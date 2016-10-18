@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interface", "Interface", "{DA6D4AAA-EE03-48DF-AE2F-48D12CB09E58}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{DCAC95E7-24D6-4AC0-894A-9BDCFF64EF2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_Core", "G_Core", "{1BB4750B-A84D-467C-9AB9-5D570F37DF3C}"
+	ProjectSection(SolutionItems) = preProject
+		..\Interface\G_Core\GBroadcasting.h = ..\Interface\G_Core\GBroadcasting.h
+		..\Interface\G_Core\GDefines.h = ..\Interface\G_Core\GDefines.h
+		..\Interface\G_Core\GInterface.h = ..\Interface\G_Core\GInterface.h
+		..\Interface\G_Core\GListener.h = ..\Interface\G_Core\GListener.h
+		..\Interface\G_Core\GMultiThreaded.h = ..\Interface\G_Core\GMultiThreaded.h
+		..\Interface\G_Core\GSingleThreaded.h = ..\Interface\G_Core\GSingleThreaded.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTime [LIB]", "GTime [LIB]\GTime [LIB].vcxproj", "{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{784DCDFE-CE55-4D63-9962-B56733D23ACD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{2582F0EF-61C1-485B-AA6A-904469D896EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x64.ActiveCfg = Debug|x64
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x64.Build.0 = Debug|x64
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x86.ActiveCfg = Debug|Win32
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x86.Build.0 = Debug|Win32
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x64.ActiveCfg = Release|x64
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x64.Build.0 = Release|x64
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.ActiveCfg = Release|Win32
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DCAC95E7-24D6-4AC0-894A-9BDCFF64EF2E} = {DA6D4AAA-EE03-48DF-AE2F-48D12CB09E58}
+		{1BB4750B-A84D-467C-9AB9-5D570F37DF3C} = {DA6D4AAA-EE03-48DF-AE2F-48D12CB09E58}
+		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC} = {2582F0EF-61C1-485B-AA6A-904469D896EB}
+		{2582F0EF-61C1-485B-AA6A-904469D896EB} = {784DCDFE-CE55-4D63-9962-B56733D23ACD}
+	EndGlobalSection
+EndGlobal
