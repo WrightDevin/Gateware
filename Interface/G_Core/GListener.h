@@ -20,7 +20,7 @@ namespace GW
 		//! Unique Identifier for this interface. {6512ACFA-2BE3-4431-B81C-9B65398A4C90}
 		static const GUUIID GListenerUUIID = 
 		{
-			{ 0x6512acfa, 0x2be3, 0x4431,{ 0xb8, 0x1c, 0x9b, 0x65, 0x39, 0x8a, 0x4c, 0x90 }
+			0x6512acfa, 0x2be3, 0x4431,{ 0xb8, 0x1c, 0x9b, 0x65, 0x39, 0x8a, 0x4c, 0x90 }
 		};
 
 		//! A GListener Interface may be registered with a GBroadcaster interface to receive event notifications
@@ -29,7 +29,7 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 			//! This operation is called whenever a GBroadcaster a listener is registered to generates an event  
-			GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData) = 0;
+			virtual GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace

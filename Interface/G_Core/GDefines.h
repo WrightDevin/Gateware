@@ -35,9 +35,16 @@ namespace GW
 	};
 
 	//! Macro used to determine if a function succeeded 
-	SUCCEEDED(_greturn_) ((~(_greturn_)) == 0x00000000)
+	#define SUCCEEDED(_greturn_) ((~(_greturn_)) == 0x00000000)
 
 	//! Macro used to determine if a function has failed 
-	FAILED(_greturn_) ((_greturn_) < 0xFFFFFFFF)
+	#define FAILED(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
+	#if defined(_WIN32)
+	#define ATOMIC_INCREMENT(_value) InterlockedIncrement(_value)
+	#define ATOMIC_DECREMENT(_value) InterlockedDecrement(_value)
+	#else
+	#define ATOMIC_INCREMENT(_value) __sync_add_and_fetch(_value)
+	#define ATOMIC_DECREMENT(_value) __sync_sub_and_fetch(_value)
+	#endif
 };// end GW namespace
