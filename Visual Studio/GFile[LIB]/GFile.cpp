@@ -12,17 +12,21 @@
 
 using namespace GW;
 using namespace CORE;
+using std::fstream;
+using std::ios;
 
 class FileIO : public GFile
 {
-	std::fstream m_file;
-	std::string m_currDir;
+	DIR* m_currDir;
+	fstream m_file;
 
-	unsigned int m_referenceCount;
+	unsigned int m_refCount;
 
 	public:
 		FileIO();
 		~FileIO();
+
+		GRETURN Init();
 
 		GRETURN OpenForBinaryRead(const char* const _file) override;
 		
@@ -58,22 +62,45 @@ class FileIO : public GFile
 		GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
 };
 
-FileIO::FileIO() : m_referenceCount(1)
+FileIO::FileIO() : m_refCount(1)
 {
-
+	m_currDir = nullptr;
 }
 
 FileIO::~FileIO()
 {
+	//Close the current directory
+	closedir(m_currDir);
 
+	//Close the file stream
+	if (m_file.is_open())
+	{
+		m_file.flush();
+		m_file.close();
+	}
+}
+
+GRETURN FileIO::Init()
+{
+	//Set m_currDir to the directory the program was run from
+	m_currDir = opendir(u8".");
+	if (!m_currDir)
+		return FAILURE;
+
+	return SUCCESS;
 }
 
 GRETURN FileIO::OpenForBinaryRead(const char* const _file)
 {
+	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+	{
+		m_file.flush();
+		m_file.close();
+	}
 
-	m_file.open(m_currDir + "/" + _file, std::ios::in | std::ios::binary);
+	//TODO: open the new file
+
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
 
@@ -82,31 +109,32 @@ GRETURN FileIO::OpenForBinaryRead(const char* const _file)
 
 GRETURN FileIO::OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flags)
 {
+	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+	{
+		m_file.flush();
+		m_file.close();
+	}
 
-	if (_flags == APPEND)
-	{
-		m_file.open(m_currDir + "/" + _file, std::ios::out | std::ios::binary| std::ios::app | std::ios::ate);
-		if (!m_file.is_open())
-			return FILE_NOT_FOUND;
-	}
-	else
-	{
-		m_file.open(m_currDir + "/" + _file, std::ios::out);
-		if (!m_file.is_open())
-			return FILE_NOT_FOUND;
-	}
+	//TODO: open the new file
+
+	if (!m_file.is_open())
+		return FAILURE;
 
 	return SUCCESS;
 }
 
 GRETURN FileIO::OpenForTextRead(const char* const _file)
 {
+	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+	{
+		m_file.flush();
+		m_file.close();
+	}
 
-	m_file.open(m_currDir + "/" + _file, std::ios::in);
+	//TODO: open the new file
+
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
 
@@ -115,30 +143,27 @@ GRETURN FileIO::OpenForTextRead(const char* const _file)
 
 GRETURN FileIO::OpenForTextWrite(const char* const _file, GFileOpenFlags _flags)
 {
+	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+	{
+		m_file.flush();
+		m_file.close();
+	}
 
-	if (_flags == APPEND)
-	{
-		m_file.open(m_currDir + "/" + _file, std::ios::out | std::ios::app | std::ios::ate);
-		if (!m_file.is_open())
-			return FILE_NOT_FOUND;
-	}
-	else
-	{
-		m_file.open(m_currDir + "/" + _file, std::ios::out);
-		if (!m_file.is_open())
-			return FILE_NOT_FOUND;
-	}
+	//TODO: open the new file
+	if (!m_file.is_open())
+		return FAILURE;
 
 	return SUCCESS;
 }
 
 GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 {
+	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
 
+	//Write the bytes out
 	m_file.write(_inData, _numBytes);
 
 	return SUCCESS;
@@ -146,44 +171,45 @@ GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 
 GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 {
+	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
 
+	//Read the bytes in
 	m_file.read(_outData, _numBytes);
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::WriteLine(const char* const _inData)
 {
+	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
 
+	//Write the line out
 	m_file << _inData;
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::ReadLine(char* _outData, unsigned int _numBytes)
 {
+	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
 
-	char buffer[255];
-	m_file.getline(buffer, 255);
-
-	strcpy_s(_outData, _numBytes, buffer);
+	//Read in data
+	m_file.getline(_outData, _numBytes);
 
 	return SUCCESS;
 }
 
 GRETURN FileIO::CloseFile()
 {
+	m_file.flush();
 	m_file.close();
-	return SUCCESS;
-}
 
-GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
-{
-	m_currDir = _dir;
 	return SUCCESS;
 }
 
@@ -192,53 +218,91 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 //
 //}
 
+GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
+{
+	//If there is an open directory, close it
+	if (m_currDir != nullptr)
+		closedir(m_currDir);
+
+	//TODO: open new dir
+
+	if (m_currDir == nullptr)
+		return FILE_NOT_FOUND;
+
+	return SUCCESS;
+}
+
 GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 {
+	//Check that there is a current working directory
+	if (m_currDir == nullptr)
+		return FAILURE;
+
+	//Ensure _outsize is initialized
+	_outSize = 0;
+
+	//Stores our files as we iterate through them
+	struct dirent* file;
+	while (file = readdir(m_currDir))
+	{
+		++_outSize;
+	}
+
+	//Set the directory iterater back to the begining
+	rewinddir(m_currDir);
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::GetFilesFromDirectory(char** _outFiles)
 {
+	//Check that there is a current working directory
+	if (m_currDir == nullptr)
+		return FAILURE;
+
+	//TODO: Implement function
+	
 	return SUCCESS;
 }
 
 GRETURN FileIO::GetCount(unsigned int &_outCount)
 {
-	_outCount = m_referenceCount;
+	//TODO: implement function
 	return SUCCESS;
 }
 
 GRETURN FileIO::IncrementCount()
 {
-	ATOMIC_INCREMENT(&m_referenceCount);
+	//TODO: implement function
 	return SUCCESS;
 }
 
 GRETURN FileIO::DecrementCount()
 {
-	unsigned int count = ATOMIC_DECREMENT(&m_referenceCount);
-	if (count == 0)
-		delete this;
-
+	//TODO: implement function
 	return SUCCESS;
 }
 
 GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface)
 {
+	//TODO: implement function
 	return SUCCESS;
 }
 
-GRETURN CreateFileHandler(GFile** _outFile)
+GRETURN GCreateFileHandler(GFile** _outFile)
 {
+	//Check that we were given a valid pointer
 	if (_outFile == nullptr)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
 	FileIO* temp = new FileIO();
 	if (!temp)
 		return FAILURE;
 
+	if (!temp->Init())
+		return FAILURE;
+
 	*_outFile = temp;
-	(*_outFile)->IncrementCount();
 
 	return SUCCESS;
 }
