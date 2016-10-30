@@ -47,11 +47,14 @@ class FileIO : public GFile
 		GRETURN CloseFile() override;
 
 		GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
-		//GRETURN GetCurrentWorkingDirectory(char _dir[255]) override;
+		
+		GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
 
 		GRETURN GetDirectorySize(unsigned int& _outSize) override;
 		
-		GRETURN GetFilesFromDirectory(char** _outFiles) override;
+		GRETURN GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize) override;
+
+		GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
 
 		GRETURN GetCount(unsigned int &_outCount) override;
 
@@ -213,10 +216,12 @@ GRETURN FileIO::CloseFile()
 	return SUCCESS;
 }
 
-//GRETURN FileIO::GetCurrentWorkingDirectory(char _dir[255])
-//{
-//
-//}
+GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
+{
+	//TODO: Implement function
+
+	return SUCCESS;
+}
 
 GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 {
@@ -254,7 +259,7 @@ GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 	return SUCCESS;
 }
 
-GRETURN FileIO::GetFilesFromDirectory(char** _outFiles)
+GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize)
 {
 	//Check that there is a current working directory
 	if (m_currDir == nullptr)
@@ -262,6 +267,13 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles)
 
 	//TODO: Implement function
 	
+	return SUCCESS;
+}
+
+GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
+{
+	//TODO: implement this function
+
 	return SUCCESS;
 }
 
