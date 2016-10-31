@@ -1,3 +1,5 @@
+#define GDEFINES
+#ifndef GDEFINES
 /*!
 	File: GDefines.h
 	Purpose: Lists the core #defines and MACROS used by the Gateware interfaces.
@@ -20,6 +22,21 @@ namespace GW
 		unsigned short  byte2a;
 		unsigned short  byte2b;
 		unsigned char	byte8[8];
+
+		//For faster comparison
+		union
+		{
+			unsigned long long part1;
+			unsigned long long part2;
+		};
+
+		bool operator==(const GUUIID& _cmp) const
+		{
+			if (part1 != _cmp.part1 || part2 != _cmp.part2)
+				return false;
+
+			return true;
+		}
 	}; // gateware guuiid mimic microsoft GUID structure in byte pattern 
 	// use built-in Visual Studio tools to generate unique ID for new interfaces
 
@@ -35,9 +52,11 @@ namespace GW
 	};
 
 	//! Macro used to determine if a function succeeded 
-	SUCCEEDED(_greturn_) ((~(_greturn_)) == 0x00000000)
+	#define G_SUCCEESS(_greturn_) ((~(_greturn_)) == 0x00000000)
 
 	//! Macro used to determine if a function has failed 
-	FAILED(_greturn_) ((_greturn_) < 0xFFFFFFFF)
+	#define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
 };// end GW namespace
+
+#endif

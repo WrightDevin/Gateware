@@ -1,3 +1,5 @@
+#ifndef GMULTITHREADED
+#define GMULTITHREADED
 /*!
 	File: GMultiThreaded.h
 	Purpose: Indentifies any Gateware interface which is garunteed to be safely accessed across multiple threads.
@@ -34,3 +36,4 @@ namespace GW
 	}// end CORE namespace
 };// end GW namespace
 
+#endif

@@ -1,3 +1,6 @@
+#ifndef GBROADCASTING
+#define GBROADCASTING
+
 /*!
 	File: GBroadcasting.h
 	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface.
@@ -40,3 +43,5 @@ namespace GW
 		};
 	}// end CORE namespace
 };// end GW namespace
+
+#endif
