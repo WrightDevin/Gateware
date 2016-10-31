@@ -1,5 +1,6 @@
 #ifndef GDEFINES
 #define GDEFINES
+
 /*!
 	File: GDefines.h
 	Purpose: Lists the core #defines and MACROS used by the Gateware interfaces.
