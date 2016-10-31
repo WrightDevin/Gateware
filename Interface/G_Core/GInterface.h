@@ -1,3 +1,5 @@
+#ifndef GINTERFACE
+#define GINTERFACE
 /*!
 	File: GInterface.h
 	Purpose: The fundamental interface which all Gateware interfaces must adhere to at a minimum.
@@ -46,3 +48,4 @@ namespace GW
 	}// end CORE namespace
 };// end GW namespace
 
+#endif

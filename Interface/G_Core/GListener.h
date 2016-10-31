@@ -1,3 +1,6 @@
+#ifndef GLISTENER
+#define GLISTENER
+
 /*!
 	File: GListener.h
 	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface.
@@ -34,3 +37,4 @@ namespace GW
 	}// end CORE namespace
 };// end GW namespace
 
+#endif

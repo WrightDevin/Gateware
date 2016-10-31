@@ -1,3 +1,6 @@
+#ifndef GBROADCASTING
+#define GBROADCASTING
+
 /*!
 	File: GBroadcasting.h
 	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface.
@@ -33,10 +36,12 @@ namespace GW
 
 			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
 			//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered
-			virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
+			 virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
 			
 			//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one 
 			virtual GRETURN DeregisterListener(GListener *_removeListener) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace
+
+#endif
