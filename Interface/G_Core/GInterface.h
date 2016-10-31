@@ -32,18 +32,18 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 			//! Return the total number of active refrences to this object
-			GRETURN GetCount(unsigned int &_outCount) = 0;
+			virtual GRETURN GetCount(unsigned int &_outCount) = 0;
 			
 			//! Increase the total number of active refrences to this object
 			//! End users should only call this operation if they are familiar with reference counting behavior
-			GRETURN IncrementCount() = 0;
+			virtual GRETURN IncrementCount() = 0;
 
 			//! Decrease the total number of active refrences to this object
 			//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid
-			GRETURN DecrementCount() = 0;
+			virtual GRETURN DecrementCount() = 0;
 
 			//! Requests an interface that may or may not be supported by this object 
-			GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) = 0;
+			virtual GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace
