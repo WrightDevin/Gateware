@@ -19,9 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GLog.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="GLog.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
