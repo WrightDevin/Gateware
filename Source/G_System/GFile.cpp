@@ -86,7 +86,7 @@ FileIO::~FileIO()
 GRETURN FileIO::Init()
 {
 	//Set m_currDir to the directory the program was run from
-	m_currDir = opendir(u8".");
+	m_currDir = opendir(u8"./");
 	if (!m_currDir)
 		return FAILURE;
 
@@ -297,7 +297,30 @@ GRETURN FileIO::DecrementCount()
 
 GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface)
 {
-	//TODO: implement function
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (_interfaceID == GFileUUIID)
+	{
+		GFile* convert = reinterpret_cast<GFile*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GMultiThreadedUUIID)
+	{
+		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
 	return SUCCESS;
 }
 
@@ -307,14 +330,16 @@ GRETURN GCreateFileHandler(GFile** _outFile)
 	if (_outFile == nullptr)
 		return FAILURE;
 
-	FileIO* temp = new FileIO();
-	if (!temp)
+	//Create the new object and make sure it's valid
+	FileIO* file = new FileIO();
+	if (!file)
 		return FAILURE;
 
-	if (!temp->Init())
-		return FAILURE;
+	GRETURN rv = file->Init();
+	if (G_FAIL(rv))
+		return rv;
 
-	*_outFile = temp;
+	*_outFile = file;
 
 	return SUCCESS;
 }

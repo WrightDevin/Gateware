@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFILE
+#define GFILE
 /*!
 	File: GFile.h
 	Purpose: A Gateware interface that handles both binary and textual file io and directory
@@ -210,3 +211,5 @@ namespace GW
 		GRETURN GCreateFileHandler(GFile** _outFile);
 	}
 }
+
+#endif

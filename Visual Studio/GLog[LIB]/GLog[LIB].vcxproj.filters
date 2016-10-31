@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GLog.cpp">
+    <ClCompile Include="..\..\Source\G_System\GLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

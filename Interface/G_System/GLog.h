@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GLOG
+#define GLOG
+
 /*!
 File: GLog.h
 Purpose: A Gateware interface that handles logging in a thread safe manner
@@ -125,3 +127,5 @@ namespace GW
 		GRETURN GCreateLog(GFile* _file, GLog** _outLog);
 	}
 }
+
+#endif

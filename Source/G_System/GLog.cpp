@@ -15,12 +15,14 @@ using std::mutex;
 
 class LogFile : public GLog
 {
-	thread m_workerThread;
-	queue<string> m_logQueue;
-	mutex m_queueLock;
-
 	GFile* m_logFile;
 
+	thread m_workerThread;
+	
+	mutex m_queueLock;
+
+	queue<string> m_logQueue;
+	
 	bool m_isVerbose;
 public:
 	GRETURN Init(const char* const _fileName);
@@ -38,17 +40,20 @@ public:
 	GRETURN CloseLogs() override;
 
 	GRETURN GetCount(unsigned int &_outCount) override;
+	
 	GRETURN IncrementCount() override;
+	
 	GRETURN DecrementCount() override;
+	
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
 };
 
 GRETURN LogFile::Init(const char* const _fileName)
 {
-	if (FAILED(GCreateFileHandler(&m_logFile)))
+	if (G_FAIL(GCreateFileHandler(&m_logFile)))
 		return FAILURE;
 
-	if (FAILED(m_logFile->OpenForTextWrite(_fileName, APPEND)))
+	if (G_FAIL(m_logFile->OpenForTextWrite(_fileName, APPEND)))
 		return FAILURE;
 
 	//TODO: Fire off worker thread
@@ -171,6 +176,30 @@ GRETURN LogFile::DecrementCount()
 
 GRETURN LogFile::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface)
 {
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (_interfaceID == GFileUUIID)
+	{
+		GLog* convert = reinterpret_cast<GLog*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GMultiThreadedUUIID)
+	{
+		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
 	return SUCCESS;
 }
 
@@ -179,14 +208,15 @@ GRETURN GCreateLog(const char* const _fileName, GLog** _outLog)
 	if (_outLog == nullptr)
 		return FAILURE;
 
-	LogFile* temp = new LogFile();
-	if (temp == nullptr)
+	LogFile* logFile = new LogFile();
+	if (logFile == nullptr)
 		return FAILURE;
 
-	if (FAILED(temp->Init(_fileName)))
-		return FAILURE;
+	GRETURN rv = logFile->Init(_fileName);
+	if (G_FAIL(rv))
+		return rv;
 
-	(*_outLog) = temp;
+	(*_outLog) = logFile;
 
 	return SUCCESS;
 }
@@ -196,14 +226,15 @@ GRETURN GCreateLog(GFile* _file, GLog** _outLog)
 	if (_outLog == nullptr)
 		return FAILURE;
 
-	LogFile* temp = new LogFile();
-	if (temp == nullptr)
+	LogFile* logFile = new LogFile();
+	if (logFile == nullptr)
 		return FAILURE;
 
-	if (FAILED(temp->Init(_file)))
-		return FAILURE;
+	GRETURN rv = logFile->Init(_file);
+	if (G_FAIL(rv))
+		return rv;
 
-	(*_outLog) = temp;
+	(*_outLog) = logFile;
 
 	return SUCCESS;
 }
