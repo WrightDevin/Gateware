@@ -20,7 +20,7 @@ namespace GW
 		//! Unique Identifier for this interface. {FF23C564-940B-44A2-9E5F-CE264659D69A}
 		static const GUUIID GBroadcastingUUIID =
 		{
-			{ 0xff23c564, 0x940b, 0x44a2,{ 0x9e, 0x5f, 0xce, 0x26, 0x46, 0x59, 0xd6, 0x9a }
+			0xff23c564, 0x940b, 0x44a2,{ 0x9e, 0x5f, 0xce, 0x26, 0x46, 0x59, 0xd6, 0x9a }
 		};
 
 		//! The GBroadcasting Interface is capable of registering & deregistering GListener interfaces.
@@ -33,10 +33,10 @@ namespace GW
 
 			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
 			//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered
-			GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
+			virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
 			
 			//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one 
-			GRETURN DeregisterListener(GListener *_removeListener) = 0;
+			virtual GRETURN DeregisterListener(GListener *_removeListener) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace

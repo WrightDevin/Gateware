@@ -20,7 +20,7 @@ namespace GW
 		//! Unique Identifier for this interface. {088E5BC2-8BF4-4972-9537-FACBFA142789}
 		static const GUUIID GSingleThreadedUUIID =
 		{
-			{ 0x88e5bc2, 0x8bf4, 0x4972,{ 0x95, 0x37, 0xfa, 0xcb, 0xfa, 0x14, 0x27, 0x89 }
+			0x88e5bc2, 0x8bf4, 0x4972,{ 0x95, 0x37, 0xfa, 0xcb, 0xfa, 0x14, 0x27, 0x89 }
 		};
 
 		//! This interface is only use to label and query interfaces which are not designed internally to support thread saftey. 

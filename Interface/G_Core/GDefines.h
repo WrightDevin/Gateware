@@ -35,9 +35,9 @@ namespace GW
 	};
 
 	//! Macro used to determine if a function succeeded 
-	SUCCEEDED(_greturn_) ((~(_greturn_)) == 0x00000000)
+	#define SUCCEEDED(_greturn_) ((~(_greturn_)) == 0x00000000)
 
 	//! Macro used to determine if a function has failed 
-	FAILED(_greturn_) ((_greturn_) < 0xFFFFFFFF)
+	#define FAILED(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
 };// end GW namespace
