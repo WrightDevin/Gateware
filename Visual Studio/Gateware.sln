@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interface", "Interface", "{DA6D4AAA-EE03-48DF-AE2F-48D12CB09E58}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{DCAC95E7-24D6-4AC0-894A-9BDCFF64EF2E}"
+	ProjectSection(SolutionItems) = preProject
+		..\Interface\G_System\GFile.h = ..\Interface\G_System\GFile.h
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_Core", "G_Core", "{1BB4750B-A84D-467C-9AB9-5D570F37DF3C}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{2582F0EF-61C1-485B-AA6A-904469D896EB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GFile[LIB]", "GFile[LIB]\GFile[LIB].vcxproj", "{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +44,14 @@ Global
 		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x64.Build.0 = Release|x64
 		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.ActiveCfg = Release|Win32
 		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.Build.0 = Release|Win32
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x64.ActiveCfg = Debug|x64
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x64.Build.0 = Debug|x64
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x86.ActiveCfg = Debug|Win32
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x86.Build.0 = Debug|Win32
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Release|x64.ActiveCfg = Release|x64
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Release|x64.Build.0 = Release|x64
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Release|x86.ActiveCfg = Release|Win32
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +61,6 @@ Global
 		{1BB4750B-A84D-467C-9AB9-5D570F37DF3C} = {DA6D4AAA-EE03-48DF-AE2F-48D12CB09E58}
 		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC} = {2582F0EF-61C1-485B-AA6A-904469D896EB}
 		{2582F0EF-61C1-485B-AA6A-904469D896EB} = {784DCDFE-CE55-4D63-9962-B56733D23ACD}
+		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1} = {2582F0EF-61C1-485B-AA6A-904469D896EB}
 	EndGlobalSection
 EndGlobal
