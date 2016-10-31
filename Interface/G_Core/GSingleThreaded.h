@@ -1,3 +1,6 @@
+#ifndef GSINGLETHREADED
+#define GSINGLETHREADED
+
 /*!
 	File: GSingleThreaded.h
 	Purpose: Indentifies any Gateware interface which may NOT be safely accessed across multiple threads.
@@ -33,3 +36,4 @@ namespace GW
 	}// end CORE namespace
 };// end GW namespace
 
+#endif
