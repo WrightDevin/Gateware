@@ -1,9 +1,10 @@
+#pragma once
 /*!
 	File: GFile.h
 	Purpose: A Gateware interface that handles both binary and textual file io and directory
 	Author: Justin W. Parks
 	Contributors: N/A
-	Last Modified: 10/26/2016
+	Last Modified: 10/30/2016
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */

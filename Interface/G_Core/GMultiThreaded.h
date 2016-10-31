@@ -1,3 +1,4 @@
+#pragma once
 /*!
 	File: GMultiThreaded.h
 	Purpose: Indentifies any Gateware interface which is garunteed to be safely accessed across multiple threads.
