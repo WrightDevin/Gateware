@@ -13,6 +13,42 @@ using std::thread;
 using std::string;
 using std::mutex;
 
+//Nameless namespace to contain the worker thread function
+namespace
+{
+	void LogWorker(GFile* _file, queue<string>& _queue, mutex& _queueLock, bool& _running)
+	{
+		while (_running)
+		{
+			if (_queueLock.try_lock())
+			{
+				if (_queue.size() != 0)
+				{
+					queue<string> writeQueue;
+					writeQueue.swap(_queue);
+
+					_queueLock.unlock();
+
+					for (int i = 0; i < writeQueue.size(); ++i)
+					{
+						_file->WriteLine(writeQueue.front().c_str());
+						writeQueue.pop();
+
+						//TODO: Flush after write
+					}
+				}
+				else
+					_queueLock.unlock();
+			}
+
+			//Sleep for 10 seconds
+			std::this_thread::sleep_for(std::chrono::seconds(10));
+		}
+
+		_file->CloseFile();
+	}
+}
+
 class LogFile : public GLog
 {
 	GFile* m_logFile;

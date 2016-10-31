@@ -41,7 +41,7 @@ namespace GW
 			*  @param [in] _file The file name of the file to open.
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
-			*  @return FILE_NOT_FOUND  File could not be found.
+			*  @retval FILE_NOT_FOUND  File could not be found.
 			*/
 			virtual GRETURN OpenForBinaryRead(const char* const _file) = 0;
 
@@ -56,7 +56,7 @@ namespace GW
 			*  @param [in] _flags One or more GFileOpenFlags on how to open the file (TRUNCATE or APPEND).
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
-			*  @return FAILURE  File could not be found/created.
+			*  @retval FAILURE  File could not be found/created.
 			*/
 			virtual GRETURN OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flags) = 0;
 
@@ -69,7 +69,7 @@ namespace GW
 			*  @param [in] _file The file name of the file to open.
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
-			*  @return FILE_NOT_FOUND  File could not be found.
+			*  @retval FILE_NOT_FOUND  File could not be found.
 			*/
 			virtual GRETURN OpenForTextRead(const char* const _file) = 0;
 
@@ -84,7 +84,7 @@ namespace GW
 			*  @param [in] _flags One or more GFileOpenFlags on how to open the file (TRUNCATE or APPEND).
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
-			*  @return FAILURE  File could not be found/created.
+			*  @retval FAILURE  File could not be found/created.
 			*/
 			virtual GRETURN OpenForTextWrite(const char* const _file, GFileOpenFlags _flags) = 0;
 

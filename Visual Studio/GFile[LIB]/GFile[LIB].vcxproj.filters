@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\Source\G_System\dirent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\G_System\GUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\G_System\GFile.cpp">

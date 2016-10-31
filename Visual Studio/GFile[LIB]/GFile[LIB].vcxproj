@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\G_System\dirent.h" />
+    <ClInclude Include="..\..\Source\G_System\GUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\G_System\GFile.cpp" />

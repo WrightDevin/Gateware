@@ -5,6 +5,10 @@
 
 #ifdef _WIN32
 #include "dirent.h"
+
+#define fstream wfstream
+
+
 #else
 #include <dirent.h>
 #endif

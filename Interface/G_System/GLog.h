@@ -50,7 +50,7 @@ namespace GW
 			*  @param [in] _log The message to log out.
 			*
 			*  @retval SUCCESS  Successfully queued the message to the log.
-			*  @return FAILURE  The queue has reached maximun size (call flush). 
+			*  @retval FAILURE  The queue has reached maximun size (call flush). 
 			*/
 			virtual GRETURN Log(const char* const _log) = 0;
 			
@@ -63,7 +63,7 @@ namespace GW
 			*  @param [in] _log The message to log out.
 			*
 			*  @retval SUCCESS  Successfully queued the message to the log.
-			*  @return FAILURE  The queue has reached maximun size (call flush).
+			*  @retval FAILURE  The queue has reached maximun size (call flush).
 			*/
 			virtual GRETURN LogCatergorized(const char* const _category, const char* const _log) = 0;
 			
@@ -82,7 +82,7 @@ namespace GW
 			*
 			*
 			*  @retval SUCCESS  Successfully dumped the logs
-			*  @return FAILURE  Most likely a file corruption or a file is not open.
+			*  @retval FAILURE  Most likely a file corruption or a file is not open.
 			*/
 			virtual GRETURN Flush() = 0;
 
@@ -92,7 +92,7 @@ namespace GW
 			*  message can be sent to their worker threads.
 			*
 			*  @retval SUCCESS  Successfully dumped the logs and closed the thread.
-			*  @return FAILURE  Most likely a file corruption or a file is not open.
+			*  @retval FAILURE  Most likely a file corruption or a file is not open.
 			*/
 			virtual GRETURN CloseLogs() = 0;
 		};
@@ -107,7 +107,7 @@ namespace GW
 		*  @param [out] _outLog Will contain the GLog if succefully created.
 		*
 		*  @retval SUCCESS  GLog was successfully created.
-		*  @return FAILURE  GLog was not created. _outLog will be null
+		*  @retval FAILURE  GLog was not created. _outLog will be null
 		*/
 		GRETURN GCreateLog(const char* const _fileName, GLog** _outLog);
 
@@ -122,7 +122,8 @@ namespace GW
 		*  @param [out] _outLog Will contain the GLog if succefully created.
 		*
 		*  @retval SUCCESS  GLog was successfully created.
-		*  @return FAILURE  GLog was not created. _outLog will be null
+		*  @retval FAILURE  GLog was not created. _outLog will be null.
+		*  @retval INVALID_ARGUMENT _outLog was passed in as null.
 		*/
 		GRETURN GCreateLog(GFile* _file, GLog** _outLog);
 	}
