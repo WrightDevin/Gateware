@@ -1,72 +1,80 @@
-
 #include "../../Interface/G_System/GFile.h"
 #include <fstream>
 #include <string>
+#include <atomic>
+#include "GUtility.h"
 
+//dirent.h is not native to Windows and is added to the project
+//The " " are used for include so the compiler knows to look in the
+//project folder first.
+//dirent.h is native in Linux and Mac so the < > are used to include
 #ifdef _WIN32
 #include "dirent.h"
-
-#define fstream wfstream
-
-
-#else
+#elif __APPLE__ || __linux__
 #include <dirent.h>
+#else
+#error Gateware libraries are not currently supported for your platform
 #endif
 
-
+//The using statements for specifically what we are using
 using namespace GW;
 using namespace CORE;
 using std::fstream;
 using std::ios;
+using std::atomic;
 
 class FileIO : public GFile
 {
 	DIR* m_currDir;
 	fstream m_file;
 
-	unsigned int m_refCount;
+	atomic<unsigned int> m_refCount;
 
-	public:
-		FileIO();
-		~FileIO();
+public:
+	FileIO();
+	~FileIO();
 
-		GRETURN Init();
+	GRETURN Init();
 
-		GRETURN OpenForBinaryRead(const char* const _file) override;
-		
-		GRETURN OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flags) override;
+	GRETURN OpenBinaryRead(const char* const _file) override;
 
-		GRETURN OpenForTextRead(const char* const _file) override;
-		
-		GRETURN OpenForTextWrite(const char* const _file, GFileOpenFlags _flags) override;
+	GRETURN OpenBinaryWrite(const char* const _file) override;
 
-		GRETURN Write(const char* const _inData, unsigned int _numBytes) override;
-		
-		GRETURN Read(char* _outData, unsigned int _numBytes) override;
+	GRETURN AppendBinaryWrite(const char* const _file) override;
 
-		GRETURN WriteLine(const char* const _inData) override;
-		
-		GRETURN ReadLine(char* _outData, unsigned int _numBytes) override;
+	GRETURN OpenTextRead(const char* const _file) override;
 
-		GRETURN CloseFile() override;
+	GRETURN OpenTextWrite(const char* const _file) override;
 
-		GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
-		
-		GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
+	GRETURN AppendTextWrite(const char* const _file) override;
 
-		GRETURN GetDirectorySize(unsigned int& _outSize) override;
-		
-		GRETURN GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize) override;
+	GRETURN Write(const char* const _inData, unsigned int _numBytes) override;
 
-		GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
+	GRETURN Read(char* _outData, unsigned int _numBytes) override;
 
-		GRETURN GetCount(unsigned int &_outCount) override;
+	GRETURN WriteLine(const char* const _inData) override;
 
-		GRETURN IncrementCount() override;
+	GRETURN ReadLine(char* _outData, unsigned int _numBytes) override;
 
-		GRETURN DecrementCount() override;
+	GRETURN CloseFile() override;
 
-		GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
+	GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
+
+	GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
+
+	GRETURN GetDirectorySize(unsigned int& _outSize) override;
+
+	GRETURN GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize) override;
+
+	GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
+
+	GRETURN GetCount(unsigned int &_outCount) override;
+
+	GRETURN IncrementCount() override;
+
+	GRETURN DecrementCount() override;
+
+	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
 };
 
 FileIO::FileIO() : m_refCount(1)
@@ -97,7 +105,7 @@ GRETURN FileIO::Init()
 	return SUCCESS;
 }
 
-GRETURN FileIO::OpenForBinaryRead(const char* const _file)
+GRETURN FileIO::OpenBinaryRead(const char* const _file)
 {
 	//Close the current file if there is one
 	if (m_file.is_open())
@@ -106,7 +114,8 @@ GRETURN FileIO::OpenForBinaryRead(const char* const _file)
 		m_file.close();
 	}
 
-	//TODO: open the new file
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::in | ios::binary);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -114,7 +123,7 @@ GRETURN FileIO::OpenForBinaryRead(const char* const _file)
 	return SUCCESS;
 }
 
-GRETURN FileIO::OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flags)
+GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 {
 	//Close the current file if there is one
 	if (m_file.is_open())
@@ -123,7 +132,8 @@ GRETURN FileIO::OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flag
 		m_file.close();
 	}
 
-	//TODO: open the new file
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::binary);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -131,7 +141,7 @@ GRETURN FileIO::OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flag
 	return SUCCESS;
 }
 
-GRETURN FileIO::OpenForTextRead(const char* const _file)
+GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 {
 	//Close the current file if there is one
 	if (m_file.is_open())
@@ -140,7 +150,26 @@ GRETURN FileIO::OpenForTextRead(const char* const _file)
 		m_file.close();
 	}
 
-	//TODO: open the new file
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::binary | ios::app | ios::ate);
+
+	if (!m_file.is_open())
+		return FAILURE;
+
+	return SUCCESS;
+}
+
+GRETURN FileIO::OpenTextRead(const char* const _file)
+{
+	//Close the current file if there is one
+	if (m_file.is_open())
+	{
+		m_file.flush();
+		m_file.close();
+	}
+
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::in);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -148,7 +177,7 @@ GRETURN FileIO::OpenForTextRead(const char* const _file)
 	return SUCCESS;
 }
 
-GRETURN FileIO::OpenForTextWrite(const char* const _file, GFileOpenFlags _flags)
+GRETURN FileIO::OpenTextWrite(const char* const _file)
 {
 	//Close the current file if there is one
 	if (m_file.is_open())
@@ -157,7 +186,27 @@ GRETURN FileIO::OpenForTextWrite(const char* const _file, GFileOpenFlags _flags)
 		m_file.close();
 	}
 
-	//TODO: open the new file
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::out);
+
+	if (!m_file.is_open())
+		return FAILURE;
+
+	return SUCCESS;
+}
+
+GRETURN FileIO::AppendTextWrite(const char* const _file)
+{
+	//Close the current file if there is one
+	if (m_file.is_open())
+	{
+		m_file.flush();
+		m_file.close();
+	}
+
+	//Open the new file
+	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::app | ios::ate);
+
 	if (!m_file.is_open())
 		return FAILURE;
 
@@ -222,9 +271,23 @@ GRETURN FileIO::CloseFile()
 
 GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 {
-	//TODO: Implement function
+	if (m_currDir == nullptr)
+		return FAILURE;
 
-	return SUCCESS;
+	//Iterate to find current directory. This should be the first thing found.
+	struct dirent* file = nullptr;
+	while ((file = readdir(m_currDir)) != nullptr)
+	{
+		if (file->d_name == ".")
+		{
+			//TODO: Implement platform specific get full path (DO THIS ON SETTING CURRENT DIRECTORY AND STORE IN CLASS)
+		}
+	}
+
+	//Rewind the directory back to begining
+	rewinddir(m_currDir);
+
+	return FAILURE;
 }
 
 GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
@@ -233,7 +296,8 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 	if (m_currDir != nullptr)
 		closedir(m_currDir);
 
-	//TODO: open new dir
+	//Open the new directory
+	m_currDir = opendir(_dir);
 
 	if (m_currDir == nullptr)
 		return FILE_NOT_FOUND;
@@ -254,7 +318,8 @@ GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 	struct dirent* file;
 	while (file = readdir(m_currDir))
 	{
-		++_outSize;
+		if(file->d_type == DT_REG)
+			++_outSize;
 	}
 
 	//Set the directory iterater back to the begining
@@ -269,33 +334,66 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 	if (m_currDir == nullptr)
 		return FAILURE;
 
-	//TODO: Implement function
-	
+	struct dirent* file;
+	unsigned int fileNumber = 0;
+
+	//Read the first file (Should be "." which will be skipped)
+	file = readdir(m_currDir);
+	if (file == nullptr)
+		return FAILURE;
+
+	//Read all files and add regular files to the buffer passed in
+	for (; file != nullptr && fileNumber < _numFiles; file = readdir(m_currDir))
+	{
+		if (file->d_type == DT_REG)
+		{
+			strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
+			++fileNumber;
+		}
+	}
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 {
-	//TODO: implement this function
+	//TODO: Make function widebyte
+	struct stat s;
+	//_wstat(_file, &s);
+
 
 	return SUCCESS;
 }
 
 GRETURN FileIO::GetCount(unsigned int &_outCount)
 {
-	//TODO: implement function
+	//Store ref count
+	_outCount = m_refCount;
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::IncrementCount()
 {
-	//TODO: implement function
+	//Check to make sure overflow will not occur
+	if (m_refCount == UINT_MAX)
+		return FAILURE;
+
+	//Increment ref count
+	++m_refCount;
+
 	return SUCCESS;
 }
 
 GRETURN FileIO::DecrementCount()
 {
-	//TODO: implement function
+	//Check to make sure underflow will not occur
+	if (m_refCount == 0)
+		return FAILURE;
+
+	//Decrement ref count
+	--m_refCount;
+
 	return SUCCESS;
 }
 
@@ -304,24 +402,43 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
+	//If interface == this
 	if (_interfaceID == GFileUUIID)
 	{
+		//Temporary GFile* to ensure proper functions are called.
 		GFile* convert = reinterpret_cast<GFile*>(this);
+
+		//Increment the count of the GFile.
 		convert->IncrementCount();
+
+		//Store the value.
 		(*_outputInterface) = convert;
 	}
+	//If requested interface is multithreaded.
 	else if (_interfaceID == GMultiThreadedUUIID)
 	{
+		//Temportary GMultiThreaded* to ensure proper functions are called
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
 		convert->IncrementCount();
+
+		//Store the value.
 		(*_outputInterface) = convert;
 	}
+	//If requested interface is the primary interface.
 	else if (_interfaceID == GInterfaceUUIID)
 	{
+		//Temporary GInterface* to ensure proper functions are called.
 		GInterface* convert = reinterpret_cast<GInterface*>(this);
+
+		//Increment the count of the GInterface.
 		convert->IncrementCount();
+
+		//Store the value.
 		(*_outputInterface) = convert;
 	}
+	//Interface is not supported
 	else
 		return INTERFACE_UNSUPPORTED;
 
@@ -332,17 +449,19 @@ GRETURN GCreateFileHandler(GFile** _outFile)
 {
 	//Check that we were given a valid pointer
 	if (_outFile == nullptr)
-		return FAILURE;
+		return INVALID_ARGUMENT;
 
 	//Create the new object and make sure it's valid
 	FileIO* file = new FileIO();
 	if (!file)
 		return FAILURE;
 
+	//Run the FileIO init function
 	GRETURN rv = file->Init();
 	if (G_FAIL(rv))
 		return rv;
 
+	//Store FileIO in the GFile
 	*_outFile = file;
 
 	return SUCCESS;

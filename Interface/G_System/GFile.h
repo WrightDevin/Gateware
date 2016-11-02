@@ -16,8 +16,6 @@
 //! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
 {
-	enum GFileOpenFlags { APPEND, TRUNCATE };
-
 	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace CORE
 	{
@@ -43,9 +41,9 @@ namespace GW
 			*  @retval SUCCESS  Succesfully opened the file.
 			*  @retval FILE_NOT_FOUND  File could not be found.
 			*/
-			virtual GRETURN OpenForBinaryRead(const char* const _file) = 0;
+			virtual GRETURN OpenBinaryRead(const char* const _file) = 0;
 
-			/*! Opens a file for binary write.
+			/*! Opens a file for binary write truncating the file.
 			*
 			*  The file name passed into the function should be passed like it is a realitive path.
 			*  The function will look in the current working directory for the file.
@@ -53,12 +51,25 @@ namespace GW
 			*  the current working directory.
 			*
 			*  @param [in] _file The file name of the file to open.
-			*  @param [in] _flags One or more GFileOpenFlags on how to open the file (TRUNCATE or APPEND).
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
 			*  @retval FAILURE  File could not be found/created.
 			*/
-			virtual GRETURN OpenForBinaryWrite(const char* const _file, GFileOpenFlags _flags) = 0;
+			virtual GRETURN OpenBinaryWrite(const char* const _file) = 0;
+
+			/*! Opens a file for binary write with append.
+			*
+			*  The file name passed into the function should be passed like it is a realitive path.
+			*  The function will look in the current working directory for the file.
+			*  If the file is not found in the current working directory, the file will be created in
+			*  the current working directory.
+			*
+			*  @param [in] _file The file name of the file to open.
+			*
+			*  @retval SUCCESS  Succesfully opened the file.
+			*  @retval FAILURE  File could not be found/created.
+			*/
+			virtual GRETURN AppendBinaryWrite(const char* const _file) = 0;
 
 			/*! Opens a file for text read.
 			*
@@ -71,9 +82,9 @@ namespace GW
 			*  @retval SUCCESS  Succesfully opened the file.
 			*  @retval FILE_NOT_FOUND  File could not be found.
 			*/
-			virtual GRETURN OpenForTextRead(const char* const _file) = 0;
+			virtual GRETURN OpenTextRead(const char* const _file) = 0;
 
-			/*! Opens a file for text write.
+			/*! Opens a file for text write truncatin the file.
 			*
 			*  The file name passed into the function should be passed like it is a realitive path.
 			*  The function will look in the current working directory for the file.
@@ -81,12 +92,25 @@ namespace GW
 			*  the current working directory.
 			*
 			*  @param [in] _file The file name of the file to open.
-			*  @param [in] _flags One or more GFileOpenFlags on how to open the file (TRUNCATE or APPEND).
 			*
 			*  @retval SUCCESS  Succesfully opened the file.
 			*  @retval FAILURE  File could not be found/created.
 			*/
-			virtual GRETURN OpenForTextWrite(const char* const _file, GFileOpenFlags _flags) = 0;
+			virtual GRETURN OpenTextWrite(const char* const _file) = 0;
+
+			/*! Opens a file for text write with append.
+			*
+			*  The file name passed into the function should be passed like it is a realitive path.
+			*  The function will look in the current working directory for the file.
+			*  If the file is not found in the current working directory, the file will be created in
+			*  the current working directory.
+			*
+			*  @param [in] _file The file name of the file to open.
+			*
+			*  @retval SUCCESS  Succesfully opened the file.
+			*  @retval FAILURE  File could not be found/created.
+			*/
+			virtual GRETURN AppendTextWrite(const char* const _file) = 0;
 
 			/*! Writes binary to the currently opened file.
 			*
