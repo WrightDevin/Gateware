@@ -1,6 +1,7 @@
 #include "../../Interface/G_System/GFile.h"
 #include <fstream>
 #include <string>
+#include <string.h>
 #include <atomic>
 #include "GUtility.h"
 
@@ -23,6 +24,7 @@
 using namespace GW;
 using namespace CORE;
 using namespace INTERNAL;
+using std::string;
 using std::fstream;
 using std::ios;
 using std::atomic;
@@ -297,7 +299,8 @@ GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 	struct dirent* file = nullptr;
 	while ((file = readdir(m_currDir)) != nullptr)
 	{
-		if (file->d_name == ".")
+        string currDir = ".";
+		if (file->d_name == currDir)
 		{
 			//TODO: Implement platform specific get full path (DO THIS ON SETTING CURRENT DIRECTORY AND STORE IN CLASS)
 		}
@@ -335,7 +338,7 @@ GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 
 	//Stores our files as we iterate through them
 	struct dirent* file;
-	while (file = readdir(m_currDir))
+	while ((file = readdir(m_currDir)))
 	{
 		if(file->d_type == DT_REG)
 			++_outSize;
@@ -366,7 +369,7 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 	{
 		if (file->d_type == DT_REG)
 		{
-			strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
+            strlcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
 			++fileNumber;
 		}
 	}
