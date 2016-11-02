@@ -58,6 +58,8 @@ public:
 
 	GRETURN CloseFile() override;
 
+	GRETURN FlushFile() override;
+
 	GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
 
 	GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
@@ -263,8 +265,21 @@ GRETURN FileIO::ReadLine(char* _outData, unsigned int _numBytes)
 
 GRETURN FileIO::CloseFile()
 {
+	if (!m_file.is_open())
+		return FAILURE;
+
 	m_file.flush();
 	m_file.close();
+
+	return SUCCESS;
+}
+
+GRETURN FileIO::FlushFile()
+{
+	if (!m_file.is_open())
+		return FAILURE;
+
+	m_file.flush();
 
 	return SUCCESS;
 }

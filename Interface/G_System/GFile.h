@@ -155,8 +155,16 @@ namespace GW
 			/*! Flushes and closes the current file.
 			*
 			*  @retval SUCCESS File successfully flushed and closed.
+			*  @retval FAILURE A file is not currently open.
 			*/
 			virtual GRETURN CloseFile() = 0;
+
+			/*! Flushes the current file.
+			*
+			*  @retval SUCCESS File successfully flushed and closed.
+			*  @retval FAILURE A file is not currently open.
+			*/
+			virtual GRETURN FlushFile() = 0;
 
 			/*! Changes the current working directory.
 			*
