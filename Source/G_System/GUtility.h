@@ -16,7 +16,7 @@ namespace INTERNAL
 #elif defined(_WIN32)
 
 #define G_WIDEN(value) stringConverter.from_bytes(value)
-#define G_NARROW(value) INTERNAL::stringConverter.to_bytes(value)
+#define G_NARROW(value) stringConverter.to_bytes(value)
 
 #else
 

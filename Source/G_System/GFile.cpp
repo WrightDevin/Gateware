@@ -9,12 +9,25 @@
 //project folder first.
 //dirent.h is native in Linux and Mac so the < > are used to include
 #if defined(__APPLE__) || defined(__linux__)
+
 #include <dirent.h>
 #include <sys/stat.h>
+
 #elif defined(_WIN32)
+
 #include "direntw.h"
+
+#define DIR _WDIR
+#define dirent _wdirent
+#define opendir _wopendir
+#define readdir _wreaddir
+#define closedir _wclosedir
+#define rewinddir _wrewinddir 
+
 #else
+
 #error Gateware libraries are not currently supported for your platform
+
 #endif
 
 #define G_UINT_MAX 0xffffffff
@@ -105,7 +118,7 @@ FileIO::~FileIO()
 GRETURN FileIO::Init()
 {
 	//Set m_currDir to the directory the program was run from
-	m_currDir = opendir(u8"./");
+	m_currDir = opendir(G_WIDEN("./").c_str());
 	if (!m_currDir)
 		return FAILURE;
 
@@ -298,11 +311,19 @@ GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 	struct dirent* file = nullptr;
 	while ((file = readdir(m_currDir)) != nullptr)
 	{
-        string currDir = ".";
+#if defined(_WIN32)
+		std::wstring currDir = L"./";
 		if (file->d_name == currDir)
 		{
 			//TODO: Implement platform specific get full path (DO THIS ON SETTING CURRENT DIRECTORY AND STORE IN CLASS)
 		}
+#elif defined(__APPLE__) || defined(__linux__)
+		string currDir = "./";
+		if (file->d_name == currDir)
+		{
+
+		}
+#endif
 	}
 
 	//Rewind the directory back to begining
@@ -318,7 +339,7 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 		closedir(m_currDir);
 
 	//Open the new directory
-	m_currDir = opendir(_dir);
+	m_currDir = opendir(G_WIDEN(_dir).c_str());
 
 	if (m_currDir == nullptr)
 		return FILE_NOT_FOUND;
@@ -368,7 +389,7 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 	{
 		if (file->d_type == DT_REG)
 		{
-            strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
+            strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, G_NARROW(file->d_name).c_str());
 			++fileNumber;
 		}
 	}
