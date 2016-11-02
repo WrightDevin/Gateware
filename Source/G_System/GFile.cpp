@@ -8,10 +8,11 @@
 //The " " are used for include so the compiler knows to look in the
 //project folder first.
 //dirent.h is native in Linux and Mac so the < > are used to include
-#ifdef _WIN32
-#include "dirent.h"
-#elif __APPLE__ || __linux__
+#if defined(__APPLE__) || defined(__linux__)
 #include <dirent.h>
+#include <sys/stat.h>
+#elif defined(_WIN32)
+#include "direntw.h"
 #else
 #error Gateware libraries are not currently supported for your platform
 #endif

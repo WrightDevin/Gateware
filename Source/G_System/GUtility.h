@@ -16,8 +16,8 @@ namespace INTERNAL
 
 #elif __APPLE || __linux__
 
-#define G_CONVERT_TO_WCHAR(value) value
-#define G_CONVERT_TO_CHAR(value) value
+#define G_WIDEN(value) value
+#define G_NARROW(value) value
 
 #else
 
