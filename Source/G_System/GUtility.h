@@ -11,7 +11,7 @@ namespace INTERNAL
 #define G_WIDEN(value) value
 #define G_NARROW(value) value
 
-#define strlcpy_s(...) strlcpy(__VA_ARGS__)
+#define strcpy_s(...) strlcpy(__VA_ARGS__)
 
 #elif defined(_WIN32)
 

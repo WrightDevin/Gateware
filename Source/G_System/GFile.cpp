@@ -1,7 +1,6 @@
 #include "../../Interface/G_System/GFile.h"
 #include <fstream>
 #include <string>
-#include <string.h>
 #include <atomic>
 #include "GUtility.h"
 
@@ -369,7 +368,7 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 	{
 		if (file->d_type == DT_REG)
 		{
-            strlcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
+            strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, file->d_name);
 			++fileNumber;
 		}
 	}
