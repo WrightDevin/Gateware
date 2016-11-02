@@ -17,9 +17,12 @@
 #error Gateware libraries are not currently supported for your platform
 #endif
 
+#define G_UINT_MAX 0xffffffff
+
 //The using statements for specifically what we are using
 using namespace GW;
 using namespace CORE;
+using namespace INTERNAL;
 using std::fstream;
 using std::ios;
 using std::atomic;
@@ -118,7 +121,7 @@ GRETURN FileIO::OpenBinaryRead(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::in | ios::binary);
+	m_file.open(G_WIDEN(_file), ios::in | ios::binary);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -136,7 +139,7 @@ GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::binary);
+	m_file.open(G_WIDEN(_file), ios::out | ios::binary);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -154,7 +157,7 @@ GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::binary | ios::app | ios::ate);
+	m_file.open(G_WIDEN(_file), ios::out | ios::binary | ios::app | ios::ate);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -172,7 +175,7 @@ GRETURN FileIO::OpenTextRead(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::in);
+	m_file.open(G_WIDEN(_file), ios::in);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -190,7 +193,7 @@ GRETURN FileIO::OpenTextWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::out);
+	m_file.open(G_WIDEN(_file), ios::out);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -208,7 +211,7 @@ GRETURN FileIO::AppendTextWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(INTERNAL::G_WIDEN(_file), ios::out | ios::app | ios::ate);
+	m_file.open(G_WIDEN(_file), ios::out | ios::app | ios::ate);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -392,7 +395,7 @@ GRETURN FileIO::GetCount(unsigned int &_outCount)
 GRETURN FileIO::IncrementCount()
 {
 	//Check to make sure overflow will not occur
-	if (m_refCount == UINT_MAX)
+	if (m_refCount == G_UINT_MAX)
 		return FAILURE;
 
 	//Increment ref count
