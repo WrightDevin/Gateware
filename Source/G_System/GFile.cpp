@@ -62,7 +62,7 @@ class FileIO : public GFile
 
 public:
 	FileIO();
-	~FileIO();
+	virtual ~FileIO();
 
 	GRETURN Init();
 

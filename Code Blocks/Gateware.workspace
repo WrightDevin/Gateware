@@ -2,5 +2,6 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Gateware">
 		<Project filename="GFile/GFile.cbp" />
+		<Project filename="GLog/GLog.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
