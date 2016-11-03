@@ -142,16 +142,6 @@ namespace GW
 			*/
 			virtual GRETURN WriteLine(const char* const _inData) = 0;
 
-			/*! Reads text from the currently opened file.
-			*
-			*  @param [out] _outData The variable to store the read in text
-			*  @param [in] _numBytes The size of _outData
-			*
-			*  @retval SUCCESS Successful read.
-			*  @retval FAILURE Either file is not open or read failed. _outData will be null.
-			*/
-			virtual GRETURN ReadLine(char* _outData, unsigned int _numBytes) = 0;
-
 			/*! Flushes and closes the current file.
 			*
 			*  @retval SUCCESS File successfully flushed and closed.
@@ -240,7 +230,7 @@ namespace GW
 		*  @retval SUCCESS Gfile successfully created.
 		*  @retval FAILURE GFile could not be created.
 		*/
-		GRETURN GCreateFileHandler(GFile** _outFile);
+		GRETURN CreateGFile(GFile** _outFile);
 	}
 }
 

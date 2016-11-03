@@ -103,7 +103,7 @@ public:
 GRETURN LogFile::Init(const char* const _fileName)
 {
 	//Create a GFile
-	GRETURN rv = GCreateFileHandler(&m_logFile);
+	GRETURN rv = CreateGFile(&m_logFile);
 	if (G_FAIL(rv))
 		return rv;
 
