@@ -19,19 +19,20 @@ using std::atomic;
 
 #define MAX_QUEUE_SIZE 20
 #define THREAD_SLEEP_TIME 10
+#define G_UINT_MAX 0xffffffff
 
 //Nameless namespace to contain the worker thread function
 
 class LogFile : public GLog
 {
 	GFile* m_logFile;
-	
+
 	thread* m_worker;
 
 	mutex m_queueLock;
 
 	queue<string> m_logQueue;
-	
+
 	bool m_isVerbose;
 
 	atomic<bool> m_threadRunning;
@@ -39,6 +40,9 @@ class LogFile : public GLog
 	atomic<unsigned int> m_refCount;
 
 public:
+    LogFile();
+    virtual ~LogFile();
+
 	GRETURN Init(const char* const _fileName);
 
 	GRETURN Init(GFile* _file);
@@ -54,11 +58,11 @@ public:
 	GRETURN CloseLogs() override;
 
 	GRETURN GetCount(unsigned int &_outCount) override;
-	
+
 	GRETURN IncrementCount() override;
-	
+
 	GRETURN DecrementCount() override;
-	
+
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
 
 	void LogWorker();
@@ -66,6 +70,14 @@ public:
 private:
 	unsigned int GetThreadID();
 };
+
+LogFile::LogFile() : m_refCount(1)
+{
+}
+
+LogFile::~LogFile()
+{
+}
 
 GRETURN LogFile::Init(const char* const _fileName)
 {
@@ -217,7 +229,7 @@ GRETURN LogFile::GetCount(unsigned int &_outCount)
 GRETURN LogFile::IncrementCount()
 {
 	//Check for possible overflow
-	if (m_refCount == UINT_MAX)
+	if (m_refCount == G_UINT_MAX)
 		return FAILURE;
 
 	//Increment the count
@@ -241,6 +253,7 @@ GRETURN LogFile::DecrementCount()
 	{
 		m_threadRunning = false;
 		m_worker->join();
+		m_logFile->DecrementCount();
 		delete m_worker;
 		delete this;
 	}
