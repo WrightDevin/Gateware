@@ -134,10 +134,13 @@ GRETURN FileIO::Init()
 	//Open the directory the program was ran in.
 	m_currDirStream = opendir(currDirectory.c_str());
 
-	//Imbue the file with utf8
+	//Imbue the file with utf8 if on Windows
+#if defined(_WIN32)
+
 	std::locale utf8Locale(std::locale(), new std::codecvt_utf8<wchar_t>);
 	m_file.imbue(utf8Locale);
-	
+
+#endif
 	//If the directory is not open the the function fails
 	if (m_currDirStream == nullptr)
 		return FAILURE;
@@ -155,7 +158,7 @@ GRETURN FileIO::OpenBinaryRead(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::in | ios::binary);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in | ios::binary);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -173,7 +176,7 @@ GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::out | ios::binary);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -191,7 +194,7 @@ GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::out | ios::binary | ios::app | ios::ate);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary | ios::app | ios::ate);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -209,7 +212,7 @@ GRETURN FileIO::OpenTextRead(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::in);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in);
 
 	if (!m_file.is_open())
 		return FILE_NOT_FOUND;
@@ -217,6 +220,7 @@ GRETURN FileIO::OpenTextRead(const char* const _file)
 	//Need to read the BOM if we are _WIN32
 #if defined(_WIN32)
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
+	
 	wchar_t BOM;
 	m_file.get(BOM);
 
@@ -236,7 +240,7 @@ GRETURN FileIO::OpenTextWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::out);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out);
 
 	if (!m_file.is_open())
 		return FAILURE;
@@ -244,6 +248,7 @@ GRETURN FileIO::OpenTextWrite(const char* const _file)
 	//Need to write the BOM if we are _WIN32
 #if defined(_WIN32)
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
+	
 	m_file << L'\xFEFF';
 
 	_setmode(_fileno(stdout), oldMode);
@@ -262,12 +267,10 @@ GRETURN FileIO::AppendTextWrite(const char* const _file)
 	}
 
 	//Open the new file
-	m_file.open(G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
+	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
 
 	if (!m_file.is_open())
 		return FAILURE;
-
-	//NO BOM WRITING BECAUSE THIS IS AN APPEND AND BOM SHOULD HAVE ALREADY BEEN WROTE
 
 	return SUCCESS;
 }
@@ -296,15 +299,13 @@ GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 		return FAILURE;
 
 	//Read the bytes in
-	#if defined(_WIN32)
-
+#if defined(_WIN32)
 	m_file.read((wchar_t*)_outData, _numBytes);
 
-	#elif defined (__APPLE__) || (__linux__)
-
+#elif defined (__APPLE__) || (__linux__)
 	m_file.read(_outData, _numBytes);
 
-	#endif
+#endif
 
 	return SUCCESS;
 }
@@ -391,7 +392,29 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 		if(file->d_type == DT_REG)
 			++m_dirSize;
 
-		//TODO: Check for "." and get full path to it
+		string currDir = G_TO_UTF16(".");
+		if (file->d_name == currDir)
+		{
+			//TODO: Get fullpath
+#if defined(_WIN32)
+			TCHAR buffer[MAX_PATH];
+			_wfullpath(buffer, file->d_name, MAX_PATH);
+
+			m_currDir = buffer;
+			m_currDir += L"\\";
+
+#elif defined(__APPLE__)
+#elif defined(__linux__)
+			char* buffer[MAX_PATH];
+			realpath(file->d_name, buffer);
+
+			if (buffer == nullptr)
+				return FILE_NOT_FOUND;
+
+			m_currDir = buffer;
+			m_currDir += "\";
+#endif
+		}
 	}
 	
 	//Set the directory iterater back to the begining
@@ -440,10 +463,23 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 
 GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 {
-	//TODO: Make function widebyte
-	struct stat s;
-	//_wstat(_file, &s);
+	//Make a full path to the file
+	string filePath = m_currDir;
+	filePath += G_TO_UTF16(_file);
 
+#if defined (_WIN32)
+	struct _stat s;
+	if (_wstat(filePath.c_str(), &s) != 0)
+		return FILE_NOT_FOUND;
+
+#elif defined(__APPLE__) || defined(__linux__)
+	struct stat s;
+	if (stat(filePath.c_str(), &s) != 0)
+		return FILE_NOT_FOUND;
+
+#endif
+
+	_outSize = s.st_size;
 
 	return SUCCESS;
 }
