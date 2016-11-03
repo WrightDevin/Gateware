@@ -30,7 +30,7 @@
 #define opendir _wopendir
 #define readdir _wreaddir
 #define closedir _wclosedir
-#define rewinddir _wrewinddir 
+#define rewinddir _wrewinddir
 
 
 #else
@@ -130,7 +130,7 @@ GRETURN FileIO::Init()
 	//Get the directory the program was ran in.
 	//Because of the #defines this will run any of the three platforms we support.
 	string currDirectory = G_TO_UTF16("./");
-	
+
 	//Open the directory the program was ran in.
 	m_currDirStream = opendir(currDirectory.c_str());
 
@@ -220,7 +220,7 @@ GRETURN FileIO::OpenTextRead(const char* const _file)
 	//Need to read the BOM if we are _WIN32
 #if defined(_WIN32)
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-	
+
 	wchar_t BOM;
 	m_file.get(BOM);
 
@@ -248,7 +248,7 @@ GRETURN FileIO::OpenTextWrite(const char* const _file)
 	//Need to write the BOM if we are _WIN32
 #if defined(_WIN32)
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-	
+
 	m_file << L'\xFEFF';
 
 	_setmode(_fileno(stdout), oldMode);
@@ -284,7 +284,7 @@ GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 #if defined(_WIN32)
 	m_file.write((wchar_t*)_inData, _numBytes);
 
-#elif define (__APPLE__) || defined(__linux__)
+#elif defined(__APPLE__) || defined(__linux__)
 	m_file.write(_inData, _numBytes);
 
 #endif
@@ -323,7 +323,7 @@ GRETURN FileIO::WriteLine(const char* const _inData)
 	//If _WIN32 we need to write out slightly different
 #ifdef _WIN32
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-	
+
 	m_file << writeOutString;
 
 	_setmode(_fileno(stdout), oldMode);
@@ -332,7 +332,7 @@ GRETURN FileIO::WriteLine(const char* const _inData)
 
 	m_file << writeOutString;
 
-#endif 
+#endif
 
 	return SUCCESS;
 }
@@ -404,19 +404,21 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 			m_currDir += L"\\";
 
 #elif defined(__APPLE__)
+
+
 #elif defined(__linux__)
-			char* buffer[MAX_PATH];
+			char buffer[PATH_MAX];
 			realpath(file->d_name, buffer);
 
 			if (buffer == nullptr)
 				return FILE_NOT_FOUND;
 
 			m_currDir = buffer;
-			m_currDir += "\";
+			m_currDir += "/";
 #endif
 		}
 	}
-	
+
 	//Set the directory iterater back to the begining
 	rewinddir(m_currDirStream);
 
@@ -453,7 +455,8 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 	{
 		if (file->d_type == DT_REG)
 		{
-			strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, G_TO_UTF8(file->d_name).c_str());
+            string fileName(file->d_name);
+			strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
 			++fileNumber;
 		}
 	}

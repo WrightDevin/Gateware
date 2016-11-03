@@ -6,31 +6,29 @@
 
 namespace INTERNAL
 {
-#pragma region MACRO_DEFINITIONS
 	#if defined(_WIN32)
-	
+
 	//Macro to preform string conversions
 	#define G_TO_UTF16(value) stringConverter.from_bytes(value)
 	#define G_TO_UTF8(value) stringConverter.to_bytes(value)
 
 	#elif defined(__APPLE) || defined(__linux__)
-	
+
 	//These string conversions are not nessisary on Linux/Apple.
 	//They are designed to be replaced with just the value given to them
-	#define G_WIDEN(value) value
-	#define G_NARROW(value) value
-	
+	#define G_TO_UTF16(value) value
+	#define G_TO_UTF8(value) value
+
 	//Defined to replace instances of strcpy_s with strlcpy on Linux/Mac
 	//This is because strcpy_s is not supported on GCC
-	#define strcpy_s(value) strlcpy(value)
+	#define strcpy_s(...) strlcpy(__VA_ARGS__)
 
 	#else
-	
+
 	//If you get this error then we are currently on a platform not supported by Gateware
 	#error Gateware Libraries are not built for your current system
-	
+
 	#endif
-#pragma endregion
 
 	//All variables and functions below are macroed above. This is so the code wrote out
 	//Will be the exact same code no matter the system we are writing it for.
