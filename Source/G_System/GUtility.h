@@ -12,7 +12,7 @@ namespace INTERNAL
 	#define G_TO_UTF16(value) stringConverter.from_bytes(value)
 	#define G_TO_UTF8(value) stringConverter.to_bytes(value)
 
-	#elif defined(__APPLE) || defined(__linux__)
+	#elif defined(__APPLE__) || defined(__linux__)
 
 	//These string conversions are not nessisary on Linux/Apple.
 	//They are designed to be replaced with just the value given to them

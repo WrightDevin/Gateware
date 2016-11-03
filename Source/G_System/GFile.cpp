@@ -482,7 +482,7 @@ GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 
 #endif
 
-	_outSize = s.st_size;
+	_outSize = (unsigned int)s.st_size;
 
 	return SUCCESS;
 }
