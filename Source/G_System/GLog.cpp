@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include <sstream>
 #include <atomic>
 
 using namespace GW;
@@ -20,59 +21,20 @@ using std::atomic;
 #define THREAD_SLEEP_TIME 10
 
 //Nameless namespace to contain the worker thread function
-namespace
-{
-	//LogWorker is the function that the logging thread will run. This thread will also control
-	//the closing of GFile when the log is destroyed
-	void LogWorker(GFile* _file, queue<string>& _queue, mutex& _queueLock, bool& _running)
-	{
-		while (_running)
-		{
-			//We use a try lock here so that we don't take a lot of time locking
-			if (_queueLock.try_lock())
-			{
-				//If there is anything to write
-				if (_queue.size() != 0)
-				{
-					//Swap the queue to another queue so we don't have to worry about thread safety
-					queue<string> writeQueue;
-					writeQueue.swap(_queue);
-
-					_queueLock.unlock();
-
-					//Write out the new queue
-					for (unsigned int i = 0; i < writeQueue.size(); ++i)
-					{
-						_file->WriteLine(writeQueue.front().c_str());
-						writeQueue.pop();
-
-						//TODO: Flush after write (Need this ability in GFile)
-					}
-				}
-				else
-					_queueLock.unlock();
-			}
-
-			//Sleep for 10 seconds
-			std::this_thread::sleep_for(std::chrono::seconds(THREAD_SLEEP_TIME));
-		}
-
-		//Close the file
-		_file->CloseFile();
-	}
-}
 
 class LogFile : public GLog
 {
 	GFile* m_logFile;
-
-	thread m_workerThread;
 	
+	thread* m_worker;
+
 	mutex m_queueLock;
 
 	queue<string> m_logQueue;
 	
 	bool m_isVerbose;
+
+	atomic<bool> m_threadRunning;
 
 	atomic<unsigned int> m_refCount;
 
@@ -98,6 +60,11 @@ public:
 	GRETURN DecrementCount() override;
 	
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
+
+	void LogWorker();
+
+private:
+	unsigned int GetThreadID();
 };
 
 GRETURN LogFile::Init(const char* const _fileName)
@@ -112,7 +79,9 @@ GRETURN LogFile::Init(const char* const _fileName)
 	if (G_FAIL(rv))
 		return rv;
 
-	//TODO: Fire off worker thread
+	//Fire off worker thread
+	m_threadRunning = true;
+	m_worker = new thread(&LogFile::LogWorker, this);
 
 	//m_isVerbose is defaulted to true
 	m_isVerbose = true;
@@ -129,7 +98,9 @@ GRETURN LogFile::Init(GFile* _file)
 	m_logFile = _file;
 	m_logFile->IncrementCount();
 
-	//TODO: Fire off worker thread
+	//Fire off worker thread
+	m_threadRunning = true;
+	m_worker = new thread(&LogFile::LogWorker, this);
 
 	//m_isVerbose is defaulted to true
 	m_isVerbose = true;
@@ -139,16 +110,23 @@ GRETURN LogFile::Init(GFile* _file)
 GRETURN LogFile::Log(const char* const _log)
 {
 	string logString;
+	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
-		//TODO: Create log string with date, time, threadID
+		time_t t = time(0);   // get time now
+		struct tm * now = localtime(&t);
+
+		logStream << "[" << (now->tm_year + 1900) << '/' << (now->tm_mon + 1) << '/' << now->tm_mday << " ";
+		logStream << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << " [";
+		logStream << GetThreadID() << "]\t";
+
 	}
 
 	//Add the log and a newline
-	logString += _log;
-	logString += "\r\n";
+	logStream << _log << "\r\n";
+	logString = logStream.str();
 
 	//Lock the mutex to push the new msg
 	m_queueLock.lock();
@@ -171,19 +149,22 @@ GRETURN LogFile::Log(const char* const _log)
 GRETURN LogFile::LogCatergorized(const char* const _category, const char* const _log)
 {
 	string logString;
+	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
-		//TODO: Create log string with date, time, threadID
+		time_t t = time(0);   // get time now
+		struct tm * now = localtime(&t);
+
+		logStream << "[" << (now->tm_year + 1900) << '/' << (now->tm_mon + 1) << '/' << now->tm_mday << " ";
+		logStream << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << " [";
+		logStream << GetThreadID() << "] ";
 	}
 
 	//Add the category and message
-	logString += "[";
-	logString += _category;
-	logString += "]\t";
-	logString += _log;
-	logString += "\r\n";
+	logStream << "[" << _category << "]\t" << _log << "\r\n";
+	logString = logStream.str();
 
 	//Lock the mutex to push the new msg
 	m_queueLock.lock();
@@ -210,18 +191,21 @@ void LogFile::EnableVerboseLogging(bool _value)
 
 GRETURN LogFile::Flush()
 {
-	//TODO: Implement function. GFile has no functionality for this atm
-
-	return SUCCESS;
+	return m_logFile->FlushFile();
 }
 
 GRETURN LogFile::CloseLogs()
 {
 	Flush();
 
-	//TODO: Send quit message to worker thread
-
 	return SUCCESS;
+}
+
+unsigned int LogFile::GetThreadID()
+{
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	return (unsigned int)std::stoull(ss.str());
 }
 
 GRETURN LogFile::GetCount(unsigned int &_outCount)
@@ -255,7 +239,9 @@ GRETURN LogFile::DecrementCount()
 	//Delete it if not
 	if (m_refCount == 0)
 	{
-		m_workerThread.join();
+		m_threadRunning = false;
+		m_worker->join();
+		delete m_worker;
 		delete this;
 	}
 
@@ -352,4 +338,43 @@ GRETURN GCreateLog(GFile* _file, GLog** _outLog)
 	(*_outLog) = logFile;
 
 	return SUCCESS;
+}
+
+//LogWorker is the function that the logging thread will run. This thread will also control
+//the closing of GFile when the log is destroyed
+void LogFile::LogWorker()
+{
+	while (m_threadRunning)
+	{
+		//We use a try lock here so that we don't take a lot of time locking
+		if (m_queueLock.try_lock())
+		{
+			//If there is anything to write
+			if (m_logQueue.size() != 0)
+			{
+				//Swap the queue to another queue so we don't have to worry about thread safety
+				queue<string> writeQueue;
+				writeQueue.swap(m_logQueue);
+
+				m_queueLock.unlock();
+
+				//Write out the new queue
+				for (unsigned int i = 0; i < writeQueue.size(); ++i)
+				{
+					m_logFile->WriteLine(writeQueue.front().c_str());
+					writeQueue.pop();
+
+					m_logFile->FlushFile();
+				}
+			}
+			else
+				m_queueLock.unlock();
+		}
+
+		//Sleep for 10 seconds
+		std::this_thread::sleep_for(std::chrono::seconds(THREAD_SLEEP_TIME));
+	}
+
+	//Close the file
+	m_logFile->CloseFile();
 }
