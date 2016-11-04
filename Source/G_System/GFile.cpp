@@ -408,7 +408,7 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 
 #elif defined(__linux__)
 			char buffer[PATH_MAX];
-			realpath(file->d_name, buffer);
+			(void*)realpath(file->d_name, buffer);
 
 			if (buffer == nullptr)
 				return FILE_NOT_FOUND;
