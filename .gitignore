@@ -11,9 +11,7 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
@@ -68,6 +66,10 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.obj
+*.idb
+*.log
+*.tlog
 
 # Chutzpah Test files
 _Chutzpah*
@@ -227,6 +229,7 @@ bin/
 obj/
 
 # Mac OS X
+xcuserdata
 *.DS_Store
 
 # Xcode
