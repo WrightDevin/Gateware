@@ -127,12 +127,8 @@ FileIO::~FileIO()
 
 GRETURN FileIO::Init()
 {
-	//Get the directory the program was ran in.
-	//Because of the #defines this will run any of the three platforms we support.
-	string currDirectory = G_TO_UTF16("./");
-
-	//Open the directory the program was ran in.
-	m_currDirStream = opendir(currDirectory.c_str());
+	//Set the current working directory to the directory the program was ran from.
+	SetCurrentWorkingDirectory("./");
 
 	//Imbue the file with utf8 if on Windows
 #if defined(_WIN32)
@@ -405,7 +401,7 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 
 #elif defined(__APPLE__)
 
-
+			//TODO: Get Apple path
 #elif defined(__linux__)
 			char buffer[PATH_MAX];
 			(void*)realpath(file->d_name, buffer);
