@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option platforms="Unix;" />
-				<Option output="../../Libraries/Linux/i386/Debug/GFile" prefix_auto="1" extension_auto="1" />
+				<Option output="../../Libraries/Linux/amd64/Debug/GFile" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug/" />
 				<Option type="2" />
@@ -29,7 +29,7 @@
 			</Target>
 			<Target title="Release">
 				<Option platforms="Unix;" />
-				<Option output="../../Libraries/Linux/i386/Debug/GFile" prefix_auto="1" extension_auto="1" />
+				<Option output="../../Libraries/Linux/amd64/Release/GFile" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Release/" />
 				<Option type="2" />

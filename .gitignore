@@ -76,7 +76,6 @@ artifacts/
 *.mode2v3
 *.perspectivev3
 *.xcuserstate
-*.cbp
 *.layout
 *.depend
 *.DS_Store
