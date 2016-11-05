@@ -37,6 +37,7 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+xcuserdata
 
 # DNX
 project.lock.json
@@ -70,6 +71,17 @@ artifacts/
 *.idb
 *.log
 *.tlog
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+*.cbp
+*.layout
+*.depend
+*.DS_Store
+*.o
+*.pyc
 
 # Chutzpah Test files
 _Chutzpah*
@@ -217,29 +229,3 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
-
-### CodeBlocks ###
-# specific to CodeBlocks IDE
-*.cbp
-*.layout
-*.depend
-
-# generated directories
-bin/
-obj/
-
-# Mac OS X
-xcuserdata
-*.DS_Store
-
-# Xcode
-*.pbxuser
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-*.xcuserstate
-
-# Generated files
-*.o
-*.pyc
-
