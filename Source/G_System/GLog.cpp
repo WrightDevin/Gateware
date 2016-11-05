@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <atomic>
+#include <iostream>
 
 using namespace GW;
 using namespace CORE;
@@ -16,6 +17,7 @@ using std::thread;
 using std::string;
 using std::mutex;
 using std::atomic;
+using std::cout;
 
 #define MAX_QUEUE_SIZE 20
 #define THREAD_SLEEP_TIME 10
@@ -35,6 +37,8 @@ class LogFile : public GLog
 
 	bool m_isVerbose;
 
+	bool m_isConsoleLogged;
+
 	atomic<bool> m_threadRunning;
 
 	atomic<unsigned int> m_refCount;
@@ -52,6 +56,8 @@ public:
 	GRETURN LogCatergorized(const char* const _category, const char* const _log) override;
 
 	void EnableVerboseLogging(bool _value) override;
+
+	void EnableConsoleLogging(bool _value) override;
 
 	GRETURN Flush() override;
 
@@ -150,6 +156,9 @@ GRETURN LogFile::Log(const char* const _log)
 		return FAILURE;
 	}
 
+	if (m_isConsoleLogged)
+		cout << logString;
+
 	//Push the message to the queue
 	m_logQueue.push(logString);
 
@@ -191,6 +200,9 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	//Push the message to the queue
 	m_logQueue.push(logString);
 
+	if (m_isConsoleLogged)
+		cout << logString;
+
 	m_queueLock.unlock();
 
 	return SUCCESS;
@@ -199,6 +211,11 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 void LogFile::EnableVerboseLogging(bool _value)
 {
 	m_isVerbose = _value;
+}
+
+void LogFile::EnableConsoleLogging(bool _value)
+{
+	m_isConsoleLogged = _value;
 }
 
 GRETURN LogFile::Flush()

@@ -76,6 +76,15 @@ namespace GW
 			*/
 			virtual void EnableVerboseLogging(bool _value) = 0;
 			
+			/*! Turns console logging on or off.
+			*
+			*  Use this function to prevent the additional console logging.
+			*
+			*  @param [in] _value true to turn on or false to turn off.
+			*
+			*/
+			virtual void EnableConsoleLogging(bool _value) = 0;
+			
 			/*! Forces a log dump to file.
 			*
 			*  This will force a log dump to the file and clear the log queue.
