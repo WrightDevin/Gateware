@@ -79,6 +79,8 @@ private:
 
 LogFile::LogFile() : m_refCount(1)
 {
+	m_isConsoleLogged = false;
+	m_isVerbose = true;
 }
 
 LogFile::~LogFile()
