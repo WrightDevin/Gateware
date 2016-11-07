@@ -22,6 +22,7 @@ using std::cout;
 #define MAX_QUEUE_SIZE 20
 #define THREAD_SLEEP_TIME 10
 #define G_UINT_MAX 0xffffffff
+#define TIME_BUFFER 40
 
 class LogFile : public GLog
 {
@@ -130,14 +131,23 @@ GRETURN LogFile::Log(const char* const _log)
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
-	#if defined(_WIN32)
 		time_t t = time(0);   // get time now
+		char timeBuffer[TIME_BUFFER];
 
-    #elif defined(__APPLE__) || defined(__linux__)
-        time_t t = time(0);
+#if defined(_WIN32)
 
-    #endif
-        logStream << "[" << asctime(localtime(&t)) << "] ThreadID[";
+		struct tm buf;
+		localtime_s(&buf, &t);
+		asctime_s(timeBuffer, TIME_BUFFER, &buf);
+
+#elif defined(__APPLE__) || defined(__linux__)
+		string buffer(asctime(localtime(&t)));
+		strcpy_s(timeBuffer, TIME_BUFFER, buffer);
+
+#endif
+		//Get rid of new line added by asctime
+		timeBuffer[strlen(timeBuffer) - 1] = '\0';
+        logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
 
@@ -172,14 +182,23 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
-	#if defined(_WIN32)
 		time_t t = time(0);   // get time now
+		char timeBuffer[TIME_BUFFER];
+
+	#if defined(_WIN32)
+
+		struct tm buf;
+		localtime_s(&buf, &t);
+		asctime_s(timeBuffer, TIME_BUFFER, &buf);
 
     #elif defined(__APPLE__) || defined(__linux__)
-        time_t t = time(0);
-
-    #endif
-        logStream << "[" << asctime(localtime(&t)) << "] ThreadID[";
+		string buffer(asctime(localtime(&t)));
+		strcpy_s(timeBuffer, TIME_BUFFER, buffer);
+    
+	#endif
+		//Get rid of new line added by asctime
+		timeBuffer[strlen(timeBuffer) - 1] = '\0';
+        logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
 
