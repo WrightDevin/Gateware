@@ -23,8 +23,6 @@ using std::cout;
 #define THREAD_SLEEP_TIME 10
 #define G_UINT_MAX 0xffffffff
 
-//Nameless namespace to contain the worker thread function
-
 class LogFile : public GLog
 {
 	GFile* m_logFile;
@@ -88,7 +86,7 @@ LogFile::~LogFile()
 GRETURN LogFile::Init(const char* const _fileName)
 {
 	//Create a GFile
-	GRETURN rv = CreateGFile(&m_logFile);
+	GRETURN rv = GCreateFile(&m_logFile);
 	if (G_FAIL(rv))
 		return rv;
 

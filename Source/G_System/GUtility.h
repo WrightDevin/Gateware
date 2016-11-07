@@ -27,7 +27,6 @@ namespace INTERNAL
 
 	//If you get this error then we are currently on a platform not supported by Gateware
 	#error Gateware Libraries are not built for your current system
-
 	#endif
 
 	//All variables and functions below are macroed above. This is so the code wrote out
