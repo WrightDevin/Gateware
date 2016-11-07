@@ -130,14 +130,15 @@ GRETURN LogFile::Log(const char* const _log)
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
+	#if defined(_WIN32)
 		time_t t = time(0);   // get time now
-		struct tm now;
-		localtime_s(&now, &t);
 
-		logStream << "[" << (now.tm_year + 1900) << '/' << (now.tm_mon + 1) << '/' << now.tm_mday << " ";
-		logStream << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " [";
+    #elif defined(__APPLE__) || defined(__linux__)
+        time_t t = time(0);
+
+    #endif
+        logStream << "[" << asctime(localtime(&t)) << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
-
 	}
 
 	//Add the log and a newline
@@ -171,13 +172,15 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	//Check verbose logging and add the verbose info if on
 	if (m_isVerbose)
 	{
+	#if defined(_WIN32)
 		time_t t = time(0);   // get time now
-		struct tm now;
-		localtime_s(&now, &t);
 
-		logStream << "[" << (now.tm_year + 1900) << '/' << (now.tm_mon + 1) << '/' << now.tm_mday << " ";
-		logStream << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " [";
-		logStream << GetThreadID() << "] ";
+    #elif defined(__APPLE__) || defined(__linux__)
+        time_t t = time(0);
+
+    #endif
+        logStream << "[" << asctime(localtime(&t)) << "] ThreadID[";
+		logStream << GetThreadID() << "]\t";
 	}
 
 	//Add the category and message
