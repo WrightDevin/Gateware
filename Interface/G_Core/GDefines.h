@@ -51,13 +51,12 @@ namespace GW
 		INTERFACE_UNSUPPORTED	= 3,
 		FILE_NOT_FOUND			= 4,
 	};
-
-	//! Macro used to determine if a function succeeded 
-	#define G_SUCCEESS(_greturn_) ((~(_greturn_)) == 0x00000000)
-
-	//! Macro used to determine if a function has failed 
-	#define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
-
 };// end GW namespace
+
+//! Macro used to determine if a function succeeded 
+#define G_SUCCEESS(_greturn_) ((~(_greturn_)) == 0x00000000)
+
+//! Macro used to determine if a function has failed 
+#define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
 #endif
