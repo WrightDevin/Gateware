@@ -587,7 +587,7 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 	return SUCCESS;
 }
 
-GRETURN GCreateFile(GFile** _outFile)
+GRETURN GW::CORE::GCreateFile(GFile** _outFile)
 {
 	//Check that we were given a valid pointer
 	if (_outFile == nullptr)
