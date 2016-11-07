@@ -1,8 +1,17 @@
 #ifndef _GINPUT
 #define _GINPUT
 
+//Single Thread ( GInput )
+// Array of keys with states.
+// Derived from Single Tread
+
+
+//Multithreaded ( GBufferedInput )
+// Register Listener
+
 // GBroadcasting Inherits directly from GMultiThreaded 
-#include "../G_Core/GBroadcasting.h"
+#include "../G_Core/GSingleThreaded.h"
+#include <Windows.h>
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
@@ -18,17 +27,20 @@ namespace GW
 		};
 
 		//! The GInput Interface is resposible for recieving and managing the keyboard and mouse.
-		class GInput : public GBroadcasting
+		class GInput : public GSingleThreaded
 		{
 		
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
+
 
 			virtual GRETURN GetKeyState(int _keyCode, int &_keyState) = 0;
 
 
 
 		};
+
+		GRETURN CreateGInput(GInput** _outFpointer, void * _hWnd);
 		}// end CORE namespace
 	};// end GW namespace
 #endif

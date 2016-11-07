@@ -50,6 +50,7 @@ namespace GW
 		MEMORY_CORRUPTION		= 2,
 		INTERFACE_UNSUPPORTED	= 3,
 		FILE_NOT_FOUND			= 4,
+		REDUNDENT_OPERATION		= 5,
 	};
 
 	//! Macro used to determine if a function succeeded 

@@ -1,4 +1,5 @@
 #include "../../Interface/G_System/GInput.h"; 
+#include <map>
 
 using namespace GW;
 using namespace CORE;
@@ -14,10 +15,9 @@ private:
 
 	/* GInput */
 
-	//! Type KeyCode  Flags 
-	//! 0000 00000000 0000 
-	short n_Keys[256];
-
+	//! Type KeyCode    Reserved  
+	//! 000	 000000000  20 Reserved bits.
+	unsigned int n_Keys[256];
 
 
 public:
@@ -27,8 +27,11 @@ public:
 	Input();
 	~Input();
 
+	GRETURN Initialize();
+
 	/* GInput */
 
+	GRETURN GetKeyState(int _keyCode, int &_keyState);
 
 	/* GInterface */
 
@@ -45,18 +48,26 @@ public:
 
 	//! Requests an interface that may or may not be supported by this object  
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
-
-
-	/* GBroadcasting */
-
-	//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional) 
-	//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered 
-	GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask);
-
-	//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one  
-	GRETURN DeregisterListener(GListener *_removeListener);
-
 };
+
+GRETURN CreateGInput(GInput** _outFpointer, void * _hWnd) {
+
+	if (_outFpointer == nullptr) {
+		return INVALID_ARGUMENT;
+	}
+
+	Input * _mInput = new Input();
+
+	if (_mInput == nullptr) {
+		return FAILURE;
+	}
+
+	//Todo call my intiialize
+
+	
+
+}
+
 
 Input::Input() {
 	n_refrenceCount = 1;
@@ -65,6 +76,7 @@ Input::Input() {
 Input::~Input() {
 
 }
+
 
 GRETURN Input::GetCount(unsigned int &_outCount) {
 
@@ -92,14 +104,30 @@ GRETURN Input::DecrementCount() {
 }
 
 GRETURN Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
 
+	if (_interfaceID == GInputUUIID)
+	{
+		GInput * convert = reinterpret_cast<GInput*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GSingleThreadedUUIID)
+	{
+		GSingleThreaded* convert = reinterpret_cast<GSingleThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
+	return SUCCESS;
 }
 
-
-GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) {
-
-}
-
-GRETURN DeregisterListener(GListener *_removeListener) {
-
-}
