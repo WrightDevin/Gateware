@@ -139,13 +139,26 @@ namespace GW
 			//! Writes text to the currently opened file.
 			/*!
 			*  
-			*
 			*  \param [in] _inData Null terminated string to write out.
 			*
 			*  \retval SUCCESS Successful write. 
 			*  \retval FAILURE Either file is not open or read failed.
 			*/
 			virtual GRETURN WriteLine(const char* const _inData) = 0;
+
+			//! Reads text to the currently opened file.
+			/*!
+			*
+			* Reads text from the current file until delimeter is hit.
+			*
+			*  \param [out] _outData Null terminated string to write out.
+			*  \param [in] _outDataSize The size of _outData.
+			*  \param [in] _delimiter The delemiter to stop reading at.
+			*
+			*  \retval SUCCESS Successful read.
+			*  \retval FAILURE Either file is not open or read failed.
+			*/
+			virtual GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) = 0;
 
 			//! Flushes and closes the current file.
 			/*!

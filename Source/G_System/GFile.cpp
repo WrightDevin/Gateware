@@ -49,6 +49,7 @@ using std::string;
 using std::fstream;
 using std::ios;
 using std::atomic;
+using std::getline;
 
 class FileIO : public GFile
 {
@@ -83,6 +84,8 @@ public:
 	GRETURN Read(char* _outData, unsigned int _numBytes) override;
 
 	GRETURN WriteLine(const char* const _inData) override;
+
+	GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) override;
 
 	GRETURN CloseFile() override;
 
@@ -330,6 +333,30 @@ GRETURN FileIO::WriteLine(const char* const _inData)
 
 #endif
 
+	return SUCCESS;
+}
+
+GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter)
+{
+	//Ensure file is open
+	if (!m_file.is_open())
+		return FAILURE;
+
+	string outString;
+
+	//If _WIN32 we need to read in slightly different
+#ifdef _WIN32
+	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
+	
+	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
+	getline(m_file, outString, *delimiter);
+
+	_setmode(_fileno(stdout), oldMode);
+#elif defined(__APPLE__) || defined(__linux__)
+	getline(m_file, outString, _delimiter);
+#endif
+
+	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
 	return SUCCESS;
 }
 

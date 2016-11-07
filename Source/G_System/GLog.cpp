@@ -131,10 +131,11 @@ GRETURN LogFile::Log(const char* const _log)
 	if (m_isVerbose)
 	{
 		time_t t = time(0);   // get time now
-		struct tm * now = localtime(&t);
+		struct tm now;
+		localtime_s(&now, &t);
 
-		logStream << "[" << (now->tm_year + 1900) << '/' << (now->tm_mon + 1) << '/' << now->tm_mday << " ";
-		logStream << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << " [";
+		logStream << "[" << (now.tm_year + 1900) << '/' << (now.tm_mon + 1) << '/' << now.tm_mday << " ";
+		logStream << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " [";
 		logStream << GetThreadID() << "]\t";
 
 	}
@@ -171,10 +172,11 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	if (m_isVerbose)
 	{
 		time_t t = time(0);   // get time now
-		struct tm * now = localtime(&t);
+		struct tm now;
+		localtime_s(&now, &t);
 
-		logStream << "[" << (now->tm_year + 1900) << '/' << (now->tm_mon + 1) << '/' << now->tm_mday << " ";
-		logStream << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << " [";
+		logStream << "[" << (now.tm_year + 1900) << '/' << (now.tm_mon + 1) << '/' << now.tm_mday << " ";
+		logStream << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec << " [";
 		logStream << GetThreadID() << "] ";
 	}
 
