@@ -347,7 +347,7 @@ GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _delimi
 	//If _WIN32 we need to read in slightly different
 #ifdef _WIN32
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-	
+
 	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
 	getline(m_file, outString, *delimiter);
 
@@ -587,7 +587,7 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 	return SUCCESS;
 }
 
-GRETURN CreateGFile(GFile** _outFile)
+GRETURN GCreateFile(GFile** _outFile)
 {
 	//Check that we were given a valid pointer
 	if (_outFile == nullptr)

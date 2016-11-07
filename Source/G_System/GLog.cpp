@@ -1,17 +1,20 @@
 #include "../../Interface/G_System/GLog.h"
 #include "../../Interface/G_System/GFile.h"
+#include "GUtility.h"
 
 
 #include <queue>
 #include <thread>
 #include <mutex>
 #include <string>
+#include <cstring>
 #include <sstream>
 #include <atomic>
 #include <iostream>
 
 using namespace GW;
 using namespace CORE;
+using namespace INTERNAL;
 using std::queue;
 using std::thread;
 using std::string;
@@ -142,7 +145,7 @@ GRETURN LogFile::Log(const char* const _log)
 
 #elif defined(__APPLE__) || defined(__linux__)
 		string buffer(asctime(localtime(&t)));
-		strcpy_s(timeBuffer, TIME_BUFFER, buffer);
+		strcpy_s(timeBuffer, TIME_BUFFER, buffer.c_str());
 
 #endif
 		//Get rid of new line added by asctime
@@ -193,8 +196,8 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 
     #elif defined(__APPLE__) || defined(__linux__)
 		string buffer(asctime(localtime(&t)));
-		strcpy_s(timeBuffer, TIME_BUFFER, buffer);
-    
+		strcpy_s(timeBuffer, TIME_BUFFER, buffer.c_str());
+
 	#endif
 		//Get rid of new line added by asctime
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';

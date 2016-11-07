@@ -35,6 +35,7 @@
 			</Target>
 		</Build>
 		<Unit filename="../../Source/G_System/GLog.cpp" />
+		<Unit filename="../../Source/G_System/GUtility.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
