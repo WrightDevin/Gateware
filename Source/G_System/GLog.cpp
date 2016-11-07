@@ -61,8 +61,6 @@ public:
 
 	GRETURN Flush() override;
 
-	GRETURN CloseLogs() override;
-
 	GRETURN GetCount(unsigned int &_outCount) override;
 
 	GRETURN IncrementCount() override;
@@ -71,10 +69,10 @@ public:
 
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
 
+private:
 	void LogWorker();
 
-private:
-	unsigned int GetThreadID();
+	unsigned long long GetThreadID();
 };
 
 LogFile::LogFile() : m_refCount(1)
@@ -129,7 +127,6 @@ GRETURN LogFile::Init(GFile* _file)
 
 GRETURN LogFile::Log(const char* const _log)
 {
-	string logString;
 	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
@@ -146,7 +143,6 @@ GRETURN LogFile::Log(const char* const _log)
 
 	//Add the log and a newline
 	logStream << _log << "\r\n";
-	logString = logStream.str();
 
 	//Lock the mutex to push the new msg
 	m_queueLock.lock();
@@ -159,10 +155,10 @@ GRETURN LogFile::Log(const char* const _log)
 	}
 
 	if (m_isConsoleLogged)
-		cout << logString;
+		cout << logStream.str();
 
 	//Push the message to the queue
-	m_logQueue.push(logString);
+	m_logQueue.push(logStream.str());
 
 	m_queueLock.unlock();
 
@@ -171,7 +167,6 @@ GRETURN LogFile::Log(const char* const _log)
 
 GRETURN LogFile::LogCatergorized(const char* const _category, const char* const _log)
 {
-	string logString;
 	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
@@ -187,7 +182,6 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 
 	//Add the category and message
 	logStream << "[" << _category << "]\t" << _log << "\r\n";
-	logString = logStream.str();
 
 	//Lock the mutex to push the new msg
 	m_queueLock.lock();
@@ -200,10 +194,10 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	}
 
 	//Push the message to the queue
-	m_logQueue.push(logString);
+	m_logQueue.push(logStream.str());
 
 	if (m_isConsoleLogged)
-		cout << logString;
+		cout << logStream.str();
 
 	m_queueLock.unlock();
 
@@ -225,18 +219,14 @@ GRETURN LogFile::Flush()
 	return m_logFile->FlushFile();
 }
 
-GRETURN LogFile::CloseLogs()
+unsigned long long LogFile::GetThreadID()
 {
-	Flush();
-
-	return SUCCESS;
-}
-
-unsigned int LogFile::GetThreadID()
-{
+	//Get the thread ID and store it in a stringstream
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
-	return (unsigned int)std::stoull(ss.str());
+
+	//Convert the string sequence to an unsigned long long
+	return std::stoull(ss.str());
 }
 
 GRETURN LogFile::GetCount(unsigned int &_outCount)
@@ -270,9 +260,14 @@ GRETURN LogFile::DecrementCount()
 	//Delete it if not
 	if (m_refCount == 0)
 	{
+		//Decrement the count of our internal GFile
+		m_logFile->DecrementCount();
+
+		//Tell the thread to stop running and wait for it
 		m_threadRunning = false;
 		m_worker->join();
-		m_logFile->DecrementCount();
+
+		//Cleanup;
 		delete m_worker;
 		delete this;
 	}

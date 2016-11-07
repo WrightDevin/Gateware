@@ -25,6 +25,7 @@ namespace GW
 			0x3be0f240, 0xc3e7, 0x424b,{ 0x88, 0x8e, 0xf2, 0x99, 0x4b, 0x6d, 0x1e, 0x48 }
 		};
 
+		//! Cross platform FileIO/Directory handling
 		class GFile : public GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual

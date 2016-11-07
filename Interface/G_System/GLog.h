@@ -29,14 +29,8 @@ namespace GW
 		//Forward declaration so we can use GFile* in a function
 		class GFile;
 
-		/*! The GLog class
-		*
-		*  This class will use a queue to keep track of any logged messages. The actual write out of the logs
-		*  will be done in a seperate low priority worker thread. This thread will be set to check the queue every 2 seconds.
-		*  This will keep the number of mutex locks to a bare minimum while maintaining thread safety. The maximum size of the
-		*  queue will be 20 and a function is provided to force a write. When logs are wrote out the queue is emptied.
-		*
-		*/
+
+		//! Cross platform threadsafe logger
 		class GLog : public GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
@@ -94,16 +88,6 @@ namespace GW
 			*  @retval FAILURE  Most likely a file corruption or a file is not open.
 			*/
 			virtual GRETURN Flush() = 0;
-
-			/*! Forces a log dump to file and closes the log file.
-			*
-			*  This needs to be called on all log files before shutdown so a shutdown
-			*  message can be sent to their worker threads.
-			*
-			*  @retval SUCCESS  Successfully dumped the logs and closed the thread.
-			*  @retval FAILURE  Most likely a file corruption or a file is not open.
-			*/
-			virtual GRETURN CloseLogs() = 0;
 		};
 
 		/*! Creates a GLog object

@@ -399,10 +399,7 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 			m_currDir = buffer;
 			m_currDir += L"\\";
 
-#elif defined(__APPLE__)
-
-			//TODO: Get Apple path
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 			char buffer[PATH_MAX];
 			(void*)realpath(file->d_name, buffer);
 
