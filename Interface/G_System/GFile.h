@@ -177,6 +177,7 @@ namespace GW
 			//! Changes the current working directory.
 			/*!
 			*  This sets the directory where we will look in with any of the open functions or other directory functions.
+			*  Paths that are not relitive to the directory the program was ran from should be passed in as absolute paths.
 			*
 			*  \param [in] _dir An absolute path to the directory to set as the current working directory.
 			*
@@ -220,7 +221,7 @@ namespace GW
 			*  \retval SUCCESS Successfully retrieved the file names.
 			*  \retval FAILURE Either current working directory is invalid or obtaining file names failed.
 			*/
-			virtual GRETURN GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize) = 0;
+			virtual GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) = 0;
 
 			//! Gets the size of the specified file in bytes.
 			/*!

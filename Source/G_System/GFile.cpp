@@ -13,6 +13,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#define DIR_SEPERATOR '/'
+
 #elif defined(_WIN32)
 
 #include <locale>
@@ -32,6 +34,7 @@
 #define closedir _wclosedir
 #define rewinddir _wrewinddir
 
+#define DIR_SEPERATOR L'\\'
 
 #else
 
@@ -65,8 +68,6 @@ public:
 	FileIO();
 	virtual ~FileIO();
 
-	GRETURN Init();
-
 	GRETURN OpenBinaryRead(const char* const _file) override;
 
 	GRETURN OpenBinaryWrite(const char* const _file) override;
@@ -97,7 +98,7 @@ public:
 
 	GRETURN GetDirectorySize(unsigned int& _outSize) override;
 
-	GRETURN GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize) override;
+	GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) override;
 
 	GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
 
@@ -108,6 +109,8 @@ public:
 	GRETURN DecrementCount() override;
 
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
+
+	GRETURN Init();
 };
 
 FileIO::FileIO() : m_refCount(1)
@@ -131,7 +134,9 @@ FileIO::~FileIO()
 GRETURN FileIO::Init()
 {
 	//Set the current working directory to the directory the program was ran from.
-	SetCurrentWorkingDirectory("./");
+	GRETURN rv = SetCurrentWorkingDirectory("./");
+	if (G_FAIL(rv))
+		return rv;
 
 	//Imbue the file with utf8 if on Windows
 #if defined(_WIN32)
@@ -149,12 +154,12 @@ GRETURN FileIO::Init()
 
 GRETURN FileIO::OpenBinaryRead(const char* const _file)
 {
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Close the current file if there is one
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in | ios::binary);
@@ -167,12 +172,12 @@ GRETURN FileIO::OpenBinaryRead(const char* const _file)
 
 GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 {
-	//Close the current file if there is one
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
+	//If a file currently open we fail.
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary);
@@ -185,12 +190,12 @@ GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 
 GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 {
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Close the current file if there is one
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary | ios::app | ios::ate);
@@ -203,12 +208,12 @@ GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 
 GRETURN FileIO::OpenTextRead(const char* const _file)
 {
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Close the current file if there is one
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in);
@@ -231,12 +236,12 @@ GRETURN FileIO::OpenTextRead(const char* const _file)
 
 GRETURN FileIO::OpenTextWrite(const char* const _file)
 {
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Close the current file if there is one
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out);
@@ -258,12 +263,12 @@ GRETURN FileIO::OpenTextWrite(const char* const _file)
 
 GRETURN FileIO::AppendTextWrite(const char* const _file)
 {
+	if (_file == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Close the current file if there is one
 	if (m_file.is_open())
-	{
-		m_file.flush();
-		m_file.close();
-	}
+		return FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
@@ -276,6 +281,9 @@ GRETURN FileIO::AppendTextWrite(const char* const _file)
 
 GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 {
+	if (_inData == nullptr || _numBytes == 0)
+		return INVALID_ARGUMENT;
+
 	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
@@ -311,6 +319,9 @@ GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 
 GRETURN FileIO::WriteLine(const char* const _inData)
 {
+	if (_inData == nullptr)
+		return INVALID_ARGUMENT;
+
 	//Ensure a file is open
 	if (!m_file.is_open())
 		return FAILURE;
@@ -338,6 +349,9 @@ GRETURN FileIO::WriteLine(const char* const _inData)
 
 GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter)
 {
+	if (_outData == nullptr || _outDataSize == 0)
+		return INVALID_ARGUMENT;
+
 	//Ensure file is open
 	if (!m_file.is_open())
 		return FAILURE;
@@ -383,7 +397,11 @@ GRETURN FileIO::FlushFile()
 
 GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 {
-	//Check to ensure there is a current working direcotry
+	//Check for valid arguements
+	if (_dir == nullptr || _dirSize == 0)
+		return INVALID_ARGUMENT;
+
+	//Check that a directory is open
 	if (m_currDirStream == nullptr)
 		return FAILURE;
 
@@ -394,49 +412,57 @@ GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 
 GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 {
+	//Check for valid arguements
+	if (_dir == nullptr)
+		return INVALID_ARGUMENT;
+
+	//Get the absolute path
+#if defined (_WIN32)
+	wchar_t buffer[MAX_PATH];
+	if (_wfullpath(buffer, G_TO_UTF16(_dir).c_str(), MAX_PATH) == nullptr)
+		return FAILURE;
+
+	//Check to make sure the directory exists
+	struct _stat s;
+	if (_wstat(buffer, &s) != 0)
+		return FILE_NOT_FOUND;
+
+#elif defined(__APPLE__) || defined(__linux__)
+	//Get the absolute path
+	char buffer[PATH_MAX];
+	if (realpath(_dir, buffer) == nullptr)
+		return FAILURE;
+
+	//Ensure the directory exists
+	struct stat s;
+	if (stat(buffer, &s) != 0)
+		return FILE_NOT_FOUND;
+#endif
+
+	//Assign the passed in directory to our internal directory storage.
+	m_currDir = buffer;
+	m_currDir += DIR_SEPERATOR;
+
 	//If there is an open directory, close it
 	if (m_currDirStream != nullptr)
 		closedir(m_currDirStream);
 
 	//Open new directory
-	string dirString = G_TO_UTF16(_dir);
-	m_currDirStream = opendir(dirString.c_str());
+	m_currDirStream = opendir(m_currDir.c_str());
 
 	//Check to ensure directory is open
 	if (m_currDirStream == nullptr)
-		return FILE_NOT_FOUND;
+		return FAILURE;
 
+	//Reset the dir size
+	m_dirSize = 0;
 
-	//Get the number of files in directory and the full path of the directory
-	//Stores our files as we iterate through them
+	//Get the number of files in directory
 	struct dirent* file;
 	while ((file = readdir(m_currDirStream)))
 	{
 		if(file->d_type == DT_REG)
 			++m_dirSize;
-
-		string currDir = G_TO_UTF16(".");
-		if (file->d_name == currDir)
-		{
-			//TODO: Get fullpath
-#if defined(_WIN32)
-			TCHAR buffer[MAX_PATH];
-			_wfullpath(buffer, file->d_name, MAX_PATH);
-
-			m_currDir = buffer;
-			m_currDir += L"\\";
-
-#elif defined(__linux__) || defined(__APPLE__)
-			char buffer[PATH_MAX];
-			(void*)realpath(file->d_name, buffer);
-
-			if (buffer == nullptr)
-				return FILE_NOT_FOUND;
-
-			m_currDir = buffer;
-			m_currDir += "/";
-#endif
-		}
 	}
 
 	//Set the directory iterater back to the begining
@@ -456,7 +482,7 @@ GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 	return SUCCESS;
 }
 
-GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, unsigned int _fileNameSize)
+GRETURN FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize)
 {
 	//Check that there is a current working directory
 	if (m_currDirStream == nullptr)
@@ -476,7 +502,7 @@ GRETURN FileIO::GetFilesFromDirectory(char** _outFiles, unsigned int _numFiles, 
 		if (file->d_type == DT_REG)
 		{
             string fileName(file->d_name);
-			strcpy_s(&(*_outFiles)[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
+			strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
 			++fileNumber;
 		}
 	}
