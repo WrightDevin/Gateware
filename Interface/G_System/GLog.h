@@ -45,6 +45,7 @@ namespace GW
 			*
 			*  \retval SUCCESS  Successfully queued the message to the log.
 			*  \retval FAILURE  The queue has reached maximun size (call flush).
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN Log(const char* const _log) = 0;
 			
@@ -58,6 +59,7 @@ namespace GW
 			*
 			*  \retval SUCCESS  Successfully queued the message to the log.
 			*  \retval FAILURE  The queue has reached maximun size (call flush).
+			*  \retval INVALID_ARGUMENT  Either _category or _log are nullptr.
 			*/
 			virtual GRETURN LogCatergorized(const char* const _category, const char* const _log) = 0;
 			
@@ -83,7 +85,6 @@ namespace GW
 			/*!
 			*  This will force a log dump to the file and clear the log queue.
 			*
-			*
 			*  \retval SUCCESS  Successfully dumped the logs
 			*  \retval FAILURE  Most likely a file corruption or a file is not open.
 			*/
@@ -101,6 +102,7 @@ namespace GW
 		*
 		*  \retval SUCCESS  GLog was successfully created.
 		*  \retval FAILURE  GLog was not created. _outLog will be null
+		*  \retval INVALID_ARGUMENT  Either one or both arguments are nullptrs.
 		*/
 		GRETURN GCreateLog(const char* const _fileName, GLog** _outLog);
 
@@ -116,7 +118,7 @@ namespace GW
 		*
 		*  \retval SUCCESS  GLog was successfully created.
 		*  \retval FAILURE  GLog was not created. _outLog will be null.
-		*  \retval INVALID_ARGUMENT _outLog was passed in as null.
+		*  \retval INVALID_ARGUMENT Either one or both the arguments are nullptr.
 		*/
 		GRETURN GCreateLog(GFile* _file, GLog** _outLog);
 	}

@@ -1,8 +1,9 @@
 #include "../../Interface/G_System/GFile.h"
-#include <fstream>
-#include <string>
-#include <atomic>
-#include "GUtility.h"
+#include <fstream>  //file streams
+#include <string>  //strings
+#include <atomic>  //automic variables
+#include <mutex>  //mutex locks
+#include "GUtility.h"  //Internal utility functions
 
 //dirent.h is not native to Windows and is added to the project
 //The " " are used for include so the compiler knows to look in the
@@ -10,20 +11,21 @@
 //dirent.h is native in Linux and Mac so the < > are used to include
 #if defined(__APPLE__) || defined(__linux__)
 
-#include <dirent.h>
-#include <sys/stat.h>
+//Apple and Linux includes
+#include <dirent.h>  //Directory handling
+#include <sys/stat.h>  //File stats
 
 #define DIR_SEPERATOR '/'
 
 #elif defined(_WIN32)
 
-#include <locale>
-#include <codecvt>
-#include <io.h>
-#include <fcntl.h>
-
+//Windows specific includes
+#include <io.h>  //Included for mode change
+#include <fcntl.h>  //Included for mode change
 #include "direntw.h"
 
+//Windows specific #defines
+//This keeps most of the function code branchless between platforms
 #define DIR _WDIR
 #define dirent _wdirent
 #define fstream wfstream
@@ -42,75 +44,75 @@
 
 #endif
 
-#define G_UINT_MAX 0xffffffff
-
 //The using statements for specifically what we are using
-using namespace GW;
-using namespace CORE;
 using namespace INTERNAL;
 using std::string;
 using std::fstream;
 using std::ios;
 using std::atomic;
+using std::mutex;
 using std::getline;
 
-class FileIO : public GFile
+class FileIO : public GW::CORE::GFile
 {
-	DIR* m_currDirStream;
-	fstream m_file;
-	string m_currDir;
+	DIR* m_currDirStream;  //Maintains the current directory
+	fstream m_file;  //Maintains the current file (if one is open)
+	
+	string m_currDir;  //A cached directory path for faster fetching
 
-	unsigned int m_dirSize;
+	atomic<unsigned int> m_dirSize;  //A cached directory size for faster fetching
 
-	atomic<unsigned int> m_refCount;
+	atomic<unsigned int> m_refCount;  //Reference counter
+
+	mutex m_lock; //Read/Write lock
 
 public:
 	FileIO();
 	virtual ~FileIO();
 
-	GRETURN OpenBinaryRead(const char* const _file) override;
+	GW::GRETURN OpenBinaryRead(const char* const _file) override;
 
-	GRETURN OpenBinaryWrite(const char* const _file) override;
+	GW::GRETURN OpenBinaryWrite(const char* const _file) override;
 
-	GRETURN AppendBinaryWrite(const char* const _file) override;
+	GW::GRETURN AppendBinaryWrite(const char* const _file) override;
 
-	GRETURN OpenTextRead(const char* const _file) override;
+	GW::GRETURN OpenTextRead(const char* const _file) override;
 
-	GRETURN OpenTextWrite(const char* const _file) override;
+	GW::GRETURN OpenTextWrite(const char* const _file) override;
 
-	GRETURN AppendTextWrite(const char* const _file) override;
+	GW::GRETURN AppendTextWrite(const char* const _file) override;
 
-	GRETURN Write(const char* const _inData, unsigned int _numBytes) override;
+	GW::GRETURN Write(const char* const _inData, unsigned int _numBytes) override;
 
-	GRETURN Read(char* _outData, unsigned int _numBytes) override;
+	GW::GRETURN Read(char* _outData, unsigned int _numBytes) override;
 
-	GRETURN WriteLine(const char* const _inData) override;
+	GW::GRETURN WriteLine(const char* const _inData) override;
 
-	GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) override;
+	GW::GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) override;
 
-	GRETURN CloseFile() override;
+	GW::GRETURN CloseFile() override;
 
-	GRETURN FlushFile() override;
+	GW::GRETURN FlushFile() override;
 
-	GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
+	GW::GRETURN SetCurrentWorkingDirectory(const char* const _dir) override;
 
-	GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
+	GW::GRETURN GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
 
-	GRETURN GetDirectorySize(unsigned int& _outSize) override;
+	GW::GRETURN GetDirectorySize(unsigned int& _outSize) override;
 
-	GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) override;
+	GW::GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) override;
 
-	GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
+	GW::GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) override;
 
-	GRETURN GetCount(unsigned int &_outCount) override;
+	GW::GRETURN GetCount(unsigned int &_outCount) override;
 
-	GRETURN IncrementCount() override;
+	GW::GRETURN IncrementCount() override;
 
-	GRETURN DecrementCount() override;
+	GW::GRETURN DecrementCount() override;
 
-	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
+	GW::GRETURN RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface) override;
 
-	GRETURN Init();
+	GW::GRETURN Init(); //The init function for this class in order to initialize variables
 };
 
 FileIO::FileIO() : m_refCount(1)
@@ -131,162 +133,203 @@ FileIO::~FileIO()
 	}
 }
 
-GRETURN FileIO::Init()
+GW::GRETURN FileIO::Init()
 {
 	//Set the current working directory to the directory the program was ran from.
-	GRETURN rv = SetCurrentWorkingDirectory("./");
+	GW::GRETURN rv = SetCurrentWorkingDirectory("./");
 	if (G_FAIL(rv))
 		return rv;
 
 	//Imbue the file with utf8 if on Windows
 #if defined(_WIN32)
 
+	//Create a UTF8 Locale to imbue the fstream with
 	std::locale utf8Locale(std::locale(), new std::codecvt_utf8<wchar_t>);
+
+	//imbue the fstream
 	m_file.imbue(utf8Locale);
 
 #endif
-	//If the directory is not open the the function fails
-	if (m_currDirStream == nullptr)
-		return FAILURE;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::OpenBinaryRead(const char* const _file)
+GW::GRETURN FileIO::OpenBinaryRead(const char* const _file)
 {
+	//Check for invalid arguments
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
-	//Close the current file if there is one
+	//Ensure a file is not already open
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
-	//Open the new file
+	//Open the new file in the currentWorkingDirectory
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in | ios::binary);
 
+	//If the file failed to open the function fails
 	if (!m_file.is_open())
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::OpenBinaryWrite(const char* const _file)
+GW::GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 {
+	//Check for invalid arguments
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//If a file currently open we fail.
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary);
 
+	//If file failed to open we fail
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::AppendBinaryWrite(const char* const _file)
+GW::GRETURN FileIO::AppendBinaryWrite(const char* const _file)
 {
+	//Check for invalid arguments
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::binary | ios::app | ios::ate);
 
+	//If file failed to open we fail
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::OpenTextRead(const char* const _file)
+GW::GRETURN FileIO::OpenTextRead(const char* const _file)
 {
+	//Check for invalid arguments
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::in);
 
 	if (!m_file.is_open())
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 
-	//Need to read the BOM if we are _WIN32
 #if defined(_WIN32)
+	//If we are on windows we need to handle the file BOM.
+	//This is what tells the system how to handle the file
+	//This only needs to be read in one time so we will read it now
+	//It can be ignored from this point on
+
+	//Lock the read operation
+	m_lock.lock();
+
+	//Set the mode so we can properly use wchar_t to get the BOM
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
+
 
 	wchar_t BOM;
 	m_file.get(BOM);
 
+	//Set the mode back to the default mode
 	_setmode(_fileno(stdout), oldMode);
+
+
+	m_lock.unlock();
 #endif
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::OpenTextWrite(const char* const _file)
+GW::GRETURN FileIO::OpenTextWrite(const char* const _file)
 {
+	//Check for invalid arguments
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out);
 
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Need to write the BOM if we are _WIN32
 #if defined(_WIN32)
+	//If we are on windows we need to handle the file BOM.
+	//This is what tells the system how to handle the file
+	//This only needs to be wrote out one time so we will write it now
+	//It can be ignored from this point on
+
+	//Lock the write opertion
+	m_lock.lock();
+
+	//Set the mode so we can write out a wide string
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
 
-	m_file << L'\xFEFF';
+	m_file << L'\xFEFF'; //The imbue earlier will take this wide string and treat it as UTF8
 
+	//Set the mode back to default mode
 	_setmode(_fileno(stdout), oldMode);
+
+	m_lock.unlock();
 #endif
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::AppendTextWrite(const char* const _file)
+GW::GRETURN FileIO::AppendTextWrite(const char* const _file)
 {
+	//Check for invalid arguements
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Close the current file if there is one
 	if (m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Open the new file
 	m_file.open(m_currDir + G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
 
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
+GW::GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 {
+	//Check for invalid arguements
 	if (_inData == nullptr || _numBytes == 0)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Ensure a file is open
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
+
+	//Lock the write operations
+	m_lock.lock();
+
+	//On windows we need to cast the char* to a wchar_t*
+	//We don't need to on MAC and Linux
 
 #if defined(_WIN32)
 	m_file.write((wchar_t*)_inData, _numBytes);
@@ -295,17 +338,28 @@ GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 	m_file.write(_inData, _numBytes);
 
 #endif
+	m_lock.unlock();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
+GW::GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 {
+	if (_numBytes == 0)
+		return GW::INVALID_ARGUMENT;
+
 	//Ensure a file is open
 	if (!m_file.is_open())
-		return FAILURE;
+	{
+		_outData = nullptr;
+		return GW::FAILURE;
+	}
 
-	//Read the bytes in
+	//Lock the read operations
+	m_lock.lock();
+
+	//On Windows we need to cast the char* to a wchar_t*
+	//We don't need to on MAC or Linux
 #if defined(_WIN32)
 	m_file.read((wchar_t*)_outData, _numBytes);
 
@@ -313,130 +367,161 @@ GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 	m_file.read(_outData, _numBytes);
 
 #endif
+	m_lock.unlock();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::WriteLine(const char* const _inData)
+GW::GRETURN FileIO::WriteLine(const char* const _inData)
 {
+	//Check for invalid arguements
 	if (_inData == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Ensure a file is open
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Transfer the data to a string. #defines make it where
 	//the string is what we need it to be on any system we support
 	string writeOutString = G_TO_UTF16(_inData);
 
-	//If _WIN32 we need to write out slightly different
+	//Lock the write operations
+	m_lock.lock();
+
 #ifdef _WIN32
+	//Set the mode so we can use widestrings
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
 
+	//Write out the string
 	m_file << writeOutString;
 
+	//Set the mode back to default mode
 	_setmode(_fileno(stdout), oldMode);
 
 #elif defined(__APPLE__) || defined(__linux__)
 
+	//Write out the string
 	m_file << writeOutString;
 
 #endif
 
-	return SUCCESS;
+	m_lock.unlock();
+
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter)
+GW::GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter)
 {
 	if (_outData == nullptr || _outDataSize == 0)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Ensure file is open
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
+	//The string to be read into
 	string outString;
 
-	//If _WIN32 we need to read in slightly different
+	//Lock the read operations
+	m_lock.lock();
+
 #ifdef _WIN32
+	//Set the mode so we can use wstrings
 	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
 
+	//Convert the UTF8 delimeter to UTF16
 	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
+
+	//Read the information
 	getline(m_file, outString, *delimiter);
 
+	//Set mode back to default mode
 	_setmode(_fileno(stdout), oldMode);
 #elif defined(__APPLE__) || defined(__linux__)
+
+	//Just read in data normally
 	getline(m_file, outString, _delimiter);
 #endif
 
+	//Copy the data over to the out parameter
 	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
-	return SUCCESS;
+
+	m_lock.unlock();
+
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::CloseFile()
+GW::GRETURN FileIO::CloseFile()
 {
+	//If a file is not open, we can not close it
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
+	//Flush the file
 	m_file.flush();
+
+	//Close the file
 	m_file.close();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::FlushFile()
+GW::GRETURN FileIO::FlushFile()
 {
+	//If a file is not open we can not flush it
 	if (!m_file.is_open())
-		return FAILURE;
+		return GW::FAILURE;
 
+	//flush the file
 	m_file.flush();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
+GW::GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 {
 	//Check for valid arguements
 	if (_dir == nullptr || _dirSize == 0)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Check that a directory is open
 	if (m_currDirStream == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
+	//Copy the current directory to the out parameter
 	strcpy_s(_dir, _dirSize, G_TO_UTF8(m_currDir).c_str());
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
+GW::GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 {
 	//Check for valid arguements
 	if (_dir == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Get the absolute path
 #if defined (_WIN32)
 	wchar_t buffer[MAX_PATH];
 	if (_wfullpath(buffer, G_TO_UTF16(_dir).c_str(), MAX_PATH) == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Check to make sure the directory exists
 	struct _stat s;
 	if (_wstat(buffer, &s) != 0)
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 
 #elif defined(__APPLE__) || defined(__linux__)
 	//Get the absolute path
 	char buffer[PATH_MAX];
 	if (realpath(_dir, buffer) == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Ensure the directory exists
 	struct stat s;
 	if (stat(buffer, &s) != 0)
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 #endif
 
 	//Assign the passed in directory to our internal directory storage.
@@ -452,7 +537,7 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 
 	//Check to ensure directory is open
 	if (m_currDirStream == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Reset the dir size
 	m_dirSize = 0;
@@ -468,25 +553,25 @@ GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 	//Set the directory iterater back to the begining
 	rewinddir(m_currDirStream);
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
+GW::GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 {
 	//Check that there is a current working directory
 	if (m_currDirStream == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	_outSize = m_dirSize;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize)
+GW::GRETURN FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize)
 {
 	//Check that there is a current working directory
 	if (m_currDirStream == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	struct dirent* file;
 	unsigned int fileNumber = 0;
@@ -494,7 +579,7 @@ GRETURN FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles,
 	//Read the first file (Should be "." which will be skipped)
 	file = readdir(m_currDirStream);
 	if (file == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Read all files and add regular files to the buffer passed in
 	for (; file != nullptr && fileNumber < _numFiles; file = readdir(m_currDirStream))
@@ -507,71 +592,76 @@ GRETURN FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles,
 		}
 	}
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
+GW::GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 {
 	//Make a full path to the file
 	string filePath = m_currDir;
 	filePath += G_TO_UTF16(_file);
 
+	//Other then the UTF8 to UTF16 converstion for the windows calls
+	//This is handled the same for each platform
+	//wWe call stat() and it fills in the passed in function
+	//with the stats of the passed in path
 #if defined (_WIN32)
 	struct _stat s;
 	if (_wstat(filePath.c_str(), &s) != 0)
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 
 #elif defined(__APPLE__) || defined(__linux__)
 	struct stat s;
 	if (stat(filePath.c_str(), &s) != 0)
-		return FILE_NOT_FOUND;
+		return GW::FILE_NOT_FOUND;
 
 #endif
 
+	//Copy the file size to the out parameter
 	_outSize = (unsigned int)s.st_size;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::GetCount(unsigned int &_outCount)
+GW::GRETURN FileIO::GetCount(unsigned int &_outCount)
 {
 	//Store ref count
 	_outCount = m_refCount;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::IncrementCount()
+GW::GRETURN FileIO::IncrementCount()
 {
 	//Check to make sure overflow will not occur
 	if (m_refCount == G_UINT_MAX)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Increment ref count
 	++m_refCount;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::DecrementCount()
+GW::GRETURN FileIO::DecrementCount()
 {
 	//Check to make sure underflow will not occur
 	if (m_refCount == 0)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Decrement ref count
 	--m_refCount;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface)
+GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface)
 {
 	if (_outputInterface == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//If interface == this
-	if (_interfaceID == GFileUUIID)
+	if (_interfaceID == GW::CORE::GFileUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
 		GFile* convert = reinterpret_cast<GFile*>(this);
@@ -583,7 +673,7 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 		(*_outputInterface) = convert;
 	}
 	//If requested interface is multithreaded.
-	else if (_interfaceID == GMultiThreadedUUIID)
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
 	{
 		//Temportary GMultiThreaded* to ensure proper functions are called
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
@@ -595,7 +685,7 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 		(*_outputInterface) = convert;
 	}
 	//If requested interface is the primary interface.
-	else if (_interfaceID == GInterfaceUUIID)
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
 	{
 		//Temporary GInterface* to ensure proper functions are called.
 		GInterface* convert = reinterpret_cast<GInterface*>(this);
@@ -608,29 +698,29 @@ GRETURN FileIO::RequestInterface(const GUUIID &_interfaceID, void** _outputInter
 	}
 	//Interface is not supported
 	else
-		return INTERFACE_UNSUPPORTED;
+		return GW::INTERFACE_UNSUPPORTED;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN GW::CORE::GCreateFile(GFile** _outFile)
+GW::GRETURN GW::CORE::GCreateFile(GFile** _outFile)
 {
 	//Check that we were given a valid pointer
 	if (_outFile == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Create the new object and make sure it's valid
 	FileIO* file = new FileIO();
 	if (!file)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Run the FileIO init function
-	GRETURN rv = file->Init();
+	GW::GRETURN rv = file->Init();
 	if (G_FAIL(rv))
 		return rv;
 
 	//Store FileIO in the GFile
 	*_outFile = file;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }

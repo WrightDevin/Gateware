@@ -3,81 +3,83 @@
 #include "GUtility.h"
 
 
-#include <queue>
-#include <thread>
-#include <mutex>
-#include <string>
-#include <cstring>
-#include <sstream>
-#include <atomic>
-#include <iostream>
+#include <queue> //To queue the messages
+#include <thread> //Threading
+#include <mutex> //Thread safety
+#include <sstream> //Stringstreams
+#include <atomic> //Thread safety
+#include <iostream> //For cout
+#include <condition_variable> //For conditional variables
 
-using namespace GW;
-using namespace CORE;
 using namespace INTERNAL;
 using std::queue;
 using std::thread;
 using std::string;
 using std::mutex;
 using std::atomic;
+using std::unique_lock;
+using std::condition_variable;
 using std::cout;
 
 #define MAX_QUEUE_SIZE 20
 #define THREAD_SLEEP_TIME 10
-#define G_UINT_MAX 0xffffffff
 #define TIME_BUFFER 40
 
-class LogFile : public GLog
+class LogFile : public GW::CORE::GLog
 {
-	GFile* m_logFile;
+	GW::CORE::GFile* m_logFile;  //Our internal GFile to log to file
 
-	thread* m_worker;
+	thread* m_worker; //The worker thread we will spin off
 
-	mutex m_queueLock;
+	mutex m_lock; //queuelock for locking the queue we are logging to
 
-	queue<string> m_logQueue;
+	queue<string> m_logQueue; //The queue we will log to
 
-	bool m_isVerbose;
+	bool m_isVerbose;  //Verbose logging boolean
 
-	bool m_isConsoleLogged;
+	bool m_isConsoleLogged; //Console loggong boolean
 
-	atomic<bool> m_threadRunning;
+	atomic<bool> m_threadRunning; //Boolean to kill the thread
 
-	atomic<unsigned int> m_refCount;
+	atomic<unsigned int> m_refCount; //Referance counter
+
+	condition_variable m_condition;
+
+	unique_lock<mutex> m_queueLock;
 
 public:
     LogFile();
     virtual ~LogFile();
 
-	GRETURN Init(const char* const _fileName);
+	GW::GRETURN Init(const char* const _fileName);
 
-	GRETURN Init(GFile* _file);
+	GW::GRETURN Init(GW::CORE::GFile* _file);
 
-	GRETURN Log(const char* const _log) override;
+	GW::GRETURN Log(const char* const _log) override;
 
-	GRETURN LogCatergorized(const char* const _category, const char* const _log) override;
+	GW::GRETURN LogCatergorized(const char* const _category, const char* const _log) override;
 
 	void EnableVerboseLogging(bool _value) override;
 
 	void EnableConsoleLogging(bool _value) override;
 
-	GRETURN Flush() override;
+	GW::GRETURN Flush() override;
 
-	GRETURN GetCount(unsigned int &_outCount) override;
+	GW::GRETURN GetCount(unsigned int &_outCount) override;
 
-	GRETURN IncrementCount() override;
+	GW::GRETURN IncrementCount() override;
 
-	GRETURN DecrementCount() override;
+	GW::GRETURN DecrementCount() override;
 
-	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) override;
+	GW::GRETURN RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface) override;
 
 private:
-	void LogWorker();
+	void LogWorker(); //Our worker thread function
 
-	unsigned long long GetThreadID();
+	unsigned long long GetThreadID(); //Gets the thread ID
 };
 
-LogFile::LogFile() : m_refCount(1)
+LogFile::LogFile() : m_refCount(1), m_queueLock(m_lock)
 {
 	m_isConsoleLogged = false;
 	m_isVerbose = true;
@@ -87,10 +89,10 @@ LogFile::~LogFile()
 {
 }
 
-GRETURN LogFile::Init(const char* const _fileName)
+GW::GRETURN LogFile::Init(const char* const _fileName)
 {
 	//Create a GFile
-	GRETURN rv = GCreateFile(&m_logFile);
+	GW::GRETURN rv = GCreateFile(&m_logFile);
 	if (G_FAIL(rv))
 		return rv;
 
@@ -105,14 +107,14 @@ GRETURN LogFile::Init(const char* const _fileName)
 
 	//m_isVerbose is defaulted to true
 	m_isVerbose = true;
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::Init(GFile* _file)
+GW::GRETURN LogFile::Init(GW::CORE::GFile* _file)
 {
 	//Check to ensure valid GFile
 	if (_file == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Set the GFile and increment the ref count
 	m_logFile = _file;
@@ -124,11 +126,14 @@ GRETURN LogFile::Init(GFile* _file)
 
 	//m_isVerbose is defaulted to true
 	m_isVerbose = true;
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::Log(const char* const _log)
+GW::GRETURN LogFile::Log(const char* const _log)
 {
+	if (_log == nullptr)
+		return GW::INVALID_ARGUMENT;
+
 	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
@@ -138,18 +143,21 @@ GRETURN LogFile::Log(const char* const _log)
 		char timeBuffer[TIME_BUFFER];
 
 #if defined(_WIN32)
-
+		//Parse the time out to readable time
 		struct tm buf;
 		localtime_s(&buf, &t);
 		asctime_s(timeBuffer, TIME_BUFFER, &buf);
 
 #elif defined(__APPLE__) || defined(__linux__)
+		//Parse the time out to readable time
 		string buffer(asctime(localtime(&t)));
 		strcpy_s(timeBuffer, TIME_BUFFER, buffer.c_str());
 
 #endif
 		//Get rid of new line added by asctime
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';
+		
+		//Create our log string
         logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
@@ -164,7 +172,7 @@ GRETURN LogFile::Log(const char* const _log)
 	if (m_logQueue.size() >= MAX_QUEUE_SIZE)
 	{
 		m_queueLock.unlock();
-		return FAILURE;
+		return GW::FAILURE;
 	}
 
 	if (m_isConsoleLogged)
@@ -175,11 +183,15 @@ GRETURN LogFile::Log(const char* const _log)
 
 	m_queueLock.unlock();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::LogCatergorized(const char* const _category, const char* const _log)
+GW::GRETURN LogFile::LogCatergorized(const char* const _category, const char* const _log)
 {
+	if (_category == nullptr || _log == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//The stream that will contain the full message
 	std::stringstream logStream;
 
 	//Check verbose logging and add the verbose info if on
@@ -190,17 +202,22 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 
 	#if defined(_WIN32)
 
+		//Parse time to readable time
 		struct tm buf;
 		localtime_s(&buf, &t);
 		asctime_s(timeBuffer, TIME_BUFFER, &buf);
 
     #elif defined(__APPLE__) || defined(__linux__)
+
+		//Parse time to readable time
 		string buffer(asctime(localtime(&t)));
 		strcpy_s(timeBuffer, TIME_BUFFER, buffer.c_str());
 
 	#endif
 		//Get rid of new line added by asctime
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';
+
+		//Build the string
         logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
@@ -215,7 +232,7 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 	if (m_logQueue.size() >= MAX_QUEUE_SIZE)
 	{
 		m_queueLock.unlock();
-		return FAILURE;
+		return GW::FAILURE;
 	}
 
 	//Push the message to the queue
@@ -226,22 +243,28 @@ GRETURN LogFile::LogCatergorized(const char* const _category, const char* const 
 
 	m_queueLock.unlock();
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
 void LogFile::EnableVerboseLogging(bool _value)
 {
+	//Set the verbose boolean
 	m_isVerbose = _value;
 }
 
 void LogFile::EnableConsoleLogging(bool _value)
 {
+	//Set the console logging boolean
 	m_isConsoleLogged = _value;
 }
 
-GRETURN LogFile::Flush()
+GW::GRETURN LogFile::Flush()
 {
-	return m_logFile->FlushFile();
+	//Notify the thread to write out
+	m_condition.notify_all();
+
+	//Flush the file
+	return GW::SUCCESS;
 }
 
 unsigned long long LogFile::GetThreadID()
@@ -254,29 +277,29 @@ unsigned long long LogFile::GetThreadID()
 	return std::stoull(ss.str());
 }
 
-GRETURN LogFile::GetCount(unsigned int &_outCount)
+GW::GRETURN LogFile::GetCount(unsigned int &_outCount)
 {
 	_outCount = m_refCount;
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::IncrementCount()
+GW::GRETURN LogFile::IncrementCount()
 {
 	//Check for possible overflow
 	if (m_refCount == G_UINT_MAX)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Increment the count
 	++m_refCount;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::DecrementCount()
+GW::GRETURN LogFile::DecrementCount()
 {
 	//Check for possible underflow
 	if (m_refCount == 0)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Decrement the count
 	--m_refCount;
@@ -297,16 +320,16 @@ GRETURN LogFile::DecrementCount()
 		delete this;
 	}
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN LogFile::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface)
+GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface)
 {
 	if (_outputInterface == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//If interface == this
-	if (_interfaceID == GLogUUIID)
+	if (_interfaceID == GW::CORE::GLogUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
 		GLog* convert = reinterpret_cast<GLog*>(this);
@@ -318,7 +341,7 @@ GRETURN LogFile::RequestInterface(const GUUIID &_interfaceID, void** _outputInte
 		(*_outputInterface) = convert;
 	}
 	//If requested interface is multithreaded.
-	else if (_interfaceID == GMultiThreadedUUIID)
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
 	{
 		//Temportary GMultiThreaded* to ensure proper functions are called
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
@@ -330,7 +353,7 @@ GRETURN LogFile::RequestInterface(const GUUIID &_interfaceID, void** _outputInte
 		(*_outputInterface) = convert;
 	}
 	//If requested interface is the primary interface.
-	else if (_interfaceID == GInterfaceUUIID)
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
 	{
 		//Temporary GInterface* to ensure proper functions are called.
 		GInterface* convert = reinterpret_cast<GInterface*>(this);
@@ -343,53 +366,53 @@ GRETURN LogFile::RequestInterface(const GUUIID &_interfaceID, void** _outputInte
 	}
 	//Interface is not supported
 	else
-		return INTERFACE_UNSUPPORTED;
+		return GW::INTERFACE_UNSUPPORTED;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN GW::CORE::GCreateLog(const char* const _fileName, GLog** _outLog)
+GW::GRETURN GW::CORE::GCreateLog(const char* const _fileName, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Create a new LogFile
 	LogFile* logFile = new LogFile();
 	if (logFile == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Init the log file
-	GRETURN rv = logFile->Init(_fileName);
+	GW::GRETURN rv = logFile->Init(_fileName);
 	if (G_FAIL(rv))
 		return rv;
 
 	//Store new log file in passed in pointer
 	(*_outLog) = logFile;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
-GRETURN GW::CORE::GCreateLog(GFile* _file, GLog** _outLog)
+GW::GRETURN GW::CORE::GCreateLog(GFile* _file, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)
-		return INVALID_ARGUMENT;
+		return GW::INVALID_ARGUMENT;
 
 	//Create a new LogFile
 	LogFile* logFile = new LogFile();
 	if (logFile == nullptr)
-		return FAILURE;
+		return GW::FAILURE;
 
 	//Init the log file
-	GRETURN rv = logFile->Init(_file);
+	GW::GRETURN rv = logFile->Init(_file);
 	if (G_FAIL(rv))
 		return rv;
 
 	//Store new log file in passed in pointer
 	(*_outLog) = logFile;
 
-	return SUCCESS;
+	return GW::SUCCESS;
 }
 
 //LogWorker is the function that the logging thread will run. This thread will also control
@@ -398,33 +421,25 @@ void LogFile::LogWorker()
 {
 	while (m_threadRunning)
 	{
-		//We use a try lock here so that we don't take a lot of time locking
-		if (m_queueLock.try_lock())
+		//If there is anything to write
+		if (m_logQueue.size() != 0)
 		{
-			//If there is anything to write
-			if (m_logQueue.size() != 0)
+			//Swap the queue to another queue so we don't have to worry about thread safety
+			queue<string> writeQueue;
+			writeQueue.swap(m_logQueue);
+
+			//Write out the new queue
+			for (unsigned int i = 0; i < writeQueue.size(); ++i)
 			{
-				//Swap the queue to another queue so we don't have to worry about thread safety
-				queue<string> writeQueue;
-				writeQueue.swap(m_logQueue);
+				m_logFile->WriteLine(writeQueue.front().c_str());
+				writeQueue.pop();
 
-				m_queueLock.unlock();
-
-				//Write out the new queue
-				for (unsigned int i = 0; i < writeQueue.size(); ++i)
-				{
-					m_logFile->WriteLine(writeQueue.front().c_str());
-					writeQueue.pop();
-
-					m_logFile->FlushFile();
-				}
+				m_logFile->FlushFile();
 			}
-			else
-				m_queueLock.unlock();
 		}
 
-		//Sleep for 10 seconds
-		std::this_thread::sleep_for(std::chrono::seconds(THREAD_SLEEP_TIME));
+		//Will unlock the mutex while waiting and relock it upon waking up
+		m_condition.wait_for(m_queueLock, std::chrono::seconds(10));
 	}
 
 	//Close the file

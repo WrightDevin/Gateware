@@ -6,6 +6,10 @@
 
 namespace INTERNAL
 {
+	//UINT_MAX is not defined on Mac or Linux
+	//Enternal #define for this
+	#define G_UINT_MAX 0xFFFFFFFF
+
 	#if defined(_WIN32)
 
 	//Macro to preform string conversions

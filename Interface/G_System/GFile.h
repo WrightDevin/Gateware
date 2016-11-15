@@ -44,6 +44,8 @@ namespace GW
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
 			*  \retval FILE_NOT_FOUND  File could not be found.
+			*  \retval FAILURE  A file is already opened.
+			*  \retval INVALID_ARGUMENT  A null pointer was passed in.
 			*/
 			virtual GRETURN OpenBinaryRead(const char* const _file) = 0;
 
@@ -57,7 +59,8 @@ namespace GW
 			*  \param [in] _file The file name of the file to open.
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
-			*  \retval FAILURE  File could not be found/created.
+			*  \retval FAILURE  A file is already open or file could not be found/created.
+			*  \retval INVALID_ARGUEMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenBinaryWrite(const char* const _file) = 0;
 
@@ -71,7 +74,8 @@ namespace GW
 			*  \param [in] _file The file name of the file to open.
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
-			*  \retval FAILURE  File could not be found/created.
+			*  \retval FAILURE  A file is alread open or the file could not be found/created.
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN AppendBinaryWrite(const char* const _file) = 0;
 
@@ -85,6 +89,8 @@ namespace GW
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
 			*  \retval FILE_NOT_FOUND  File could not be found.
+			*  \retval FAILURE  A file is already open.
+			*  \retval INVALID_ARGUEMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenTextRead(const char* const _file) = 0;
 
@@ -98,7 +104,8 @@ namespace GW
 			*  \param [in] _file The file name of the file to open.
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
-			*  \retval FAILURE  File could not be found/created.
+			*  \retval FAILURE  A file is alread open or the file could not be found/created.
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenTextWrite(const char* const _file) = 0;
 
@@ -112,17 +119,19 @@ namespace GW
 			*  \param [in] _file The file name of the file to open.
 			*
 			*  \retval SUCCESS  Succesfully opened the file.
-			*  \retval FAILURE  File could not be found/created.
+			*  \retval FAILURE  A file is alread open or the file could not be found/created.
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN AppendTextWrite(const char* const _file) = 0;
 
 			//! Writes binary to the currently opened file.
 			/*!
-			*  @param [in] _inData The data to write out to file.
-			*  @param [in] _numBytes The number of bytes to write out to the file.
+			*  \param [in] _inData The data to write out to file.
+			*  \param [in] _numBytes The number of bytes to write out to the file.
 			*  
-			*  @retval SUCCESS  Succesfully wrote out the data.
-			*  @retval FAILURE  Either a file is not open or the write failed.
+			*  \retval SUCCESS  Succesfully wrote out the data.
+			*  \retval FAILURE  Either a file is not open or the write failed.
+			*  \retval INVALID_ARGUMENT  Either a nullptr was passed in or a size of 0 bytes was passed in.
 			*/
 			virtual GRETURN Write(const char* const _inData, unsigned int _numBytes) = 0;
 
@@ -133,44 +142,46 @@ namespace GW
 			*
 			*  \retval SUCCESS  Successful read.
 			*  \retval FAILURE  Either file is not open or read failed. _outData will be null.
+			*  \retval INVALID_ARGUMENT A byte size of 0 was passed in.
 			*/
 			virtual GRETURN Read(char* _outData, unsigned int _numBytes) = 0;
 
 			//! Writes text to the currently opened file.
 			/*!
-			*  
 			*  \param [in] _inData Null terminated string to write out.
 			*
-			*  \retval SUCCESS Successful write. 
-			*  \retval FAILURE Either file is not open or read failed.
+			*  \retval SUCCESS  Successful write. 
+			*  \retval FAILURE  Either file is not open or read failed.
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN WriteLine(const char* const _inData) = 0;
 
 			//! Reads text to the currently opened file.
 			/*!
 			*
-			* Reads text from the current file until delimeter is hit.
+			* Reads text from the current file until either the size is reached or delimeter is reached.
 			*
 			*  \param [out] _outData Null terminated string to write out.
 			*  \param [in] _outDataSize The size of _outData.
 			*  \param [in] _delimiter The delemiter to stop reading at.
 			*
-			*  \retval SUCCESS Successful read.
-			*  \retval FAILURE Either file is not open or read failed.
+			*  \retval SUCCESS  Successful read.
+			*  \retval FAILURE  Either file is not open or read failed.
+			*  \retval INVALID_ARGUMENT  Either a nullptr was passed in or the size request is 0.
 			*/
 			virtual GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) = 0;
 
 			//! Flushes and closes the current file.
 			/*!
-			*  \retval SUCCESS File successfully flushed and closed.
-			*  \retval FAILURE A file is not currently open.
+			*  \retval SUCCESS  File successfully flushed and closed.
+			*  \retval FAILURE  A file is not currently open.
 			*/
 			virtual GRETURN CloseFile() = 0;
 
 			//! Flushes the current file.
 			/*!
-			*  \retval SUCCESS File successfully flushed and closed.
-			*  \retval FAILURE A file is not currently open.
+			*  \retval SUCCESS  File successfully flushed and closed.
+			*  \retval FAILURE  A file is not currently open.
 			*/
 			virtual GRETURN FlushFile() = 0;
 
@@ -181,8 +192,10 @@ namespace GW
 			*
 			*  \param [in] _dir An absolute path to the directory to set as the current working directory.
 			*
-			*  \retval SUCCESS Succesfully set the current working directory.
-			*  \retval FILE_NOT_FOUND The directory could not be found.
+			*  \retval SUCCESS  Succesfully set the current working directory.
+			*  \retval FILE_NOT_FOUND  The directory could not be found.
+			*  \retval FAILURE  Failed to open directory (Could be because it was not found).
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in
 			*/
 			virtual GRETURN SetCurrentWorkingDirectory(const char* const _dir) = 0;
 
@@ -194,8 +207,9 @@ namespace GW
 			*  \param [out] _outDir An absolute path to the directory to set as the current working directory.
 			*  \param [in] _dirSize The size of _outDir.
 			*
-			*  \retval SUCCESS Successfully obtained the working directory
-			*  \retval FAILURE The current working directory is invalid or _outDir was not big enough. _outDir will be null.
+			*  \retval SUCCESS  Successfully obtained the working directory
+			*  \retval FAILURE  The current working directory is invalid or _outDir was not big enough. _outDir will be null.
+			*  \retval INVALID_ARGUMENT  A nullptr was passed in or the size is 0.
 			*/
 			virtual GRETURN GetCurrentWorkingDirectory(char* _outDir, unsigned int _dirSize) = 0;
 
@@ -203,8 +217,8 @@ namespace GW
 			/*!
 			*  \param [out] _outSize The number of files in the directory.
 			*
-			*  \retval SUCCESS Successfully counted the files in the directory.
-			*  \retval FAILURE Either currently working directory is invalid or count failed. _outSize will be -1;
+			*  \retval SUCCESS  Successfully counted the files in the directory.
+			*  \retval FAILURE  Either currently working directory is invalid or count failed. _outSize will be -1;
 			*/
 			virtual GRETURN GetDirectorySize(unsigned int& _outSize) = 0;
 
@@ -218,8 +232,8 @@ namespace GW
 			*  \param [in] _numFiles The number of files.
 			*  \param [in] _fileNameSize The size of the file names. 
 			*
-			*  \retval SUCCESS Successfully retrieved the file names.
-			*  \retval FAILURE Either current working directory is invalid or obtaining file names failed.
+			*  \retval SUCCESS  Successfully retrieved the file names.
+			*  \retval FAILURE  Either current working directory is invalid or obtaining file names failed.
 			*/
 			virtual GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) = 0;
 
@@ -232,8 +246,8 @@ namespace GW
 			*  \param [in] _file The file to get the size of.
 			*  \param [out] _outSize will store the size of the file.
 			*
-			*  \retval SUCCESS Successfully retrieved the file size.
-			*  \retval FILE_NOT_FOUND Could not locate the file. Check that the current working directory is valid.
+			*  \retval SUCCESS  Successfully retrieved the file size.
+			*  \retval FILE_NOT_FOUND  Could not locate the file. Check that the current working directory is valid.
 			*/
 			virtual GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) = 0;
 		};
@@ -246,8 +260,9 @@ namespace GW
 		*
 		*  \param [out] _outFile The Gfile that was created.
 		*
-		*  \retval SUCCESS Gfile successfully created.
-		*  \retval FAILURE GFile could not be created.
+		*  \retval SUCCESS  Gfile successfully created.
+		*  \retval FAILURE  GFile could not be created.
+		*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 		*/
 		GRETURN GCreateFile(GFile** _outFile);
 	}
