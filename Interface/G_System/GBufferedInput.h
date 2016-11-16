@@ -19,6 +19,14 @@ namespace GW
 	namespace CORE
 	{
 
+		enum GBInput_Events {
+			KEYPRESSED,
+			KEYRELEASED,
+			BUTTONPRESSED,
+			BUTTONRELEASED,
+			MOUSESCROLL,
+		};
+
 		//! Unique Identifier for this interface. {4CBA9D69-1B32-43DA-B7B2-A421C57818F0}
 		static const GUUIID GBufferedInputUUIID =
 		{

@@ -15,9 +15,10 @@ private:
 
 	/* GInput */
 
-	//! Type KeyCode    Reserved  
-	//! 000	 000000000  20 Reserved bits.
-	unsigned int n_Keys[256];
+
+	//! Type 3 bits KeyCode 9 bits (512 Unique)    Reserved 20 bits 
+	//! 000			00000000-0					   00000000-00000000-0000
+	unsigned int n_Keys[512];
 
 
 public:
