@@ -2,6 +2,9 @@
 #include "../../Interface/G_System/GFile.h"
 #include "GUtility.h"
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
 
 #include <queue> //To queue the messages
 #include <thread> //Threading
@@ -31,7 +34,7 @@ class LogFile : public GW::CORE::GLog
 
 	thread* m_worker; //The worker thread we will spin off
 
-	mutex m_lock; //queuelock for locking the queue we are logging to
+	mutex m_queueLock; //queuelock for locking the queue we are logging to
 
 	queue<string> m_logQueue; //The queue we will log to
 
@@ -43,9 +46,7 @@ class LogFile : public GW::CORE::GLog
 
 	atomic<unsigned int> m_refCount; //Referance counter
 
-	condition_variable m_condition;
-
-	unique_lock<mutex> m_queueLock;
+	condition_variable m_conditional;
 
 public:
     LogFile();
@@ -79,7 +80,7 @@ private:
 	unsigned long long GetThreadID(); //Gets the thread ID
 };
 
-LogFile::LogFile() : m_refCount(1), m_queueLock(m_lock)
+LogFile::LogFile() : m_refCount(1)
 {
 	m_isConsoleLogged = false;
 	m_isVerbose = true;
@@ -175,11 +176,16 @@ GW::GRETURN LogFile::Log(const char* const _log)
 		return GW::FAILURE;
 	}
 
+	//Push the message to the queue
+	m_logQueue.push(logStream.str());
+
 	if (m_isConsoleLogged)
 		cout << logStream.str();
 
-	//Push the message to the queue
-	m_logQueue.push(logStream.str());
+#if defined(_MSC_VER)
+	OutputDebugStringW(G_TO_UTF16(logStream.str()).c_str());
+#endif
+
 
 	m_queueLock.unlock();
 
@@ -241,6 +247,10 @@ GW::GRETURN LogFile::LogCatergorized(const char* const _category, const char* co
 	if (m_isConsoleLogged)
 		cout << logStream.str();
 
+#if defined(_MSC_VER)
+	OutputDebugStringW(G_TO_UTF16(logStream.str()).c_str());
+#endif
+
 	m_queueLock.unlock();
 
 	return GW::SUCCESS;
@@ -260,8 +270,7 @@ void LogFile::EnableConsoleLogging(bool _value)
 
 GW::GRETURN LogFile::Flush()
 {
-	//Notify the thread to write out
-	m_condition.notify_all();
+	m_conditional.notify_all();
 
 	//Flush the file
 	return GW::SUCCESS;
@@ -419,14 +428,20 @@ GW::GRETURN GW::CORE::GCreateLog(GFile* _file, GLog** _outLog)
 //the closing of GFile when the log is destroyed
 void LogFile::LogWorker()
 {
+	unique_lock<mutex> queueLock(m_queueLock);
 	while (m_threadRunning)
 	{
+		//Will lock the mutex when awaken and unlock it when put back to sleep
+		m_conditional.wait_for(queueLock, std::chrono::seconds(20));
+
 		//If there is anything to write
 		if (m_logQueue.size() != 0)
 		{
 			//Swap the queue to another queue so we don't have to worry about thread safety
 			queue<string> writeQueue;
 			writeQueue.swap(m_logQueue);
+
+			queueLock.unlock();
 
 			//Write out the new queue
 			for (unsigned int i = 0; i < writeQueue.size(); ++i)
@@ -437,9 +452,6 @@ void LogFile::LogWorker()
 				m_logFile->FlushFile();
 			}
 		}
-
-		//Will unlock the mutex while waiting and relock it upon waking up
-		m_condition.wait_for(m_queueLock, std::chrono::seconds(10));
 	}
 
 	//Close the file

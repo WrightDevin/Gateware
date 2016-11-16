@@ -82,6 +82,8 @@ artifacts/
 *.o
 *.pyc
 *.db
+*.xml
+*.lastcodeanalysissucceeded
 
 # Chutzpah Test files
 _Chutzpah*

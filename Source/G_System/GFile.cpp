@@ -25,7 +25,7 @@
 #include "direntw.h"
 
 //Windows specific #defines
-//This keeps most of the function code branchless between platforms
+//This keeps most of the function's code branchless between platforms
 #define DIR _WDIR
 #define dirent _wdirent
 #define fstream wfstream
@@ -247,7 +247,7 @@ GW::GRETURN FileIO::OpenTextRead(const char* const _file)
 	m_file.get(BOM);
 
 	//Set the mode back to the default mode
-	_setmode(_fileno(stdout), oldMode);
+	int ignored = _setmode(_fileno(stdout), oldMode);
 
 
 	m_lock.unlock();
@@ -288,7 +288,7 @@ GW::GRETURN FileIO::OpenTextWrite(const char* const _file)
 	m_file << L'\xFEFF'; //The imbue earlier will take this wide string and treat it as UTF8
 
 	//Set the mode back to default mode
-	_setmode(_fileno(stdout), oldMode);
+	int ignored = _setmode(_fileno(stdout), oldMode);
 
 	m_lock.unlock();
 #endif
@@ -397,7 +397,7 @@ GW::GRETURN FileIO::WriteLine(const char* const _inData)
 	m_file << writeOutString;
 
 	//Set the mode back to default mode
-	_setmode(_fileno(stdout), oldMode);
+	int ignored = _setmode(_fileno(stdout), oldMode);
 
 #elif defined(__APPLE__) || defined(__linux__)
 
@@ -437,7 +437,7 @@ GW::GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	getline(m_file, outString, *delimiter);
 
 	//Set mode back to default mode
-	_setmode(_fileno(stdout), oldMode);
+	int ignored = _setmode(_fileno(stdout), oldMode);
 #elif defined(__APPLE__) || defined(__linux__)
 
 	//Just read in data normally

@@ -6,7 +6,7 @@ File: GLog.h
 Purpose: A Gateware interface that handles logging in a thread safe manner
 Author: Justin W. Parks
 Contributors: N/A
-Last Modified: 10/30/2016
+Last Modified: 11/16/2016
 Copyright: 7thGate Software LLC.
 License: MIT
 */

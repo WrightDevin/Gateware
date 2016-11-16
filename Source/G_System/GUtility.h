@@ -41,10 +41,10 @@ namespace INTERNAL
 	//Used like so
 	//to utf16: stringConverter.from_bytes(const char*)  //Is overloaded to accept string as well
 	//to utf8: stringConverter.to_bytes(const wchar_t*) //Is overloaded to accept wstring as well
-	::std::wstring_convert < ::std::codecvt_utf8_utf16<wchar_t>> stringConverter;
+	static ::std::wstring_convert < ::std::codecvt_utf8_utf16<wchar_t>> stringConverter;
 
 	//GCC does not support strcpy_s. This is a safe strcpy function for use on Linux
-	unsigned int strlcpy(char* destination,  unsigned int strLen, const char* const source)
+	static unsigned int strlcpy(char* destination,  unsigned int strLen, const char* const source)
 	{
 	    return snprintf(destination, strLen, "%s", source);
 	}
