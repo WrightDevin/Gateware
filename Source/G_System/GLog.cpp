@@ -12,6 +12,7 @@
 #include <sstream> //Stringstreams
 #include <atomic> //Thread safety
 #include <iostream> //For cout
+#include <cstring>
 #include <condition_variable> //For conditional variables
 
 using namespace INTERNAL;
@@ -157,7 +158,7 @@ GW::GRETURN LogFile::Log(const char* const _log)
 #endif
 		//Get rid of new line added by asctime
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';
-		
+
 		//Create our log string
         logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
