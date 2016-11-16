@@ -32,7 +32,7 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 			//! This operation is called whenever a GBroadcaster a listener is registered to generates an event  
-			virtual GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData) = 0;
+			virtual GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _dataSize) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace
