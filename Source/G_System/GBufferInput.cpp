@@ -15,11 +15,6 @@
 
 #endif
 
-
-#define GETMASK(index, size) (((1 << (size)) - 1) << (index))
-#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
-#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
-
 using namespace GW;
 using namespace CORE;
 
@@ -27,95 +22,6 @@ struct LINUX_WINDOW {
 	void * Window;
 	void * Display;
 };
-
-class BufferedInput : public GBufferedInput {
-
-private:
-
-	/* GInput */
-
-	//! Total number of active refrences to this object. 
-	std::atomic_uint32_t n_refrenceCount;
-
-	//! A mutex for locking and unlocking.
-	std::mutex _Mutex;
-
-
-#ifdef _WIN32
-#elif __linux__
-	LINUX_WINDOW _linuxWindow;
-#elif __APPPLE__
-
-#endif
-public:
-
-	/* Input */
-
-	BufferedInput();
-	~BufferedInput();
-
-	//! Initialized the RAW_INPUT for windows alongside the Win Proc.
-	GRETURN InitializeWindows(void * _window);
-
-	GRETURN InitializeLinux(void * _window);
-	GRETURN InitializeMac(void * _window);
-
-	//! While there are still events read the events. And update the buffer.
-	GRETURN Update();
-
-	/* GInterface */
-
-	//! Return the total number of active refrences to this object 
-	GRETURN GetCount(unsigned int &_outCount);
-
-	//! Increase the total number of active refrences to this object 
-	//! End users should only call this operation if they are familiar with reference counting behavior 
-	GRETURN IncrementCount();
-
-	//! Decrease the total number of active refrences to this object 
-	//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid 
-	GRETURN DecrementCount();
-
-	//! Requests an interface that may or may not be supported by this object  
-	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
-
-
-	/* GBroadcasting */
-
-	//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional) 
-	//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered 
-	GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask);
-
-	//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one  
-	GRETURN DeregisterListener(GListener *_removeListener);
-
-};
-
-GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _window) {
-
-	if (_outPointer == nullptr) {
-		return INVALID_ARGUMENT;
-	}
-
-	BufferedInput * _mInput = new BufferedInput();
-
-	if (_mInput == nullptr) {
-		return FAILURE;
-	}
-
-#ifdef _WIN32
-	_mInput->InitializeWindows(_window);
-#elif __APPLE__
-	_mInput->InitializeMac(_window);
-#elif __linux__
-	_mInput->InitializeLinux(_window);
-#endif
-
-	(*_outPointer) = _mInput;
-
-	return SUCCESS;
-
-}
 
 static const unsigned int Keycodes[][2] = {
 	//Windows Scancodes		//Linux Other
@@ -211,9 +117,214 @@ static const unsigned int Keycodes[][2] = {
 	{ G_KEY_F12,			G_KEY_UNKNOWN }, //87
 	{ G_KEY_F12,			G_KEY_UNKNOWN }, //88
 
+};
 
+
+#define GETMASK(index, size) (((1 << (size)) - 1) << (index))
+#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
+#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
+
+
+namespace {
+
+
+#ifdef _WIN32
+	//Variables
+
+	//! Store the users implementation of the windows procedure.
+	LONG_PTR _userWinProc;
+
+	//! Map of Listeners to send event information to.
+	std::map<GListener *, unsigned long long> _listeners;
+
+	//Methods
+	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
+		switch (msg)
+		{
+
+		case WM_INPUT:
+		{
+			UINT dwSize;
+
+			//Get the size of RawInput
+			GetRawInputData((HRAWINPUT)lp, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+
+			LPBYTE lpb = new BYTE[dwSize];
+
+			if (GetRawInputData((HRAWINPUT)lp, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
+				//std::cout << "GetRawInputData does not return correct size.\n";
+			}
+
+			RAWINPUT* raw = (RAWINPUT*)lpb;
+
+			unsigned int _event = 0;
+			unsigned int _data = 0;
+
+			if (raw->header.dwType == RIM_TYPEKEYBOARD)
+			{
+
+
+				//Get G_KEY
+				_data = Keycodes[raw->data.keyboard.MakeCode][0];
+
+				//Set state released or pressed.
+				switch (raw->data.keyboard.Flags) {
+				case 0:
+					_event = KEYPRESSED;
+					break;
+				case 1:
+					_event = KEYRELEASED;
+					break;
+				}
+			}
+			else if (raw->header.dwType == RIM_TYPEMOUSE)
+			{
+
+				//Set Code
+				switch (raw->data.mouse.usButtonData) {
+				case 1:
+				case 2:
+					_data = G_BUTTON_LEFT;
+					break;
+				case 4:
+				case 8:
+					_data = G_BUTTON_RIGHT;
+					break;
+				case 16:
+				case 32:
+					_data = G_BUTTON_MIDDLE;
+					break;
+				}
+
+				switch (raw->data.mouse.usButtonFlags) {
+					//Mouse Pressed
+				case 1:
+				case 4:
+				case 32:
+					_event = BUTTONPRESSED;
+					break;
+					//Mouse Released
+				case 2:
+				case 8:
+				case 16:
+					_event = BUTTONRELEASED;
+					break;
+					//Scroll
+				case 1024:
+					_event = MOUSESCROLL;
+				}
+
+			}
+			std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+			for (; iter != _listeners.end(); ++iter) {
+				iter->first->OnEvent(GBufferedInputUUIID, _event, &_data);
+			}
+
+
+			delete[] lpb;
+		}
+		break;
+
+
+		default:
+			return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
+			break;
+		}
+		return 0;
+	}
+#endif
+
+}
+
+
+class BufferedInput : public GBufferedInput {
+
+private:
+
+	/* GInput */
+
+	//! Total number of active refrences to this object. 
+	std::atomic_uint32_t n_refrenceCount;
+
+	//! A mutex for locking and unlocking.
+	std::mutex _Mutex;
+
+
+#ifdef _WIN32
+#elif __linux__
+	LINUX_WINDOW _linuxWindow;
+#elif __APPPLE__
+
+#endif
+public:
+
+	/* Input */
+
+	BufferedInput();
+	~BufferedInput();
+
+	//! Initialized the RAW_INPUT for windows alongside the Win Proc.
+	GRETURN InitializeWindows(void * _window);
+
+	GRETURN InitializeLinux(void * _window);
+	GRETURN InitializeMac(void * _window);
+
+	//! While there are still events read the events. And update the buffer.
+	GRETURN Update();
+
+	/* GInterface */
+
+	//! Return the total number of active refrences to this object 
+	GRETURN GetCount(unsigned int &_outCount);
+
+	//! Increase the total number of active refrences to this object 
+	//! End users should only call this operation if they are familiar with reference counting behavior 
+	GRETURN IncrementCount();
+
+	//! Decrease the total number of active refrences to this object 
+	//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid 
+	GRETURN DecrementCount();
+
+	//! Requests an interface that may or may not be supported by this object  
+	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
+
+
+	/* GBroadcasting */
+
+	//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional) 
+	//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered 
+	GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask);
+
+	//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one  
+	GRETURN DeregisterListener(GListener *_removeListener);
 
 };
+
+GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _window) {
+
+	if (_outPointer == nullptr) {
+		return INVALID_ARGUMENT;
+	}
+
+	BufferedInput * _mInput = new BufferedInput();
+
+	if (_mInput == nullptr) {
+		return FAILURE;
+	}
+
+#ifdef _WIN32
+	_mInput->InitializeWindows(_window);
+#elif __APPLE__
+	_mInput->InitializeMac(_window);
+#elif __linux__
+	_mInput->InitializeLinux(_window);
+#endif
+
+	(*_outPointer) = _mInput;
+
+	return SUCCESS;
+
+}
 
 #pragma region BufferedInput
 
@@ -260,7 +371,7 @@ GRETURN BufferedInput::InitializeWindows(void * _window) {
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
 
 	//For all of the devices display there correspondant information.
-	for (unsigned int i = 0; i < nNoOfDevices; i++) {
+	for (int i = 0; i < nNoOfDevices; i++) {
 
 		UINT size = 256;
 		TCHAR tBuffer[256] = { 0 };
@@ -316,6 +427,8 @@ GRETURN BufferedInput::InitializeWindows(void * _window) {
 		//std::cout << "\n\n*******************\nRegistering Devices Failed.\n*******************\n";
 	}
 #endif
+
+	return SUCCESS;
 }
 
 GRETURN BufferedInput::InitializeLinux(void * data) {
@@ -324,10 +437,14 @@ GRETURN BufferedInput::InitializeLinux(void * data) {
 	memcpy(&_linuxWindow, data, 64);
 	XSelectInput(_linuxWindow.Display, _linuxWindow.Window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask);
 #endif
+
+	return SUCCESS;
+
 }
 
 GRETURN BufferedInput::InitializeMac(void * hWnd) {
 
+	return SUCCESS;
 }
 
 GRETURN BufferedInput::Update() {
@@ -371,6 +488,7 @@ GRETURN BufferedInput::Update() {
 #elif __APPPLE__
 
 #endif
+	return SUCCESS;
 
 }
 
@@ -483,112 +601,3 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 
 
 
-namespace {
-
-
-#ifdef _WIN32
-	//Variables
-
-	//! Store the users implementation of the windows procedure.
-	LONG_PTR _userWinProc;
-
-	//! Map of Listeners to send event information to.
-	std::map<GListener *, unsigned long long> _listeners;
-
-	//Methods
-	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
-		switch (msg)
-		{
-
-		case WM_INPUT:
-		{
-			UINT dwSize;
-
-			//Get the size of RawInput
-			GetRawInputData((HRAWINPUT)lp, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
-
-			LPBYTE lpb = new BYTE[dwSize];
-
-			if (GetRawInputData((HRAWINPUT)lp, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize) {
-				//std::cout << "GetRawInputData does not return correct size.\n";
-			}
-
-			RAWINPUT* raw = (RAWINPUT*)lpb;
-
-			unsigned int _event = 0;
-			unsigned int _data = 0;
-
-			if (raw->header.dwType == RIM_TYPEKEYBOARD)
-			{
-
-
-				//Get G_KEY
-				_data = Keycodes[raw->data.keyboard.MakeCode][0];
-				
-				//Set state released or pressed.
-				switch (raw->data.keyboard.Flags) {
-				case 0:
-					_event = KEYPRESSED;
-				break;
-				case 1:
-					_event = KEYRELEASED;
-					break;
-				}
-			}
-			else if (raw->header.dwType == RIM_TYPEMOUSE)
-			{
-
-				//Set Code
-				switch (raw->data.mouse.usButtonData) {
-				case 1:
-				case 2:
-					_data = G_BUTTON_LEFT;
-					break;
-				case 4:
-				case 8:
-					_data = G_BUTTON_RIGHT;
-					break;
-				case 16:
-				case 32:
-					_data = G_BUTTON_MIDDLE;
-					break;
-				}
-
-				switch (raw->data.mouse.usButtonFlags) {
-				//Mouse Pressed
-				case 1:
-				case 4:
-				case 32:
-					_event = BUTTONPRESSED;
-					break;
-				//Mouse Released
-				case 2:
-				case 8:
-				case 16:
-					_event = BUTTONRELEASED;
-					break;
-				//Scroll
-				case 1024:
-					_event = MOUSESCROLL;
-				}
-
-			}
-			std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
-			for (; iter != _listeners.end(); ++iter) {
-				iter->first->OnEvent(GBufferedInputUUIID, _event, &_data);
-			}
-
-
-			delete[] lpb;
-		}
-		break;
-
-
-		default:
-			return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
-			break;
-		}
-	}
-#endif
-
-}
