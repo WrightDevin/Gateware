@@ -1,5 +1,5 @@
-#ifndef _GINPUT
-#define _GINPUT
+#ifndef _GBUFFEREDINPUT_H
+#define _GBUFFEREDINPUT_H
 
 //Single Thread ( GInput )
 // Array of keys with states.
@@ -40,10 +40,11 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 
+			//virtual GRETURN Update() = 0;
 
 		};
 
-		GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _hWnd);
+		GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data);
 		}// end CORE namespace
 	};// end GW namespace
 #endif

@@ -27,3 +27,9 @@ AppWizard uses "TODO:" comments to indicate parts of the source code you
 should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
+
+
+
+#define GETMASK(index, size) (((1 << (size)) - 1) << (index))
+#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
+#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))

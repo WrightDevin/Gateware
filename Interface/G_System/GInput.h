@@ -1,5 +1,5 @@
-#ifndef _GINPUT
-#define _GINPUT
+#ifndef _GINPUT_H
+#define _GINPUT_H
 
 //Single Thread ( GInput )
 // Array of keys with states.
@@ -20,6 +20,11 @@ namespace GW
 	namespace CORE
 	{
 
+		enum KeyStates {
+			PRESSED,
+			RELEASED
+		};
+
 		//! Unique Identifier for this interface. {4CBA9D69-1B32-43DA-B7B2-A421C57818F0}
 		static const GUUIID GInputUUIID =
 		{
@@ -33,14 +38,14 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 
+			//virtual GRETURN Update() = 0;
 
-			virtual GRETURN GetKeyState(int _keyCode, int &_keyState) = 0;
-
-
+			virtual GRETURN GetKeyState(int _keyCode, bool &_outValue) = 0;
+			virtual GRETURN GetMousePosition(double &x, double &y) = 0;
 
 		};
 
-		GRETURN CreateGInput(GInput** _outFpointer, void * _hWnd);
+		GRETURN CreateGInput(GInput** _outFpointer, void * _data);
 		}// end CORE namespace
 	};// end GW namespace
 #endif

@@ -1,5 +1,5 @@
 #include "../../Interface/G_System/GBufferedInput.h"
-#include "../../Source/G_System/GBIGlobalNamespace.h"
+#include "GKeyDefines.h"
 #include <map>
 #include <mutex> 
 #include <atomic>
@@ -18,10 +18,13 @@
 using namespace GW;
 using namespace CORE;
 
+
+#ifdef __linux__
 struct LINUX_WINDOW {
-	void * Window;
-	void * Display;
+	Window _Window;
+	Display * _Display;
 };
+#endif
 
 static const unsigned int Keycodes[][2] = {
 	//Windows Scancodes		//Linux Other
@@ -118,12 +121,6 @@ static const unsigned int Keycodes[][2] = {
 	{ G_KEY_F12,			G_KEY_UNKNOWN }, //88
 
 };
-
-
-#define GETMASK(index, size) (((1 << (size)) - 1) << (index))
-#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
-#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
-
 
 namespace {
 
@@ -236,7 +233,6 @@ namespace {
 
 }
 
-
 class BufferedInput : public GBufferedInput {
 
 private:
@@ -264,13 +260,12 @@ public:
 	~BufferedInput();
 
 	//! Initialized the RAW_INPUT for windows alongside the Win Proc.
-	GRETURN InitializeWindows(void * _window);
-
-	GRETURN InitializeLinux(void * _window);
-	GRETURN InitializeMac(void * _window);
+	GRETURN InitializeWindows(void * _data);
+	GRETURN InitializeLinux(void * _data);
+	GRETURN InitializeMac(void * _data);
 
 	//! While there are still events read the events. And update the buffer.
-	GRETURN Update();
+	//GRETURN Update();
 
 	/* GInterface */
 
@@ -300,9 +295,9 @@ public:
 
 };
 
-GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _window) {
+GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
-	if (_outPointer == nullptr) {
+	if (_outPointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
@@ -313,11 +308,51 @@ GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _window) {
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(_window);
+	_mInput->InitializeWindows(_data);
 #elif __APPLE__
-	_mInput->InitializeMac(_window);
+	_mInput->InitializeMac(_data);
 #elif __linux__
-	_mInput->InitializeLinux(_window);
+	_mInput->InitializeLinux(_data);
+#endif
+
+#ifdef _WIN32
+	MSG msg;
+	while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
+#elif __linux__
+	XEvent e;
+	unsigned int _event = 0;
+	unsigned int code = 0;
+	unsigned short state = 0;
+	while (1) {
+		XNextEvent(_linuxWindow.Display, &e);
+		switch (e.type) {
+		case KeyPress:
+			code = e.xkey.keycode;
+			state = KeyPressed;
+			break;
+		case KeyRelease:
+			code = e.xkey.keycode;
+			state = KeyReleased;
+			break;
+		case ButtonPress:
+			code = e.xbutton.button;
+			state = KeyPressed;
+			break;
+		}
+		case ButtonRelease:
+			code = e.xbutton.button;
+			state = KeyReleased;
+			break;
+	}
+	std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
+	for (; iter != _listeners.end(); ++iter) {
+		iter->first->OnEvent(GBufferedInputUUIID, state, &_event);
+	}
+}
+
+	}
+#elif __APPPLE__
+
 #endif
 
 	(*_outPointer) = _mInput;
@@ -336,9 +371,9 @@ BufferedInput::~BufferedInput() {
 
 }
 
-GRETURN BufferedInput::InitializeWindows(void * _window) {
+GRETURN BufferedInput::InitializeWindows(void * _data) {
 #ifdef _WIN32
-	_userWinProc = SetWindowLongPtr((HWND)_window, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 		//The user has not setup a windows proc prior to this point.
@@ -415,13 +450,13 @@ GRETURN BufferedInput::InitializeWindows(void * _window) {
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
 	rID[0].dwFlags = RIDEV_NOLEGACY;
-	rID[0].hwndTarget = (HWND)_window;
+	rID[0].hwndTarget = (HWND)_data;
 
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
 	rID[1].dwFlags = RIDEV_NOLEGACY;
-	rID[1].hwndTarget = (HWND)_window;
+	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 		//std::cout << "\n\n*******************\nRegistering Devices Failed.\n*******************\n";
@@ -431,10 +466,12 @@ GRETURN BufferedInput::InitializeWindows(void * _window) {
 	return SUCCESS;
 }
 
-GRETURN BufferedInput::InitializeLinux(void * data) {
+GRETURN BufferedInput::InitializeLinux(void * _data) {
 
 #ifdef __linux__
-	memcpy(&_linuxWindow, data, 64);
+
+	(*_linuxWindow) = (LINUX_WINDOW*)_data;
+	//memcpy(&_linuxWindow, data, 64);
 	XSelectInput(_linuxWindow.Display, _linuxWindow.Window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask);
 #endif
 
@@ -442,55 +479,17 @@ GRETURN BufferedInput::InitializeLinux(void * data) {
 
 }
 
-GRETURN BufferedInput::InitializeMac(void * hWnd) {
+GRETURN BufferedInput::InitializeMac(void * _data) {
 
 	return SUCCESS;
 }
-
-GRETURN BufferedInput::Update() {
-
-#ifdef _WIN32
-	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
-#elif __linux__
-	XEvent e;
-	unsigned int _event = 0;
-	unsigned int code = 0;
-	unsigned short state = 0;
-	while (1) {
-		XNextEvent(_linuxWindow.Display, &e);
-		switch (e.type) {
-		case KeyPress:
-			code = e.xkey.keycode;
-			state = KeyPressed;
-			break;
-		case KeyRelease:
-			code = e.xkey.keycode;
-			state = KeyReleased;
-			break;
-		case ButtonPress:
-			code = e.xbutton.button;
-			state = KeyPressed;
-			break;
-		}
-		case ButtonRelease:
-			code = e.xbutton.button;
-			state = KeyReleased;
-			break;
-		}
-		std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
-		for (; iter != _listeners.end(); ++iter) {
-			iter->first->OnEvent(GBufferedInputUUIID, state, &_event);
-		}
-	}
-
-	}
-#elif __APPPLE__
-
-#endif
-	return SUCCESS;
-
-}
+//
+//GRETURN BufferedInput::Update() {
+//
+//
+//	return SUCCESS;
+//
+//}
 
 #pragma endregion
 
