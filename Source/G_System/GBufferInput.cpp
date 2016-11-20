@@ -295,7 +295,7 @@ public:
 
 };
 
-GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
+GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 	if (_outPointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
@@ -316,8 +316,8 @@ GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 #endif
 
 #ifdef _WIN32
-	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
+	//MSG msg;
+	//while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
 #elif __linux__
 	XEvent e;
 	unsigned int _event = 0;
