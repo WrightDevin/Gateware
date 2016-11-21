@@ -155,12 +155,10 @@ namespace {
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
 			int _event = -1;
-			unsigned int _data = 0;
+			int _data = -1;
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD)
 			{
-
-
 				//Get G_KEY
 				_data = Keycodes[raw->data.keyboard.MakeCode][0];
 
@@ -177,9 +175,8 @@ namespace {
 			else if (raw->header.dwType == RIM_TYPEMOUSE)
 			{
 
-				unsigned int buttonData = raw->data.mouse.ulButtons;
 				//Set Code
-				switch (buttonData) {
+				switch (raw->data.mouse.ulButtons) {
 				case 1:
 				case 2:
 					_data = G_BUTTON_LEFT;
@@ -194,10 +191,17 @@ namespace {
 					break;
 				}
 
-				unsigned int buttonFlags = raw->data.mouse.usButtonFlags;
+				switch (raw->data.mouse.usButtonData) {
+				case 120:
+					_data = G_MOUSE_SCROLL_UP;
+					break;
+				case 65416:
+					_data = G_MOUSE_SCROLL_DOWN;
+					break;
+				}
 
 
-				switch (buttonFlags) {
+				switch (raw->data.mouse.usButtonFlags) {
 					//Mouse Pressed
 				case 1:
 				case 4:
@@ -216,9 +220,11 @@ namespace {
 				}
 
 			}
-			std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
-			for (; iter != _listeners.end(); ++iter) {
-				iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)_data);
+			if (_data != -1 && _event != -1) {
+				std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+				for (; iter != _listeners.end(); ++iter) {
+					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)_data);
+				}
 			}
 
 
@@ -563,6 +569,11 @@ GRETURN BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outp
 #pragma region GBroadcasting
 
 GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long long _eventMask) {
+
+	if (_addListener == nullptr) {
+		return INVALID_ARGUMENT;
+	}
+
 	//Check if listner is already in the map of listeners. Return Redundent_Operation.
 	_Mutex.lock();
 
@@ -582,6 +593,9 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 }
 
 GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
+	if (_removeListener == nullptr) {
+		return INVALID_ARGUMENT;
+	}
 	//Check if listner exists.
 	_Mutex.lock();
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_removeListener);

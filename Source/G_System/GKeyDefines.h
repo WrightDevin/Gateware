@@ -101,6 +101,8 @@
 #define G_BUTTON_LEFT			0x64
 #define G_BUTTON_RIGHT			0x65
 #define G_BUTTON_MIDDLE			0x66
+#define G_MOUSE_SCROLL_UP		0x67
+#define G_MOUSE_SCROLL_DOWN		0x68
 
 
 #endif
