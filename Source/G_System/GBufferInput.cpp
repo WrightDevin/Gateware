@@ -154,7 +154,7 @@ namespace {
 
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
-			unsigned int _event = 0;
+			int _event = -1;
 			unsigned int _data = 0;
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD)
@@ -165,11 +165,11 @@ namespace {
 				_data = Keycodes[raw->data.keyboard.MakeCode][0];
 
 				//Set state released or pressed.
-				switch (raw->data.keyboard.Flags) {
-				case 0:
+				switch (raw->data.keyboard.Message) {
+				case 256:
 					_event = KEYPRESSED;
 					break;
-				case 1:
+				case 257:
 					_event = KEYRELEASED;
 					break;
 				}
@@ -177,8 +177,9 @@ namespace {
 			else if (raw->header.dwType == RIM_TYPEMOUSE)
 			{
 
+				unsigned int buttonData = raw->data.mouse.ulButtons;
 				//Set Code
-				switch (raw->data.mouse.usButtonData) {
+				switch (buttonData) {
 				case 1:
 				case 2:
 					_data = G_BUTTON_LEFT;
@@ -193,7 +194,10 @@ namespace {
 					break;
 				}
 
-				switch (raw->data.mouse.usButtonFlags) {
+				unsigned int buttonFlags = raw->data.mouse.usButtonFlags;
+
+
+				switch (buttonFlags) {
 					//Mouse Pressed
 				case 1:
 				case 4:
@@ -214,7 +218,7 @@ namespace {
 			}
 			std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
 			for (; iter != _listeners.end(); ++iter) {
-				iter->first->OnEvent(GBufferedInputUUIID, _event, &_data);
+				iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)_data);
 			}
 
 
@@ -295,7 +299,7 @@ public:
 
 };
 
-GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
+GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 	if (_outPointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
@@ -316,8 +320,8 @@ GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 #endif
 
 #ifdef _WIN32
-	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
+	//MSG msg;
+	//while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
 #elif __linux__
 	XEvent e;
 	unsigned int _event = 0;
