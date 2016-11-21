@@ -1,6 +1,6 @@
 
 #include "../../Interface/G_System/GInput.h"
-#include "GKeyDefines.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include <map>
 
 

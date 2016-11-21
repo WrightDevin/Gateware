@@ -1,5 +1,5 @@
 #include "../../Interface/G_System/GBufferedInput.h"
-#include "GKeyDefines.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include <map>
 #include <mutex> 
 #include <atomic>
@@ -157,6 +157,8 @@ namespace {
 			int _event = -1;
 			int _data = -1;
 
+			G_INPUT_DATA _dataStruct;
+
 			if (raw->header.dwType == RIM_TYPEKEYBOARD)
 			{
 				//Get G_KEY
@@ -220,10 +222,23 @@ namespace {
 				}
 
 			}
-			if (_data != -1 && _event != -1) {
+			_dataStruct._data = _data;
+
+			POINT p;
+			if (GetCursorPos(&p))
+			{
+				_dataStruct._screenX = p.x;
+				_dataStruct._screenY = p.y;
+			}
+			if (ScreenToClient(window, &p))
+			{
+				_dataStruct._x = p.x;
+				_dataStruct._y = p.y;
+			}
+			if (_dataStruct._data != -1 && _event != -1) {
 				std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
 				for (; iter != _listeners.end(); ++iter) {
-					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)_data);
+					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct);
 				}
 			}
 

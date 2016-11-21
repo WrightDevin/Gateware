@@ -11,6 +11,7 @@
 
 // GBroadcasting Inherits directly from GMultiThreaded 
 #include "../G_Core/GBroadcasting.h"
+#include "../G_System/GKeyDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
@@ -18,6 +19,15 @@ namespace GW
 	//! The core namespace to which all Gateware fundamental interfaces must belong
 	namespace CORE
 	{
+
+#pragma pack(push, 1)
+		struct G_INPUT_DATA
+		{
+			int _data;
+			int _x, _y;
+			int _screenX, _screenY;
+		};
+#pragma pack(pop)
 
 		enum GBInput_Events {
 			KEYPRESSED,

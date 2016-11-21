@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\G_System\GKeyDefines.h">
+    <ClInclude Include="..\..\Interface\G_System\GKeyDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
