@@ -238,7 +238,7 @@ namespace {
 			if (_dataStruct._data != -1 && _event != -1) {
 				std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
 				for (; iter != _listeners.end(); ++iter) {
-					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct);
+					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
 				}
 			}
 
