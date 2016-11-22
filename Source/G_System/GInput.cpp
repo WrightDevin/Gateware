@@ -199,9 +199,19 @@ namespace {
 				case 32:
 					n_Keys[_data] = 0;
 					break;
+				case 1024:
+					n_Keys[_data] = 1;
+					break;
 				}
 
 
+			}
+
+			if (_data != G_MOUSE_SCROLL_UP) {
+				n_Keys[G_MOUSE_SCROLL_UP] = 0;
+			}
+			if (_data != G_MOUSE_SCROLL_DOWN) {
+				n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
 			}
 
 			POINT p;

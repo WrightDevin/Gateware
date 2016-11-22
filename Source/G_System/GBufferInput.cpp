@@ -219,6 +219,7 @@ namespace {
 					//Scroll
 				case 1024:
 					_event = MOUSESCROLL;
+					break;
 				}
 
 			}
