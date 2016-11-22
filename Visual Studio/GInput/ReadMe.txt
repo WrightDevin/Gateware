@@ -1,19 +1,19 @@
 ========================================================================
-    STATIC LIBRARY : GInput[LIB] Project Overview
+    STATIC LIBRARY : GInput Project Overview
 ========================================================================
 
-AppWizard has created this GInput[LIB] library project for you.
+AppWizard has created this GInput library project for you.
 
 No source files were created as part of your project.
 
 
-GInput[LIB].vcxproj
+GInput.vcxproj
     This is the main project file for VC++ projects generated using an Application Wizard.
     It contains information about the version of Visual C++ that generated the file, and
     information about the platforms, configurations, and project features selected with the
     Application Wizard.
 
-GInput[LIB].vcxproj.filters
+GInput.vcxproj.filters
     This is the filters file for VC++ projects generated using an Application Wizard. 
     It contains information about the association between the files in your project 
     and the filters. This association is used in the IDE to show grouping of files with
@@ -27,9 +27,3 @@ AppWizard uses "TODO:" comments to indicate parts of the source code you
 should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
-
-
-
-#define GETMASK(index, size) (((1 << (size)) - 1) << (index))
-#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
-#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))

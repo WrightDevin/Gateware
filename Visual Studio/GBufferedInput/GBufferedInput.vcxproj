@@ -153,9 +153,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\G_System\GBufferInput.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Interface\G_System\GKeyDefines.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -114,6 +114,12 @@ namespace {
 	LONG_PTR _userWinProc;
 
 	unsigned int n_Keys[256];
+	float _mousePrevX = 0;
+	float _mousePrevY = 0;
+	float _mousePositionX = 0;
+	float _mousePositionY = 0;
+	float _mouseDeltaX = 0;
+	float _mouseDeltaY = 0;
 
 	//Methods
 	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
@@ -142,14 +148,21 @@ namespace {
 			{
 				//Get G_KEY
 				_data = Keycodes[raw->data.keyboard.MakeCode][0];
-				n_Keys[_data] = raw->data.keyboard.Flags;
+				//Set state released or pressed.
+				switch (raw->data.keyboard.Message) {
+				case 256:
+					n_Keys[_data] = 1;
+					break;
+				case 257:
+					n_Keys[_data] = 0;
+					break;
+				}
 
 			}
 			else if (raw->header.dwType == RIM_TYPEMOUSE)
 			{
 
-				//Set Code
-				switch (raw->data.mouse.usButtonData){
+				switch (raw->data.mouse.ulButtons) {
 				case 1:
 				case 2:
 					_data = G_BUTTON_LEFT;
@@ -161,6 +174,15 @@ namespace {
 				case 16:
 				case 32:
 					_data = G_BUTTON_MIDDLE;
+					break;
+				}
+
+				switch (raw->data.mouse.usButtonData) {
+				case 120:
+					_data = G_MOUSE_SCROLL_UP;
+					break;
+				case 65416:
+					_data = G_MOUSE_SCROLL_DOWN;
 					break;
 				}
 
@@ -181,6 +203,24 @@ namespace {
 
 
 			}
+
+			POINT p;
+			if (GetCursorPos(&p))
+			{
+
+			}
+			if (ScreenToClient(window, &p))
+			{
+				_mousePositionX = (float)p.x;
+				_mousePositionY = (float)p.y;
+			}
+			
+			_mouseDeltaX = _mousePrevX - _mousePositionX;
+			_mouseDeltaY = _mousePrevY - _mousePositionY;
+
+			_mousePrevX = _mousePositionX;
+			_mousePrevY = _mousePositionY;
+
 
 			delete[] lpb;
 		}
@@ -221,8 +261,11 @@ public:
 	/* GInput */
 
 	//GRETURN Update();
-	GRETURN GetKeyState(int _keyCode, bool &_outValue);
-	GRETURN GetMousePosition(double &x, double &y);
+	int GetKeyState(int _keyCode);
+	int GetButtonState(int _buttonCode);
+	GRETURN GetMouseDelta(float &x, float &y);
+	GRETURN GetMousePosition(float &x, float &y);
+	float GetMouseScroll();
 
 
 	/* GInterface */
@@ -242,7 +285,7 @@ public:
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
 };
 
-GRETURN CreateGInput(GInput** _outFpointer, void * _data) {
+GRETURN GW::CORE::CreateGInput(GInput** _outFpointer, void * _data) {
 
 	if (_outFpointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
@@ -263,8 +306,8 @@ GRETURN CreateGInput(GInput** _outFpointer, void * _data) {
 #endif
 
 #ifdef _WIN32
-	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
+	//MSG msg;
+	//while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
 #elif __linux__
 	XEvent e;
 	unsigned int _event = 0;
@@ -290,7 +333,7 @@ GRETURN CreateGInput(GInput** _outFpointer, void * _data) {
 			code = e.xbutton.button;
 			state = KeyReleased;
 			break;
-}
+	}
 	std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
 	for (; iter != _listeners.end(); ++iter) {
 		iter->first->OnEvent(GBufferedInputUUIID, state, &_event);
@@ -483,22 +526,40 @@ GRETURN Input::InitializeMac(void * _data) {
 	return SUCCESS;
 }
 
-GRETURN Input::GetKeyState(int _keyCode, bool &_outValue) {
-	_outValue = bool(n_Keys[_keyCode]);
+int Input::GetKeyState(int _keyCode) {
+
+	return n_Keys[_keyCode];
+
+}
+
+int Input::GetButtonState(int _buttonCode) {
+	return n_Keys[_buttonCode];
+}
+
+GRETURN Input::GetMouseDelta(float &x, float &y) {
+
+	x = _mouseDeltaX;
+	y = _mouseDeltaY;
+
 	return SUCCESS;
 }
 
-GRETURN Input::GetMousePosition(double &x, double &y) {
-	POINT p;
-	if (!GetCursorPos(&p))
-	{
-		return FAILURE;
-	}
-	if (!ScreenToClient(HWND(hWnd), &p))
-	{
-		return FAILURE;
-	}
+GRETURN Input::GetMousePosition(float &x, float &y) {
+
+	x = _mousePositionX;
+	y = _mousePositionY;
 
 	return SUCCESS;
+}
 
+float Input::GetMouseScroll() {
+
+	float direction = 0;
+	if (n_Keys[G_MOUSE_SCROLL_UP]) {
+		direction = -1;
+	}
+	else if(n_Keys[G_MOUSE_SCROLL_DOWN]){
+		direction = 1;
+	}
+	return direction;
 }

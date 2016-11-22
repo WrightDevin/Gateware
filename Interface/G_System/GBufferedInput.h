@@ -1,60 +1,63 @@
 #ifndef _GBUFFEREDINPUT_H
 #define _GBUFFEREDINPUT_H
 
-//Single Thread ( GInput )
-// Array of keys with states.
-// Derived from Single Tread
-
-
-//Multithreaded ( GBufferedInput )
-// Register Listener
-
-// GBroadcasting Inherits directly from GMultiThreaded 
 #include "../G_Core/GBroadcasting.h"
 #include "../G_System/GKeyDefines.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong
 	namespace CORE
 	{
 
 #pragma pack(push, 1)
+		//! G_INPUT_DATA will hold any information you may need about an Input Event.
+		/*!
+		*/
 		struct G_INPUT_DATA
 		{
-			int _data;
-			int _x, _y;
-			int _screenX, _screenY;
+			int _data;				/*<_data Data store the key/button information. */ 
+			int _x;					/*<_x Window Mouse position x when event is send. */
+			int _y;					/*<_y Window Mouse position y when event is send. */
+			int _screenX;			/*<_x Screen Mouse position x when event is send. */
+			int _screenY;			/*<_y Screen Mouse position y when event is send. */
 		};
 #pragma pack(pop)
 
+		//! GBInput_Events hold the possible events that can be sent from GBufferedInput.
+		/*!
+		*/
 		enum GBInput_Events {
-			KEYPRESSED,
-			KEYRELEASED,
-			BUTTONPRESSED,
-			BUTTONRELEASED,
-			MOUSESCROLL,
+			KEYPRESSED,				/*<KEYPRESSED Key pressed event. */ 
+			KEYRELEASED,			/*<KEYRELEASED Key released event. */ 
+			BUTTONPRESSED,			/*<BUTTONPRESSED Button pressed event. */ 
+			BUTTONRELEASED,			/*<BUTTONRELEASED Button released event. */ 
+			MOUSESCROLL,			/*<MOUSESCROLL Mouse scroll event. */ 
 		};
 
-		//! Unique Identifier for this interface. {4CBA9D69-1B32-43DA-B7B2-A421C57818F0}
 		static const GUUIID GBufferedInputUUIID =
 		{
-			0x4cba9d69, 0x1b32, 0x43da,{ 0xb7, 0xb2, 0xa4, 0x21, 0xc5, 0x78, 0x18, 0xf0 } 
+			0x4cba9d69, 0x1b32, 0x43da,{ 0xb7, 0xb2, 0xa4, 0x21, 0xc5, 0x78, 0x18, 0xf0 }
 		};
 
-		//! The GInput Interface is resposible for recieving and managing the keyboard and mouse.
-		class GBufferedInput : public GBroadcasting
-		{
-		
-			// All Gateware API interfaces contain no variables & are pure virtual
-		public:
+		//! A Multi threaded buffered input library.
+		/*!
+		* Register with a GBufferedInput to recieve mouse and keyboard events.
+		*/
+		class GBufferedInput : public GBroadcasting { };
 
-			//virtual GRETURN Update() = 0;
-
-		};
-
-		GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data);
-		}// end CORE namespace
-	};// end GW namespace
+		//! Creates a GBufferedInput Object.
+		/*!
+		*
+		* \param [out] _outBufferedInput
+		* \param [in] _data (Windows) The handle to the window (HWND).
+		* \param [in] _data (Linux) Not Yet Implemented.
+		* \param [in] _data (Max) Not Yet Implemented.
+		*
+		* \retval SUCCESS no problems found.
+		* \retval FAILURE could not make an BufferedInput Object.
+		* \retval INVALID_ARGUMENT _outInput and or _data is nullptr.
+		*/
+		GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
+	};
+};
 #endif
