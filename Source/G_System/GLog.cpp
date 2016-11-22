@@ -430,7 +430,7 @@ GW::GRETURN GW::CORE::GCreateLog(GFile* _file, GLog** _outLog)
 void LogFile::LogWorker()
 {
 	unique_lock<mutex> queueLock(m_queueLock);
-	while (m_threadRunning)
+	while (m_threadRunning || m_logQueue.size() != 0)
 	{
 		//Will lock the mutex when awaken and unlock it when put back to sleep
 		m_conditional.wait_for(queueLock, std::chrono::seconds(20));
@@ -438,17 +438,10 @@ void LogFile::LogWorker()
 		//If there is anything to write
 		if (m_logQueue.size() != 0)
 		{
-			//Swap the queue to another queue so we don't have to worry about thread safety
-			queue<string> writeQueue;
-			writeQueue.swap(m_logQueue);
-
-			queueLock.unlock();
-
-			//Write out the new queue
-			for (unsigned int i = 0; i < writeQueue.size(); ++i)
+			while(m_logQueue.size() != 0)
 			{
-				m_logFile->WriteLine(writeQueue.front().c_str());
-				writeQueue.pop();
+				m_logFile->WriteLine(m_logQueue.front().c_str());
+				m_logQueue.pop();
 
 				m_logFile->FlushFile();
 			}
