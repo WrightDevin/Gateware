@@ -239,16 +239,8 @@ GW::GRETURN FileIO::OpenTextRead(const char* const _file)
 	//Lock the read operation
 	m_lock.lock();
 
-	//Set the mode so we can properly use wchar_t to get the BOM
-	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-
-
 	wchar_t BOM;
 	m_file.get(BOM);
-
-	//Set the mode back to the default mode
-	int ignored = _setmode(_fileno(stdout), oldMode);
-
 
 	m_lock.unlock();
 #endif
@@ -282,13 +274,7 @@ GW::GRETURN FileIO::OpenTextWrite(const char* const _file)
 	//Lock the write opertion
 	m_lock.lock();
 
-	//Set the mode so we can write out a wide string
-	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-
 	m_file << L'\xFEFF'; //The imbue earlier will take this wide string and treat it as UTF8
-
-	//Set the mode back to default mode
-	int ignored = _setmode(_fileno(stdout), oldMode);
 
 	m_lock.unlock();
 #endif
@@ -390,14 +376,9 @@ GW::GRETURN FileIO::WriteLine(const char* const _inData)
 	m_lock.lock();
 
 #ifdef _WIN32
-	//Set the mode so we can use widestrings
-	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
 
 	//Write out the string
 	m_file << writeOutString;
-
-	//Set the mode back to default mode
-	int ignored = _setmode(_fileno(stdout), oldMode);
 
 #elif defined(__APPLE__) || defined(__linux__)
 
@@ -427,17 +408,12 @@ GW::GRETURN FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	m_lock.lock();
 
 #ifdef _WIN32
-	//Set the mode so we can use wstrings
-	int oldMode = _setmode(_fileno(stdout), _O_U16TEXT);
-
 	//Convert the UTF8 delimeter to UTF16
 	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
 
 	//Read the information
 	getline(m_file, outString, *delimiter);
 
-	//Set mode back to default mode
-	int ignored = _setmode(_fileno(stdout), oldMode);
 #elif defined(__APPLE__) || defined(__linux__)
 
 	//Just read in data normally
