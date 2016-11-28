@@ -2,6 +2,18 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:GInput/../GBufferedInput/GBufferedInput.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:GLog/../GInput/GInput.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:GFile/../GLog/GLog.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:GFile/GFile.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:../Interface">
    </FileRef>
 </Workspace>
