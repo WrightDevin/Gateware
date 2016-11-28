@@ -19,6 +19,8 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+[Rr]elease/
+[Dd]ebug/
 
 # Visual Studio 2015 cache/options directory
 .vs/
