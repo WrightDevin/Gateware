@@ -21,5 +21,8 @@
     <ClCompile Include="..\..\Source\G_System\GBufferInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\G_System\GBI_Static.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
