@@ -1,0 +1,150 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		8F2246411DEF5ED000826DFC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F2246361DEF5ECF00826DFC;
+			remoteInfo = GFile;
+		};
+		8F22466B1DEF62D900826DFC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F2246561DEF604600826DFC;
+			remoteInfo = "GFile x32";
+		};
+		8F22466E1DEF62D900826DFC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F2246671DEF62D800826DFC /* GLog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F2246601DEF62D800826DFC;
+			remoteInfo = GLog;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GFile.xcodeproj; path = GFile/GFile.xcodeproj; sourceTree = "<group>"; };
+		8F2246671DEF62D800826DFC /* GLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLog.xcodeproj; path = GLog/GLog.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		8F22463E1DEF5ECF00826DFC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F2246421DEF5ED000826DFC /* libGFile.a */,
+				8F22466C1DEF62D900826DFC /* GFile.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F2246681DEF62D800826DFC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F22466F1DEF62D900826DFC /* libGLog.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F299A5B1DEF463200CAE02E = {
+			isa = PBXGroup;
+			children = (
+				8F2246671DEF62D800826DFC /* GLog.xcodeproj */,
+				8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		8F299A5C1DEF463200CAE02E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0810;
+			};
+			buildConfigurationList = 8F299A5F1DEF463200CAE02E /* Build configuration list for PBXProject "Gateware Libraries" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8F299A5B1DEF463200CAE02E;
+			productRefGroup = 8F299A5B1DEF463200CAE02E;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8F22463E1DEF5ECF00826DFC /* Products */;
+					ProjectRef = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F2246681DEF62D800826DFC /* Products */;
+					ProjectRef = 8F2246671DEF62D800826DFC /* GLog.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		8F2246421DEF5ED000826DFC /* libGFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libGFile.a;
+			remoteRef = 8F2246411DEF5ED000826DFC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F22466C1DEF62D900826DFC /* GFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GFile.a;
+			remoteRef = 8F22466B1DEF62D900826DFC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F22466F1DEF62D900826DFC /* libGLog.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libGLog.a;
+			remoteRef = 8F22466E1DEF62D900826DFC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin XCBuildConfiguration section */
+		8F299A601DEF463200CAE02E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		8F299A611DEF463200CAE02E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8F299A5F1DEF463200CAE02E /* Build configuration list for PBXProject "Gateware Libraries" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F299A601DEF463200CAE02E /* Debug */,
+				8F299A611DEF463200CAE02E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8F299A5C1DEF463200CAE02E /* Project object */;
+}

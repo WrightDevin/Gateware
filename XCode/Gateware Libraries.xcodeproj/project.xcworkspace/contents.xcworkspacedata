@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:GFile.xcodeproj">
+      location = "self:Gateware Libraries.xcodeproj">
    </FileRef>
 </Workspace>
