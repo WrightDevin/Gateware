@@ -34,6 +34,7 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Unit filename="../../Source/G_System/GInput.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

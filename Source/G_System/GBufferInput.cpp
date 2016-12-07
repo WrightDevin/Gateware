@@ -1,24 +1,22 @@
-#include "../../Source/G_System/GBI_Static.cpp"
-#include <mutex> 
+#include "../../Source/G_System/GBI_Callback.cpp"
+#include <mutex>
 #include <atomic>
 #include <queue>
 #include <thread>
-
+#include <iostream>
+#include <cstring>
 
 class BufferedInput : public GBufferedInput {
 
 private:
 
-
-	std::atomic_uint32_t n_refrenceCount;
+	std::atomic<unsigned int> n_refrenceCount;
 
 	std::atomic_bool _threadOpen;
 
 	std::thread * _inputThread;
 
 	std::mutex _Mutex;
-
-
 
 #ifdef _WIN32
 #elif __linux__
@@ -30,7 +28,7 @@ private:
 public:
 
 	BufferedInput();
-	~BufferedInput();
+	virtual ~BufferedInput();
 
 	void InputThread();
 
@@ -142,6 +140,7 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 }
 
 GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
+
 	if (_removeListener == nullptr) {
 		return INVALID_ARGUMENT;
 	}
@@ -157,7 +156,6 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 		return FAILURE;
 	}
 
-
 	return SUCCESS;
 }
 
@@ -165,6 +163,7 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 
 
 GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
+
 
 	if (_outPointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
@@ -191,7 +190,10 @@ GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _dat
 }
 
 GRETURN BufferedInput::InitializeWindows(void * _data) {
+
 #ifdef _WIN32
+
+	_keyMask = 0;
 	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
@@ -246,7 +248,6 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 		//Display the device information.
 
 		//Check if its a mouse.
-		//std::cout << std::endl << "Device Name: " << tBuffer << std::endl;
 		if (rdi.dwType == RIM_TYPEMOUSE) {
 
 		}
@@ -278,9 +279,25 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
-		//std::cout << "\n\n*******************\nRegistering Devices Failed.\n*******************\n";
+
+	}
+		//Capslock
+	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+	}
+
+	//Numlock
+	if ((GetKeyState(VK_NUMLOCK) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+	}
+
+	//ScrollLock
+	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_SCROLL_LOCK);
 	}
 #endif
+
+
 
 	return SUCCESS;
 }
@@ -289,14 +306,18 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 
 #ifdef __linux__
 
-	(*_linuxWindow) = (LINUX_WINDOW*)_data;
-	//memcpy(&_linuxWindow, data, 64);
-	XSelectInput(_linuxWindow.Display, _linuxWindow.Window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask);
+	//(*_linuxWindow) = (LINUX_WINDOW*)_data;
+    memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
+    Display * _display;
+    _display = (Display *)(_linuxWindow._Display);
+    Window _window;
+    memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
+    _threadOpen = true;
 	_inputThread = new std::thread(&BufferedInput::InputThread, this);
 
-	_threadOpen = true;
 
 	return SUCCESS;
 
@@ -311,37 +332,87 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
 
 void BufferedInput::InputThread()
 {
-	unsigned int _event = 0;
-	unsigned int _code = 0;
-	unsigned short _state = 0;
+    int _event = -1;
+    int _code = -1;
+    G_INPUT_DATA _dataStruct;
 	while (_threadOpen)
 	{
 #ifdef __linux__
-		XEvent e;
+        XEvent e;
 
-		XPeekEvent(_linuxWindow.Display, &e);
+        Display * _display = (Display*)(_linuxWindow._Display);
+
+		XNextEvent(_display, &e);
 		switch (e.type) {
 		case KeyPress:
-			_code = e.xkey.keycode;
-			_state = KEYPRESSED;
+			_code = Keycodes[e.xkey.keycode][1];
+			_event = KEYPRESSED;
+			_dataStruct._keyMask = e.xkey.state;
+            _dataStruct._x = e.xkey.x;
+            _dataStruct._y = e.xkey.y;
+            _dataStruct._screenX = e.xkey.x_root;
+            _dataStruct._screenY = e.xkey.y_root;
+
 			break;
 		case KeyRelease:
-			_code = e.xkey.keycode;
-			_state = KEYRELEASED;
+			_code = Keycodes[e.xkey.keycode][1];
+			_event = KEYRELEASED;
+			_dataStruct._keyMask = e.xkey.state;
+            _dataStruct._x = e.xkey.x;
+            _dataStruct._y = e.xkey.y;
+            _dataStruct._screenX = e.xkey.x_root;
 			break;
 		case ButtonPress:
 			_code = e.xbutton.button;
-			_state = KEYPRESSED;
+			_event = BUTTONPRESSED;
+            _dataStruct._keyMask = e.xkey.state;
+            _dataStruct._x = e.xkey.x;
+            _dataStruct._y = e.xkey.y;
+            _dataStruct._screenX = e.xkey.x_root;
+            _dataStruct._screenY = e.xkey.y_root;
 			break;
 		case ButtonRelease:
 			_code = e.xbutton.button;
-			_state = KEYRELEASED;
+			_event = BUTTONRELEASED;
+			_dataStruct._keyMask = e.xkey.state;
+            _dataStruct._x = e.xkey.x;
+            _dataStruct._y = e.xkey.y;
+            _dataStruct._screenX = e.xkey.x_root;
+            _dataStruct._screenY = e.xkey.y_root;
 			break;
 		}
 
-		std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
-		for (; iter != _listeners.end(); ++iter) {
-			iter->first->OnEvent(GBufferedInputUUIID, state, &_event);
+		if (_event == BUTTONPRESSED || _event == BUTTONRELEASED) {
+			switch (_code) {
+			case 1:
+				_code = G_BUTTON_LEFT;
+				break;
+			case 3:
+				_code = G_BUTTON_RIGHT;
+				break;
+			case 2:
+				_code = G_BUTTON_MIDDLE;
+				break;
+            case 4:
+                _code = G_MOUSE_SCROLL_UP;
+                break;
+            case 5:
+                _code = G_MOUSE_SCROLL_DOWN;
+                break;
+            default:
+                _code = -1;
+                break;
+			}
+		}
+
+        _dataStruct._data = _code;
+
+
+        if(_code != -1 && _event != -1){
+            std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+            for (; iter != _listeners.end(); ++iter) {
+                iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+            }
 		}
 #endif
 	}
