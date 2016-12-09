@@ -73,6 +73,12 @@ namespace GW
 			*/
 			virtual float GetMouseScroll() = 0;
 
+			//! Get the key mask.
+			/*!
+			* \retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
+			*/
+			virtual unsigned int GetKeyMask() = 0;
+
 
 		};
 

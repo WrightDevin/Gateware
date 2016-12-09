@@ -115,4 +115,6 @@
 #define G_MASK_SCROLL_LOCK		0x3
 #define G_MASK_NUM_LOCK			0x4
 
+//#define G_CHECK_MASK(var,mask) ((var) & (1<<(mask)))
+
 #endif

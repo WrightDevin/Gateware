@@ -305,8 +305,6 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 GRETURN BufferedInput::InitializeLinux(void * _data) {
 
 #ifdef __linux__
-
-	//(*_linuxWindow) = (LINUX_WINDOW*)_data;
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display * _display;
     _display = (Display *)(_linuxWindow._Display);

@@ -1,4 +1,6 @@
 #include "../../Source/G_System/GI_Callback.cpp"
+#include <mutex>
+#include <atomic>
 
 
 class Input : public GInput {
@@ -11,12 +13,18 @@ private:
 	unsigned int n_refrenceCount;
 	void * hWnd;
 
+	std::atomic_bool _threadOpen;
+
+	std::thread * _inputThread;
+
 public:
 
 	/* Input */
 
 	Input();
 	~Input();
+
+	void InputThread();
 
 	GRETURN InitializeWindows(void * _data);
 	GRETURN InitializeLinux(void * _data);
@@ -30,6 +38,7 @@ public:
 	GRETURN GetMouseDelta(float &x, float &y);
 	GRETURN GetMousePosition(float &x, float &y);
 	float GetMouseScroll();
+	unsigned int GetKeyMask();
 
 
 	/* GInterface */
@@ -69,45 +78,6 @@ GRETURN GW::CORE::CreateGInput(GInput** _outFpointer, void * _data) {
 	_mInput->InitializeLinux(_data);
 #endif
 
-#ifdef _WIN32
-	//MSG msg;
-	//while (GetMessage(&msg, 0, 0, 0)) DispatchMessage(&msg);
-#elif __linux__
-	XEvent e;
-	unsigned int _event = 0;
-	unsigned int code = 0;
-	unsigned short state = 0;
-	while (1) {
-		XNextEvent(_linuxWindow.Display, &e);
-		switch (e.type) {
-		case KeyPress:
-			code = e.xkey.keycode;
-			state = KeyPressed;
-			break;
-		case KeyRelease:
-			code = e.xkey.keycode;
-			state = KeyReleased;
-			break;
-		case ButtonPress:
-			code = e.xbutton.button;
-			state = KeyPressed;
-			break;
-		}
-		case ButtonRelease:
-			code = e.xbutton.button;
-			state = KeyReleased;
-			break;
-	}
-	std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin;
-	for (; iter != _listeners.end(); ++iter) {
-		iter->first->OnEvent(GBufferedInputUUIID, state, &_event);
-	}
-}
-
-	}
-#elif __APPPLE__
-
-#endif
 
 	//Todo call my intiialize
 	(*_outFpointer) = _mInput;
@@ -182,7 +152,7 @@ GRETURN Input::InitializeWindows(void * _data) {
 	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
-		//The user has not setup a windows proc prior to this point.
+
 	}
 
 	//Getting Raw Input Devices.
@@ -265,7 +235,21 @@ GRETURN Input::InitializeWindows(void * _data) {
 	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
-		//std::cout << "\n\n*******************\nRegistering Devices Failed.\n*******************\n";
+	}
+
+	//Capslock
+	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+	}
+
+	//Numlock
+	if ((GetKeyState(VK_NUMLOCK) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+	}
+
+	//ScrollLock
+	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
+		TURNON_BIT(_keyMask, G_MASK_SCROLL_LOCK);
 	}
 #endif
 
@@ -275,11 +259,16 @@ GRETURN Input::InitializeWindows(void * _data) {
 GRETURN Input::InitializeLinux(void * _data) {
 
 #ifdef __linux__
-
-	(*_linuxWindow) = (LINUX_WINDOW*)_data;
-	//memcpy(&_linuxWindow, data, 64);
-	XSelectInput(_linuxWindow.Display, _linuxWindow.Window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask);
+	memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
+	Display * _display;
+	_display = (Display *)(_linuxWindow._Display);
+	Window _window;
+	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
+
+	_threadOpen = true;
+	_inputThread = new std::thread(&Input::InputThread, this);
 
 	return SUCCESS;
 
@@ -326,4 +315,110 @@ float Input::GetMouseScroll() {
 		direction = 1;
 	}
 	return direction;
+}
+
+
+unsigned int Input::GetKeyMask() {
+	return _keyMask;
+}
+
+void Input::InputThread()
+{
+	int _event = -1;
+	int _code = -1;
+	while (_threadOpen)
+	{
+#ifdef __linux__
+		XEvent e;
+
+		Display * _display = (Display*)(_linuxWindow._Display);
+
+		XNextEvent(_display, &e);
+		switch (e.type) {
+		case KeyPress:
+			_code = Keycodes[e.xkey.keycode][1];
+			n_Keys[_data] = 1;
+			_event = KEYPRESSED;
+			_keyMask = e.xkey.state;
+			_mousePositionX = e.xkey.x;
+			_mousePositionY = e.xkey.y;
+			_mouseDeltaX = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.x_root;
+			break;
+		case KeyRelease:
+			_code = Keycodes[e.xkey.keycode][1];
+			n_Keys[_data] = 0;
+			_event = KEYRELEASED;
+			_keyMask = e.xkey.state;
+			_mousePositionX = e.xkey.x;
+			_mousePositionY = e.xkey.y;
+			_mouseDeltaX = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.x_root;
+			break;
+		case ButtonPress:
+			_code = e.xbutton.button;
+			_event = BUTTONPRESSED;
+			_keyMask = e.xkey.state;
+			_mousePositionX = e.xkey.x;
+			_mousePositionY = e.xkey.y;
+			_mouseDeltaX = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.x_root;
+			break;
+		case ButtonRelease:
+			_code = e.xbutton.button;
+			_event = BUTTONRELEASED;
+			_keyMask = e.xkey.state;
+			_mousePositionX = e.xkey.x;
+			_mousePositionY = e.xkey.y;
+			_mouseDeltaX = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.x_root;
+			break;
+		}
+
+		if (_event == BUTTONPRESSED || _event == BUTTONRELEASED) {
+
+			switch (_code) {
+			case 1:
+				_code = G_BUTTON_LEFT;
+				break;
+			case 3:
+				_code = G_BUTTON_RIGHT;
+				break;
+			case 2:
+				_code = G_BUTTON_MIDDLE;
+				break;
+			case 4:
+				_code = G_MOUSE_SCROLL_UP;
+				break;
+			case 5:
+				_code = G_MOUSE_SCROLL_DOWN;
+				break;
+			default:
+				_code = -1;
+				break;
+			}
+			if (_event == BUTTONPRESSED) {
+				n_Keys[_code] = 1;
+			}
+			else if (_event == BUTTONRELEASED) {
+				n_Keys[_code] = 0;
+			}
+
+		}
+
+		if (_code != G_MOUSE_SCROLL_UP) {
+			n_Keys[G_MOUSE_SCROLL_UP] = 0;
+		}
+		if (_code != G_MOUSE_SCROLL_DOWN) {
+			n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
+		}
+
+		_mouseDeltaX = _mousePrevX - _mousePositionX;
+		_mouseDeltaY = _mousePrevY - _mousePositionY;
+
+		_mousePrevX = _mousePositionX;
+		_mousePrevY = _mousePositionY;
+
+#endif
+	}
 }

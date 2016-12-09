@@ -7,19 +7,21 @@ using namespace CORE;
 namespace {
 
 
+unsigned int n_Keys[256];
+float _mousePrevX = 0;
+float _mousePrevY = 0;
+float _mousePositionX = 0;
+float _mousePositionY = 0;
+float _mouseDeltaX = 0;
+float _mouseDeltaY = 0;
+unsigned int _keyMask;
+
+
 #ifdef _WIN32
 	//Variables
 
 	//! Store the users implementation of the windows procedure.
 	LONG_PTR _userWinProc;
-
-	unsigned int n_Keys[256];
-	float _mousePrevX = 0;
-	float _mousePrevY = 0;
-	float _mousePositionX = 0;
-	float _mousePositionY = 0;
-	float _mouseDeltaX = 0;
-	float _mouseDeltaY = 0;
 
 	//Methods
 	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
@@ -52,9 +54,36 @@ namespace {
 				switch (raw->data.keyboard.Message) {
 				case 256:
 					n_Keys[_data] = 1;
+					switch (_data) {
+					case G_KEY_RIGHTSHIFT:
+					case G_KEY_LEFTSHIFT:
+						TURNON_BIT(_keyMask, G_MASK_SHIFT);
+						break;
+					case G_KEY_CONTROL:
+						TURNON_BIT(_keyMask, G_MASK_CONTROL);
+						break;
+					case G_KEY_CAPSLOCK:
+						TOGGLE_BIT(_keyMask, G_MASK_CAPS_LOCK);
+						break;
+					case G_KEY_NUMLOCK:
+						TOGGLE_BIT(_keyMask, G_MASK_NUM_LOCK);
+						break;
+					case G_KEY_SCROLL_LOCK:
+						TOGGLE_BIT(_keyMask, G_MASK_SCROLL_LOCK);
+						break;
+					}
 					break;
 				case 257:
 					n_Keys[_data] = 0;
+					switch (_data) {
+					case G_KEY_RIGHTSHIFT:
+					case G_KEY_LEFTSHIFT:
+						TURNOFF_BIT(_keyMask, G_MASK_SHIFT);
+						break;
+					case G_KEY_CONTROL:
+						TURNOFF_BIT(_keyMask, G_MASK_CONTROL);
+						break;
+					}
 					break;
 				}
 
@@ -145,4 +174,14 @@ namespace {
 	}
 #endif
 
+#ifdef __linux__
+
+	bool LinuxPredicate(Display *display, XEvent *e, XPointer arg) {
+
+	}
+
+
+#endif
+
 }
+
