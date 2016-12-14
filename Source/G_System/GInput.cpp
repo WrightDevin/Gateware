@@ -284,6 +284,15 @@ GRETURN Input::InitializeLinux(void * _data) {
 
 GRETURN Input::InitializeMac(void * _data) {
 
+#ifdef __APPLE__
+
+	NSResponder * windowResponder = [NSResponder alloc];
+	windowResponder = (NSResponder *)_data;
+
+	windowResponder.nextResponder(responder);
+
+#endif
+
 	return SUCCESS;
 }
 
