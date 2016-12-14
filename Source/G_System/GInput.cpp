@@ -1,7 +1,8 @@
 #include "../../Source/G_System/GI_Callback.cpp"
 #include <mutex>
 #include <atomic>
-
+#include <thread>
+#include <cstring>
 
 class Input : public GInput {
 
@@ -17,12 +18,19 @@ private:
 
 	std::thread * _inputThread;
 
+#ifdef _WIN32
+#elif __linux__
+	LINUX_WINDOW _linuxWindow;
+#elif __APPPLE__
+
+#endif
+
 public:
 
 	/* Input */
 
 	Input();
-	~Input();
+	virtual ~Input();
 
 	void InputThread();
 
@@ -43,18 +51,18 @@ public:
 
 	/* GInterface */
 
-	//! Return the total number of active refrences to this object 
+	//! Return the total number of active refrences to this object
 	GRETURN GetCount(unsigned int &_outCount);
 
-	//! Increase the total number of active refrences to this object 
-	//! End users should only call this operation if they are familiar with reference counting behavior 
+	//! Increase the total number of active refrences to this object
+	//! End users should only call this operation if they are familiar with reference counting behavior
 	GRETURN IncrementCount();
 
-	//! Decrease the total number of active refrences to this object 
-	//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid 
+	//! Decrease the total number of active refrences to this object
+	//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid
 	GRETURN DecrementCount();
 
-	//! Requests an interface that may or may not be supported by this object  
+	//! Requests an interface that may or may not be supported by this object
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
 };
 
@@ -324,7 +332,6 @@ unsigned int Input::GetKeyMask() {
 
 void Input::InputThread()
 {
-	int _event = -1;
 	int _code = -1;
 	while (_threadOpen)
 	{
@@ -337,8 +344,8 @@ void Input::InputThread()
 		switch (e.type) {
 		case KeyPress:
 			_code = Keycodes[e.xkey.keycode][1];
-			n_Keys[_data] = 1;
-			_event = KEYPRESSED;
+			n_Keys[_code] = 1;
+			//_event = KEYPRESSED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
@@ -347,8 +354,8 @@ void Input::InputThread()
 			break;
 		case KeyRelease:
 			_code = Keycodes[e.xkey.keycode][1];
-			n_Keys[_data] = 0;
-			_event = KEYRELEASED;
+			n_Keys[_code] = 0;
+			//_event = KEYRELEASED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
@@ -357,25 +364,28 @@ void Input::InputThread()
 			break;
 		case ButtonPress:
 			_code = e.xbutton.button;
-			_event = BUTTONPRESSED;
+			//_event = BUTTONPRESSED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.x_root;
+			n_Keys[_code] = 1;
 			break;
 		case ButtonRelease:
 			_code = e.xbutton.button;
-			_event = BUTTONRELEASED;
+			//_event = BUTTONRELEASED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.x_root;
+			n_Keys[_code] = 0;
+
 			break;
 		}
 
-		if (_event == BUTTONPRESSED || _event == BUTTONRELEASED) {
+		if (e.type == ButtonPress || e.type == ButtonRelease) {
 
 			switch (_code) {
 			case 1:
@@ -396,12 +406,6 @@ void Input::InputThread()
 			default:
 				_code = -1;
 				break;
-			}
-			if (_event == BUTTONPRESSED) {
-				n_Keys[_code] = 1;
-			}
-			else if (_event == BUTTONRELEASED) {
-				n_Keys[_code] = 0;
 			}
 
 		}

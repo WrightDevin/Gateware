@@ -174,14 +174,5 @@ unsigned int _keyMask;
 	}
 #endif
 
-#ifdef __linux__
-
-	bool LinuxPredicate(Display *display, XEvent *e, XPointer arg) {
-
-	}
-
-
-#endif
-
 }
 
