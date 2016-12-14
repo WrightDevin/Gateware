@@ -9,19 +9,6 @@ namespace GW
 	namespace CORE
 	{
 
-#pragma pack(push, 1)
-
-
-		//! LINUX_WINDOW will hold any information you may need about an Input Event.
-		/*!
-		*/
-		struct LINUX_WINDOW {
-			void * _Window;			/*<_Window void pointer storing the window handle. */
-			void * _Display;		/*<_data Data void pointer storing the display handle. */
-		};
-
-#pragma pack(pop)
-
 		static const GUUIID GInputUUIID =
 		{
 			0x4cba9d69, 0x1b32, 0x43da,{ 0xb7, 0xb2, 0xa4, 0x21, 0xc5, 0x78, 0x18, 0xf0 }
