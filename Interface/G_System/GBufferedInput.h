@@ -15,12 +15,20 @@ namespace GW
 		*/
 		struct G_INPUT_DATA
 		{
-			int _data;				/*<_data Data store the key/button information. */
+			int _data;				/*<_data Data store the key/button information. */ 
 			int _x;					/*<_x Window Mouse position x when event is send. */
 			int _y;					/*<_y Window Mouse position y when event is send. */
 			int _screenX;			/*<_x Screen Mouse position x when event is send. */
 			int _screenY;			/*<_y Screen Mouse position y when event is send. */
 			unsigned int _keyMask;	/*<_keyMask Bit flags for (CapsLock, NumLock, ScrollLoock, Shift, and Control). */
+		};
+
+		//! LINUX_WINDOW will hold any information you may need about an Input Event.
+		/*!
+		*/
+		struct LINUX_WINDOW {
+			void * _Window;			/*<_Window void pointer storing the window handle. */ 
+			void * _Display;		/*<_data Data void pointer storing the display handle. */ 
 		};
 
 #pragma pack(pop)
@@ -29,11 +37,11 @@ namespace GW
 		/*!
 		*/
 		enum GBInput_Events {
-			KEYPRESSED,				/*<KEYPRESSED Key pressed event. */
-			KEYRELEASED,			/*<KEYRELEASED Key released event. */
-			BUTTONPRESSED,			/*<BUTTONPRESSED Button pressed event. */
-			BUTTONRELEASED,			/*<BUTTONRELEASED Button released event. */
-			MOUSESCROLL,			/*<MOUSESCROLL Mouse scroll event. */
+			KEYPRESSED,				/*<KEYPRESSED Key pressed event. */ 
+			KEYRELEASED,			/*<KEYRELEASED Key released event. */ 
+			BUTTONPRESSED,			/*<BUTTONPRESSED Button pressed event. */ 
+			BUTTONRELEASED,			/*<BUTTONRELEASED Button released event. */ 
+			MOUSESCROLL,			/*<MOUSESCROLL Mouse scroll event. */ 
 		};
 
 		static const GUUIID GBufferedInputUUIID =
