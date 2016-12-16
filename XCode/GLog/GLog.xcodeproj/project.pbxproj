@@ -7,16 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		35035CEB1DCBB2AA00CF3387 /* GFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 35035CEA1DCBB2AA00CF3387 /* GFile.cpp */; };
+		8F2246791DEF646900826DFC /* GLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F2246781DEF646900826DFC /* GLog.cpp */; };
+		8F2246821DEF69EB00826DFC /* GLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F2246781DEF646900826DFC /* GLog.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		35035CD61DCBB27700CF3387 /* libGFile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGFile.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		35035CEA1DCBB2AA00CF3387 /* GFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GFile.cpp; path = ../../../../Source/G_System/GFile.cpp; sourceTree = "<group>"; };
+		8F2246601DEF62D800826DFC /* GLog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = GLog.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F2246781DEF646900826DFC /* GLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLog.cpp; path = ../../Source/G_System/GLog.cpp; sourceTree = "<group>"; };
+		8F22467E1DEF673000826DFC /* GLog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = GLog.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		35035CD31DCBB27700CF3387 /* Frameworks */ = {
+		8F22465D1DEF62D800826DFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F22467B1DEF673000826DFC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -26,34 +35,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		35035CCD1DCBB27700CF3387 = {
+		8F2246571DEF62D700826DFC = {
 			isa = PBXGroup;
 			children = (
-				35035CD81DCBB27700CF3387 /* GFile */,
-				35035CD71DCBB27700CF3387 /* Products */,
+				8F2246781DEF646900826DFC /* GLog.cpp */,
+				8F2246611DEF62D800826DFC /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		35035CD71DCBB27700CF3387 /* Products */ = {
+		8F2246611DEF62D800826DFC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				35035CD61DCBB27700CF3387 /* libGFile.a */,
+				8F2246601DEF62D800826DFC /* GLog.a */,
+				8F22467E1DEF673000826DFC /* GLog.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		35035CD81DCBB27700CF3387 /* GFile */ = {
-			isa = PBXGroup;
-			children = (
-				35035CEA1DCBB2AA00CF3387 /* GFile.cpp */,
-			);
-			path = GFile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		35035CD41DCBB27700CF3387 /* Headers */ = {
+		8F22465E1DEF62D800826DFC /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F22467C1DEF673000826DFC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -63,68 +72,98 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		35035CD51DCBB27700CF3387 /* GFile */ = {
+		8F22465F1DEF62D800826DFC /* GLog */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 35035CE11DCBB27700CF3387 /* Build configuration list for PBXNativeTarget "GFile" */;
+			buildConfigurationList = 8F2246641DEF62D800826DFC /* Build configuration list for PBXNativeTarget "GLog" */;
 			buildPhases = (
-				35035CD21DCBB27700CF3387 /* Sources */,
-				35035CD31DCBB27700CF3387 /* Frameworks */,
-				35035CD41DCBB27700CF3387 /* Headers */,
+				8F22465C1DEF62D800826DFC /* Sources */,
+				8F22465D1DEF62D800826DFC /* Frameworks */,
+				8F22465E1DEF62D800826DFC /* Headers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = GFile;
-			productName = GFile;
-			productReference = 35035CD61DCBB27700CF3387 /* libGFile.a */;
+			name = GLog;
+			productName = GLog;
+			productReference = 8F2246601DEF62D800826DFC /* GLog.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		8F22467D1DEF673000826DFC /* GLog x32 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F22467F1DEF673000826DFC /* Build configuration list for PBXNativeTarget "GLog x32" */;
+			buildPhases = (
+				8F22467A1DEF673000826DFC /* Sources */,
+				8F22467B1DEF673000826DFC /* Frameworks */,
+				8F22467C1DEF673000826DFC /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "GLog x32";
+			productName = "GLog x32";
+			productReference = 8F22467E1DEF673000826DFC /* GLog.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		35035CCE1DCBB27700CF3387 /* Project object */ = {
+		8F2246581DEF62D700826DFC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0810;
-				ORGANIZATIONNAME = "Full Sail";
+				ORGANIZATIONNAME = "GDBS Tools";
 				TargetAttributes = {
-					35035CD51DCBB27700CF3387 = {
+					8F22465F1DEF62D800826DFC = {
+						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
+					8F22467D1DEF673000826DFC = {
 						CreatedOnToolsVersion = 8.1;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 35035CD11DCBB27700CF3387 /* Build configuration list for PBXProject "GFile" */;
+			buildConfigurationList = 8F22465B1DEF62D700826DFC /* Build configuration list for PBXProject "GLog" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 35035CCD1DCBB27700CF3387;
-			productRefGroup = 35035CD71DCBB27700CF3387 /* Products */;
+			mainGroup = 8F2246571DEF62D700826DFC;
+			productRefGroup = 8F2246611DEF62D800826DFC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				35035CD51DCBB27700CF3387 /* GFile */,
+				8F22465F1DEF62D800826DFC /* GLog */,
+				8F22467D1DEF673000826DFC /* GLog x32 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		35035CD21DCBB27700CF3387 /* Sources */ = {
+		8F22465C1DEF62D800826DFC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				35035CEB1DCBB2AA00CF3387 /* GFile.cpp in Sources */,
+				8F2246791DEF646900826DFC /* GLog.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F22467A1DEF673000826DFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F2246821DEF69EB00826DFC /* GLog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		35035CDF1DCBB27700CF3387 /* Debug */ = {
+		8F2246621DEF62D800826DFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -171,7 +210,7 @@
 			};
 			name = Debug;
 		};
-		35035CE01DCBB27700CF3387 /* Release */ = {
+		8F2246631DEF62D800826DFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -211,47 +250,81 @@
 			};
 			name = Release;
 		};
-		35035CE21DCBB27700CF3387 /* Debug */ = {
+		8F2246651DEF62D800826DFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/amd64/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = "";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
-		35035CE31DCBB27700CF3387 /* Release */ = {
+		8F2246661DEF62D800826DFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/amd64/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+		8F2246801DEF673000826DFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/i386/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = "";
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = GLog;
+				VALID_ARCHS = i386;
+			};
+			name = Debug;
+		};
+		8F2246811DEF673000826DFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/i386/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = "";
+				PRODUCT_NAME = GLog;
+				VALID_ARCHS = i386;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		35035CD11DCBB27700CF3387 /* Build configuration list for PBXProject "GFile" */ = {
+		8F22465B1DEF62D700826DFC /* Build configuration list for PBXProject "GLog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				35035CDF1DCBB27700CF3387 /* Debug */,
-				35035CE01DCBB27700CF3387 /* Release */,
+				8F2246621DEF62D800826DFC /* Debug */,
+				8F2246631DEF62D800826DFC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		35035CE11DCBB27700CF3387 /* Build configuration list for PBXNativeTarget "GFile" */ = {
+		8F2246641DEF62D800826DFC /* Build configuration list for PBXNativeTarget "GLog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				35035CE21DCBB27700CF3387 /* Debug */,
-				35035CE31DCBB27700CF3387 /* Release */,
+				8F2246651DEF62D800826DFC /* Debug */,
+				8F2246661DEF62D800826DFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		8F22467F1DEF673000826DFC /* Build configuration list for PBXNativeTarget "GLog x32" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F2246801DEF673000826DFC /* Debug */,
+				8F2246811DEF673000826DFC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 35035CCE1DCBB27700CF3387 /* Project object */;
+	rootObject = 8F2246581DEF62D700826DFC /* Project object */;
 }
