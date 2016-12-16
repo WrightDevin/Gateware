@@ -3,5 +3,7 @@
 	<Workspace title="Gateware">
 		<Project filename="GFile/GFile.cbp" />
 		<Project filename="GLog/GLog.cbp" />
+		<Project filename="GBufferedInput/GBufferedInput.cbp" />
+		<Project filename="GInput/GInput.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
