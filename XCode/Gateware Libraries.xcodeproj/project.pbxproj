@@ -7,58 +7,33 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		8F2246411DEF5ED000826DFC /* PBXContainerItemProxy */ = {
+		8FFC24A61E01C2A600C39FD6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
+			containerPortal = 8FFC24A21E01C2A500C39FD6 /* GBufferedInput.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8F2246361DEF5ECF00826DFC;
-			remoteInfo = GFile;
-		};
-		8F22466B1DEF62D900826DFC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8F2246561DEF604600826DFC;
-			remoteInfo = "GFile x32";
-		};
-		8F22466E1DEF62D900826DFC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8F2246671DEF62D800826DFC /* GLog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8F2246601DEF62D800826DFC;
-			remoteInfo = GLog;
+			remoteGlobalIDString = 8FFC249B1E01C2A500C39FD6;
+			remoteInfo = GBufferedInput;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GFile.xcodeproj; path = GFile/GFile.xcodeproj; sourceTree = "<group>"; };
-		8F2246671DEF62D800826DFC /* GLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLog.xcodeproj; path = GLog/GLog.xcodeproj; sourceTree = "<group>"; };
+		8FFC24A21E01C2A500C39FD6 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		8F22463E1DEF5ECF00826DFC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8F2246421DEF5ED000826DFC /* libGFile.a */,
-				8F22466C1DEF62D900826DFC /* GFile.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8F2246681DEF62D800826DFC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8F22466F1DEF62D900826DFC /* libGLog.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		8F299A5B1DEF463200CAE02E = {
 			isa = PBXGroup;
 			children = (
-				8F2246671DEF62D800826DFC /* GLog.xcodeproj */,
-				8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */,
+				8FFC24A21E01C2A500C39FD6 /* GBufferedInput.xcodeproj */,
 			);
+			sourceTree = "<group>";
+		};
+		8FFC24A31E01C2A500C39FD6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8FFC24A71E01C2A600C39FD6 /* GBufferedInput.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -81,12 +56,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 8F22463E1DEF5ECF00826DFC /* Products */;
-					ProjectRef = 8F22463D1DEF5ECF00826DFC /* GFile.xcodeproj */;
-				},
-				{
-					ProductGroup = 8F2246681DEF62D800826DFC /* Products */;
-					ProjectRef = 8F2246671DEF62D800826DFC /* GLog.xcodeproj */;
+					ProductGroup = 8FFC24A31E01C2A500C39FD6 /* Products */;
+					ProjectRef = 8FFC24A21E01C2A500C39FD6 /* GBufferedInput.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -96,25 +67,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8F2246421DEF5ED000826DFC /* libGFile.a */ = {
+		8FFC24A71E01C2A600C39FD6 /* GBufferedInput.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libGFile.a;
-			remoteRef = 8F2246411DEF5ED000826DFC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8F22466C1DEF62D900826DFC /* GFile.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = GFile.a;
-			remoteRef = 8F22466B1DEF62D900826DFC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8F22466F1DEF62D900826DFC /* libGLog.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGLog.a;
-			remoteRef = 8F22466E1DEF62D900826DFC /* PBXContainerItemProxy */;
+			path = GBufferedInput.a;
+			remoteRef = 8FFC24A61E01C2A600C39FD6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

@@ -1,4 +1,4 @@
-#include "../../Source/G_System/GBI_Callback.cpp"
+
 #include <mutex>
 #include <atomic>
 #include <queue>
@@ -326,12 +326,25 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 GRETURN BufferedInput::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
+<<<<<<< HEAD
 
 	NSResponder * windowResponder = [NSResponder alloc];
 	windowResponder = (NSResponder*)_data;
 
 #endif
 
+=======
+    
+    NSResponder * windowResponder = [NSResponder alloc];
+    windowResponder = (__bridge NSResponder *)_data;
+    
+    windowResponder.nextResponder = responder;
+    
+    
+    
+#endif
+    
+>>>>>>> PeterFarber
 	return SUCCESS;
 }
 

@@ -168,5 +168,13 @@ namespace {
 		return 0;
 	}
 #endif
+    
+#ifdef __APPLE__
+    
+//#include "../../Interface/G_System/GResponder.h"
+    
+    GResponder * responder = [GResponder alloc];
+    
+#endif
 
 }
