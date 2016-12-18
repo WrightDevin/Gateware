@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/GInput" prefix_auto="1" extension_auto="1" />
+				<Option output="../../Libraries/Linux/amd64/Debug/GInput" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/Debug/" />
 				<Option type="2" />
@@ -34,6 +34,14 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-lX11" />
+		</Compiler>
+		<Linker>
+			<Add option="-lX11" />
+			<Add option="-pthread" />
+		</Linker>
 		<Unit filename="../../Source/G_System/GInput.cpp" />
 		<Extensions>
 			<code_completion />

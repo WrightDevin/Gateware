@@ -74,9 +74,11 @@ GRETURN BufferedInput::DecrementCount() {
 	n_refrenceCount -= 1;
 
 	if (n_refrenceCount == 0) {
+#ifdef __linux__
 		_threadOpen = false;
 		_inputThread->join();
 		delete _inputThread;
+#endif
 		delete this;
 	}
 
@@ -322,6 +324,13 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 }
 
 GRETURN BufferedInput::InitializeMac(void * _data) {
+
+#ifdef __APPLE__
+
+	NSResponder * windowResponder = [NSResponder alloc];
+	windowResponder = (NSResponder*)_data;
+
+#endif
 
 	return SUCCESS;
 }

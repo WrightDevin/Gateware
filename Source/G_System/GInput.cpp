@@ -291,6 +291,8 @@ GRETURN Input::InitializeMac(void * _data) {
 
 	windowResponder.nextResponder(responder);
 
+
+
 #endif
 
 	return SUCCESS;
@@ -350,6 +352,8 @@ void Input::InputThread()
 		Display * _display = (Display*)(_linuxWindow._Display);
 
 		XNextEvent(_display, &e);
+		printf("1");
+
 		switch (e.type) {
 		case KeyPress:
 			_code = Keycodes[e.xkey.keycode][1];
@@ -379,7 +383,6 @@ void Input::InputThread()
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.x_root;
-			n_Keys[_code] = 1;
 			break;
 		case ButtonRelease:
 			_code = e.xbutton.button;
@@ -389,8 +392,6 @@ void Input::InputThread()
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.x_root;
-			n_Keys[_code] = 0;
-
 			break;
 		}
 
@@ -415,6 +416,13 @@ void Input::InputThread()
 			default:
 				_code = -1;
 				break;
+			}
+
+			if (e.type == ButtonPress) {
+				n_Keys[_code] = 1;
+			}
+			else if (e.type == ButtonRelease) {
+				n_Keys[_code] = 0;
 			}
 
 		}

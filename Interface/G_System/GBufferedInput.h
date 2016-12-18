@@ -23,13 +23,6 @@ namespace GW
 			unsigned int _keyMask;	/*<_keyMask Bit flags for (CapsLock, NumLock, ScrollLoock, Shift, and Control). */
 		};
 
-		//! LINUX_WINDOW will hold any information you may need about an Input Event.
-		/*!
-		*/
-		struct LINUX_WINDOW {
-			void * _Window;			/*<_Window void pointer storing the window handle. */ 
-			void * _Display;		/*<_data Data void pointer storing the display handle. */ 
-		};
 
 #pragma pack(pop)
 
