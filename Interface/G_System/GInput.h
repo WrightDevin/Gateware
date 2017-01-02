@@ -72,8 +72,6 @@ namespace GW
 			* \retval -1 The mouse is scrolling up.
 			*/
 			virtual float GetMouseScroll() = 0;
-
-
 		};
 
 		//! Creates a GInput Object.
@@ -88,8 +86,7 @@ namespace GW
 		* \retval FAILURE could not make an Input Object.
 		* \retval INVALID_ARGUMENT _outInput and or _data is nullptr.
 		*/
-		GRETURN CreateGInput(GInput** _outInput, void * _data);
-
+		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGInput(GInput** _outInput, void * _data);
 	};
 };
 

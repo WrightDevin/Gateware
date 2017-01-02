@@ -1,3 +1,6 @@
+// Override export symbols for DLL builds (must be included before interface code)
+#include "../DLL_Export_Symbols.h"
+
 #include "../../Interface/G_System/GBufferedInput.h"
 #include "../../Interface/G_System/GKeyDefines.h"
 #include <map>
@@ -321,6 +324,14 @@ public:
 
 };
 
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGBufferedInput(_outPointer, _data);
+}
+
+// Create function MUST be explicitly scoped to avoid naming colissions
 GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 	if (_outPointer == nullptr || _data == nullptr) {

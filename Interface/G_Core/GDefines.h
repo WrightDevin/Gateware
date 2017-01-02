@@ -6,7 +6,7 @@
 	Purpose: Lists the core #defines and MACROS used by the Gateware interfaces.
 	Author: Lari H. Norri
 	Contributors: N/A
-	Last Modified: 9/14/2016
+	Last Modified: 12/12/2016
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -14,6 +14,8 @@
 //! The core namespace to which all Gateware interfaces must belong
 namespace GW
 {
+// ensure identical binary padding for structures on all platforms
+#pragma pack(push, 1)
 	//! Gateware Universaly Unique Interface IDentifier
 	//! Each GIID defines a unique 128bit number identifying a particular version of an interface
 	//! This allows interfaces to be upgraded down the line safely without breaking legacy code
@@ -39,7 +41,8 @@ namespace GW
 			return true;
 		}
 	}; // gateware guuiid mimic microsoft GUID structure in byte pattern 
-	// use built-in Visual Studio tools to generate unique ID for new interfaces
+	   // use built-in Visual Studio tools to generate unique ID for new interfaces
+#pragma pack(pop)
 
 	//! Listing of common error codes returned by Gateware functions
 	enum GRETURN
@@ -60,4 +63,19 @@ namespace GW
 //! Macro used to determine if a function has failed 
 #define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
+//! If the following symbol is defined by the complier then you must also define the following DLL export symbols.
+// ADD NON SYMBOLS FOR STANDARD BUILDS TO BE OVERRIDEN PER-PROJECT COMPILER SETTINGS
+#ifndef GATEWARE_EXPORT_IMPLICIT
+	#define GATEWARE_EXPORT_IMPLICIT
 #endif
+#ifndef GATEWARE_EXPORT_EXPLICIT
+	#define GATEWARE_EXPORT_EXPLICIT extern "C"
+#endif
+#ifndef GATEWARE_BEGIN_EXPORT
+	#define GATEWARE_BEGIN_EXPORT
+#endif
+#ifndef GATEWARE_END_EXPORT
+	#define GATEWARE_END_EXPORT
+#endif
+
+#endif // end include guard

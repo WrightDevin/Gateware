@@ -57,7 +57,8 @@ namespace GW
 		* \retval FAILURE could not make an BufferedInput Object.
 		* \retval INVALID_ARGUMENT _outInput and or _data is nullptr.
 		*/
-		GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
+		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
 	};
 };
+
 #endif

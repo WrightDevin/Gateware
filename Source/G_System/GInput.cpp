@@ -1,3 +1,5 @@
+// Override export symbols for DLL builds (must be included before interface code)
+#include "../DLL_Export_Symbols.h"
 
 #include "../../Interface/G_System/GInput.h"
 #include "../../Interface/G_System/GKeyDefines.h"
@@ -294,6 +296,13 @@ public:
 	//! Requests an interface that may or may not be supported by this object  
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
 };
+
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GRETURN CreateGInput(GInput** _outPointer, void * _data)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGInput(_outPointer, _data);
+}
 
 GRETURN GW::CORE::CreateGInput(GInput** _outFpointer, void * _data) {
 

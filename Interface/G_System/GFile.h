@@ -264,7 +264,7 @@ namespace GW
 		*  \retval FAILURE  GFile could not be created.
 		*  \retval INVALID_ARGUMENT  A nullptr was passed in.
 		*/
-		GRETURN GCreateFile(GFile** _outFile);
+		GATEWARE_EXPORT_IMPLICIT GRETURN GCreateFile(GFile** _outFile);
 	}
 }
 

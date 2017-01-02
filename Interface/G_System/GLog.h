@@ -6,7 +6,7 @@ File: GLog.h
 Purpose: A Gateware interface that handles logging in a thread safe manner
 Author: Justin W. Parks
 Contributors: N/A
-Last Modified: 11/16/2016
+Last Modified: 12/14/2016
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -104,7 +104,7 @@ namespace GW
 		*  \retval FAILURE  GLog was not created. _outLog will be null
 		*  \retval INVALID_ARGUMENT  Either one or both arguments are nullptrs.
 		*/
-		GRETURN GCreateLog(const char* const _fileName, GLog** _outLog);
+		GATEWARE_EXPORT_IMPLICIT GRETURN GCreateLog(const char* const _fileName, GLog** _outLog);
 
 		//! Creates a GLog object
 		/*!
@@ -120,7 +120,7 @@ namespace GW
 		*  \retval FAILURE  GLog was not created. _outLog will be null.
 		*  \retval INVALID_ARGUMENT Either one or both the arguments are nullptr.
 		*/
-		GRETURN GCreateLog(GFile* _file, GLog** _outLog);
+		GATEWARE_EXPORT_IMPLICIT GRETURN GCreateLog(GFile* _file, GLog** _outLog);
 	}
 }
 
