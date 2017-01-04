@@ -8,12 +8,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{DCAC95E7-24D6-4AC0-894A-9BDCFF64EF2E}"
 	ProjectSection(SolutionItems) = preProject
 		..\Interface\G_System\GBufferedInput.h = ..\Interface\G_System\GBufferedInput.h
+		..\Interface\G_System\GFile.h = ..\Interface\G_System\GFile.h
 		..\Interface\G_System\GInput.h = ..\Interface\G_System\GInput.h
 		..\Interface\G_System\GKeyDefines.h = ..\Interface\G_System\GKeyDefines.h
-	EndProjectSection
-	ProjectSection(SolutionItems) = preProject
-		..\Interface\G_System\GFile.h = ..\Interface\G_System\GFile.h
 		..\Interface\G_System\GLog.h = ..\Interface\G_System\GLog.h
+		..\Interface\G_System\GResponder.h = ..\Interface\G_System\GResponder.h
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_Core", "G_Core", "{1BB4750B-A84D-467C-9AB9-5D570F37DF3C}"
@@ -46,14 +45,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x64.ActiveCfg = Debug|x64
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x64.Build.0 = Debug|x64
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x86.ActiveCfg = Debug|Win32
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Debug|x86.Build.0 = Debug|Win32
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x64.ActiveCfg = Release|x64
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x64.Build.0 = Release|x64
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.ActiveCfg = Release|Win32
-		{246AF88F-856E-4FE2-A29B-C71F3DFBA2FC}.Release|x86.Build.0 = Release|Win32
 		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x64.ActiveCfg = Debug|x64
 		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x64.Build.0 = Debug|x64
 		{6E57BBC4-E0EF-42BD-AFDA-19417F0178D1}.Debug|x86.ActiveCfg = Debug|Win32
