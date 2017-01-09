@@ -71,11 +71,5 @@ namespace GW
 #ifndef GATEWARE_EXPORT_EXPLICIT
 	#define GATEWARE_EXPORT_EXPLICIT extern "C"
 #endif
-#ifndef GATEWARE_BEGIN_EXPORT
-	#define GATEWARE_BEGIN_EXPORT
-#endif
-#ifndef GATEWARE_END_EXPORT
-	#define GATEWARE_END_EXPORT
-#endif
 
 #endif // end include guard
