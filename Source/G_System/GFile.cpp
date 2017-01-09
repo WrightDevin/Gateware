@@ -515,20 +515,6 @@ GW::GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 	if (m_currDirStream == nullptr)
 		return GW::FAILURE;
 
-	//Reset the dir size
-	m_dirSize = 0;
-
-	//Get the number of files in directory
-	struct dirent* file;
-	while ((file = readdir(m_currDirStream)))
-	{
-		if(file->d_type == DT_REG)
-			++m_dirSize;
-	}
-
-	//Set the directory iterater back to the begining
-	rewinddir(m_currDirStream);
-
 	return GW::SUCCESS;
 }
 
@@ -538,7 +524,19 @@ GW::GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 	if (m_currDirStream == nullptr)
 		return GW::FAILURE;
 
-	_outSize = m_dirSize;
+	//Reset the dir size
+	_outSize = 0;
+
+	//Get the number of files in directory
+	struct dirent* file;
+	while ((file = readdir(m_currDirStream)))
+	{
+		if (file->d_type == DT_REG)
+			++_outSize;
+	}
+
+	//Set the directory iterater back to the begining
+	rewinddir(m_currDirStream);
 
 	return GW::SUCCESS;
 }
