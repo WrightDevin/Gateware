@@ -96,6 +96,10 @@
 #define G_KEY_F11				0x55
 #define G_KEY_F12				0x56
 
+//PEMDAS
+#define G_KEY_ADD				0x57
+#define G_KEY_MULTIPLY			0x59
+#define G_KEY_DIVIDE			0x5a
 
 //Button Keys
 #define G_BUTTON_LEFT			0x64
@@ -103,6 +107,32 @@
 #define G_BUTTON_MIDDLE			0x66
 #define G_MOUSE_SCROLL_UP		0x67
 #define G_MOUSE_SCROLL_DOWN		0x68
+
+//Key Masks
+#define G_MASK_SHIFT			0x0
+#define G_MASK_CAPS_LOCK		0x1
+#define G_MASK_CONTROL			0x2
+#define G_MASK_SCROLL_LOCK		0x3
+#define G_MASK_NUM_LOCK			0x4
+
+//#define G_CHECK_MASK(var,mask) ((var) & (1<<(mask)))
+
+//! LINUX_WINDOW will hold any information you may need about an Input Event.
+/*!
+*/
+namespace GW
+{
+	namespace CORE
+	{
+#pragma pack(push, 1)
+		struct LINUX_WINDOW
+		{
+			void * _Window;			/*<_Window void pointer storing the window handle. */
+			void * _Display;		/*<_data Data void pointer storing the display handle. */
+		};
+#pragma pack(pop)
+	}
+}
 
 
 #endif

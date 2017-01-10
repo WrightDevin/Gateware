@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_System", "G_System", "{DC
 		..\Interface\G_System\GInput.h = ..\Interface\G_System\GInput.h
 		..\Interface\G_System\GKeyDefines.h = ..\Interface\G_System\GKeyDefines.h
 		..\Interface\G_System\GLog.h = ..\Interface\G_System\GLog.h
+		..\Interface\G_System\GResponder.h = ..\Interface\G_System\GResponder.h
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "G_Core", "G_Core", "{1BB4750B-A84D-467C-9AB9-5D570F37DF3C}"

@@ -3,7 +3,6 @@
 
 #include "../G_Core/GSingleThreaded.h"
 #include "../G_System/GKeyDefines.h"
-#include <Windows.h>
 
 namespace GW
 {
@@ -72,6 +71,14 @@ namespace GW
 			* \retval -1 The mouse is scrolling up.
 			*/
 			virtual float GetMouseScroll() = 0;
+
+			//! Get the key mask.
+			/*!
+			* \retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
+			*/
+			virtual unsigned int GetKeyMask() = 0;
+
+
 		};
 
 		//! Creates a GInput Object.

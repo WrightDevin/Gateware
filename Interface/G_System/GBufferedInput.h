@@ -20,7 +20,9 @@ namespace GW
 			int _y;					/*<_y Window Mouse position y when event is send. */
 			int _screenX;			/*<_x Screen Mouse position x when event is send. */
 			int _screenY;			/*<_y Screen Mouse position y when event is send. */
+			unsigned int _keyMask;	/*<_keyMask Bit flags for (CapsLock, NumLock, ScrollLoock, Shift, and Control). */
 		};
+
 #pragma pack(pop)
 
 		//! GBInput_Events hold the possible events that can be sent from GBufferedInput.
