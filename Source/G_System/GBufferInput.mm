@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+#include "../../Source/G_System/GBI_Callback.cpp"
+
 @interface GResponder : NSResponder
 
 //Overide Functions for the Responder
@@ -29,11 +31,13 @@
 }
 
 -(void)keyDown:(NSEvent *)theEvent{
-    NSLog(@"Poop");
+    int keycode = [theEvent keycode];
+	n_Keys[keycode] = 1;
 }
 
 -(void)keyUp:(NSEvent *)theEvent{
-    
+    int keycode = [theEvent keycode];
+	n_Keys[keycode] = 0;
 }
 
 -(void)mouseDown:(NSEvent *)theEvent{
@@ -48,7 +52,8 @@
     
 }
 
+#include "../../Source/G_System/GBufferInput.cpp"
+
 @end
 
-#include "../../Source/G_System/GBI_Callback.cpp"
-#include "../../Source/G_System/GBufferInput.cpp"
+

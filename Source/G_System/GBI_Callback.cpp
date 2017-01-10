@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GBufferedInput.h"
 

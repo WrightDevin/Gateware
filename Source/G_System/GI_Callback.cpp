@@ -23,6 +23,8 @@ unsigned int _keyMask;
 	//! Store the users implementation of the windows procedure.
 	LONG_PTR _userWinProc;
 
+
+
 	//Methods
 	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
 		switch (msg)

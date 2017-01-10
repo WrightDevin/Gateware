@@ -1,4 +1,4 @@
-
+#include "../../Source/G_System/GBI_Callback.cpp"
 #include <mutex>
 #include <atomic>
 #include <queue>
@@ -162,8 +162,6 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 }
 
 
-
-
 GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 
@@ -247,22 +245,6 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 
 		}
 
-		//Display the device information.
-
-		//Check if its a mouse.
-		if (rdi.dwType == RIM_TYPEMOUSE) {
-
-		}
-
-		//Check if its a Keyboard.
-		else if (rdi.dwType == RIM_TYPEKEYBOARD) {
-
-		}
-		//Check if its a vendor.
-		else if (rdi.dwType == RIM_TYPEHID) {
-
-		}
-
 	}
 
 	//Register the raw input devices.
@@ -326,14 +308,6 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 GRETURN BufferedInput::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
-<<<<<<< HEAD
-
-	NSResponder * windowResponder = [NSResponder alloc];
-	windowResponder = (NSResponder*)_data;
-
-#endif
-
-=======
     
     NSResponder * windowResponder = [NSResponder alloc];
     windowResponder = (__bridge NSResponder *)_data;
@@ -341,10 +315,8 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
     windowResponder.nextResponder = responder;
     
     
-    
 #endif
     
->>>>>>> PeterFarber
 	return SUCCESS;
 }
 

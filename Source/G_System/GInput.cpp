@@ -3,6 +3,7 @@
 #include <atomic>
 #include <thread>
 #include <cstring>
+#include <iostream>
 
 class Input : public GInput {
 
@@ -327,10 +328,10 @@ GRETURN Input::GetMousePosition(float &x, float &y) {
 float Input::GetMouseScroll() {
 
 	float direction = 0;
-	if (n_Keys[G_MOUSE_SCROLL_UP]) {
+	if (n_Keys[G_MOUSE_SCROLL_UP] == 1) {
 		direction = -1;
 	}
-	else if(n_Keys[G_MOUSE_SCROLL_DOWN]){
+	else if(n_Keys[G_MOUSE_SCROLL_DOWN] == 1){
 		direction = 1;
 	}
 	return direction;
@@ -352,7 +353,6 @@ void Input::InputThread()
 		Display * _display = (Display*)(_linuxWindow._Display);
 
 		XNextEvent(_display, &e);
-		printf("1");
 
 		switch (e.type) {
 		case KeyPress:
@@ -363,7 +363,7 @@ void Input::InputThread()
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.y_root;
 			break;
 		case KeyRelease:
 			_code = Keycodes[e.xkey.keycode][1];
@@ -373,66 +373,60 @@ void Input::InputThread()
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.y_root;
 			break;
 		case ButtonPress:
 			_code = e.xbutton.button;
-			//_event = BUTTONPRESSED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.y_root;
+            switch (_code) {
+			case 1:
+				 n_Keys[G_BUTTON_LEFT] = 1;
+				break;
+			case 2:
+                n_Keys[G_BUTTON_MIDDLE] = 1;
+				break;
+			case 3:
+                n_Keys[G_BUTTON_RIGHT] = 1;
+				break;
+			case 4:
+                n_Keys[G_MOUSE_SCROLL_UP] = 1;
+				break;
+			case 5:
+                n_Keys[G_MOUSE_SCROLL_DOWN] = 1;
+				break;
+			}
 			break;
 		case ButtonRelease:
 			_code = e.xbutton.button;
-			//_event = BUTTONRELEASED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.x_root;
+			_mouseDeltaY = e.xkey.y_root;
+            switch (_code) {
+			case 1:
+				 n_Keys[G_BUTTON_LEFT] = 0;
+				break;
+			case 2:
+                n_Keys[G_BUTTON_MIDDLE] = 0;
+				break;
+			case 3:
+                n_Keys[G_BUTTON_RIGHT] = 0;
+				break;
+			case 4:
+                n_Keys[G_MOUSE_SCROLL_UP] = 0;
+				break;
+			case 5:
+                n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
+				break;
+			}
 			break;
 		}
 
-		if (e.type == ButtonPress || e.type == ButtonRelease) {
-
-			switch (_code) {
-			case 1:
-				_code = G_BUTTON_LEFT;
-				break;
-			case 3:
-				_code = G_BUTTON_RIGHT;
-				break;
-			case 2:
-				_code = G_BUTTON_MIDDLE;
-				break;
-			case 4:
-				_code = G_MOUSE_SCROLL_UP;
-				break;
-			case 5:
-				_code = G_MOUSE_SCROLL_DOWN;
-				break;
-			default:
-				_code = -1;
-				break;
-			}
-
-			if (e.type == ButtonPress) {
-				n_Keys[_code] = 1;
-			}
-			else if (e.type == ButtonRelease) {
-				n_Keys[_code] = 0;
-			}
-
-		}
-
-		if (_code != G_MOUSE_SCROLL_UP) {
-			n_Keys[G_MOUSE_SCROLL_UP] = 0;
-		}
-		if (_code != G_MOUSE_SCROLL_DOWN) {
-			n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
-		}
 
 		_mouseDeltaX = _mousePrevX - _mousePositionX;
 		_mouseDeltaY = _mousePrevY - _mousePositionY;
