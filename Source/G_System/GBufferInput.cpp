@@ -165,20 +165,6 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 }
 
 
-
-
-
-	/* GBroadcasting */
-
-	//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional) 
-	//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered 
-	GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask);
-
-	//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one  
-	GRETURN DeregisterListener(GListener *_removeListener);
-
-};
-
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
 GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
 {
@@ -366,12 +352,13 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
 
 void BufferedInput::InputThread()
 {
+#ifdef __linux__
     int _event = -1;
     int _code = -1;
     G_INPUT_DATA _dataStruct;
 	while (_threadOpen)
 	{
-#ifdef __linux__
+
         XEvent e;
 
         Display * _display = (Display*)(_linuxWindow._Display);
@@ -448,6 +435,7 @@ void BufferedInput::InputThread()
                 iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
             }
 		}
-#endif
+
 	}
+#endif
 }
