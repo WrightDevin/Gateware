@@ -1,4 +1,5 @@
-#include "../../Source/G_System/GBI_Callback.cpp"
+//#include "../../Source/G_System/GBI_Callback.cpp"
+
 #include <mutex>
 #include <atomic>
 #include <queue>
@@ -74,6 +75,7 @@ GRETURN BufferedInput::DecrementCount() {
 	n_refrenceCount -= 1;
 
 	if (n_refrenceCount == 0) {
+
 #ifdef __linux__
 		_threadOpen = false;
 		_inputThread->join();

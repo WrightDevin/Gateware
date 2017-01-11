@@ -1,0 +1,411 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		8F01AFE91E24020C004F4D72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01AFDE1E24020B004F4D72;
+			remoteInfo = GFile;
+		};
+		8F01AFFF1E240223004F4D72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01AFF41E240223004F4D72;
+			remoteInfo = GLog;
+		};
+		8F01B0311E240291004F4D72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01B02D1E240290004F4D72 /* GInput.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0261E240290004F4D72;
+			remoteInfo = GInput;
+		};
+		8F01B04F1E2402D4004F4D72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0441E2402D3004F4D72;
+			remoteInfo = GBufferedInput;
+		};
+		8FD304351E240835007B55CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0711E240422004F4D72;
+			remoteInfo = "GBufferedInput copy";
+		};
+		8FD304391E240835007B55CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0BF1E240456004F4D72;
+			remoteInfo = "GFile i386";
+		};
+		8FD3043D1E240835007B55CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01B02D1E240290004F4D72 /* GInput.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0941E24042F004F4D72;
+			remoteInfo = "GInput copy";
+		};
+		8FD304411E240835007B55CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F01B0B61E240451004F4D72;
+			remoteInfo = "GLog copy";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GFile.xcodeproj; path = GFile/GFile.xcodeproj; sourceTree = "<group>"; };
+		8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLog.xcodeproj; path = GLog/GLog.xcodeproj; sourceTree = "<group>"; };
+		8F01B02D1E240290004F4D72 /* GInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GInput.xcodeproj; path = GInput/GInput.xcodeproj; sourceTree = "<group>"; };
+		8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
+		8FC4C9321E26C7E800066FE6 /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8F01B0341E2402A9004F4D72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8F01AFC21E2401BC004F4D72 = {
+			isa = PBXGroup;
+			children = (
+				8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */,
+				8F01B02D1E240290004F4D72 /* GInput.xcodeproj */,
+				8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */,
+				8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */,
+				8FC4C9321E26C7E800066FE6 /* libGBufferedInput.a */,
+			);
+			sourceTree = "<group>";
+		};
+		8F01AFE61E24020B004F4D72 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F01AFEA1E24020C004F4D72 /* GFile.a */,
+				8FD3043A1E240835007B55CC /* GFile.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F01AFFC1E240223004F4D72 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F01B0001E240223004F4D72 /* GLog.a */,
+				8FD304421E240835007B55CC /* GLog.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F01B02E1E240290004F4D72 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F01B0321E240291004F4D72 /* GInput.a */,
+				8FD3043E1E240835007B55CC /* GInput.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F01B04C1E2402D3004F4D72 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F01B0501E2402D4004F4D72 /* GBufferedInput.a */,
+				8FD304361E240835007B55CC /* GBufferedInput.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8F01B0351E2402A9004F4D72 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8F01B0361E2402A9004F4D72 /* GBufferedInput */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F01B0381E2402A9004F4D72 /* Build configuration list for PBXNativeTarget "GBufferedInput" */;
+			buildPhases = (
+				8F01B0331E2402A9004F4D72 /* Sources */,
+				8F01B0341E2402A9004F4D72 /* Frameworks */,
+				8F01B0351E2402A9004F4D72 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GBufferedInput;
+			productName = GBufferedInput;
+			productReference = 8FC4C9321E26C7E800066FE6 /* libGBufferedInput.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8F01AFC31E2401BC004F4D72 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0810;
+				ORGANIZATIONNAME = "GDBS Tools";
+				TargetAttributes = {
+					8F01B0361E2402A9004F4D72 = {
+						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 8F01AFC61E2401BC004F4D72 /* Build configuration list for PBXProject "Gateware Libraries" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8F01AFC21E2401BC004F4D72;
+			productRefGroup = 8F01AFC21E2401BC004F4D72;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8F01B04C1E2402D3004F4D72 /* Products */;
+					ProjectRef = 8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F01AFE61E24020B004F4D72 /* Products */;
+					ProjectRef = 8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F01B02E1E240290004F4D72 /* Products */;
+					ProjectRef = 8F01B02D1E240290004F4D72 /* GInput.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F01AFFC1E240223004F4D72 /* Products */;
+					ProjectRef = 8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				8F01B0361E2402A9004F4D72 /* GBufferedInput */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		8F01AFEA1E24020C004F4D72 /* GFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GFile.a;
+			remoteRef = 8F01AFE91E24020C004F4D72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F01B0001E240223004F4D72 /* GLog.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GLog.a;
+			remoteRef = 8F01AFFF1E240223004F4D72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F01B0321E240291004F4D72 /* GInput.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GInput.a;
+			remoteRef = 8F01B0311E240291004F4D72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F01B0501E2402D4004F4D72 /* GBufferedInput.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GBufferedInput.a;
+			remoteRef = 8F01B04F1E2402D4004F4D72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8FD304361E240835007B55CC /* GBufferedInput.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GBufferedInput.a;
+			remoteRef = 8FD304351E240835007B55CC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8FD3043A1E240835007B55CC /* GFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GFile.a;
+			remoteRef = 8FD304391E240835007B55CC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8FD3043E1E240835007B55CC /* GInput.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GInput.a;
+			remoteRef = 8FD3043D1E240835007B55CC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8FD304421E240835007B55CC /* GLog.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = GLog.a;
+			remoteRef = 8FD304411E240835007B55CC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8F01B0331E2402A9004F4D72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8F01AFD01E2401BC004F4D72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8F01AFD11E2401BC004F4D72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8F01B0391E2402A9004F4D72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8F01B03A1E2402A9004F4D72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8F01AFC61E2401BC004F4D72 /* Build configuration list for PBXProject "Gateware Libraries" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F01AFD01E2401BC004F4D72 /* Debug */,
+				8F01AFD11E2401BC004F4D72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8F01B0381E2402A9004F4D72 /* Build configuration list for PBXNativeTarget "GBufferedInput" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F01B0391E2402A9004F4D72 /* Debug */,
+				8F01B03A1E2402A9004F4D72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8F01AFC31E2401BC004F4D72 /* Project object */;
+}

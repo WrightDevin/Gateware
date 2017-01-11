@@ -11,16 +11,18 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
 [Rr]eleases/
+[Rr]elease/
+[Dd]ebud/
 x64/
 x86/
 build/
 bld/
 [Bb]in/
 [Oo]bj/
+[Rr]elease/
+[Dd]ebug/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -39,6 +41,7 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+xcuserdata
 
 # DNX
 project.lock.json
@@ -68,7 +71,22 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.obj
+*.idb
+*.log
+*.tlog
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+*.depend
 *.DS_Store
+*.o
+*.pyc
+*.db
+*.xml
+*.lastcodeanalysissucceeded
 
 # Chutzpah Test files
 _Chutzpah*

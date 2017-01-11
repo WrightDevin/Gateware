@@ -137,6 +137,24 @@ namespace GW
 	};
 };
 
+//! LINUX_WINDOW will hold any information you may need about an Input Event.
+/*!
+*/
+namespace GW
+{
+	namespace CORE
+	{
+#pragma pack(push, 1)
+		struct LINUX_WINDOW
+		{
+			void * _Window;			/*<_Window void pointer storing the window handle. */
+			void * _Display;		/*<_data Data void pointer storing the display handle. */
+		};
+#pragma pack(pop)
+	}
+}
+
+
 #endif
 
 

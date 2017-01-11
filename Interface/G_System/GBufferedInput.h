@@ -23,7 +23,6 @@ namespace GW
 			unsigned int _keyMask;	/*<_keyMask Bit flags for (CapsLock, NumLock, ScrollLoock, Shift, and Control). */
 		};
 
-
 #pragma pack(pop)
 
 		//! GBInput_Events hold the possible events that can be sent from GBufferedInput.
