@@ -1,4 +1,7 @@
-//#include "../../Source/G_System/GBI_Callback.cpp"
+#ifndef __APPLE__
+#include "../../Source/G_System/GBI_Callback.cpp"
+#endif
+
 
 #include <mutex>
 #include <atomic>
@@ -22,7 +25,7 @@ private:
 #ifdef _WIN32
 #elif __linux__
 	LINUX_WINDOW _linuxWindow;
-#elif __APPPLE__
+#elif __APPLE__
 
 #endif
 

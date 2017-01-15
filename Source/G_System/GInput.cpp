@@ -1,4 +1,8 @@
+#ifndef __APPLE__
 #include "../../Source/G_System/GI_Callback.cpp"
+#endif
+
+
 #include <mutex>
 #include <atomic>
 #include <thread>
@@ -284,14 +288,13 @@ GRETURN Input::InitializeLinux(void * _data) {
 GRETURN Input::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
-
-	NSResponder * windowResponder = [NSResponder alloc];
-	windowResponder = (NSResponder *)_data;
-
-	windowResponder.nextResponder(responder);
-
-
-
+    
+    NSResponder * windowResponder = [NSResponder alloc];
+    windowResponder = (__bridge NSResponder *)_data;
+    
+    windowResponder.nextResponder = responder;
+    
+    
 #endif
 
 	return SUCCESS;

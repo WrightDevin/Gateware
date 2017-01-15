@@ -10,10 +10,10 @@ namespace {
 
 	//! Map of Listeners to send event information to.
 	std::map<GListener *, unsigned long long> _listeners;
-
+    unsigned int _keyMask;
 
 #ifdef _WIN32
-	unsigned int _keyMask;
+
 	//Variables
 
 	//! Store the users implementation of the windows procedure.

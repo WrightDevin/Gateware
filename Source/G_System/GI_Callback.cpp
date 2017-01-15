@@ -179,9 +179,8 @@ unsigned int _keyMask;
 
 #ifdef __APPLE__
 
-#include "../../Interface/G_System/GResponder.h"
 
-	GResponder * responder = [GResponder alloc];
+	GIResponder * responder = [GIResponder alloc];
 
 
 #endif
