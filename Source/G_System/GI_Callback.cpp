@@ -108,14 +108,14 @@ unsigned int _keyMask;
 					break;
 				}
 
-				switch (raw->data.mouse.usButtonData) {
-				case 120:
-					_data = G_MOUSE_SCROLL_UP;
-					break;
-				case 65416:
-					_data = G_MOUSE_SCROLL_DOWN;
-					break;
-				}
+				//switch (raw->data.mouse.usButtonData) {
+				//case 120:
+				//	_data = G_MOUSE_SCROLL_UP;
+				//	break;
+				//case 65416:
+				//	_data = G_MOUSE_SCROLL_DOWN;
+				//	break;
+				//}
 
 				switch (raw->data.mouse.usButtonFlags) {
 					//pressed
@@ -138,12 +138,12 @@ unsigned int _keyMask;
 
 			}
 
-			if (_data != G_MOUSE_SCROLL_UP) {
-				n_Keys[G_MOUSE_SCROLL_UP] = 0;
-			}
-			if (_data != G_MOUSE_SCROLL_DOWN) {
-				n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
-			}
+			//if (_data != G_MOUSE_SCROLL_UP) {
+			//	n_Keys[G_MOUSE_SCROLL_UP] = 0;
+			//}
+			//if (_data != G_MOUSE_SCROLL_DOWN) {
+			//	n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
+			//}
 
 			POINT p;
 			if (GetCursorPos(&p))

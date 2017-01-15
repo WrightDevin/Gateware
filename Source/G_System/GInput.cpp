@@ -42,11 +42,9 @@ public:
 	/* GInput */
 
 	//GRETURN Update();
-	int GetKeyState(int _keyCode);
-	int GetButtonState(int _buttonCode);
+	float GetState(int _keyCode, GRETURN * errorCode);
 	GRETURN GetMouseDelta(float &x, float &y);
 	GRETURN GetMousePosition(float &x, float &y);
-	float GetMouseScroll();
 	unsigned int GetKeyMask();
 
 
@@ -299,14 +297,17 @@ GRETURN Input::InitializeMac(void * _data) {
 	return SUCCESS;
 }
 
-int Input::GetKeyState(int _keyCode) {
+float Input::GetState(int _keyCode, GRETURN * errorCode) {
 
-	return n_Keys[_keyCode];
+	if (errorCode != nullptr) {
+		*errorCode = GRETURN::SUCCESS;
+		if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
+			*errorCode = GRETURN::FEATURE_UNSUPPORTED;
+		}
+	}
 
-}
+	return (float)n_Keys[_keyCode];
 
-int Input::GetButtonState(int _buttonCode) {
-	return n_Keys[_buttonCode];
 }
 
 GRETURN Input::GetMouseDelta(float &x, float &y) {
@@ -325,17 +326,17 @@ GRETURN Input::GetMousePosition(float &x, float &y) {
 	return SUCCESS;
 }
 
-float Input::GetMouseScroll() {
-
-	float direction = 0;
-	if (n_Keys[G_MOUSE_SCROLL_UP] == 1) {
-		direction = -1;
-	}
-	else if(n_Keys[G_MOUSE_SCROLL_DOWN] == 1){
-		direction = 1;
-	}
-	return direction;
-}
+//float Input::GetMouseScroll() {
+//
+//	float direction = 0;
+//	if (n_Keys[G_MOUSE_SCROLL_UP] == 1) {
+//		direction = -1;
+//	}
+//	else if(n_Keys[G_MOUSE_SCROLL_DOWN] == 1){
+//		direction = 1;
+//	}
+//	return direction;
+//}
 
 
 unsigned int Input::GetKeyMask() {
@@ -392,12 +393,12 @@ void Input::InputThread()
 			case 3:
                 n_Keys[G_BUTTON_RIGHT] = 1;
 				break;
-			case 4:
-                n_Keys[G_MOUSE_SCROLL_UP] = 1;
-				break;
-			case 5:
-                n_Keys[G_MOUSE_SCROLL_DOWN] = 1;
-				break;
+			//case 4:
+   //             n_Keys[G_MOUSE_SCROLL_UP] = 1;
+			//	break;
+			//case 5:
+   //             n_Keys[G_MOUSE_SCROLL_DOWN] = 1;
+			//	break;
 			}
 			break;
 		case ButtonRelease:
@@ -417,12 +418,12 @@ void Input::InputThread()
 			case 3:
                 n_Keys[G_BUTTON_RIGHT] = 0;
 				break;
-			case 4:
-                n_Keys[G_MOUSE_SCROLL_UP] = 0;
-				break;
-			case 5:
-                n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
-				break;
+			//case 4:
+   //             n_Keys[G_MOUSE_SCROLL_UP] = 0;
+			//	break;
+			//case 5:
+   //             n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
+			//	break;
 			}
 			break;
 		}
