@@ -51,6 +51,7 @@ namespace GW
 		INTERFACE_UNSUPPORTED	= 3,
 		FILE_NOT_FOUND			= 4,
 		REDUNDENT_OPERATION		= 5,
+		FEATURE_UNSUPPORTED		= 6,
 	};
 
 	//! Macro used to determine if a function succeeded 

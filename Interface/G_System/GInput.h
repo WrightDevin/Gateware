@@ -32,17 +32,7 @@ namespace GW
 			* \retval 0 The Key is not pressed.
 			* \retval 1 The Key is pressed.
 			*/
-			virtual int GetKeyState(int _keyCode) = 0;
-
-			//! Get the current state of a button.
-			/*!
-			*
-			* \param [in] ButtonCode
-			*
-			* \retval 0 The Button is not pressed.
-			* \retval 1 The Button is pressed.
-			*/
-			virtual int GetButtonState(int _buttonCode) = 0;
+			virtual float GetState(int _keyCode, GRETURN * errorCode = nullptr) = 0;
 
 			//! Get the change in mouse position.
 			/*!
@@ -64,13 +54,7 @@ namespace GW
 			*/
 			virtual GRETURN GetMousePosition(float &x, float &y) = 0;
 
-			//! Get the the mouse scroll.
-			/*!
-			* \retval 1 The mouse is scrolling up.
-			* \retval 0 The mouse is not scrolling.
-			* \retval -1 The mouse is scrolling up.
-			*/
-			virtual float GetMouseScroll() = 0;
+
 
 			//! Get the key mask.
 			/*!
