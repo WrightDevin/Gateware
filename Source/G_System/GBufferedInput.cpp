@@ -1,7 +1,8 @@
+#include "../DLL_Export_Symbols.h"
+
 #ifndef __APPLE__
 #include "../../Source/G_System/GBI_Callback.cpp"
 #endif
-
 
 #include <mutex>
 #include <atomic>
@@ -165,6 +166,13 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 	}
 
 	return SUCCESS;
+}
+
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGBufferedInput(_outPointer, _data);
 }
 
 GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
