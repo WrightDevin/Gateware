@@ -77,6 +77,14 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-lX11" />
+		</Compiler>
+		<Linker>
+			<Add option="-lX11" />
+			<Add option="-pthread" />
+		</Linker>
 		<Unit filename="../../Source/G_System/GInput.cpp" />
 		<Extensions>
 			<code_completion />

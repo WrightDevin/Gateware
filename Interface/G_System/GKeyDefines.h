@@ -114,25 +114,34 @@
 #define G_MASK_CONTROL			0x2
 #define G_MASK_SCROLL_LOCK		0x3
 #define G_MASK_NUM_LOCK			0x4
+#define G_MASK_COMMAND          0x5
+#define G_MASK_ALT              0x6
+#define G_MASK_FUNCTION         0x7
 
-//#define G_CHECK_MASK(var,mask) ((var) & (1<<(mask)))
 
-//! LINUX_WINDOW will hold any information you may need about an Input Event.
-/*!
-*/
+
 namespace GW
 {
 	namespace CORE
 	{
 #pragma pack(push, 1)
-		struct LINUX_WINDOW
-		{
+
+
+		//! LINUX_WINDOW will hold any information you may need about an Input Event.
+		/*!
+		*/
+		struct LINUX_WINDOW {
 			void * _Window;			/*<_Window void pointer storing the window handle. */
 			void * _Display;		/*<_data Data void pointer storing the display handle. */
 		};
+
 #pragma pack(pop)
-	}
-}
+
+	};
+};
+
 
 
 #endif
+
+

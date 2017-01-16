@@ -9,10 +9,12 @@ namespace GW
 	namespace CORE
 	{
 
+		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
 		static const GUUIID GInputUUIID =
 		{
-			0x4cba9d69, 0x1b32, 0x43da,{ 0xb7, 0xb2, 0xa4, 0x21, 0xc5, 0x78, 0x18, 0xf0 }
+			0xd68b715f, 0xe73b, 0x44c6,{ 0x8a, 0x7f, 0x97, 0xec, 0xc8, 0xeb, 0x99, 0x5 } 
 		};
+
 
 		//! A single threaded input library.
 		/*!
@@ -32,17 +34,7 @@ namespace GW
 			* \retval 0 The Key is not pressed.
 			* \retval 1 The Key is pressed.
 			*/
-			virtual int GetKeyState(int _keyCode) = 0;
-
-			//! Get the current state of a button.
-			/*!
-			*
-			* \param [in] ButtonCode
-			*
-			* \retval 0 The Button is not pressed.
-			* \retval 1 The Button is pressed.
-			*/
-			virtual int GetButtonState(int _buttonCode) = 0;
+			virtual float GetState(int _keyCode, GRETURN * errorCode = nullptr) = 0;
 
 			//! Get the change in mouse position.
 			/*!
@@ -64,13 +56,7 @@ namespace GW
 			*/
 			virtual GRETURN GetMousePosition(float &x, float &y) = 0;
 
-			//! Get the the mouse scroll.
-			/*!
-			* \retval 1 The mouse is scrolling up.
-			* \retval 0 The mouse is not scrolling.
-			* \retval -1 The mouse is scrolling up.
-			*/
-			virtual float GetMouseScroll() = 0;
+
 
 			//! Get the key mask.
 			/*!
