@@ -16,26 +16,20 @@ Inherits \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_single_threaded}{G\+W\+::\+C\+O\
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-virtual int \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_a58bd9b0ff864391f6455955802292513}{Get\+Key\+State} (int \+\_\+key\+Code)=0
+virtual float \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_a17eed501af7818dc48afd4e3dbdab331}{Get\+State} (int \+\_\+key\+Code, \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} $\ast$error\+Code=nullptr)=0
 \begin{DoxyCompactList}\small\item\em Get the current state of any key. \end{DoxyCompactList}\item 
-virtual int \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_a22770ecd4e65ac105f362da351a953e9}{Get\+Button\+State} (int \+\_\+button\+Code)=0
-\begin{DoxyCompactList}\small\item\em Get the current state of a button. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_a570f179fb0fc093d3f6422f9c170efeb}{Get\+Mouse\+Delta} (float \&x, float \&y)=0
 \begin{DoxyCompactList}\small\item\em Get the change in mouse position. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_aa62945d29410ef2afad6ed39e0ff6575}{Get\+Mouse\+Position} (float \&x, float \&y)=0
 \begin{DoxyCompactList}\small\item\em Get the most recent mouse position. \end{DoxyCompactList}\item 
-virtual float \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_a84238bcdd0cc1af02c727535c4da3623}{Get\+Mouse\+Scroll} ()=0
-\begin{DoxyCompactList}\small\item\em Get the the mouse scroll. \end{DoxyCompactList}\item 
 virtual unsigned int \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input_ab634a00fa9e5a12142bf6d50c112a0b3}{Get\+Key\+Mask} ()=0
 \begin{DoxyCompactList}\small\item\em Get the key mask. \end{DoxyCompactList}\item 
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
 \begin{DoxyCompactList}\small\item\em Return the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{Increment\+Count} ()=0
-\item 
+\begin{DoxyCompactList}\small\item\em Increase the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{Decrement\+Count} ()=0
-\item 
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{Request\+Interface} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
 \begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -50,22 +44,31 @@ The single thread input library is used for high speed game input. You can use t
 \subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
 {\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
 
-Decrease the total number of active refrences to this object Once the internal count reaches zero this object will be deallocated and your pointer will become invalid \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_a22770ecd4e65ac105f362da351a953e9}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_a22770ecd4e65ac105f362da351a953e9} 
-\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Get\+Button\+State@{Get\+Button\+State}}
-\index{Get\+Button\+State@{Get\+Button\+State}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
-\subsubsection{\texorpdfstring{Get\+Button\+State()}{GetButtonState()}}
-{\footnotesize\ttfamily virtual int G\+W\+::\+C\+O\+R\+E\+::\+G\+Input\+::\+Get\+Button\+State (\begin{DoxyParamCaption}\item[{int}]{\+\_\+button\+Code }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
+\subsubsection{\texorpdfstring{Get\+Count()}{GetCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Get\+Count (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
 
 
 \begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em Button\+Code} & \\
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
 \hline
 \end{DoxyParams}
 
 \begin{DoxyRetVals}{Return values}
-{\em 0} & The Button is not pressed. \\
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran \\
 \hline
-{\em 1} & The Button is pressed. \\
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corupt. \\
 \hline
 \end{DoxyRetVals}
 \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_ab634a00fa9e5a12142bf6d50c112a0b3}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_ab634a00fa9e5a12142bf6d50c112a0b3} 
@@ -77,24 +80,6 @@ Decrease the total number of active refrences to this object Once the internal c
 
 \begin{DoxyRetVals}{Return values}
 {\em G\+\_\+\+M\+A\+SK} & (\+\_\+\+S\+H\+I\+FT, \+\_\+\+C\+O\+N\+T\+R\+OL, \+\_\+\+C\+A\+P\+S\+\_\+\+L\+O\+CK, \+\_\+\+N\+U\+M\+\_\+\+L\+O\+CK, \+\_\+\+S\+C\+R\+O\+L\+L\+\_\+\+L\+O\+CK). \\
-\hline
-\end{DoxyRetVals}
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_a58bd9b0ff864391f6455955802292513}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_a58bd9b0ff864391f6455955802292513} 
-\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Get\+Key\+State@{Get\+Key\+State}}
-\index{Get\+Key\+State@{Get\+Key\+State}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
-\subsubsection{\texorpdfstring{Get\+Key\+State()}{GetKeyState()}}
-{\footnotesize\ttfamily virtual int G\+W\+::\+C\+O\+R\+E\+::\+G\+Input\+::\+Get\+Key\+State (\begin{DoxyParamCaption}\item[{int}]{\+\_\+key\+Code }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
-
-
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em Key\+Code} & \\
-\hline
-\end{DoxyParams}
-
-\begin{DoxyRetVals}{Return values}
-{\em 0} & The Key is not pressed. \\
-\hline
-{\em 1} & The Key is pressed. \\
 \hline
 \end{DoxyRetVals}
 \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_a570f179fb0fc093d3f6422f9c170efeb}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_a570f179fb0fc093d3f6422f9c170efeb} 
@@ -133,19 +118,24 @@ Decrease the total number of active refrences to this object Once the internal c
 {\em S\+U\+C\+C\+E\+SS} & no problems found. \\
 \hline
 \end{DoxyRetVals}
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_a84238bcdd0cc1af02c727535c4da3623}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_a84238bcdd0cc1af02c727535c4da3623} 
-\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Get\+Mouse\+Scroll@{Get\+Mouse\+Scroll}}
-\index{Get\+Mouse\+Scroll@{Get\+Mouse\+Scroll}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
-\subsubsection{\texorpdfstring{Get\+Mouse\+Scroll()}{GetMouseScroll()}}
-{\footnotesize\ttfamily virtual float G\+W\+::\+C\+O\+R\+E\+::\+G\+Input\+::\+Get\+Mouse\+Scroll (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_input_a17eed501af7818dc48afd4e3dbdab331}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_input_a17eed501af7818dc48afd4e3dbdab331} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Get\+State@{Get\+State}}
+\index{Get\+State@{Get\+State}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
+\subsubsection{\texorpdfstring{Get\+State()}{GetState()}}
+{\footnotesize\ttfamily virtual float G\+W\+::\+C\+O\+R\+E\+::\+G\+Input\+::\+Get\+State (\begin{DoxyParamCaption}\item[{int}]{\+\_\+key\+Code,  }\item[{\hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} $\ast$}]{error\+Code = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+key\+Code} & The key code of the key to check \\
+\hline
+\mbox{\tt out}  & {\em error\+Code} & If function fails this will hold the error\+Code\\
+\hline
+\end{DoxyParams}
 
 \begin{DoxyRetVals}{Return values}
-{\em 1} & The mouse is scrolling up. \\
+{\em 0} & The Key is not pressed. \\
 \hline
-{\em 0} & The mouse is not scrolling. \\
-\hline
-{\em -\/1} & The mouse is scrolling up. \\
+{\em 1} & The Key is pressed. \\
 \hline
 \end{DoxyRetVals}
 \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
@@ -154,7 +144,38 @@ Decrease the total number of active refrences to this object Once the internal c
 \subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
 {\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
 
-Increase the total number of active refrences to this object End users should only call this operation if they are familiar with reference counting behavior 
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Input@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Input}}
+\subsubsection{\texorpdfstring{Request\+Interface()}{RequestInterface()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Request\+Interface (\begin{DoxyParamCaption}\item[{const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&}]{\+\_\+interface\+ID,  }\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Similiar to DirectX query\+Interface function.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is support and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

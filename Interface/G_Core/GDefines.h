@@ -18,7 +18,7 @@ namespace GW
 #pragma pack(push, 1)
 	//! Gateware Universaly Unique Interface IDentifier
 	/*! 
-	*	Each GIID defines a unique 128bit number identifying a particular version of an interface
+	*	Each GUUIID defines a unique 128bit number identifying a particular version of an interface
 	*	This allows interfaces to be upgraded down the line safely without breaking legacy code
 	*/
 	struct GUUIID // ALL GUUIID are stored little endian

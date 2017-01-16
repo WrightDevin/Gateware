@@ -28,8 +28,8 @@ namespace GW
 
 		//! The GBroadcasting Interface is capable of registering & deregistering GListener interfaces.
 		/*! 
-		*	The Broadcaster must then notifiy any listeners of advertised events via the "GListener::OnEvent" callback 
-		*	During registration a GBroadcasting implmenetation may choose to support filtration via bitflags (optional) 
+		*	The GBroadcaster will notify all registered listeners with the listeners OnEvent function.
+		*	The events being registered for can be filtered with the _eventMask (optional).
 		*/
 		class GBroadcasting : public GMultiThreaded
 		{
