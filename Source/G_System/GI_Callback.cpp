@@ -23,6 +23,8 @@ unsigned int _keyMask;
 	//! Store the users implementation of the windows procedure.
 	LONG_PTR _userWinProc;
 
+
+
 	//Methods
 	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
 		switch (msg)
@@ -106,14 +108,14 @@ unsigned int _keyMask;
 					break;
 				}
 
-				switch (raw->data.mouse.usButtonData) {
-				case 120:
-					_data = G_MOUSE_SCROLL_UP;
-					break;
-				case 65416:
-					_data = G_MOUSE_SCROLL_DOWN;
-					break;
-				}
+				//switch (raw->data.mouse.usButtonData) {
+				//case 120:
+				//	_data = G_MOUSE_SCROLL_UP;
+				//	break;
+				//case 65416:
+				//	_data = G_MOUSE_SCROLL_DOWN;
+				//	break;
+				//}
 
 				switch (raw->data.mouse.usButtonFlags) {
 					//pressed
@@ -136,12 +138,12 @@ unsigned int _keyMask;
 
 			}
 
-			if (_data != G_MOUSE_SCROLL_UP) {
-				n_Keys[G_MOUSE_SCROLL_UP] = 0;
-			}
-			if (_data != G_MOUSE_SCROLL_DOWN) {
-				n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
-			}
+			//if (_data != G_MOUSE_SCROLL_UP) {
+			//	n_Keys[G_MOUSE_SCROLL_UP] = 0;
+			//}
+			//if (_data != G_MOUSE_SCROLL_DOWN) {
+			//	n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
+			//}
 
 			POINT p;
 			if (GetCursorPos(&p))
@@ -177,9 +179,8 @@ unsigned int _keyMask;
 
 #ifdef __APPLE__
 
-#include "../../Interface/G_System/GResponder.h"
 
-	GResponder * responder = [GResponder alloc];
+	GIResponder * responder = [GIResponder alloc];
 
 
 #endif

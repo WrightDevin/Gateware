@@ -12,11 +12,9 @@
 		8F01B05E1E240393004F4D72 /* GI_Callback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05B1E240393004F4D72 /* GI_Callback.cpp */; };
 		8F01B05F1E240393004F4D72 /* GI_Static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05C1E240393004F4D72 /* GI_Static.cpp */; };
 		8F01B0601E240393004F4D72 /* GInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05D1E240393004F4D72 /* GInput.cpp */; };
-		8F01B08A1E24042F004F4D72 /* GInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05D1E240393004F4D72 /* GInput.cpp */; };
-		8F01B08B1E24042F004F4D72 /* GI_Callback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05B1E240393004F4D72 /* GI_Callback.cpp */; };
-		8F01B08C1E24042F004F4D72 /* GI_Static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05C1E240393004F4D72 /* GI_Static.cpp */; };
 		8F01B08F1E24042F004F4D72 /* GInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0571E240370004F4D72 /* GInput.h */; };
 		8F01B0901E24042F004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0581E240370004F4D72 /* GKeyDefines.h */; };
+		8F17D7231E2960AD00F1627A /* GInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F17D7221E2960AD00F1627A /* GInput.mm */; };
 		8FD304491E240B29007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304481E240B29007B55CC /* Cocoa.framework */; };
 		8FD3044A1E240B30007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304481E240B29007B55CC /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -29,6 +27,7 @@
 		8F01B05C1E240393004F4D72 /* GI_Static.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GI_Static.cpp; path = ../../../Source/G_System/GI_Static.cpp; sourceTree = "<group>"; };
 		8F01B05D1E240393004F4D72 /* GInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GInput.cpp; path = ../../../Source/G_System/GInput.cpp; sourceTree = "<group>"; };
 		8F01B0941E24042F004F4D72 /* GInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = GInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F17D7221E2960AD00F1627A /* GInput.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = GInput.mm; path = ../../../Source/G_System/GInput.mm; sourceTree = "<group>"; };
 		8FD304481E240B29007B55CC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -55,6 +54,7 @@
 		8F01B01D1E240290004F4D72 = {
 			isa = PBXGroup;
 			children = (
+				8F17D7221E2960AD00F1627A /* GInput.mm */,
 				8F01B0571E240370004F4D72 /* GInput.h */,
 				8F01B05B1E240393004F4D72 /* GI_Callback.cpp */,
 				8F01B05C1E240393004F4D72 /* GI_Static.cpp */,
@@ -188,9 +188,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F01B08A1E24042F004F4D72 /* GInput.cpp in Sources */,
-				8F01B08B1E24042F004F4D72 /* GI_Callback.cpp in Sources */,
-				8F01B08C1E24042F004F4D72 /* GI_Static.cpp in Sources */,
+				8F17D7231E2960AD00F1627A /* GInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

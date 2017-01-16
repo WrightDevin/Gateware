@@ -1,5 +1,9 @@
+// Override export symbols for DLL builds (must be included before interface code)
 #include "../DLL_Export_Symbols.h"
+
+#ifndef __APPLE__
 #include "../../Source/G_System/GBI_Callback.cpp"
+#endif
 
 #include <mutex>
 #include <atomic>
@@ -12,6 +16,7 @@ class BufferedInput : public GBufferedInput {
 
 private:
 
+	//The atomic value is for thread safety.(Like a mutex without using a mutex).
 	std::atomic<unsigned int> n_refrenceCount;
 
 	std::atomic_bool _threadOpen;
@@ -23,7 +28,7 @@ private:
 #ifdef _WIN32
 #elif __linux__
 	LINUX_WINDOW _linuxWindow;
-#elif __APPPLE__
+#elif __APPLE__
 
 #endif
 
@@ -164,7 +169,6 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 	return SUCCESS;
 }
 
-
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
 GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
 {
@@ -172,7 +176,6 @@ GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPoint
 	return GW::CORE::CreateGBufferedInput(_outPointer, _data);
 }
 
-// Create function MUST be explicitly scoped to avoid naming colissions
 GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 
@@ -245,30 +248,14 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 		tBuffer[0] = '\0';
 
 
-		//FInd the device name.
+		//Find the device name.
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, tBuffer, &size) < 0) {
-
+			
 		}
 
 		UINT cbSize = rdi.cbSize;
 		//Get the device information.
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0) {
-
-		}
-
-		//Display the device information.
-
-		//Check if its a mouse.
-		if (rdi.dwType == RIM_TYPEMOUSE) {
-
-		}
-
-		//Check if its a Keyboard.
-		else if (rdi.dwType == RIM_TYPEKEYBOARD) {
-
-		}
-		//Check if its a vendor.
-		else if (rdi.dwType == RIM_TYPEHID) {
 
 		}
 
@@ -292,7 +279,8 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 
 	}
-		//Capslock
+	
+	//Capslock
 	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
 		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
 	}
@@ -316,17 +304,22 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 GRETURN BufferedInput::InitializeLinux(void * _data) {
 
 #ifdef __linux__
+	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display * _display;
+	//Cast the void* _linuxWidnow._Display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow._Display);
     Window _window;
+	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
     memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+	//Select the type of Input events we wish to recieve.
 	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
+	//Set our thread to open.
     _threadOpen = true;
+	//Create the Linux Input thread.
 	_inputThread = new std::thread(&BufferedInput::InputThread, this);
-
 
 	return SUCCESS;
 
@@ -336,12 +329,14 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
     
+	//Create an NSReponder *. (NSResponder is the class that we use to recieve events on mac).
     NSResponder * windowResponder = [NSResponder alloc];
+	//Cast the _data(NSWindow) to a NSReponder. (NSWindow Derives From NSResponder).
     windowResponder = (__bridge NSResponder *)_data;
-    
+    //Set the next responder to the our Responder(GResponder) responder is declared in GBI_Callback.cpp.
+	//Setting the nextResponder allows us to piggy back on the events being sent to the main program.
+	//So we get a copy of the original events.
     windowResponder.nextResponder = responder;
-    
-    
     
 #endif
     
@@ -358,30 +353,44 @@ void BufferedInput::InputThread()
     G_INPUT_DATA _dataStruct;
 	while (_threadOpen)
 	{
-
+		//To store the current event from XNextEvent.
         XEvent e;
 
+		//Cast the void* _linuxWidnow._Display to a display pointer to pass to XNextEvent.
         Display * _display = (Display*)(_linuxWindow._Display);
 
+		//Gets the next event and removes it from the queue.
 		XNextEvent(_display, &e);
+
+		//Check what type of event it is ( KeyPress, KeyRelease, ButtonPress, ButtonRelease).
 		switch (e.type) {
 		case KeyPress:
+			//Get the keycode from the static table of G_KEYS.
 			_code = Keycodes[e.xkey.keycode][1];
+			//Set the Event Type for when we send the events to all registered listeners.
 			_event = KEYPRESSED;
+			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
 			_dataStruct._keyMask = e.xkey.state;
+			//Set the cursor position relative to the window.
             _dataStruct._x = e.xkey.x;
             _dataStruct._y = e.xkey.y;
+			//Set the cursor position relative to the screen.
             _dataStruct._screenX = e.xkey.x_root;
             _dataStruct._screenY = e.xkey.y_root;
-
 			break;
 		case KeyRelease:
+			//Get the keycode from the static table of G_KEYS.
 			_code = Keycodes[e.xkey.keycode][1];
+			//Set the Event Type for when we send the events to all registered listeners.
 			_event = KEYRELEASED;
+			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
 			_dataStruct._keyMask = e.xkey.state;
+			//Set the cursor position relative to the window.
             _dataStruct._x = e.xkey.x;
             _dataStruct._y = e.xkey.y;
+			//Set the cursor position relative to the screen.
             _dataStruct._screenX = e.xkey.x_root;
+			_dataStruct._screenX = e.xkey.y_root;
 			break;
 		case ButtonPress:
 			_code = e.xbutton.button;
@@ -403,6 +412,7 @@ void BufferedInput::InputThread()
 			break;
 		}
 
+		//If the event is a button event check which button it was.
 		if (_event == BUTTONPRESSED || _event == BUTTONRELEASED) {
 			switch (_code) {
 			case 1:
@@ -426,16 +436,17 @@ void BufferedInput::InputThread()
 			}
 		}
 
+		//Set the keycode in the _dataStruct being sent to all registered listeners.
         _dataStruct._data = _code;
 
-
+		//Send the event to all registered listeners.
         if(_code != -1 && _event != -1){
             std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
             for (; iter != _listeners.end(); ++iter) {
                 iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
             }
 		}
-
 	}
 #endif
+
 }

@@ -70,7 +70,7 @@
 		8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLog.xcodeproj; path = GLog/GLog.xcodeproj; sourceTree = "<group>"; };
 		8F01B02D1E240290004F4D72 /* GInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GInput.xcodeproj; path = GInput/GInput.xcodeproj; sourceTree = "<group>"; };
 		8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
-		8FD304321E240831007B55CC /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libGBufferedInput.a; path = "/Users/gdbstools/Desktop/gateware.git.0/XCode/Gateware Libraries/build/Debug/libGBufferedInput.a"; sourceTree = "<absolute>"; };
+		8F09F8651E2BC62C0090C9D9 /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,14 +91,15 @@
 				8F01B02D1E240290004F4D72 /* GInput.xcodeproj */,
 				8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */,
 				8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */,
+				8F09F8651E2BC62C0090C9D9 /* libGBufferedInput.a */,
 			);
 			sourceTree = "<group>";
 		};
 		8F01AFE61E24020B004F4D72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8F01AFEA1E24020C004F4D72 /* libGFile amd64.a */,
-				8FD3043A1E240835007B55CC /* libGFile i386.a */,
+				8F01AFEA1E24020C004F4D72 /* GFile.a */,
+				8FD3043A1E240835007B55CC /* GFile.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,8 +107,8 @@
 		8F01AFFC1E240223004F4D72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8F01B0001E240223004F4D72 /* libGLog.a */,
-				8FD304421E240835007B55CC /* libGLog copy.a */,
+				8F01B0001E240223004F4D72 /* GLog.a */,
+				8FD304421E240835007B55CC /* GLog.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -115,8 +116,8 @@
 		8F01B02E1E240290004F4D72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8F01B0321E240291004F4D72 /* libGInput.a */,
-				8FD3043E1E240835007B55CC /* libGInput copy.a */,
+				8F01B0321E240291004F4D72 /* GInput.a */,
+				8FD3043E1E240835007B55CC /* GInput.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,8 +125,8 @@
 		8F01B04C1E2402D3004F4D72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8F01B0501E2402D4004F4D72 /* libGBufferedInput.a */,
-				8FD304361E240835007B55CC /* libGBufferedInput copy.a */,
+				8F01B0501E2402D4004F4D72 /* GBufferedInput.a */,
+				8FD304361E240835007B55CC /* GBufferedInput.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -157,7 +158,7 @@
 			);
 			name = GBufferedInput;
 			productName = GBufferedInput;
-			productReference = 8FD304321E240831007B55CC /* libGBufferedInput.a */;
+			productReference = 8F09F8651E2BC62C0090C9D9 /* libGBufferedInput.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -211,59 +212,59 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8F01AFEA1E24020C004F4D72 /* libGFile amd64.a */ = {
+		8F01AFEA1E24020C004F4D72 /* GFile.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGFile amd64.a";
+			path = GFile.a;
 			remoteRef = 8F01AFE91E24020C004F4D72 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8F01B0001E240223004F4D72 /* libGLog.a */ = {
+		8F01B0001E240223004F4D72 /* GLog.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libGLog.a;
+			path = GLog.a;
 			remoteRef = 8F01AFFF1E240223004F4D72 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8F01B0321E240291004F4D72 /* libGInput.a */ = {
+		8F01B0321E240291004F4D72 /* GInput.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libGInput.a;
+			path = GInput.a;
 			remoteRef = 8F01B0311E240291004F4D72 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8F01B0501E2402D4004F4D72 /* libGBufferedInput.a */ = {
+		8F01B0501E2402D4004F4D72 /* GBufferedInput.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libGBufferedInput.a;
+			path = GBufferedInput.a;
 			remoteRef = 8F01B04F1E2402D4004F4D72 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8FD304361E240835007B55CC /* libGBufferedInput copy.a */ = {
+		8FD304361E240835007B55CC /* GBufferedInput.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGBufferedInput copy.a";
+			path = GBufferedInput.a;
 			remoteRef = 8FD304351E240835007B55CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8FD3043A1E240835007B55CC /* libGFile i386.a */ = {
+		8FD3043A1E240835007B55CC /* GFile.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGFile i386.a";
+			path = GFile.a;
 			remoteRef = 8FD304391E240835007B55CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8FD3043E1E240835007B55CC /* libGInput copy.a */ = {
+		8FD3043E1E240835007B55CC /* GInput.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGInput copy.a";
+			path = GInput.a;
 			remoteRef = 8FD3043D1E240835007B55CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8FD304421E240835007B55CC /* libGLog copy.a */ = {
+		8FD304421E240835007B55CC /* GLog.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGLog copy.a";
+			path = GLog.a;
 			remoteRef = 8FD304411E240835007B55CC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
