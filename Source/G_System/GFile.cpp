@@ -680,6 +680,14 @@ GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _out
 	return GW::SUCCESS;
 }
 
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGFile(GW::CORE::GFile** _outFile)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGFile(_outFile);
+}
+
+
 GW::GRETURN GW::CORE::CreateGFile(GFile** _outFile)
 {
 	//Check that we were given a valid pointer

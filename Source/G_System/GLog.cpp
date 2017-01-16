@@ -1,3 +1,6 @@
+// Override export symbols for DLL builds (must be included before interface code)
+#include "../DLL_Export_Symbols.h"
+
 #include "../../Interface/G_System/GLog.h"
 #include "../../Interface/G_System/GFile.h"
 #include "GUtility.h"
@@ -381,6 +384,14 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 	return GW::SUCCESS;
 }
 
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLog(const char* const _fileName, GW::CORE::GLog** _outLog)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGLog(_fileName, _outLog);
+}
+
+
 GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
@@ -401,6 +412,13 @@ GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
 	(*_outLog) = logFile;
 
 	return GW::SUCCESS;
+}
+
+// This is an DLL exported version of the create function, the name is not mangled for explicit linking.
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLog(GW::CORE::GFile* _file, GW::CORE::GLog** _outLog)
+{
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	return GW::CORE::CreateGLogCustom(_file, _outLog);
 }
 
 GW::GRETURN GW::CORE::CreateGLogCustom(GFile* _file, GLog** _outLog)

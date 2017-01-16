@@ -1,3 +1,6 @@
+// Override export symbols for DLL builds (must be included before interface code)
+#include "../DLL_Export_Symbols.h"
+
 #ifndef __APPLE__
 #include "../../Source/G_System/GI_Callback.cpp"
 #endif
