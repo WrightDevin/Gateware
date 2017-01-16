@@ -2,7 +2,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-
+//The GIResponder is our interpretation of the NSReponder to recieve events.
 @interface GIResponder : NSResponder
 {
     NSUInteger flags;
@@ -41,7 +41,9 @@
 }
 
 -(void)keyDown:(NSEvent *)theEvent{
+	//Set the key to pressed after getting it from the static table of keys.
     n_Keys[Keycodes[[theEvent keyCode]][2]] = 1;
+	//Get the keymask.
     [self GetKeyMask:theEvent];
 }
 
@@ -88,7 +90,9 @@
 
 -(void)GetKeyMask:(NSEvent *)theEvent{
     _keyMask = 0;
+	//Get the unsigned int of all the modifier flags.
     NSUInteger flags = [theEvent modifierFlags];
+	//Check individual modifier flags and turn them on respectivly to our keymask(unsigned int).
     if (flags & NSEventModifierFlagShift) {
         TURNON_BIT(_keyMask, G_MASK_SHIFT);
     }

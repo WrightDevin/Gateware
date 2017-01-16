@@ -2,7 +2,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-
+//The GResponder is our interpretation of the NSReponder to recieve events.
 @interface GResponder : NSResponder
 
 -(bool)acceptFirstResponder;
@@ -41,15 +41,21 @@
 
 -(void)keyDown:(NSEvent *)theEvent{
     G_INPUT_DATA _dataStruct;
+	//Get the key from the static list of keys.
     _dataStruct._data = Keycodes[[theEvent keyCode]][2];
+	//Call the GetKeyMask Function passing the event passed to this functions.
     [self GetKeyMask:theEvent];
+	//Set the keymask.
     _dataStruct._keyMask = _keyMask;
+	//Get the mouse position relative to the window.
     NSPoint mousePosition = [theEvent locationInWindow];
     _dataStruct._x = mousePosition.x;
     _dataStruct._y = mousePosition.y;
+	//Get the mouse position relative to the screen.
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct._screenX = screenMousePosition.x;
     _dataStruct._screenY = screenMousePosition.y;
+	//Send off the event.
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, KEYPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
@@ -175,22 +181,28 @@
     }
 }
 
--(void)scrollWheel:(NSEvent *)theEvent{
+-(void)scrollWheel:(NSEvent *)theEvent}
     G_INPUT_DATA _dataStruct;
+	//Check wether the its a scroll up or down event.
     if([theEvent scrollingDeltaY] > 0){
         _dataStruct._data = G_MOUSE_SCROLL_UP;
     }
     if([theEvent scrollingDeltaY] < 0){
         _dataStruct._data = G_MOUSE_SCROLL_DOWN;
     }
+	//Get the keymask using the getkeymask function/
     [self GetKeyMask:theEvent];
+	//Set the keymask.
     _dataStruct._keyMask = _keyMask;
+	//Get the mouse position relative to the window.
     NSPoint mousePosition = [theEvent locationInWindow];
     _dataStruct._x = mousePosition.x;
     _dataStruct._y = mousePosition.y;
+	//Get the mouse position relative to the screen.
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct._screenX = screenMousePosition.x;
     _dataStruct._screenY = screenMousePosition.y;
+	//Make sure theres data to send and send the data to all registered listeners.
     if(_dataStruct._data){
         std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
         for (; iter != _listeners.end(); ++iter) {
@@ -202,7 +214,9 @@
 
 -(void)GetKeyMask:(NSEvent *)theEvent{
     _keyMask = 0;
+	//Get the unsigned int of all the modifier flags.
     NSUInteger flags = [theEvent modifierFlags];
+	//Check individual modifier flags and turn them on respectivly to our keymask(unsigned int).
     if (flags & NSEventModifierFlagShift) {
         TURNON_BIT(_keyMask, G_MASK_SHIFT);
     }

@@ -15,9 +15,9 @@ private:
 
 	/* GInterface */
 
-	//! Total number of active refrences to this object.
-	unsigned int n_refrenceCount;
 	void * hWnd;
+
+	unsigned int n_refrenceCount;
 
 	std::atomic_bool _threadOpen;
 
@@ -45,27 +45,16 @@ public:
 
 	/* GInput */
 
-	//GRETURN Update();
 	float GetState(int _keyCode, GRETURN * errorCode);
 	GRETURN GetMouseDelta(float &x, float &y);
 	GRETURN GetMousePosition(float &x, float &y);
 	unsigned int GetKeyMask();
 
-
 	/* GInterface */
 
-	//! Return the total number of active refrences to this object
 	GRETURN GetCount(unsigned int &_outCount);
-
-	//! Increase the total number of active refrences to this object
-	//! End users should only call this operation if they are familiar with reference counting behavior
 	GRETURN IncrementCount();
-
-	//! Decrease the total number of active refrences to this object
-	//! Once the internal count reaches zero this object will be deallocated and your pointer will become invalid
 	GRETURN DecrementCount();
-
-	//! Requests an interface that may or may not be supported by this object
 	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
 };
 
@@ -188,7 +177,6 @@ GRETURN Input::InitializeWindows(void * _data) {
 
 	}
 
-
 	RID_DEVICE_INFO rdi;
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
 
@@ -208,23 +196,6 @@ GRETURN Input::InitializeWindows(void * _data) {
 		UINT cbSize = rdi.cbSize;
 		//Get the device information.
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0) {
-
-		}
-
-		//Display the device information.
-
-		//Check if its a mouse.
-		//std::cout << std::endl << "Device Name: " << tBuffer << std::endl;
-		if (rdi.dwType == RIM_TYPEMOUSE) {
-
-		}
-
-		//Check if its a Keyboard.
-		else if (rdi.dwType == RIM_TYPEKEYBOARD) {
-
-		}
-		//Check if its a vendor.
-		else if (rdi.dwType == RIM_TYPEHID) {
 
 		}
 
@@ -270,15 +241,21 @@ GRETURN Input::InitializeWindows(void * _data) {
 GRETURN Input::InitializeLinux(void * _data) {
 
 #ifdef __linux__
+	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
 	memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
 	Display * _display;
+	//Cast the void* _linuxWidnow._Display to a display pointer to pass to XSelectInput.
 	_display = (Display *)(_linuxWindow._Display);
 	Window _window;
+	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
 	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+	//Select the type of Input events we wish to recieve.
 	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
+	//Set our thread to open.
 	_threadOpen = true;
+	//Create the Linux Input thread.
 	_inputThread = new std::thread(&Input::InputThread, this);
 
 	return SUCCESS;
@@ -289,12 +266,15 @@ GRETURN Input::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
     
-    NSResponder * windowResponder = [NSResponder alloc];
-    windowResponder = (__bridge NSResponder *)_data;
-    
-    windowResponder.nextResponder = responder;
-    
-    
+	//Create an NSReponder *. (NSResponder is the class that we use to recieve events on mac).
+	NSResponder * windowResponder = [NSResponder alloc];
+	//Cast the _data(NSWindow) to a NSReponder. (NSWindow Derives From NSResponder).
+	windowResponder = (__bridge NSResponder *)_data;
+	//Set the next responder to the our Responder(GResponder) responder is declared in GBI_Callback.cpp.
+	//Setting the nextResponder allows us to piggy back on the events being sent to the main program.
+	//So we get a copy of the original events.
+	windowResponder.nextResponder = responder;
+
 #endif
 
 	return SUCCESS;
@@ -329,50 +309,45 @@ GRETURN Input::GetMousePosition(float &x, float &y) {
 	return SUCCESS;
 }
 
-//float Input::GetMouseScroll() {
-//
-//	float direction = 0;
-//	if (n_Keys[G_MOUSE_SCROLL_UP] == 1) {
-//		direction = -1;
-//	}
-//	else if(n_Keys[G_MOUSE_SCROLL_DOWN] == 1){
-//		direction = 1;
-//	}
-//	return direction;
-//}
-
-
 unsigned int Input::GetKeyMask() {
 	return _keyMask;
 }
 
 void Input::InputThread()
 {
+
+#ifdef __linux__
 	int _code = -1;
 	while (_threadOpen)
 	{
-#ifdef __linux__
+		//To store the current event from XNextEvent.
 		XEvent e;
 
+		//Cast the void* _linuxWidnow._Display to a display pointer to pass to XNextEvent.
 		Display * _display = (Display*)(_linuxWindow._Display);
 
+		//Gets the next event and removes it from the queue.
 		XNextEvent(_display, &e);
 
+		//Check what type of event it is ( KeyPress, KeyRelease, ButtonPress, ButtonRelease).
 		switch (e.type) {
 		case KeyPress:
+			//Get the keycode from the static table of G_KEYS.
 			_code = Keycodes[e.xkey.keycode][1];
+			//Set the key in the buffer of keys to 1 for pressed.
 			n_Keys[_code] = 1;
-			//_event = KEYPRESSED;
+			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
 			_keyMask = e.xkey.state;
+			//Set the cursor position relative to the window.
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
+			//Set the cursor position relative to the screen.
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.y_root;
 			break;
 		case KeyRelease:
 			_code = Keycodes[e.xkey.keycode][1];
 			n_Keys[_code] = 0;
-			//_event = KEYRELEASED;
 			_keyMask = e.xkey.state;
 			_mousePositionX = e.xkey.x;
 			_mousePositionY = e.xkey.y;
@@ -386,6 +361,8 @@ void Input::InputThread()
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.y_root;
+
+			//Check the code and set the corresponding button to pressed.
             switch (_code) {
 			case 1:
 				 n_Keys[G_BUTTON_LEFT] = 1;
@@ -396,12 +373,6 @@ void Input::InputThread()
 			case 3:
                 n_Keys[G_BUTTON_RIGHT] = 1;
 				break;
-			//case 4:
-   //             n_Keys[G_MOUSE_SCROLL_UP] = 1;
-			//	break;
-			//case 5:
-   //             n_Keys[G_MOUSE_SCROLL_DOWN] = 1;
-			//	break;
 			}
 			break;
 		case ButtonRelease:
@@ -411,6 +382,8 @@ void Input::InputThread()
 			_mousePositionY = e.xkey.y;
 			_mouseDeltaX = e.xkey.x_root;
 			_mouseDeltaY = e.xkey.y_root;
+
+			//Check the code and set the corresponding button to released.
             switch (_code) {
 			case 1:
 				 n_Keys[G_BUTTON_LEFT] = 0;
@@ -421,23 +394,19 @@ void Input::InputThread()
 			case 3:
                 n_Keys[G_BUTTON_RIGHT] = 0;
 				break;
-			//case 4:
-   //             n_Keys[G_MOUSE_SCROLL_UP] = 0;
-			//	break;
-			//case 5:
-   //             n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
-			//	break;
 			}
 			break;
 		}
 
-
+		//Set the change in mouse position.
 		_mouseDeltaX = _mousePrevX - _mousePositionX;
 		_mouseDeltaY = _mousePrevY - _mousePositionY;
 
+		//Set the previous mouse position as the current.
 		_mousePrevX = _mousePositionX;
 		_mousePrevY = _mousePositionY;
 
-#endif
 	}
+#endif
+
 }
