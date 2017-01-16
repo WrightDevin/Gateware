@@ -1,0 +1,145 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Log Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_log}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+
+
+Cross platform threadsafe logger.  
+
+
+
+
+{\ttfamily \#include $<$G\+Log.\+h$>$}
+
+
+
+Inherits \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Multi\+Threaded}.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log_a9b9ec52b1b35eb2fd9a63ec7312fd31a}{Log} (const char $\ast$const \+\_\+log)=0
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log_ab7dbe43179c1de11c9ddac9d6cba01cf}{Log\+Catergorized} (const char $\ast$const \+\_\+category, const char $\ast$const \+\_\+log)=0
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string with a category. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log_ac14e65291dba9480deadd772a8f0e307}{Enable\+Verbose\+Logging} (bool \+\_\+value)=0
+\begin{DoxyCompactList}\small\item\em Turns verbose logging on or off. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log_a9a486a646a0a02bb5724100c1849fcec}{Enable\+Console\+Logging} (bool \+\_\+value)=0
+\begin{DoxyCompactList}\small\item\em Turns console logging on or off. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log_a1e0bb42d95ddd42fa019d5cd6050ff97}{Flush} ()=0
+\begin{DoxyCompactList}\small\item\em Forces a log dump to file. \end{DoxyCompactList}\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active refrences to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{Increment\+Count} ()=0
+\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{Decrement\+Count} ()=0
+\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{Request\+Interface} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Decrease the total number of active refrences to this object Once the internal count reaches zero this object will be deallocated and your pointer will become invalid \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log_a9a486a646a0a02bb5724100c1849fcec}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_log_a9a486a646a0a02bb5724100c1849fcec} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Enable\+Console\+Logging@{Enable\+Console\+Logging}}
+\index{Enable\+Console\+Logging@{Enable\+Console\+Logging}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Enable\+Console\+Logging()}{EnableConsoleLogging()}}
+{\footnotesize\ttfamily virtual void G\+W\+::\+C\+O\+R\+E\+::\+G\+Log\+::\+Enable\+Console\+Logging (\begin{DoxyParamCaption}\item[{bool}]{\+\_\+value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Use this function to prevent the additional console logging.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log_ac14e65291dba9480deadd772a8f0e307}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_log_ac14e65291dba9480deadd772a8f0e307} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}}
+\index{Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Enable\+Verbose\+Logging()}{EnableVerboseLogging()}}
+{\footnotesize\ttfamily virtual void G\+W\+::\+C\+O\+R\+E\+::\+G\+Log\+::\+Enable\+Verbose\+Logging (\begin{DoxyParamCaption}\item[{bool}]{\+\_\+value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Use this function to prevent the addition of date, time, and thread\+ID to your logs.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log_a1e0bb42d95ddd42fa019d5cd6050ff97}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_log_a1e0bb42d95ddd42fa019d5cd6050ff97} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Flush@{Flush}}
+\index{Flush@{Flush}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Flush()}{Flush()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Log\+::\+Flush (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+This will force a log dump to the file and clear the log queue.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully dumped the logs \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Most likely a file corruption or a file is not open. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Increase the total number of active refrences to this object End users should only call this operation if they are familiar with reference counting behavior \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log_a9b9ec52b1b35eb2fd9a63ec7312fd31a}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_log_a9b9ec52b1b35eb2fd9a63ec7312fd31a} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Log@{Log}}
+\index{Log@{Log}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Log()}{Log()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Log\+::\+Log (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+log }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximun size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_log_ab7dbe43179c1de11c9ddac9d6cba01cf}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_log_ab7dbe43179c1de11c9ddac9d6cba01cf} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}!Log\+Catergorized@{Log\+Catergorized}}
+\index{Log\+Catergorized@{Log\+Catergorized}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Log@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Log}}
+\subsubsection{\texorpdfstring{Log\+Catergorized()}{LogCatergorized()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Log\+::\+Log\+Catergorized (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+category,  }\item[{const char $\ast$const}]{\+\_\+log }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+category} & The category the log belongs in. ie. E\+R\+R\+OR, W\+A\+R\+N\+I\+NG, I\+N\+FO, etc. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximun size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either \+\_\+category or \+\_\+log are nullptr. \\
+\hline
+\end{DoxyRetVals}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+Log.\+h\end{DoxyCompactItemize}

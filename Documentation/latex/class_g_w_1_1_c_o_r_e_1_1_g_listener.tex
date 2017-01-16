@@ -1,0 +1,51 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_listener}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Listener Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_listener}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}}
+
+
+A \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} Interface may be registered with a G\+Broadcaster interface to receive event notifications.  
+
+
+
+
+{\ttfamily \#include $<$G\+Listener.\+h$>$}
+
+
+
+Inherits \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Multi\+Threaded}.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_listener_a72a16a96654c7a9ce301907d05b4ad45}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_listener_a72a16a96654c7a9ce301907d05b4ad45} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener_a72a16a96654c7a9ce301907d05b4ad45}{On\+Event} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+sender\+Interface, unsigned int \+\_\+event\+ID, void $\ast$\+\_\+event\+Data, unsigned int \+\_\+data\+Size)=0
+\begin{DoxyCompactList}\small\item\em This operation is called whenever a G\+Broadcaster a listener is registered to generates an event. \end{DoxyCompactList}\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active refrences to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{Increment\+Count} ()=0
+\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{Decrement\+Count} ()=0
+\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{Request\+Interface} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}}
+\subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Decrease the total number of active refrences to this object Once the internal count reaches zero this object will be deallocated and your pointer will become invalid \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Listener}}
+\subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Increase the total number of active refrences to this object End users should only call this operation if they are familiar with reference counting behavior 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+Listener.\+h\end{DoxyCompactItemize}

@@ -94,7 +94,7 @@ LogFile::~LogFile()
 GW::GRETURN LogFile::Init(const char* const _fileName)
 {
 	//Create a GFile
-	GW::GRETURN rv = GCreateFile(&m_logFile);
+	GW::GRETURN rv = CreateGFile(&m_logFile);
 	if (G_FAIL(rv))
 		return rv;
 
@@ -381,7 +381,7 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 	return GW::SUCCESS;
 }
 
-GW::GRETURN GW::CORE::GCreateLog(const char* const _fileName, GLog** _outLog)
+GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)
@@ -403,7 +403,7 @@ GW::GRETURN GW::CORE::GCreateLog(const char* const _fileName, GLog** _outLog)
 	return GW::SUCCESS;
 }
 
-GW::GRETURN GW::CORE::GCreateLog(GFile* _file, GLog** _outLog)
+GW::GRETURN GW::CORE::CreateGLogCustom(GFile* _file, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)

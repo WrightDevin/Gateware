@@ -1,0 +1,183 @@
+\hypertarget{namespace_g_w_1_1_c_o_r_e}{}\section{GW\+:\+:C\+O\+RE Namespace Reference}
+\label{namespace_g_w_1_1_c_o_r_e}\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+
+
+The core namespace to which all Gateware fundamental interfaces must belong.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_g_w_1_1_c_o_r_e_1_1_g___i_n_p_u_t___d_a_t_a}{G\+\_\+\+I\+N\+P\+U\+T\+\_\+\+D\+A\+TA}
+\begin{DoxyCompactList}\small\item\em \hyperlink{struct_g_w_1_1_c_o_r_e_1_1_g___i_n_p_u_t___d_a_t_a}{G\+\_\+\+I\+N\+P\+U\+T\+\_\+\+D\+A\+TA} will hold any information you may need about an Input Event. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting}
+\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_buffered_input}{G\+Buffered\+Input}
+\begin{DoxyCompactList}\small\item\em A Multi threaded buffered input library. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File}
+\begin{DoxyCompactList}\small\item\em Cross platform File\+I\+O/\+Directory handling. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input}{G\+Input}
+\begin{DoxyCompactList}\small\item\em A single threaded input library. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface}{G\+Interface}
+\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener}
+\begin{DoxyCompactList}\small\item\em A \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} Interface may be registered with a G\+Broadcaster interface to receive event notifications. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log}
+\begin{DoxyCompactList}\small\item\em Cross platform threadsafe logger. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+Multi\+Threaded}
+\begin{DoxyCompactList}\small\item\em This interface is only use to label and query interfaces which promise to 100\% internally support thread saftey. \end{DoxyCompactList}\item 
+class \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_single_threaded}{G\+Single\+Threaded}
+\begin{DoxyCompactList}\small\item\em This interface is only use to label and query interfaces which are not designed internally to support thread saftey. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_w_1_1_c_o_r_e_1_1_l_i_n_u_x___w_i_n_d_o_w}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespace_g_w_1_1_c_o_r_e_ad9b7ad6dcc306c2d2029ad1981f5dbe2}{}\label{namespace_g_w_1_1_c_o_r_e_ad9b7ad6dcc306c2d2029ad1981f5dbe2} 
+enum \hyperlink{namespace_g_w_1_1_c_o_r_e_ad9b7ad6dcc306c2d2029ad1981f5dbe2}{G\+B\+Input\+\_\+\+Events} \{ \newline
+{\bfseries K\+E\+Y\+P\+R\+E\+S\+S\+ED}, 
+{\bfseries K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}, 
+{\bfseries B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}, 
+{\bfseries B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}, 
+\newline
+{\bfseries M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}
+ \}\begin{DoxyCompactList}\small\item\em G\+B\+Input\+\_\+\+Events hold the possible events that can be sent from G\+Buffered\+Input. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{namespace_g_w_1_1_c_o_r_e_a004bf4f838aee645e39d1ce291866df4}{Create\+G\+Buffered\+Input} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_buffered_input}{G\+Buffered\+Input} $\ast$$\ast$\+\_\+out\+Buffered\+Input, void $\ast$\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_buffered_input}{G\+Buffered\+Input} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{namespace_g_w_1_1_c_o_r_e_a0e56d3ae4b384ce268ed1cbdb9391ef1}{G\+Create\+File} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} $\ast$$\ast$\+\_\+out\+File)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{namespace_g_w_1_1_c_o_r_e_aec1bf5a7404f981ce2b33a35324d7f80}{Create\+G\+Input} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input}{G\+Input} $\ast$$\ast$\+\_\+out\+Input, void $\ast$\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input}{G\+Input} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{namespace_g_w_1_1_c_o_r_e_a463db8a43954759bb7241fbd5b188ae2}{G\+Create\+Log} (const char $\ast$const \+\_\+file\+Name, \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{namespace_g_w_1_1_c_o_r_e_a05158f9e57230c75b73a30c956e32bd5}{G\+Create\+Log} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} $\ast$\+\_\+file, \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespace_g_w_1_1_c_o_r_e_a004bf4f838aee645e39d1ce291866df4}{}\label{namespace_g_w_1_1_c_o_r_e_a004bf4f838aee645e39d1ce291866df4} 
+\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}!Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}}
+\index{Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}!G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+\subsubsection{\texorpdfstring{Create\+G\+Buffered\+Input()}{CreateGBufferedInput()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+Create\+G\+Buffered\+Input (\begin{DoxyParamCaption}\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_buffered_input}{G\+Buffered\+Input} $\ast$$\ast$}]{\+\_\+out\+Buffered\+Input,  }\item[{void $\ast$}]{\+\_\+data }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Buffered\+Input} & \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Linux) Not Yet Implemented. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Max) Not Yet Implemented.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an Buffered\+Input Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+data is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{namespace_g_w_1_1_c_o_r_e_aec1bf5a7404f981ce2b33a35324d7f80}{}\label{namespace_g_w_1_1_c_o_r_e_aec1bf5a7404f981ce2b33a35324d7f80} 
+\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}!Create\+G\+Input@{Create\+G\+Input}}
+\index{Create\+G\+Input@{Create\+G\+Input}!G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+\subsubsection{\texorpdfstring{Create\+G\+Input()}{CreateGInput()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+Create\+G\+Input (\begin{DoxyParamCaption}\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input}{G\+Input} $\ast$$\ast$}]{\+\_\+out\+Input,  }\item[{void $\ast$}]{\+\_\+data }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Input} & \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Linux) Not Yet Implemented. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+data} & (Max) Not Yet Implemented.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an Input Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+data is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{namespace_g_w_1_1_c_o_r_e_a0e56d3ae4b384ce268ed1cbdb9391ef1}{}\label{namespace_g_w_1_1_c_o_r_e_a0e56d3ae4b384ce268ed1cbdb9391ef1} 
+\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}!G\+Create\+File@{G\+Create\+File}}
+\index{G\+Create\+File@{G\+Create\+File}!G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+\subsubsection{\texorpdfstring{G\+Create\+File()}{GCreateFile()}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Create\+File (\begin{DoxyParamCaption}\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} $\ast$$\ast$}]{\+\_\+out\+File }\end{DoxyParamCaption})}
+
+The \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} created by this function will have its current working directory defaulted to the directory where the program was ran from. Call Set\+Current\+Working\+Directory to change it. No file will be opened in creation of \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File}. Call an open function to open one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+File} & The Gfile that was created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Gfile successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} could not be created. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{namespace_g_w_1_1_c_o_r_e_a463db8a43954759bb7241fbd5b188ae2}{}\label{namespace_g_w_1_1_c_o_r_e_a463db8a43954759bb7241fbd5b188ae2} 
+\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}!G\+Create\+Log@{G\+Create\+Log}}
+\index{G\+Create\+Log@{G\+Create\+Log}!G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+\subsubsection{\texorpdfstring{G\+Create\+Log()}{GCreateLog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Create\+Log (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{\+\_\+file\+Name,  }\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} $\ast$$\ast$}]{\+\_\+out\+Log }\end{DoxyParamCaption})}
+
+This function will create a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} object with the log file being created in the directory the program was ran from. If you want to control where the log file is going to be created at then use the overridden function to pass in a G\+File$\ast$ that is pre set the way you want it.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file\+Name} & The name of the log file. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} if succefully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} was not created. \+\_\+out\+Log will be null \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both arguments are nullptrs. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{namespace_g_w_1_1_c_o_r_e_a05158f9e57230c75b73a30c956e32bd5}{}\label{namespace_g_w_1_1_c_o_r_e_a05158f9e57230c75b73a30c956e32bd5} 
+\index{G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}!G\+Create\+Log@{G\+Create\+Log}}
+\index{G\+Create\+Log@{G\+Create\+Log}!G\+W\+::\+C\+O\+RE@{G\+W\+::\+C\+O\+RE}}
+\subsubsection{\texorpdfstring{G\+Create\+Log()}{GCreateLog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Create\+Log (\begin{DoxyParamCaption}\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} $\ast$}]{\+\_\+file,  }\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} $\ast$$\ast$}]{\+\_\+out\+Log }\end{DoxyParamCaption})}
+
+This function will create a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} object with the \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} object that was passed in. This is so you can have more control over your log by setting up a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} in advance. The \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} object should already have a file open for text writing. N\+O\+TE\+: A reference count will be added to the \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} object passed in if the function succeeds.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file} & The \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_file}{G\+File} object that this log will use. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} if succefully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_log}{G\+Log} was not created. \+\_\+out\+Log will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both the arguments are nullptr. \\
+\hline
+\end{DoxyRetVals}

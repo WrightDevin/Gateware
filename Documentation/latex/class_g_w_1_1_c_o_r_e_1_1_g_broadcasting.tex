@@ -1,0 +1,61 @@
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Broadcasting Class Reference}
+\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+
+
+{\ttfamily \#include $<$G\+Broadcasting.\+h$>$}
+
+
+
+Inherits \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_multi_threaded}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Multi\+Threaded}.
+
+
+
+Inherited by \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_buffered_input}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Buffered\+Input}.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a7411c69b20257c02791bccc92cb0fd2b}{Register\+Listener} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} $\ast$\+\_\+add\+Listener, unsigned long long \+\_\+event\+Mask)=0
+\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a582f9f7b9311023dd1f00db49c16e80e}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a582f9f7b9311023dd1f00db49c16e80e} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a582f9f7b9311023dd1f00db49c16e80e}{Deregister\+Listener} (\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} $\ast$\+\_\+remove\+Listener)=0
+\begin{DoxyCompactList}\small\item\em A successfully deregistered listener will no longer receive events and have it\textquotesingle{}s refrence count decremented by one. \end{DoxyCompactList}\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active refrences to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{Increment\+Count} ()=0
+\item 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{Decrement\+Count} ()=0
+\item 
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{Request\+Interface} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting} Interface is capable of registering \& deregistering \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} interfaces. The Broadcaster must then notifiy any listeners of advertised events via the \char`\"{}\+G\+Listener\+::\+On\+Event\char`\"{} callback During registration a \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting}{G\+Broadcasting} implmenetation may choose to support filtration via bitflags (optional) 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+\subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Decrease the total number of active refrences to this object Once the internal count reaches zero this object will be deallocated and your pointer will become invalid \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+\subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Increase the total number of active refrences to this object End users should only call this operation if they are familiar with reference counting behavior \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a7411c69b20257c02791bccc92cb0fd2b}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_broadcasting_a7411c69b20257c02791bccc92cb0fd2b} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}!Register\+Listener@{Register\+Listener}}
+\index{Register\+Listener@{Register\+Listener}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting}}
+\subsubsection{\texorpdfstring{Register\+Listener()}{RegisterListener()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Broadcasting\+::\+Register\+Listener (\begin{DoxyParamCaption}\item[{\hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_listener}{G\+Listener} $\ast$}]{\+\_\+add\+Listener,  }\item[{unsigned long long}]{\+\_\+event\+Mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Any listener added to this class must receive all events unless otherwise specified by the \+\_\+event\+Mask (optional) Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+G\+Broadcasting.\+h\end{DoxyCompactItemize}
