@@ -1,6 +1,7 @@
 #ifndef _GINPUT_H
 #define _GINPUT_H
 
+
 #include "../G_Core/GSingleThreaded.h"
 #include "../G_System/GKeyDefines.h"
 

@@ -27,18 +27,33 @@ namespace GW
 		};
 
 		//! The GBroadcasting Interface is capable of registering & deregistering GListener interfaces.
-		//! The Broadcaster must then notifiy any listeners of advertised events via the "GListener::OnEvent" callback 
-		//! During registration a GBroadcasting implmenetation may choose to support filtration via bitflags (optional) 
+		/*! 
+		*	The Broadcaster must then notifiy any listeners of advertised events via the "GListener::OnEvent" callback 
+		*	During registration a GBroadcasting implmenetation may choose to support filtration via bitflags (optional) 
+		*/
 		class GBroadcasting : public GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 
 			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
-			//! Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered
+			/*!
+			*	Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered
+			*
+			*	\param [in] _addListener The listener object that is registering for messages.
+			*	\param [in] _eventMask The events the listener is registering for. 0 will register for all events.
+			*
+			*	\retval SUCCESS The listener was successfully registered.
+			*	\retval REDUNDENT_OPERATION The listener has already been registered by a previous call.
+			*/
 			 virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
 			
-			//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one 
+			//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one.
+			/*!
+			*	\param [in] _removeListener The listener to deregister from events.
+			*
+			*	\retval SUCCESS The listener was successfully deregistered.
+			*/
 			virtual GRETURN DeregisterListener(GListener *_removeListener) = 0;
 		};
 	}// end CORE namespace

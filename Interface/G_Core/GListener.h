@@ -1,7 +1,7 @@
 #ifndef GLISTENER
 #define GLISTENER
 
-/*!
+/*
 	File: GListener.h
 	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface.
 	Author: Lari H. Norri
@@ -31,7 +31,13 @@ namespace GW
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
-			//! This operation is called whenever a GBroadcaster a listener is registered to generates an event  
+			//! This operation is called whenever a GBroadcaster a listener is registered to generates an event. 
+			/*!
+			*	\param [in] _senderInterface The interface of the sender object.
+			*	\param [in] _eventID The ID of the event sent.
+			*	\param [in] _eventData The data of the event.
+			*	\param [in] _dataSize The size of _eventData in bytes.
+			*/
 			virtual GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _dataSize) = 0;
 		};
 	}// end CORE namespace

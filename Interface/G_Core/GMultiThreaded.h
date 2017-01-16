@@ -26,7 +26,7 @@ namespace GW
 			0xb0b2c21c, 0xb7a0, 0x42a2,{ 0xbb, 0xf6, 0xa8, 0x93, 0xd6, 0x6a, 0xb0, 0x6 }
 		};
 
-		//! This interface is only use to label and query interfaces which promise to 100% internally support thread saftey. 
+		//! This interface is only used to label and query interfaces which promise to 100% internally support thread saftey. 
 		class GMultiThreaded : public GInterface
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual

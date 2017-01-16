@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['gcreatefile',['GCreateFile',['../namespace_g_w_1_1_c_o_r_e.html#a0e56d3ae4b384ce268ed1cbdb9391ef1',1,'GW::CORE']]],
-  ['gcreatelog',['GCreateLog',['../namespace_g_w_1_1_c_o_r_e.html#a463db8a43954759bb7241fbd5b188ae2',1,'GW::CORE::GCreateLog(const char *const _fileName, GLog **_outLog)'],['../namespace_g_w_1_1_c_o_r_e.html#a05158f9e57230c75b73a30c956e32bd5',1,'GW::CORE::GCreateLog(GFile *_file, GLog **_outLog)']]],
   ['getbuttonstate',['GetButtonState',['../class_g_w_1_1_c_o_r_e_1_1_g_input.html#a22770ecd4e65ac105f362da351a953e9',1,'GW::CORE::GInput']]],
   ['getcount',['GetCount',['../class_g_w_1_1_c_o_r_e_1_1_g_interface.html#a80f212dcdf60202cf9da49405863d1d5',1,'GW::CORE::GInterface']]],
   ['getcurrentworkingdirectory',['GetCurrentWorkingDirectory',['../class_g_w_1_1_c_o_r_e_1_1_g_file.html#a01e2d9e0f2266c694f68f527f1df330c',1,'GW::CORE::GFile']]],
