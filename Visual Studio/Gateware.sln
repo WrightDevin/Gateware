@@ -59,10 +59,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GInput_DLL", "GInput_DLL\GI
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GBufferedInput_DLL", "GBufferedInput_DLL\GBufferedInput_DLL.vcxproj", "{6DA04194-D31C-4381-BA56-9A081794CA35}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLog_DLL", "GLog_DLL\GLog_DLL.vcxproj", "{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		GLog Source\GLog Source.vcxitems*{0a56711d-103d-41c5-ae1d-eb4b276b3786}*SharedItemsImports = 9
 		GBufferedInput Source\GBufferedInput Source.vcxitems*{0ad098c7-63dd-4182-b069-0fe9e3ddb97d}*SharedItemsImports = 4
+		GFile Source\GFile Source.vcxitems*{1e2d77c3-ab9e-4fde-863e-50044659af5d}*SharedItemsImports = 4
+		GLog Source\GLog Source.vcxitems*{1e2d77c3-ab9e-4fde-863e-50044659af5d}*SharedItemsImports = 4
 		GLog Source\GLog Source.vcxitems*{29e5adcc-a50d-4415-934c-9d48da071753}*SharedItemsImports = 4
 		GFile Source\GFile Source.vcxitems*{2c72ed80-033a-4706-9a14-dc67685038a6}*SharedItemsImports = 9
 		GInput Source\GInput Source.vcxitems*{5ebe21f7-8433-4c8f-8c5a-11a55e9e1321}*SharedItemsImports = 9
@@ -136,6 +140,14 @@ Global
 		{6DA04194-D31C-4381-BA56-9A081794CA35}.Release|x64.Build.0 = Release|x64
 		{6DA04194-D31C-4381-BA56-9A081794CA35}.Release|x86.ActiveCfg = Release|Win32
 		{6DA04194-D31C-4381-BA56-9A081794CA35}.Release|x86.Build.0 = Release|Win32
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Debug|x64.ActiveCfg = Debug|x64
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Debug|x64.Build.0 = Debug|x64
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Debug|x86.ActiveCfg = Debug|Win32
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Debug|x86.Build.0 = Debug|Win32
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Release|x64.ActiveCfg = Release|x64
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Release|x64.Build.0 = Release|x64
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Release|x86.ActiveCfg = Release|Win32
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,5 +169,6 @@ Global
 		{29E5ADCC-A50D-4415-934C-9D48DA071753} = {2582F0EF-61C1-485B-AA6A-904469D896EB}
 		{D0E7A119-03F2-4680-8ACF-0B989568352E} = {78A620C4-0B3E-4106-9BD0-12DA228CF532}
 		{6DA04194-D31C-4381-BA56-9A081794CA35} = {78A620C4-0B3E-4106-9BD0-12DA228CF532}
+		{1E2D77C3-AB9E-4FDE-863E-50044659AF5D} = {78A620C4-0B3E-4106-9BD0-12DA228CF532}
 	EndGlobalSection
 EndGlobal
