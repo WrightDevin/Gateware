@@ -144,11 +144,6 @@ namespace GW
 	} // end CORE namespace
 } // end GW namespace
 
-	};
-};
-
-
-
 #endif
 
 

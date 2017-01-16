@@ -29,7 +29,7 @@ using std::condition_variable;
 using std::cout;
 
 #define MAX_QUEUE_SIZE 20
-#define THREAD_SLEEP_TIME 10
+#define THREAD_SLEEP_TIME 1
 #define TIME_BUFFER 40
 
 class LogFile : public GW::CORE::GLog
@@ -450,7 +450,7 @@ void LogFile::LogWorker()
 	while (m_threadRunning || m_logQueue.size() != 0)
 	{
 		//Will lock the mutex when awaken and unlock it when put back to sleep
-		m_conditional.wait_for(queueLock, std::chrono::seconds(20));
+		m_conditional.wait_for(queueLock, std::chrono::seconds(THREAD_SLEEP_TIME));
 
 		//If there is anything to write
 		if (m_logQueue.size() != 0)
