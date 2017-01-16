@@ -2,7 +2,7 @@
 \label{class_g_w_1_1_c_o_r_e_1_1_g_single_threaded}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}}
 
 
-This interface is only use to label and query interfaces which are not designed internally to support thread saftey.  
+This interface is only used to label and query interfaces which are not designed internally to support thread saftey.  
 
 
 
@@ -20,14 +20,12 @@ Inherited by \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_input}{G\+W\+::\+C\+O\+R\+E\
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
 \begin{DoxyCompactList}\small\item\em Return the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{Increment\+Count} ()=0
-\item 
+\begin{DoxyCompactList}\small\item\em Increase the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_af6924e12b14f217b518fc91c63d9703d}{Decrement\+Count} ()=0
-\item 
-\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active refrences to this object. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} \hyperlink{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{Request\+Interface} (const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
 \begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -39,13 +37,71 @@ virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+
 \subsubsection{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}
 {\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
 
-Decrease the total number of active refrences to this object Once the internal count reaches zero this object will be deallocated and your pointer will become invalid \hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a80f212dcdf60202cf9da49405863d1d5} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}}
+\subsubsection{\texorpdfstring{Get\+Count()}{GetCount()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Get\+Count (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corupt. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_a3e04e58eef4f3e3f56ff7fb751194c37} 
 \index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}!Increment\+Count@{Increment\+Count}}
 \index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}}
 \subsubsection{\texorpdfstring{Increment\+Count()}{IncrementCount()}}
 {\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
 
-Increase the total number of active refrences to this object End users should only call this operation if they are familiar with reference counting behavior 
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0}{}\label{class_g_w_1_1_c_o_r_e_1_1_g_interface_ab1414aa07bca310a824ee01a91657ad0} 
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Single\+Threaded}}
+\subsubsection{\texorpdfstring{Request\+Interface()}{RequestInterface()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespace_g_w_a69b1aaebac1cac8049825f035884c95b}{G\+R\+E\+T\+U\+RN} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Request\+Interface (\begin{DoxyParamCaption}\item[{const \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} \&}]{\+\_\+interface\+ID,  }\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [inherited]}}
+
+Similiar to DirectX query\+Interface function.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The \hyperlink{struct_g_w_1_1_g_u_u_i_i_d}{G\+U\+U\+I\+ID} of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is support and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

@@ -1,20 +1,21 @@
 var NAVTREE =
 [
   [ "Gateware Libraries", "index.html", [
-    [ "APIOverview", "index.html#API", [
-      [ "GLog", "index.html#APIOverview", null ],
-      [ "GFile", "index.html#GLog", null ],
-      [ "GInput", "index.html#GFile", null ],
-      [ "GBufferedInput", "index.html#GInput", null ]
+    [ "Installation", "index.html#Install", null ],
+    [ "API Overview", "index.html#API", [
+      [ "GLog", "index.html#APIGLog", null ],
+      [ "GFile", "index.html#APIGFile", null ],
+      [ "GInput", "index.html#APIGInput", null ],
+      [ "GBufferedInput", "index.html#APIGBufferedInput", null ]
     ] ],
-    [ "Installation", "index.html#Installation", null ],
-    [ "Reporting", "index.html#Bug", null ],
+    [ "Bug Reporting", "index.html#Reporting", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
-        [ "Enumerations", "namespacemembers_enum.html", null ]
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -23,7 +24,8 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ]
+        [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
     [ "Files", null, [

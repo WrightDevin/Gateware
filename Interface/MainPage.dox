@@ -4,24 +4,24 @@
 * \license Gateware libraries are released under Creative Commons MIT lincense unless noted differently by the library.
 * \version Beta Release
 *
-* \section API APIOverview
+* \section Install Installation
 * Coming Soon
 *
-* \subsection APIOverview GLog
+* \section API API Overview
 * Coming Soon
 *
-* \subsection GLog GFile
+* \subsection APIGLog GLog
 * Coming Soon
 *
-* \subsection GFile GInput
+* \subsection APIGFile GFile
 * Coming Soon
 *
-* \subsection GInput GBufferedInput
+* \subsection APIGInput GInput
 * Coming Soon
 *
-* \section Installation
+* \subsection APIGBufferedInput GBufferedInput
 * Coming Soon
 *
-* \section Bug Reporting
+* \section Reporting Bug Reporting
 * Coming Soon
 */

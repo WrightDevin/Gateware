@@ -1,7 +1,7 @@
 #ifndef GDEFINES
 #define GDEFINES
 
-/*!
+/*
 	File: GDefines.h
 	Purpose: Lists the core #defines and MACROS used by the Gateware interfaces.
 	Author: Lari H. Norri
@@ -17,8 +17,10 @@ namespace GW
 // ensure identical binary padding for structures on all platforms
 #pragma pack(push, 1)
 	//! Gateware Universaly Unique Interface IDentifier
-	//! Each GIID defines a unique 128bit number identifying a particular version of an interface
-	//! This allows interfaces to be upgraded down the line safely without breaking legacy code
+	/*! 
+	*	Each GUUIID defines a unique 128bit number identifying a particular version of an interface
+	*	This allows interfaces to be upgraded down the line safely without breaking legacy code
+	*/
 	struct GUUIID // ALL GUUIID are stored little endian
 	{
 		unsigned int	byte4;
@@ -33,6 +35,7 @@ namespace GW
 			unsigned long long part2;
 		};
 
+		//! Comparison operator overload
 		bool operator==(const GUUIID& _cmp) const
 		{
 			if (part1 != _cmp.part1 || part2 != _cmp.part2)
@@ -44,27 +47,39 @@ namespace GW
 	   // use built-in Visual Studio tools to generate unique ID for new interfaces
 #pragma pack(pop)
 
-	//! Listing of common error codes returned by Gateware functions
+	//! Listing of common error codes returned by Gateware functions.
 	enum GRETURN
 	{
-		SUCCESS					= 0xFFFFFFFF, // Any other code indicates some type of failure
-		FAILURE					= 0,
-		INVALID_ARGUMENT		= 1,
-		MEMORY_CORRUPTION		= 2,
-		INTERFACE_UNSUPPORTED	= 3,
-		FILE_NOT_FOUND			= 4,
-		REDUNDENT_OPERATION		= 5,
-		FEATURE_UNSUPPORTED		= 6,
+		SUCCESS					= 0xFFFFFFFF, /*< The function succeded. */
+		FAILURE					= 0, /*< The function failed (Check function documentation for possible reasons).*/
+		INVALID_ARGUMENT		= 1, /*< An invalid arguement was passed into the function.*/
+		MEMORY_CORRUPTION		= 2, /*< A memory corruption occurred in the function.*/
+		INTERFACE_UNSUPPORTED	= 3, /*< The requested interface is not supported by the object.*/
+		FILE_NOT_FOUND			= 4, /*< A requested file is not found.*/
+		REDUNDENT_OPERATION		= 5, /*< The requested operation will not do anything.*/
+		FEATURE_UNSUPPORTED		= 6, /*< Attempted an operation that is currently not supported.*/
 	};
 };// end GW namespace
 
-//! Macro used to determine if a function succeeded 
+//! Macro used to determine if a function succeeded
+/*!
+*	\param [in] _greturn_ The GRETURN value to check.
+*
+*	\retval true GRETURN value passed in was SUCCESS
+*	\retval false GRETURN value passed in was a failure code
+*/
 #define G_SUCCESS(_greturn_) ((~(_greturn_)) == 0x00000000)
 
-//! Macro used to determine if a function has failed 
+//! Macro used to determine if a function has failed
+/*
+*	\param [in] _greturn_ The GRETURN value to check.
+*
+*	\retval true GRETURN value passed in was a failure code
+*	\retval false GRETURN value passed in was SUCCESS
+*/
 #define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
-//! If the following symbol is defined by the complier then you must also define the following DLL export symbols.
+// If the following symbol is defined by the complier then you must also define the following DLL export symbols.
 // ADD NON SYMBOLS FOR STANDARD BUILDS TO BE OVERRIDEN PER-PROJECT COMPILER SETTINGS
 #ifndef GATEWARE_EXPORT_IMPLICIT
 	#define GATEWARE_EXPORT_IMPLICIT
