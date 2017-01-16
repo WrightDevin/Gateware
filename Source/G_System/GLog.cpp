@@ -415,7 +415,7 @@ GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLog(GW::CORE::GFile* _file, GW::CORE::GLog** _outLog)
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLogCustom(GW::CORE::GFile* _file, GW::CORE::GLog** _outLog)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
 	return GW::CORE::CreateGLogCustom(_file, _outLog);
