@@ -9,12 +9,10 @@
 /* Begin PBXBuildFile section */
 		8F01B0591E240370004F4D72 /* GInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0571E240370004F4D72 /* GInput.h */; };
 		8F01B05A1E240370004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0581E240370004F4D72 /* GKeyDefines.h */; };
-		8F01B05E1E240393004F4D72 /* GI_Callback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05B1E240393004F4D72 /* GI_Callback.cpp */; };
-		8F01B05F1E240393004F4D72 /* GI_Static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05C1E240393004F4D72 /* GI_Static.cpp */; };
-		8F01B0601E240393004F4D72 /* GInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B05D1E240393004F4D72 /* GInput.cpp */; };
 		8F01B08F1E24042F004F4D72 /* GInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0571E240370004F4D72 /* GInput.h */; };
 		8F01B0901E24042F004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0581E240370004F4D72 /* GKeyDefines.h */; };
 		8F17D7231E2960AD00F1627A /* GInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F17D7221E2960AD00F1627A /* GInput.mm */; };
+		8F4DCEC41E3941C00028F64C /* GInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F17D7221E2960AD00F1627A /* GInput.mm */; };
 		8FD304491E240B29007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304481E240B29007B55CC /* Cocoa.framework */; };
 		8FD3044A1E240B30007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304481E240B29007B55CC /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -178,9 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F01B0601E240393004F4D72 /* GInput.cpp in Sources */,
-				8F01B05E1E240393004F4D72 /* GI_Callback.cpp in Sources */,
-				8F01B05F1E240393004F4D72 /* GI_Static.cpp in Sources */,
+				8F4DCEC41E3941C00028F64C /* GInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

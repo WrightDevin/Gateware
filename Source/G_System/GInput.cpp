@@ -277,13 +277,20 @@ GRETURN Input::InitializeMac(void * _data) {
 #ifdef __APPLE__
     
 	//Create an NSReponder *. (NSResponder is the class that we use to recieve events on mac).
-	NSResponder * windowResponder = [NSResponder alloc];
+	NSWindow * windowResponder = [NSWindow alloc];
 	//Cast the _data(NSWindow) to a NSReponder. (NSWindow Derives From NSResponder).
-	windowResponder = (__bridge NSResponder *)_data;
+	windowResponder = (__bridge NSWindow *)_data;
 	//Set the next responder to the our Responder(GResponder) responder is declared in GBI_Callback.cpp.
 	//Setting the nextResponder allows us to piggy back on the events being sent to the main program.
 	//So we get a copy of the original events.
-	windowResponder.nextResponder = responder;
+    NSResponder * currentResponder = windowResponder.firstResponder;
+    while(currentResponder.nextResponder != nil){
+        currentResponder = currentResponder.nextResponder;
+    }
+    
+    currentResponder.nextResponder = responder;
+    
+	
 
 #endif
 

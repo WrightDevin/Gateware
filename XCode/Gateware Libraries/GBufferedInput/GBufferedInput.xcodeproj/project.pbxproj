@@ -12,6 +12,7 @@
 		8F01B06C1E240422004F4D72 /* GBufferedInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0511E24030E004F4D72 /* GBufferedInput.h */; };
 		8F01B06D1E240422004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0521E24030E004F4D72 /* GKeyDefines.h */; };
 		8F4DCE691E3922AE0028F64C /* GBufferedInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F4DCE681E3922AE0028F64C /* GBufferedInput.mm */; };
+		8F4DCEDC1E3942460028F64C /* GBufferedInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F4DCE681E3922AE0028F64C /* GBufferedInput.mm */; };
 		8FD304451E240B13007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304441E240B13007B55CC /* Cocoa.framework */; };
 		8FD304461E240B1B007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304441E240B13007B55CC /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -169,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F4DCEDC1E3942460028F64C /* GBufferedInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
