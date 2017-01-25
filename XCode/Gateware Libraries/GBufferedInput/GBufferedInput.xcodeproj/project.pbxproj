@@ -9,10 +9,9 @@
 /* Begin PBXBuildFile section */
 		8F01B0531E24030E004F4D72 /* GBufferedInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0511E24030E004F4D72 /* GBufferedInput.h */; };
 		8F01B0541E24030E004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0521E24030E004F4D72 /* GKeyDefines.h */; };
-		8F01B0561E240346004F4D72 /* GBufferInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B0551E240346004F4D72 /* GBufferInput.mm */; };
-		8F01B0691E240422004F4D72 /* GBufferInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F01B0551E240346004F4D72 /* GBufferInput.mm */; };
 		8F01B06C1E240422004F4D72 /* GBufferedInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0511E24030E004F4D72 /* GBufferedInput.h */; };
 		8F01B06D1E240422004F4D72 /* GKeyDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F01B0521E24030E004F4D72 /* GKeyDefines.h */; };
+		8F4DCE691E3922AE0028F64C /* GBufferedInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F4DCE681E3922AE0028F64C /* GBufferedInput.mm */; };
 		8FD304451E240B13007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304441E240B13007B55CC /* Cocoa.framework */; };
 		8FD304461E240B1B007B55CC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FD304441E240B13007B55CC /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -21,8 +20,8 @@
 		8F01B0441E2402D3004F4D72 /* GBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = GBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F01B0511E24030E004F4D72 /* GBufferedInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GBufferedInput.h; path = ../../../Interface/G_System/GBufferedInput.h; sourceTree = "<group>"; };
 		8F01B0521E24030E004F4D72 /* GKeyDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GKeyDefines.h; path = ../../../Interface/G_System/GKeyDefines.h; sourceTree = "<group>"; };
-		8F01B0551E240346004F4D72 /* GBufferInput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GBufferInput.mm; path = ../../../Source/G_System/GBufferInput.mm; sourceTree = "<group>"; };
 		8F01B0711E240422004F4D72 /* GBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = GBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F4DCE681E3922AE0028F64C /* GBufferedInput.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = GBufferedInput.mm; path = ../../../Source/G_System/GBufferedInput.mm; sourceTree = "<group>"; };
 		8FD304441E240B13007B55CC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -49,7 +48,7 @@
 		8F01B03B1E2402D3004F4D72 = {
 			isa = PBXGroup;
 			children = (
-				8F01B0551E240346004F4D72 /* GBufferInput.mm */,
+				8F4DCE681E3922AE0028F64C /* GBufferedInput.mm */,
 				8F01B0511E24030E004F4D72 /* GBufferedInput.h */,
 				8F01B0521E24030E004F4D72 /* GKeyDefines.h */,
 				8F01B0451E2402D3004F4D72 /* Products */,
@@ -170,7 +169,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F01B0561E240346004F4D72 /* GBufferInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,7 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F01B0691E240422004F4D72 /* GBufferInput.mm in Sources */,
+				8F4DCE691E3922AE0028F64C /* GBufferedInput.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

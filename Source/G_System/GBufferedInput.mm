@@ -181,7 +181,7 @@
     }
 }
 
--(void)scrollWheel:(NSEvent *)theEvent}
+-(void)scrollWheel:(NSEvent *)theEvent{
     G_INPUT_DATA _dataStruct;
 	//Check wether the its a scroll up or down event.
     if([theEvent scrollingDeltaY] > 0){
@@ -248,6 +248,6 @@
     }
 }*/
 
-#include "../../Source/G_System/GBufferInput.cpp"
+#include "../../Source/G_System/GBufferedInput.cpp"
 
 @end
