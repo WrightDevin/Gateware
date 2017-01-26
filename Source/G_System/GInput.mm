@@ -45,40 +45,58 @@
     n_Keys[Keycodes[[theEvent keyCode]][2]] = 1;
 	//Get the keymask.
     [self GetKeyMask:theEvent];
+    
+    if(self.nextResponder != nil)
+        [self.nextResponder keyDown:theEvent];
 }
 
 -(void)keyUp:(NSEvent *)theEvent{
     n_Keys[Keycodes[[theEvent keyCode]][2]] = 0;
     [self GetKeyMask:theEvent];
+    
+    if(self.nextResponder != nil)
+        [self.nextResponder keyUp:theEvent];
 }
 
 -(void)mouseDown:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_LEFT] = 1;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder mouseDown:theEvent];
 }
 
 -(void)mouseUp:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_LEFT] = 0;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder mouseUp:theEvent];
 }
 
 -(void)rightmouseDown:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_RIGHT] = 1;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder rightMouseDown:theEvent];
 }
 -(void)rightmouseUp:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_RIGHT] = 0;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder rightMouseUp:theEvent];
 }
 
 -(void)othermouseDown:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_MIDDLE] = 1;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder otherMouseDown:theEvent];
 }
 
 -(void)othermouseUp:(NSEvent *)theEvent{
     n_Keys[G_BUTTON_MIDDLE] = 0;
     [self GetKeyMask:theEvent];
+    if(self.nextResponder != nil)
+        [self.nextResponder otherMouseUp:theEvent];
 }
 
 
@@ -86,6 +104,10 @@
     NSPoint mousePosition = [theEvent locationInWindow];
     _mousePositionX = mousePosition.x;
     _mousePositionY = mousePosition.y;
+    
+    if(self.nextResponder != nil)
+        [self.nextResponder mouseMoved:theEvent];
+    
 }
 
 -(void)GetKeyMask:(NSEvent *)theEvent{

@@ -328,21 +328,23 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 GRETURN BufferedInput::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
+    //Need to convert data back into an NSWindow*
+    NSWindow * currentResponder = ((__bridge NSWindow*)_data);
     
-	//Create an NSReponder *. (NSResponder is the class that we use to recieve events on mac).
-    NSWindow * windowResponder = [NSWindow alloc];
-	//Cast the _data(NSWindow) to a NSReponder. (NSWindow Derives From NSResponder).
-    windowResponder = (__bridge NSWindow *)_data;
-    //Set the next responder to the our Responder(GResponder) responder is declared in GBI_Callback.cpp.
-	//Setting the nextResponder allows us to piggy back on the events being sent to the main program.
-	//So we get a copy of the original events.
-    NSResponder * currentResponder = windowResponder.firstResponder;
-    while(currentResponder.nextResponder != nil){
-        currentResponder = currentResponder.nextResponder;
-    }
+    //We only want to process the message and pass it on. So if there is already
+    //so we set the our responders next responder to be the current next reponder
+    [responder setNextResponder:currentResponder.nextResponder];
     
-    currentResponder.nextResponder = responder;
+    //We then set out responder to the next responder of the window
+    [currentResponder setNextResponder:responder];
     
+    //We also need to make our responder the first responder of the window
+    [currentResponder makeFirstResponder:responder];
+    
+    //In order to get mouse button presses we need to set our responder to be
+    //The next responder in the contentView as well
+    [currentResponder.contentView setNextResponder:responder];
+
     
 #endif
     

@@ -60,7 +60,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, KEYPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
-
+    if(self.nextResponder != nil)
+        [self.nextResponder keyDown:theEvent];
 }
 
 -(void)keyUp:(NSEvent *)theEvent{
@@ -78,6 +79,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, KEYRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder keyUp:theEvent];
 }
 
 -(void)mouseDown:(NSEvent *)theEvent{
@@ -95,6 +98,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder mouseDown:theEvent];
 }
 
 -(void)mouseUp:(NSEvent *)theEvent{
@@ -112,6 +117,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder mouseUp:theEvent];
 }
 
 -(void)rightmouseDown:(NSEvent *)theEvent{
@@ -129,6 +136,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder rightMouseDown:theEvent];
 }
 -(void)rightmouseUp:(NSEvent *)theEvent{
     G_INPUT_DATA _dataStruct;
@@ -145,6 +154,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder rightMouseUp:theEvent];
 }
 
 -(void)othermouseDown:(NSEvent *)theEvent{
@@ -162,6 +173,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder otherMouseDown:theEvent];
 }
 
 -(void)othermouseUp:(NSEvent *)theEvent{
@@ -179,6 +192,8 @@
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
     }
+    if(self.nextResponder != nil)
+        [self.nextResponder otherMouseUp:theEvent];
 }
 
 -(void)scrollWheel:(NSEvent *)theEvent{
@@ -209,7 +224,8 @@
             iter->first->OnEvent(GBufferedInputUUIID, MOUSESCROLL, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
         }
     }
-    
+    if(self.nextResponder != nil)
+        [self.nextResponder scrollWheel:theEvent];
 }
 
 -(void)GetKeyMask:(NSEvent *)theEvent{
