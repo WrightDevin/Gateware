@@ -164,10 +164,10 @@ namespace {
 		break;
 
 		default:
-			return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
+			
 			break;
 		}
-		return 0;
+		return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
 	}
 #endif
     
