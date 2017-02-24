@@ -1,5 +1,7 @@
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GInput.h"
+#include <queue>
+#include <unordered_set>
 
 using namespace GW;
 using namespace CORE;
@@ -8,14 +10,15 @@ namespace {
 
 
 unsigned int n_Keys[256];
-float _mousePrevX = 0;
-float _mousePrevY = 0;
-float _mousePositionX = 0;
-float _mousePositionY = 0;
-float _mouseDeltaX = 0;
-float _mouseDeltaY = 0;
+int _mousePrevX = 0;
+int _mousePrevY = 0;
+int _mousePositionX = 0;
+int _mousePositionY = 0;
+int _mouseScreenPositionX = 0;
+int _mouseScreenPositionY = 0;
+int _mouseDeltaX = 0;
+int _mouseDeltaY = 0;
 unsigned int _keyMask;
-
 
 #ifdef _WIN32
 	//Variables
@@ -99,7 +102,7 @@ unsigned int _keyMask;
 					_data = G_BUTTON_LEFT;
 					break;
 				case 4:
-				case 8:
+				case 8:toKeySym
 					_data = G_BUTTON_RIGHT;
 					break;
 				case 16:
@@ -121,7 +124,7 @@ unsigned int _keyMask;
 					//pressed
 				case 1:
 				case 4:
-				case 16:
+				case 16:toKeySym
 					n_Keys[_data] = 1;
 					break;
 					//Released
@@ -169,16 +172,20 @@ unsigned int _keyMask;
 
 
 		default:
-			
+
 			break;
 		}
 		return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
 	}
 #endif
 
+#ifdef __linux__
+
+    Window _window;
+
+#endif // __linux__
 
 #ifdef __APPLE__
-
 
 	GIResponder * responder = [GIResponder alloc];
 

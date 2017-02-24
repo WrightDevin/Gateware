@@ -72,10 +72,11 @@
 			</Target>
 		</Build>
 		<Unit filename="../../Source/G_System/GBI_Callback.cpp" />
-		<Unit filename="../../Source/G_System/GBufferInput.cpp" />
+		<Unit filename="../../Source/G_System/GBufferedInput.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

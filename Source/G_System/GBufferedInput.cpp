@@ -250,7 +250,7 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 
 		//Find the device name.
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, tBuffer, &size) < 0) {
-			
+
 		}
 
 		UINT cbSize = rdi.cbSize;
@@ -279,7 +279,7 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 
 	}
-	
+
 	//Capslock
 	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
 		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
@@ -309,17 +309,18 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
     Display * _display;
 	//Cast the void* _linuxWidnow._Display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow._Display);
-    Window _window;
 	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
     memcpy(&_window, _linuxWindow._Window, sizeof(_window));
 	//Select the type of Input events we wish to recieve.
-	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
+	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
 	//Set our thread to open.
     _threadOpen = true;
 	//Create the Linux Input thread.
 	_inputThread = new std::thread(&BufferedInput::InputThread, this);
+
+
 
 	return SUCCESS;
 
@@ -330,28 +331,26 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
 #ifdef __APPLE__
     //Need to convert data back into an NSWindow*
     NSWindow * currentResponder = ((__bridge NSWindow*)_data);
-    
+
     //We only want to process the message and pass it on. So if there is already
     //so we set the our responders next responder to be the current next reponder
     [responder setNextResponder:currentResponder.nextResponder];
-    
+
     //We then set out responder to the next responder of the window
     [currentResponder setNextResponder:responder];
-    
+
     //We also need to make our responder the first responder of the window
     [currentResponder makeFirstResponder:responder];
-    
+
     //In order to get mouse button presses we need to set our responder to be
     //The next responder in the contentView as well
     [currentResponder.contentView setNextResponder:responder];
 
-    
+
 #endif
-    
+
 	return SUCCESS;
 }
-
-
 
 void BufferedInput::InputThread()
 {
@@ -359,101 +358,104 @@ void BufferedInput::InputThread()
     int _event = -1;
     int _code = -1;
     G_INPUT_DATA _dataStruct;
+
 	while (_threadOpen)
 	{
-		//To store the current event from XNextEvent.
-        XEvent e;
 
-		//Cast the void* _linuxWidnow._Display to a display pointer to pass to XNextEvent.
-        Display * _display = (Display*)(_linuxWindow._Display);
+        std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
 
-		//Gets the next event and removes it from the queue.
-		XNextEvent(_display, &e);
+        Display * _display = (Display*)_linuxWindow._Display;
 
-		//Check what type of event it is ( KeyPress, KeyRelease, ButtonPress, ButtonRelease).
-		switch (e.type) {
-		case KeyPress:
-			//Get the keycode from the static table of G_KEYS.
-			_code = Keycodes[e.xkey.keycode][1];
-			//Set the Event Type for when we send the events to all registered listeners.
-			_event = KEYPRESSED;
-			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
-			_dataStruct._keyMask = e.xkey.state;
-			//Set the cursor position relative to the window.
-            _dataStruct._x = e.xkey.x;
-            _dataStruct._y = e.xkey.y;
-			//Set the cursor position relative to the screen.
-            _dataStruct._screenX = e.xkey.x_root;
-            _dataStruct._screenY = e.xkey.y_root;
-			break;
-		case KeyRelease:
-			//Get the keycode from the static table of G_KEYS.
-			_code = Keycodes[e.xkey.keycode][1];
-			//Set the Event Type for when we send the events to all registered listeners.
-			_event = KEYRELEASED;
-			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
-			_dataStruct._keyMask = e.xkey.state;
-			//Set the cursor position relative to the window.
-            _dataStruct._x = e.xkey.x;
-            _dataStruct._y = e.xkey.y;
-			//Set the cursor position relative to the screen.
-            _dataStruct._screenX = e.xkey.x_root;
-			_dataStruct._screenX = e.xkey.y_root;
-			break;
-		case ButtonPress:
-			_code = e.xbutton.button;
-			_event = BUTTONPRESSED;
-            _dataStruct._keyMask = e.xkey.state;
-            _dataStruct._x = e.xkey.x;
-            _dataStruct._y = e.xkey.y;
-            _dataStruct._screenX = e.xkey.x_root;
-            _dataStruct._screenY = e.xkey.y_root;
-			break;
-		case ButtonRelease:
-			_code = e.xbutton.button;
-			_event = BUTTONRELEASED;
-			_dataStruct._keyMask = e.xkey.state;
-            _dataStruct._x = e.xkey.x;
-            _dataStruct._y = e.xkey.y;
-            _dataStruct._screenX = e.xkey.x_root;
-            _dataStruct._screenY = e.xkey.y_root;
-			break;
-		}
+        Window a, b;
+        XQueryPointer(_display, _window, &a, &b, &_dataStruct._screenX, &_dataStruct._screenY, &_dataStruct._x, &_dataStruct._y, &_dataStruct._keyMask);
+        //printf("Pos ( %d, %d), Mask: (%d)\n", screenx, screeny, mask);
 
-		//If the event is a button event check which button it was.
-		if (_event == BUTTONPRESSED || _event == BUTTONRELEASED) {
-			switch (_code) {
-			case 1:
-				_code = G_BUTTON_LEFT;
-				break;
-			case 3:
-				_code = G_BUTTON_RIGHT;
-				break;
-			case 2:
-				_code = G_BUTTON_MIDDLE;
-				break;
-            case 4:
-                _code = G_MOUSE_SCROLL_UP;
-                break;
-            case 5:
-                _code = G_MOUSE_SCROLL_DOWN;
-                break;
-            default:
-                _code = -1;
-                break;
-			}
-		}
-
-		//Set the keycode in the _dataStruct being sent to all registered listeners.
-        _dataStruct._data = _code;
-
-		//Send the event to all registered listeners.
-        if(_code != -1 && _event != -1){
-            std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
-            for (; iter != _listeners.end(); ++iter) {
-                iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        char keys_return[32];
+        //Get the current state of all keys
+        XQueryKeymap(_display, keys_return);
+        //Loop through all the keys and check to see if they match the saved state of all the keys.
+        for(unsigned int i = 5; i < 126; i++){
+            _code = Keycodes[i][1];
+            _dataStruct._data = _code;
+            //Save the state of current key.
+            unsigned int key = keys_return[(i >>3)] & (1 << (i & 7));
+            //If a key does not match send an event saying it has been updated.
+            if(key != n_Keys[_code]){
+                if(key == 0){
+                    _event = KEYPRESSED;
+                }else{
+                    _event = KEYRELEASED;
+                }
+                printf("%d\n", _code);
+                //Send the event to all registered listeners.
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
             }
-		}
+            n_Keys[_code] = key;
+        }
+
+        if(_dataStruct._keyMask & Button1Mask){
+            if(!n_Keys[G_BUTTON_LEFT]){
+                _dataStruct._data = G_BUTTON_LEFT;
+                _event = BUTTONPRESSED;
+                n_Keys[G_BUTTON_LEFT] = 1;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }else{
+            if(n_Keys[G_BUTTON_LEFT] ){
+                _dataStruct._data = G_BUTTON_LEFT;
+                _event = BUTTONRELEASED;
+                n_Keys[G_BUTTON_LEFT] = 0;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }
+        if(_dataStruct._keyMask & Button3Mask){
+            if(!n_Keys[G_BUTTON_RIGHT]){
+                _dataStruct._data = G_BUTTON_RIGHT;
+                _event = BUTTONPRESSED;
+                n_Keys[G_BUTTON_RIGHT] = 1;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }else{
+            if(n_Keys[G_BUTTON_RIGHT]){
+                _dataStruct._data = G_BUTTON_RIGHT;
+                _event = BUTTONRELEASED;
+                n_Keys[G_BUTTON_RIGHT] = 0;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }
+        if(_dataStruct._keyMask & Button2Mask){
+            if(!n_Keys[G_BUTTON_MIDDLE]){
+                _dataStruct._data = G_BUTTON_MIDDLE;
+                _event = BUTTONPRESSED;
+                n_Keys[G_BUTTON_MIDDLE] = 1;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }else{
+            if(n_Keys[G_BUTTON_MIDDLE]){
+                _dataStruct._data = G_BUTTON_MIDDLE;
+                _event = BUTTONRELEASED;
+                n_Keys[G_BUTTON_MIDDLE] = 0;
+                for (; iter != _listeners.end(); ++iter) {
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                }
+            }
+        }
+
+        printf("Keymask: %d \n", _dataStruct._keyMask);
+
+
 	}
 #endif
 

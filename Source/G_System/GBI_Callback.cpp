@@ -2,6 +2,7 @@
 
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GBufferedInput.h"
+#include <list>
 
 using namespace GW;
 using namespace CORE;
@@ -11,6 +12,8 @@ namespace {
 	//! Map of Listeners to send event information to.
 	std::map<GListener *, unsigned long long> _listeners;
     unsigned int _keyMask;
+
+
 
 #ifdef _WIN32
 
@@ -68,7 +71,7 @@ namespace {
 					case G_KEY_NUMLOCK:
 						TOGGLE_BIT(_keyMask, G_MASK_NUM_LOCK);
 						break;
-					case G_KEY_SCROLL_LOCK:
+					case G_KEY_SCROLL_Lunordered_setOCK:
 						TOGGLE_BIT(_keyMask, G_MASK_SCROLL_LOCK);
 						break;
 					}
@@ -164,19 +167,27 @@ namespace {
 		break;
 
 		default:
-			
+
 			break;
 		}
 		return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
-	}
+	}unordered_set
 #endif
-    
+
+#ifdef __linux__
+
+    Window _window;
+    unsigned int n_Keys[256];
+    unsigned int n_Buttons[32];
+
+#endif // __linux__
+
 #ifdef __APPLE__
-    
+
 //#include "../../Interface/G_System/GResponder.h"
-    
+
     GResponder * responder = [GResponder alloc];
-    
+
 #endif
 
 }

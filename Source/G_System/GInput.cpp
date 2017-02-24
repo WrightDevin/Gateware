@@ -5,12 +5,12 @@
 #include "../../Source/G_System/GI_Callback.cpp"
 #endif
 
-
 #include <mutex>
 #include <atomic>
 #include <thread>
 #include <cstring>
 #include <iostream>
+#include <time.h>
 
 class Input : public GInput {
 
@@ -165,7 +165,7 @@ GRETURN Input::InitializeWindows(void * _data) {
 
 	}
 
-	//Getting Raw Input Devices.
+	//Getting Raw Input Devices.#include <time.h>
 
 	UINT numDevices;
 	PRAWINPUTDEVICELIST pRawInputDeviceList;
@@ -256,12 +256,14 @@ GRETURN Input::InitializeLinux(void * _data) {
 	Display * _display;
 	//Cast the void* _linuxWidnow._Display to a display pointer to pass to XSelectInput.
 	_display = (Display *)(_linuxWindow._Display);
-	Window _window;
 	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
 	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
 	//Select the type of Input events we wish to recieve.
-	XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
+	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
+
 #endif
+
+    ///XAutoRepeatOff(_display);
 
 	//Set our thread to open.
 	_threadOpen = true;
@@ -275,24 +277,24 @@ GRETURN Input::InitializeLinux(void * _data) {
 GRETURN Input::InitializeMac(void * _data) {
 
 #ifdef __APPLE__
-    
+
     //Need to convert data back into an NSWindow*
     NSWindow * currentResponder = ((__bridge NSWindow*)_data);
-    
+
     //We only want to process the message and pass it on. So if there is already
     //so we set the our responders next responder to be the current next reponder
     [responder setNextResponder:currentResponder.nextResponder];
-    
+
     //We then set out responder to the next responder of the window
     [currentResponder setNextResponder:responder];
-    
+
     //We also need to make our responder the first responder of the window
     [currentResponder makeFirstResponder:responder];
-    
+
     //In order to get mouse button presses we need to set our responder to be
     //The next responder in the contentView as well
     [currentResponder.contentView setNextResponder:responder];
-    
+
 
 #endif
 
@@ -337,95 +339,57 @@ void Input::InputThread()
 
 #ifdef __linux__
 	int _code = -1;
+
 	while (_threadOpen)
 	{
-		//To store the current event from XNextEvent.
-		XEvent e;
-
-		//Cast the void* _linuxWidnow._Display to a display pointer to pass to XNextEvent.
+        //Cast the void* _linuxWidnow._Display to a display pointer to pass to XNextEvent.
 		Display * _display = (Display*)(_linuxWindow._Display);
+		char keys_return[32];
+        XQueryKeymap(_display, keys_return);
+        for(unsigned int i = 0; i < 128; i++){
+            _code = Keycodes[i][1];
+            if(keys_return[(i >> 3)] & (1 << (i & 7))){
+                n_Keys[_code] = 1;
+            }else{
+                n_Keys[_code] = 0;
+            }
+        }
 
-		//Gets the next event and removes it from the queue.
-		XNextEvent(_display, &e);
 
-		//Check what type of event it is ( KeyPress, KeyRelease, ButtonPress, ButtonRelease).
-		switch (e.type) {
-		case KeyPress:
-			//Get the keycode from the static table of G_KEYS.
-			_code = Keycodes[e.xkey.keycode][1];
-			//Set the key in the buffer of keys to 1 for pressed.
-			n_Keys[_code] = 1;
-			//Set the keymask to check if(CapsLock, NumLock, Shift, Control, etc...) are currently on.
-			_keyMask = e.xkey.state;
-			//Set the cursor position relative to the window.
-			_mousePositionX = e.xkey.x;
-			_mousePositionY = e.xkey.y;
-			//Set the cursor position relative to the screen.
-			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.y_root;
-			break;
-		case KeyRelease:
-			_code = Keycodes[e.xkey.keycode][1];
-			n_Keys[_code] = 0;
-			_keyMask = e.xkey.state;
-			_mousePositionX = e.xkey.x;
-			_mousePositionY = e.xkey.y;
-			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.y_root;
-			break;
-		case ButtonPress:
-			_code = e.xbutton.button;
-			_keyMask = e.xkey.state;
-			_mousePositionX = e.xkey.x;
-			_mousePositionY = e.xkey.y;
-			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.y_root;
+        Window a, b;
+        XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &_keyMask);
+        //printf("KeyMask: %d\n", _keyMask);
 
-			//Check the code and set the corresponding button to pressed.
-            switch (_code) {
-			case 1:
-				 n_Keys[G_BUTTON_LEFT] = 1;
-				break;
-			case 2:
-                n_Keys[G_BUTTON_MIDDLE] = 1;
-				break;
-			case 3:
-                n_Keys[G_BUTTON_RIGHT] = 1;
-				break;
-			}
-			break;
-		case ButtonRelease:
-			_code = e.xbutton.button;
-			_keyMask = e.xkey.state;
-			_mousePositionX = e.xkey.x;
-			_mousePositionY = e.xkey.y;
-			_mouseDeltaX = e.xkey.x_root;
-			_mouseDeltaY = e.xkey.y_root;
+        if(_keyMask & Button1Mask){
+            //printf("Left\n");
+            n_Keys[G_BUTTON_LEFT];
 
-			//Check the code and set the corresponding button to released.
-            switch (_code) {
-			case 1:
-				 n_Keys[G_BUTTON_LEFT] = 0;
-				break;
-			case 2:
-                n_Keys[G_BUTTON_MIDDLE] = 0;
-				break;
-			case 3:
-                n_Keys[G_BUTTON_RIGHT] = 0;
-				break;
-			}
-			break;
-		}
+        }
+        if(_keyMask & Button3Mask){
+            //printf("Right\n");
+            n_Keys[G_BUTTON_RIGHT];
+        }
 
-		//Set the change in mouse position.
-		_mouseDeltaX = _mousePrevX - _mousePositionX;
-		_mouseDeltaY = _mousePrevY - _mousePositionY;
+        if(_keyMask & Button2Mask){
+            //printf("Middle\n");
+            n_Keys[G_BUTTON_MIDDLE];
+        }
 
-		//Set the previous mouse position as the current.
-		_mousePrevX = _mousePositionX;
-		_mousePrevY = _mousePositionY;
+	    timespec delay = { 0, 3333333 }; // 300Hz
+	    //while(nanosleep(&delay, &delay)); // Throttle thread to 300Hz
+
+        //Set the change in mouse position.
+        _mouseDeltaX = _mousePrevX - _mousePositionX;
+        _mouseDeltaY = _mousePrevY - _mousePositionY;
+
+        //Set the previous mouse position as the current.
+        _mousePrevX = _mousePositionX;
+        _mousePrevY = _mousePositionY;
+
 
 	}
 #endif
 
 }
+
+
