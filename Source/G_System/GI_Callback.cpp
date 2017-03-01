@@ -102,7 +102,7 @@ unsigned int _keyMask;
 					_data = G_BUTTON_LEFT;
 					break;
 				case 4:
-				case 8:toKeySym
+				case 8:
 					_data = G_BUTTON_RIGHT;
 					break;
 				case 16:
@@ -124,7 +124,7 @@ unsigned int _keyMask;
 					//pressed
 				case 1:
 				case 4:
-				case 16:toKeySym
+				case 16:
 					n_Keys[_data] = 1;
 					break;
 					//Released

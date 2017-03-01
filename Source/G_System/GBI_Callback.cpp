@@ -71,7 +71,7 @@ namespace {
 					case G_KEY_NUMLOCK:
 						TOGGLE_BIT(_keyMask, G_MASK_NUM_LOCK);
 						break;
-					case G_KEY_SCROLL_Lunordered_setOCK:
+					case G_KEY_SCROLL_LOCK:
 						TOGGLE_BIT(_keyMask, G_MASK_SCROLL_LOCK);
 						break;
 					}
@@ -171,7 +171,7 @@ namespace {
 			break;
 		}
 		return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
-	}unordered_set
+	}
 #endif
 
 #ifdef __linux__
