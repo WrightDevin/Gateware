@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveProject path="../../../../Gateware/gateware-test-suite.git.0/Demo Application/DemoApplication/DemoApp.cbp" />
-	<PreferredTarget name="Debug amd64" />
+	<ActiveProject path="../../../../Gateware/gateware.git.0/Code Blocks/GInput/GInput.cbp" />
 </CodeBlocks_workspace_layout_file>
