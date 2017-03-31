@@ -12,7 +12,7 @@
 #include <queue> //To queue the messages
 #include <thread> //Threading
 #include <mutex> //Thread safety
-#include <sstream> //Stringstreams
+#include <sstream> //String streams
 #include <atomic> //Thread safety
 #include <iostream> //For cout
 #include <cstring>
@@ -38,17 +38,17 @@ class LogFile : public GW::SYSTEM::GLog
 
 	thread* m_worker; //The worker thread we will spin off
 
-	mutex m_queueLock; //queuelock for locking the queue we are logging to
+	mutex m_queueLock; //Queuelock for locking the queue we are logging to
 
 	queue<string> m_logQueue; //The queue we will log to
 
 	bool m_isVerbose;  //Verbose logging boolean
 
-	bool m_isConsoleLogged; //Console loggong boolean
+	bool m_isConsoleLogged; //Console logging boolean
 
 	atomic<bool> m_threadRunning; //Boolean to kill the thread
 
-	atomic<unsigned int> m_refCount; //Referance counter
+	atomic<unsigned int> m_refCount; //Reference counter
 
 	condition_variable m_conditional;
 
@@ -170,7 +170,7 @@ GW::GRETURN LogFile::Log(const char* const _log)
 	//Add the log and a newline
 	logStream << _log << "\r\n";
 
-	//Lock the mutex to push the new msg
+	//Lock the mutex to push the new message
 	m_queueLock.lock();
 
 	//Check to see if we are at our max messages
@@ -282,7 +282,7 @@ GW::GRETURN LogFile::Flush()
 
 unsigned long long LogFile::GetThreadID()
 {
-	//Get the thread ID and store it in a stringstream
+	//Get the thread ID and store it in a string stream
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
 
@@ -341,7 +341,7 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 	if (_outputInterface == nullptr)
 		return GW::INVALID_ARGUMENT;
 
-	//If interface == this
+	//If passed in interface is equivalent to current interface (this)
 	if (_interfaceID == GW::SYSTEM::GLogUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
@@ -353,10 +353,10 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 		//Store the value.
 		(*_outputInterface) = convert;
 	}
-	//If requested interface is multithreaded.
+	//If requested interface is multi-threaded.
 	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
 	{
-		//Temportary GMultiThreaded* to ensure proper functions are called
+		//Temporary GMultiThreaded* to ensure proper functions are called
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
 
 		//Increment the count of the GMultithreaded.

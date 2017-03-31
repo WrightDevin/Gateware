@@ -128,8 +128,10 @@
 #define G_MASK_ALT              0x6
 #define G_MASK_FUNCTION         0x7
 
+//! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
 {
+	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace SYSTEM
 	{
 #pragma pack(push, 1)

@@ -1,15 +1,25 @@
 #ifndef _GINPUT_H
 #define _GINPUT_H
 
+/*
+File: GInput.h
+Purpose: A Gateware interface that handles high-speed keyboard and mouse input (temp description, written by Nic Russell) 
+Author: ?????????
+Contributors: N/A
+Last Modified: ????????????
+Copyright: 7thGate Software LLC.
+License: MIT
+*/
 
 #include "../G_Core/GSingleThreaded.h"
 #include "../G_System/GKeyDefines.h"
 
+//! The core namespace to which all Gateware interfaces/structures/defines must belong
 namespace GW
 {
+	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace SYSTEM
 	{
-
 		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
 		static const GUUIID GInputUUIID =
 		{
@@ -41,20 +51,20 @@ namespace GW
 			//! Get the change in mouse position.
 			/*!
 			*
-			*	\param [out] x a refrence to a float to store the mouse delta position x.
-			*	\param [out] y a refrence to a float to store the mouse delta position y.
+			*	\param [out] x a reference to a float to store the mouse delta position x.
+			*	\param [out] y a reference to a float to store the mouse delta position y.
 			*
-			*	\retval SUCCESS no problems found.
+			*	\retval SUCCESS no problems found. Values stored in x and y
 			*/
 			virtual GRETURN GetMouseDelta(float &x, float &y) = 0;
 
 			//! Get the most recent mouse position.
 			/*!
 			*
-			*	\param [out] x a refrence to a float to store the mouse position x.
-			*	\param [out] y a refrence to a float to store the mouse position y.
+			*	\param [out] x a reference to a float to store the mouse position x.
+			*	\param [out] y a reference to a float to store the mouse position y.
 			*
-			*	\retval SUCCESS no problems found.
+			*	\retval SUCCESS no problems found. Values stored in x and y
 			*/
 			virtual GRETURN GetMousePosition(float &x, float &y) = 0;
 
@@ -82,7 +92,7 @@ namespace GW
 		*	\retval INVALID_ARGUMENT _outInput and or _data is nullptr.
 		*/
 		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGInput(GInput** _outInput, void * _data);
-	} // end CORE namespace
+	} // end SYSTEM namespace
 } // end GW namespace
 
 #endif

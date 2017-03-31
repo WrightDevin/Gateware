@@ -1,9 +1,9 @@
-#ifndef GMULTITHREADED
-#define GMULTITHREADED
+#ifndef _GMULTITHREADED_H
+#define _GMULTITHREADED_H
 
 /*!
 	File: GMultiThreaded.h
-	Purpose: Indentifies any Gateware interface which is garunteed to be safely accessed across multiple threads.
+	Purpose: Indentifies any Gateware interface which is guaranteed to be safely accessed across multiple threads.
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
@@ -26,7 +26,7 @@ namespace GW
 			0xb0b2c21c, 0xb7a0, 0x42a2,{ 0xbb, 0xf6, 0xa8, 0x93, 0xd6, 0x6a, 0xb0, 0x6 }
 		};
 
-		//! This interface is only used to label and query interfaces which promise to 100% internally support thread saftey. 
+		//! This interface is only used to label and query interfaces which promise to 100% internally support thread safety. 
 		class GMultiThreaded : public GInterface
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual

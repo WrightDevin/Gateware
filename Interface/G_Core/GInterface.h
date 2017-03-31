@@ -1,5 +1,5 @@
-#ifndef GINTERFACE
-#define GINTERFACE
+#ifndef _GINTERFACE_H
+#define _GINTERFACE_H
 /*!
 	File: GInterface.h
 	Purpose: The fundamental interface which all Gateware interfaces must adhere to at a minimum.
@@ -27,22 +27,22 @@ namespace GW
 
 		//! Base interface all Gateware interfaces must support at a minimum.
 		/*! 
-		*	Core features include: Interface Upgrades, Refrence Counting, Event Broadcasting.
+		*	Core features include: Interface Upgrades, Reference Counting, Event Broadcasting.
 		*/
 		class GInterface
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
-			//! Return the total number of active refrences to this object.
+			//! Return the total number of active references to this object.
 			/*!
 			*	\param [out] _outCount The total number of active references of this object.
 			*
 			*	\retval SUCCESS Successfully ran
-			*	\retval FAILURE Either class does not exist or the internal reference count is corupt.
+			*	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
 			*/
 			virtual GRETURN GetCount(unsigned int &_outCount) = 0;
 			
-			//! Increase the total number of active refrences to this object.
+			//! Increase the total number of active references to this object.
 			/*!
 			*	End users should only call this operation if they are familiar with reference counting behavior.
 			*
@@ -51,7 +51,7 @@ namespace GW
 			*/
 			virtual GRETURN IncrementCount() = 0;
 
-			//! Decrease the total number of active refrences to this object.
+			//! Decrease the total number of active references to this object.
 			/*!
 			*	Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
 			*

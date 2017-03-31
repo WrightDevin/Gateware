@@ -7,7 +7,7 @@
 namespace INTERNAL
 {
 	//UINT_MAX is not defined on Mac or Linux
-	//Enternal #define for this
+	//Internal #define for this
 	#define G_UINT_MAX 0xFFFFFFFF
 
 	#if defined(_WIN32)
@@ -18,7 +18,7 @@ namespace INTERNAL
 
 	#elif defined(__APPLE__) || defined(__linux__)
 
-	//These string conversions are not nessisary on Linux/Apple.
+	//These string conversions are not necessary on Linux/Apple.
 	//They are designed to be replaced with just the value given to them
 	#define G_TO_UTF16(value) value
 	#define G_TO_UTF8(value) value
@@ -48,7 +48,6 @@ namespace INTERNAL
 	{
 	    return snprintf(destination, strLen, "%s", source);
 	}
-
 
 }
 

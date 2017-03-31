@@ -1,5 +1,5 @@
-#ifndef GDEFINES
-#define GDEFINES
+#ifndef _GDEFINES_H
+#define _GDEFINES_H
 
 /*
 	File: GDefines.h
@@ -14,7 +14,7 @@
 //! The core namespace to which all Gateware interfaces must belong
 namespace GW
 {
-// ensure identical binary padding for structures on all platforms
+// Ensure identical binary padding for structures on all platforms
 #pragma pack(push, 1)
 	//! Gateware Universaly Unique Interface IDentifier
 	/*! 
@@ -43,7 +43,7 @@ namespace GW
 
 			return true;
 		}
-	}; // gateware guuiid mimic microsoft GUID structure in byte pattern 
+	}; // Gateware guuiid mimic microsoft GUID structure in byte pattern 
 	   // use built-in Visual Studio tools to generate unique ID for new interfaces
 #pragma pack(pop)
 
@@ -56,7 +56,7 @@ namespace GW
 		MEMORY_CORRUPTION		= 2, /*< A memory corruption occurred in the function.*/
 		INTERFACE_UNSUPPORTED	= 3, /*< The requested interface is not supported by the object.*/
 		FILE_NOT_FOUND			= 4, /*< A requested file is not found.*/
-		REDUNDENT_OPERATION		= 5, /*< The requested operation will not do anything.*/
+		REDUNDANT_OPERATION		= 5, /*< The requested operation will not do anything.*/
 		FEATURE_UNSUPPORTED		= 6, /*< Attempted an operation that is currently not supported.*/
 	};
 };// end GW namespace

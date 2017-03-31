@@ -4,7 +4,7 @@
 #include "../../Interface/G_System/GFile.h"
 #include <fstream>  //file streams
 #include <string>  //strings
-#include <atomic>  //automic variables
+#include <atomic>  //atomic variables
 #include <mutex>  //mutex locks
 #include "GUtility.h"  //Internal utility functions
 
@@ -183,7 +183,7 @@ GW::GRETURN FileIO::OpenBinaryWrite(const char* const _file)
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
-	//If a file currently open we fail.
+	//If the file is currently open we fail.
 	if (m_file.is_open())
 		return GW::FAILURE;
 
@@ -287,7 +287,7 @@ GW::GRETURN FileIO::OpenTextWrite(const char* const _file)
 
 GW::GRETURN FileIO::AppendTextWrite(const char* const _file)
 {
-	//Check for invalid arguements
+	//Check for invalid arguments
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
@@ -306,7 +306,7 @@ GW::GRETURN FileIO::AppendTextWrite(const char* const _file)
 
 GW::GRETURN FileIO::Write(const char* const _inData, unsigned int _numBytes)
 {
-	//Check for invalid arguements
+	//Check for invalid arguments
 	if (_inData == nullptr || _numBytes == 0)
 		return GW::INVALID_ARGUMENT;
 
@@ -363,7 +363,7 @@ GW::GRETURN FileIO::Read(char* _outData, unsigned int _numBytes)
 
 GW::GRETURN FileIO::WriteLine(const char* const _inData)
 {
-	//Check for invalid arguements
+	//Check for invalid arguments
 	if (_inData == nullptr)
 		return GW::INVALID_ARGUMENT;
 
@@ -371,8 +371,8 @@ GW::GRETURN FileIO::WriteLine(const char* const _inData)
 	if (!m_file.is_open())
 		return GW::FAILURE;
 
-	//Transfer the data to a string. #defines make it where
-	//the string is what we need it to be on any system we support
+	//Transfer the data to a string. #defines make it so the
+	//string is what we need it to be on any system we support
 	string writeOutString = G_TO_UTF16(_inData);
 
 	//Lock the write operations
@@ -460,7 +460,7 @@ GW::GRETURN FileIO::FlushFile()
 
 GW::GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize)
 {
-	//Check for valid arguements
+	//Check for valid arguments
 	if (_dir == nullptr || _dirSize == 0)
 		return GW::INVALID_ARGUMENT;
 
@@ -476,7 +476,7 @@ GW::GRETURN FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize
 
 GW::GRETURN FileIO::SetCurrentWorkingDirectory(const char* const _dir)
 {
-	//Check for valid arguements
+	//Check for valid arguments
 	if (_dir == nullptr)
 		return GW::INVALID_ARGUMENT;
 
@@ -538,7 +538,7 @@ GW::GRETURN FileIO::GetDirectorySize(unsigned int& _outSize)
 			++_outSize;
 	}
 
-	//Set the directory iterater back to the begining
+	//Set the directory iterator back to the beginning
 	rewinddir(m_currDirStream);
 
 	return GW::SUCCESS;
@@ -578,9 +578,9 @@ GW::GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 	string filePath = m_currDir;
 	filePath += G_TO_UTF16(_file);
 
-	//Other then the UTF8 to UTF16 converstion for the windows calls
+	//Other than the UTF8 to UTF16 conversion for the windows calls,
 	//This is handled the same for each platform
-	//wWe call stat() and it fills in the passed in function
+	//We call stat() and it fills in the passed in function
 	//with the stats of the passed in path
 #if defined (_WIN32)
 	struct _stat s;
@@ -602,7 +602,7 @@ GW::GRETURN FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 
 GW::GRETURN FileIO::GetCount(unsigned int &_outCount)
 {
-	//Store ref count
+	//Store reference count
 	_outCount = m_refCount;
 
 	return GW::SUCCESS;
@@ -614,7 +614,7 @@ GW::GRETURN FileIO::IncrementCount()
 	if (m_refCount == G_UINT_MAX)
 		return GW::FAILURE;
 
-	//Increment ref count
+	//Increment reference count
 	++m_refCount;
 
 	return GW::SUCCESS;
@@ -626,7 +626,7 @@ GW::GRETURN FileIO::DecrementCount()
 	if (m_refCount == 0)
 		return GW::FAILURE;
 
-	//Decrement ref count
+	//Decrement reference count
 	--m_refCount;
 
 	return GW::SUCCESS;
@@ -637,7 +637,7 @@ GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _out
 	if (_outputInterface == nullptr)
 		return GW::INVALID_ARGUMENT;
 
-	//If interface == this
+	//If passed in interface is equivalent to current interface (this)
 	if (_interfaceID == GW::SYSTEM::GFileUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
@@ -652,7 +652,7 @@ GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _out
 	//If requested interface is multithreaded.
 	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
 	{
-		//Temportary GMultiThreaded* to ensure proper functions are called
+		//Temporary GMultiThreaded* to ensure proper functions are called
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
 
 		//Increment the count of the GMultithreaded.

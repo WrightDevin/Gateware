@@ -17,7 +17,7 @@ class BufferedInput : public GBufferedInput {
 private:
 
 	//The atomic value is for thread safety.(Like a mutex without using a mutex).
-	std::atomic<unsigned int> n_refrenceCount;
+	std::atomic<unsigned int> n_referenceCount;
 
 	std::atomic_bool _threadOpen;
 
@@ -55,7 +55,7 @@ public:
 
 
 BufferedInput::BufferedInput() {
-	n_refrenceCount = 1;
+	n_referenceCount = 1;
 }
 
 BufferedInput::~BufferedInput() {
@@ -64,23 +64,23 @@ BufferedInput::~BufferedInput() {
 
 GRETURN BufferedInput::GetCount(unsigned int &_outCount) {
 
-	_outCount = n_refrenceCount;
+	_outCount = n_referenceCount;
 
 	return SUCCESS;
 }
 
 GRETURN BufferedInput::IncrementCount() {
 
-	n_refrenceCount += 1;
+	n_referenceCount += 1;
 
 	return SUCCESS;
 }
 
 GRETURN BufferedInput::DecrementCount() {
 
-	n_refrenceCount -= 1;
+	n_referenceCount -= 1;
 
-	if (n_refrenceCount == 0) {
+	if (n_referenceCount == 0) {
 
 #ifdef __linux__
 		_threadOpen = false;
@@ -137,7 +137,7 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_addListener);
 	if (iter != _listeners.end()) {
-		return REDUNDENT_OPERATION;
+		return REDUNDANT_OPERATION;
 	}
 
 	_listeners[_addListener] = _eventMask;
@@ -230,7 +230,7 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	}
 
 	int nNoOfDevices = 0;
-	//Using the new List and number of devices.
+	//Using the new List and number of devices,
 	//Populate the raw input device list.
 	if ((nNoOfDevices = GetRawInputDeviceList(pRawInputDeviceList, &numDevices, sizeof(RAWINPUTDEVICELIST))) == ((UINT)-1)) {
 
@@ -240,7 +240,7 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	RID_DEVICE_INFO rdi;
 	rdi.cbSize = sizeof(RID_DEVICE_INFO);
 
-	//For all of the devices display there correspondant information.
+	//For all of the devices, display their correspondent information.
 	for (int i = 0; i < nNoOfDevices; i++) {
 
 		UINT size = 256;
@@ -307,11 +307,11 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display * _display;
-	//Cast the void* _linuxWidnow._Display to a display pointer to pass to XSelectInput.
+	//Cast the void* _linuxWindow._Display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow._Display);
 	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
     memcpy(&_window, _linuxWindow._Window, sizeof(_window));
-	//Select the type of Input events we wish to recieve.
+	//Select the type of Input events we wish to receive.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
@@ -332,8 +332,8 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
     //Need to convert data back into an NSWindow*
     NSWindow * currentResponder = ((__bridge NSWindow*)_data);
 
-    //We only want to process the message and pass it on. So if there is already
-    //so we set the our responders next responder to be the current next reponder
+    //We only want to process the message and pass it on. So if there is already  <---(already what? -Nic Russell)
+    //we set our responders next responder to be the current next responder
     [responder setNextResponder:currentResponder.nextResponder];
 
     //We then set out responder to the next responder of the window

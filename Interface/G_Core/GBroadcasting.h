@@ -1,5 +1,5 @@
-#ifndef GBROADCASTING
-#define GBROADCASTING
+#ifndef _GBROADCASTING_H
+#define _GBROADCASTING_H
 
 /*!
 	File: GBroadcasting.h
@@ -38,7 +38,7 @@ namespace GW
 
 			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
 			/*!
-			*	Listeners registered to a broadcaster will have their refrence counts increased by one until deregistered
+			*	Listeners registered to a broadcaster will have their reference counts increased by one until deregistered
 			*
 			*	\param [in] _addListener The listener object that is registering for messages.
 			*	\param [in] _eventMask The events the listener is registering for. 0 will register for all events.
@@ -48,7 +48,7 @@ namespace GW
 			*/
 			 virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
 			
-			//! A successfully deregistered listener will no longer receive events and have it's refrence count decremented by one.
+			//! A successfully deregistered listener will no longer receive events and have its reference count decremented by one.
 			/*!
 			*	\param [in] _removeListener The listener to deregister from events.
 			*

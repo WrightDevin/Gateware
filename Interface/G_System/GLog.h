@@ -1,5 +1,5 @@
-#ifndef GLOG
-#define GLOG
+#ifndef _GLOG_H
+#define _GLOG_H
 
 /*
 	File: GLog.h
@@ -44,7 +44,7 @@ namespace GW
 			*	\param [in] _log The message to log out.
 			*
 			*	\retval SUCCESS  Successfully queued the message to the log.
-			*	\retval FAILURE  The queue has reached maximun size (call flush).
+			*	\retval FAILURE  The queue has reached maximum size (call flush).
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN Log(const char* const _log) = 0;
@@ -58,7 +58,7 @@ namespace GW
 			*	\param [in] _log The message to log out.
 			*
 			*	\retval SUCCESS  Successfully queued the message to the log.
-			*	\retval FAILURE  The queue has reached maximun size (call flush).
+			*	\retval FAILURE  The queue has reached maximum size (call flush).
 			*	\retval INVALID_ARGUMENT  Either _category or _log are nullptr.
 			*/
 			virtual GRETURN LogCatergorized(const char* const _category, const char* const _log) = 0;
@@ -98,7 +98,7 @@ namespace GW
 		*	then use the overridden function to pass in a GFile* that is pre set the way you want it.
 		*
 		*	\param [in] _fileName The name of the log file.
-		*	\param [out] _outLog Will contain the GLog if succefully created.
+		*	\param [out] _outLog Will contain the GLog if successfully created.
 		*
 		*	\retval SUCCESS  GLog was successfully created.
 		*	\retval FAILURE  GLog was not created. _outLog will be null
@@ -114,7 +114,7 @@ namespace GW
 		*	NOTE: A reference count will be added to the GFile object passed in if the function succeeds.
 		*
 		*	\param [in] _file The GFile object that this log will use.
-		*	\param [out] _outLog Will contain the GLog if succefully created.
+		*	\param [out] _outLog Will contain the GLog if successfully created.
 		*
 		*	\retval SUCCESS  GLog was successfully created.
 		*	\retval FAILURE  GLog was not created. _outLog will be null.

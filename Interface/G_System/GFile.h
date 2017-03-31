@@ -1,5 +1,5 @@
-#ifndef GFILE
-#define GFILE
+#ifndef _GFILE_H
+#define _GFILE_H
 /*
 	File: GFile.h
 	Purpose: A Gateware interface that handles both binary and textual file io and directory
@@ -28,6 +28,7 @@ namespace GW
 		//! Cross platform FileIO/Directory handling
 		/*!
 		*	Handles file input/output operations, as well as, directory information and file information
+		*	Inherits from GMultiThreaded, therfore its implementation must be thread safe
 		*/
 		class GFile : public CORE::GMultiThreaded
 		{
@@ -36,7 +37,7 @@ namespace GW
 
 			//! Opens a file for binary read.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the function will fail.
 			*
@@ -49,9 +50,9 @@ namespace GW
 			*/
 			virtual GRETURN OpenBinaryRead(const char* const _file) = 0;
 
-			//! Opens a file for binary write truncating the file.
+			//! Opens a file for binary write with truncation.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
 			*	the current working directory.
@@ -60,13 +61,13 @@ namespace GW
 			*
 			*	\retval SUCCESS  Succesfully opened the file.
 			*	\retval FAILURE  A file is already open or file could not be found/created.
-			*	\retval INVALID_ARGUEMENT  A nullptr was passed in.
+			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenBinaryWrite(const char* const _file) = 0;
 
 			//! Opens a file for binary write with append.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
 			*	the current working directory.
@@ -81,7 +82,7 @@ namespace GW
 
 			//! Opens a file for text read.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the function will fail.
 			*
@@ -90,13 +91,13 @@ namespace GW
 			*	\retval SUCCESS  Succesfully opened the file.
 			*	\retval FILE_NOT_FOUND  File could not be found.
 			*	\retval FAILURE  A file is already open.
-			*	\retval INVALID_ARGUEMENT  A nullptr was passed in.
+			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenTextRead(const char* const _file) = 0;
 
-			//! Opens a file for text write truncatin the file.
+			//! Opens a file for text write with truncation.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
 			*	the current working directory.
@@ -111,7 +112,7 @@ namespace GW
 
 			//! Opens a file for text write with append.
 			/*!
-			*	The file name passed into the function should be passed like it is a realitive path.
+			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
 			*	the current working directory.
@@ -159,11 +160,11 @@ namespace GW
 			//! Reads text to the currently opened file.
 			/*!
 			*
-			*	Reads text from the current file until either the size is reached or delimeter is reached.
+			*	Reads text from the current file until either the size is reached or delimiter is reached.
 			*
 			*	\param [out] _outData Null terminated string to write out.
 			*	\param [in] _outDataSize The size of _outData.
-			*	\param [in] _delimiter The delemiter to stop reading at.
+			*	\param [in] _delimiter The delimiter to stop reading at.
 			*
 			*	\retval SUCCESS  Successful read.
 			*	\retval FAILURE  Either file is not open or read failed.
@@ -188,7 +189,7 @@ namespace GW
 			//! Changes the current working directory.
 			/*!
 			*	This sets the directory where we will look in with any of the open functions or other directory functions.
-			*	Paths that are not relitive to the directory the program was ran from should be passed in as absolute paths.
+			*	Paths that are not relative to the directory the program was ran from should be passed in as absolute paths.
 			*
 			*	\param [in] _dir An absolute path to the directory to set as the current working directory.
 			*
@@ -202,7 +203,7 @@ namespace GW
 			//! Retrieves the absolute path of the current working directory
 			/*!
 			*	This is the directory where we will look for any file open commands.
-			*	This is by Windows standard gareenteed to be 255 or less. 
+			*	This is by Windows standard guaranteed to be 255 or less. 
 			*
 			*	\param [out] _outDir An absolute path to the directory to set as the current working directory.
 			*	\param [in] _dirSize The size of _outDir.
@@ -239,7 +240,7 @@ namespace GW
 
 			//! Gets the size of the specified file in bytes.
 			/*!
-			*	The filename passed into this function should be passed as a realitive path.
+			*	The filename passed into this function should be passed as a relative path.
 			*	This function will assume the file passed in is in the current working directory
 			*	and will look for it there.
 			*

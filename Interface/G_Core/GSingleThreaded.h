@@ -1,5 +1,5 @@
-#ifndef GSINGLETHREADED
-#define GSINGLETHREADED
+#ifndef _GSINGLETHREADED_H
+#define _GSINGLETHREADED_H
 
 /*!
 	File: GSingleThreaded.h
@@ -26,7 +26,7 @@ namespace GW
 			0x88e5bc2, 0x8bf4, 0x4972,{ 0x95, 0x37, 0xfa, 0xcb, 0xfa, 0x14, 0x27, 0x89 }
 		};
 
-		//! This interface is only used to label and query interfaces which are not designed internally to support thread saftey. 
+		//! This interface is only used to label and query interfaces which are not designed internally to support thread safety. 
 		class GSingleThreaded : public GInterface
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
