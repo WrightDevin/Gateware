@@ -97,7 +97,7 @@ GRETURN BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outp
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
-	if (_interfaceID == GBufferedInputUUIID)
+	if (_interfaceID == SYSTEM::GBufferedInputUUIID)
 	{
 		GBufferedInput * convert = reinterpret_cast<GBufferedInput*>(this);
 		convert->IncrementCount();
@@ -173,10 +173,10 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::CORE::CreateGBufferedInput(_outPointer, _data);
+	return GW::SYSTEM::CreateGBufferedInput(_outPointer, _data);
 }
 
-GRETURN GW::CORE::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
+GRETURN GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
 
 
 	if (_outPointer == nullptr || _data == nullptr) {

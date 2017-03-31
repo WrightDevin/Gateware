@@ -18,7 +18,7 @@
 namespace GW
 {
 	//! The core namespace to which all Gateware fundamental interfaces must belong.
-	namespace CORE
+	namespace SYSTEM
 	{
 		//! Unique Identifier for this interface. {79AC4197-1A78-4A86-A4A4-E84773A2F6DF}
 		static const GUUIID GLogUUIID =
@@ -31,7 +31,7 @@ namespace GW
 
 
 		//! Cross platform threadsafe logger
-		class GLog : public GMultiThreaded
+		class GLog : public CORE::GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:

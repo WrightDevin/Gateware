@@ -7,7 +7,7 @@
 
 namespace GW
 {
-	namespace CORE
+	namespace SYSTEM
 	{
 
 		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
@@ -22,7 +22,7 @@ namespace GW
 		*	The single thread input library is used for high speed game input.
 		*	You can use this library to get any mouse or keyboard input.
 		*/
-		class GInput : public GSingleThreaded
+		class GInput : public CORE::GSingleThreaded
 		{
 
 		public:

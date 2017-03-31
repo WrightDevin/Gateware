@@ -17,7 +17,7 @@
 namespace GW
 {
 	//! The core namespace to which all Gateware fundamental interfaces must belong.
-	namespace CORE
+	namespace SYSTEM
 	{
 		//! Unique Identifier for this interface. {3BE0F240-C3E7-424B-888E-F2994B6D1E48}
 		static const GUUIID GFileUUIID =
@@ -29,7 +29,7 @@ namespace GW
 		/*!
 		*	Handles file input/output operations, as well as, directory information and file information
 		*/
-		class GFile : public GMultiThreaded
+		class GFile : public CORE::GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
@@ -265,7 +265,7 @@ namespace GW
 		*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 		*/
 		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGFile(GFile** _outFile);
-	} // end CORE namespace
+	} // end SYSTEM namespace
 } // end GW namespace
 
 #endif

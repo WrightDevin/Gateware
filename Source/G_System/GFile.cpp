@@ -56,7 +56,7 @@ using std::atomic;
 using std::mutex;
 using std::getline;
 
-class FileIO : public GW::CORE::GFile
+class FileIO : public GW::SYSTEM::GFile
 {
 	DIR* m_currDirStream;  //Maintains the current directory
 	fstream m_file;  //Maintains the current file (if one is open)
@@ -638,7 +638,7 @@ GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _out
 		return GW::INVALID_ARGUMENT;
 
 	//If interface == this
-	if (_interfaceID == GW::CORE::GFileUUIID)
+	if (_interfaceID == GW::SYSTEM::GFileUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
 		GFile* convert = reinterpret_cast<GFile*>(this);
@@ -681,14 +681,14 @@ GW::GRETURN FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _out
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGFile(GW::CORE::GFile** _outFile)
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGFile(GW::SYSTEM::GFile** _outFile)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::CORE::CreateGFile(_outFile);
+	return GW::SYSTEM::CreateGFile(_outFile);
 }
 
 
-GW::GRETURN GW::CORE::CreateGFile(GFile** _outFile)
+GW::GRETURN GW::SYSTEM::CreateGFile(GFile** _outFile)
 {
 	//Check that we were given a valid pointer
 	if (_outFile == nullptr)

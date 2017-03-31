@@ -12,7 +12,7 @@
 #include <iostream>
 #include <time.h>
 
-class Input : public GInput {
+class Input : public SYSTEM::GInput {
 
 private:
 
@@ -62,13 +62,13 @@ public:
 };
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GRETURN CreateGInput(GInput** _outPointer, void * _data)
+GATEWARE_EXPORT_EXPLICIT GRETURN CreateGInput(GW::SYSTEM::GInput** _outPointer, void * _data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::CORE::CreateGInput(_outPointer, _data);
+	return GW::SYSTEM::CreateGInput(_outPointer, _data);
 }
 
-GRETURN GW::CORE::CreateGInput(GInput** _outFpointer, void * _data) {
+GRETURN GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * _data) {
 
 	if (_outFpointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
@@ -133,7 +133,7 @@ GRETURN Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterf
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
-	if (_interfaceID == GInputUUIID)
+	if (_interfaceID == SYSTEM::GInputUUIID)
 	{
 		GInput * convert = reinterpret_cast<GInput*>(this);
 		convert->IncrementCount();

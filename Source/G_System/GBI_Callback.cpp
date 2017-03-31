@@ -6,6 +6,7 @@
 
 using namespace GW;
 using namespace CORE;
+using namespace SYSTEM;
 
 namespace {
 

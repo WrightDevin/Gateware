@@ -130,7 +130,7 @@
 
 namespace GW
 {
-	namespace CORE
+	namespace SYSTEM
 	{
 #pragma pack(push, 1)
 		//! The structure used to pass into Input libraries on Linux

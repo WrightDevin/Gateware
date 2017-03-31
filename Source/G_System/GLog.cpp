@@ -32,9 +32,9 @@ using std::cout;
 #define THREAD_SLEEP_TIME 1
 #define TIME_BUFFER 40
 
-class LogFile : public GW::CORE::GLog
+class LogFile : public GW::SYSTEM::GLog
 {
-	GW::CORE::GFile* m_logFile;  //Our internal GFile to log to file
+	GW::SYSTEM::GFile* m_logFile;  //Our internal GFile to log to file
 
 	thread* m_worker; //The worker thread we will spin off
 
@@ -58,7 +58,7 @@ public:
 
 	GW::GRETURN Init(const char* const _fileName);
 
-	GW::GRETURN Init(GW::CORE::GFile* _file);
+	GW::GRETURN Init(GW::SYSTEM::GFile* _file);
 
 	GW::GRETURN Log(const char* const _log) override;
 
@@ -115,7 +115,7 @@ GW::GRETURN LogFile::Init(const char* const _fileName)
 	return GW::SUCCESS;
 }
 
-GW::GRETURN LogFile::Init(GW::CORE::GFile* _file)
+GW::GRETURN LogFile::Init(GW::SYSTEM::GFile* _file)
 {
 	//Check to ensure valid GFile
 	if (_file == nullptr)
@@ -342,7 +342,7 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 		return GW::INVALID_ARGUMENT;
 
 	//If interface == this
-	if (_interfaceID == GW::CORE::GLogUUIID)
+	if (_interfaceID == GW::SYSTEM::GLogUUIID)
 	{
 		//Temporary GFile* to ensure proper functions are called.
 		GLog* convert = reinterpret_cast<GLog*>(this);
@@ -385,13 +385,13 @@ GW::GRETURN LogFile::RequestInterface(const GW::GUUIID &_interfaceID, void** _ou
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLog(const char* const _fileName, GW::CORE::GLog** _outLog)
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLog(const char* const _fileName, GW::SYSTEM::GLog** _outLog)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::CORE::CreateGLog(_fileName, _outLog);
+	return GW::SYSTEM::CreateGLog(_fileName, _outLog);
 }
 
-GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
+GW::GRETURN GW::SYSTEM::CreateGLog(const char* const _fileName, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)
@@ -414,13 +414,13 @@ GW::GRETURN GW::CORE::CreateGLog(const char* const _fileName, GLog** _outLog)
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLogCustom(GW::CORE::GFile* _file, GW::CORE::GLog** _outLog)
+GATEWARE_EXPORT_EXPLICIT GW::GRETURN CreateGLogCustom(GW::SYSTEM::GFile* _file, GW::SYSTEM::GLog** _outLog)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::CORE::CreateGLogCustom(_file, _outLog);
+	return GW::SYSTEM::CreateGLogCustom(_file, _outLog);
 }
 
-GW::GRETURN GW::CORE::CreateGLogCustom(GFile* _file, GLog** _outLog)
+GW::GRETURN GW::SYSTEM::CreateGLogCustom(GFile* _file, GLog** _outLog)
 {
 	//Check to make sure the user passed a valid pointer
 	if (_outLog == nullptr)

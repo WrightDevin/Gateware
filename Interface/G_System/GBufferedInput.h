@@ -15,7 +15,7 @@
 
 namespace GW
 {
-	namespace CORE
+	namespace SYSTEM
 	{
 
 #pragma pack(push, 1)
@@ -51,7 +51,7 @@ namespace GW
 		/*!
 		*	Register with a GBufferedInput to recieve mouse and keyboard events.
 		*/
-		class GBufferedInput : public GBroadcasting { };
+		class GBufferedInput : public CORE::GBroadcasting { };
 
 		//! Creates a GBufferedInput Object.
 		/*!
@@ -65,8 +65,8 @@ namespace GW
 		*	\retval FAILURE could not make an BufferedInput Object.
 		*	\retval INVALID_ARGUMENT _outInput and or _data is nullptr.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
-	} // end CORE namespace
+		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(SYSTEM::GBufferedInput** _outBufferedInput, void * _data);
+	} // end SYSTEM namespace
 } // end GW namespace
 
 #endif
