@@ -38,8 +38,10 @@ namespace GW
 
 			//! Logs a null terminated string.
 			/*!
-			*	Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See EnableVerboseLogging).
-			*	A new line character will be appended to the end of the string so your log messages do not require a new line.
+			*	Date, Time, and thread ID will be appended to the front of the message unless 
+			*	specified otherwise (See EnableVerboseLogging). A new line character will be 
+			*	appended to the end of the string so your log messages do not require a new line. 
+			*	The string is logged to the internal GFile object.
 			*
 			*	\param [in] _log The message to log out.
 			*
@@ -51,8 +53,10 @@ namespace GW
 			
 			//! Logs a null terminated string with a category.
 			/*!
-			*	Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See EnableVerboseLogging).
-			*	A new line character will be appended to the end of the string so your log messages do not require a new line.
+			*	Date, Time, and thread ID will be appended to the front of the message unless 
+			*	specified otherwise (See EnableVerboseLogging). A new line character will be 
+			*	appended to the end of the string so your log messages do not require a new line. 
+			*	The string is logged to the internal GFile object.
 			*
 			*	\param [in] _category The category the log belongs in. ie. ERROR, WARNING, INFO, etc.
 			*	\param [in] _log The message to log out.
@@ -65,7 +69,8 @@ namespace GW
 			
 			//! Turns verbose logging on or off.
 			/*!
-			*	Use this function to prevent the addition of date, time, and threadID to your logs.
+			*	Use this function to ensure or prevent the addition of date, time, and threadID
+			*	to your log messages.
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*
@@ -74,7 +79,7 @@ namespace GW
 			
 			//! Turns console logging on or off.
 			/*!
-			*	Use this function to prevent the additional console logging.
+			*	Use this function to ensure or prevent the additional console logging.
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*
@@ -96,6 +101,7 @@ namespace GW
 		*	This function will create a GLog object with the log file being created in the directory
 		*	the program was ran from. If you want to control where the log file is going to be created at
 		*	then use the overridden function to pass in a GFile* that is pre set the way you want it.
+		*	Reference count of created object is initialized to one
 		*
 		*	\param [in] _fileName The name of the log file.
 		*	\param [out] _outLog Will contain the GLog if successfully created.
@@ -111,7 +117,8 @@ namespace GW
 		*	This function will create a GLog object with the GFile object that was passed in.
 		*	This is so you can have more control over your log by setting up a GFile in advance.
 		*	The GFile object should already have a file open for text writing.
-		*	NOTE: A reference count will be added to the GFile object passed in if the function succeeds.
+		*	Created GLog and GFile objects will have their reference counts initialized to one.
+		*	
 		*
 		*	\param [in] _file The GFile object that this log will use.
 		*	\param [out] _outLog Will contain the GLog if successfully created.

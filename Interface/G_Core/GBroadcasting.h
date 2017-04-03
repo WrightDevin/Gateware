@@ -39,12 +39,13 @@ namespace GW
 			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
 			/*!
 			*	Listeners registered to a broadcaster will have their reference counts increased by one until deregistered
+			*	
 			*
 			*	\param [in] _addListener The listener object that is registering for messages.
 			*	\param [in] _eventMask The events the listener is registering for. 0 will register for all events.
 			*
 			*	\retval SUCCESS The listener was successfully registered.
-			*	\retval REDUNDENT_OPERATION The listener has already been registered by a previous call.
+			*	\retval REDUNDANT_OPERATION The listener has already been registered by a previous call.
 			*/
 			 virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
 			

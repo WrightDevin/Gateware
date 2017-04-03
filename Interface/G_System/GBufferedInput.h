@@ -59,17 +59,19 @@ namespace GW
 
 		//! Creates a GBufferedInput Object.
 		/*!
+		*	Initializes a window based on the void* data passed in. The created 
+		*	GBufferedInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outBufferedInput
 		*	\param [in] _data (Windows) The handle to the window (HWND).
-		*	\param [in] _data (Linux) Not Yet Implemented.
-		*	\param [in] _data (Max) Not Yet Implemented.
+		*	\param [in] _data (Linux) LINUX_WINDOW data.
+		*	\param [in] _data (Max) NSWindow data.
 		*
 		*	\retval SUCCESS no problems found.
 		*	\retval FAILURE could not make an BufferedInput Object.
 		*	\retval INVALID_ARGUMENT _outInput and or _data is nullptr.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(SYSTEM::GBufferedInput** _outBufferedInput, void * _data);
+		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
 	} // end SYSTEM namespace
 } // end GW namespace
 

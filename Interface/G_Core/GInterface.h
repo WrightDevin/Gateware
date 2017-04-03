@@ -62,7 +62,8 @@ namespace GW
 
 			//! Requests an interface that may or may not be supported by this object.
 			/*!
-			*	Similiar to DirectX queryInterface function.
+			*	Similiar to DirectX queryInterface function. Can be used by the end-user to
+			*	query and implement an interface update
 			*
 			*	\param [in] _interfaceID The GUUIID of the interface you are requesting.
 			*	\param [out] _outputInterface Where the interface will be stored if function is successful.

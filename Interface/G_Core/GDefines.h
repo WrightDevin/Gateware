@@ -16,7 +16,7 @@ namespace GW
 {
 // Ensure identical binary padding for structures on all platforms
 #pragma pack(push, 1)
-	//! Gateware Universaly Unique Interface IDentifier
+	//! Gateware Universally Unique Interface IDentifier
 	/*! 
 	*	Each GUUIID defines a unique 128bit number identifying a particular version of an interface
 	*	This allows interfaces to be upgraded down the line safely without breaking legacy code
@@ -79,7 +79,7 @@ namespace GW
 */
 #define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 
-// If the following symbol is defined by the complier then you must also define the following DLL export symbols.
+// If the following symbol is defined by the compiler then you must also define the following DLL export symbols.
 // ADD NON SYMBOLS FOR STANDARD BUILDS TO BE OVERRIDEN PER-PROJECT COMPILER SETTINGS
 #ifndef GATEWARE_EXPORT_IMPLICIT
 	#define GATEWARE_EXPORT_IMPLICIT

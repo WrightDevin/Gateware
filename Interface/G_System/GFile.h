@@ -55,7 +55,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory.
+			*	the current working directory. File can now be read from with Read()
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -70,12 +70,12 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory.
+			*	the current working directory. File can now be written to with Write()
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
 			*	\retval SUCCESS  Succesfully opened the file.
-			*	\retval FAILURE  A file is alread open or the file could not be found/created.
+			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN AppendBinaryWrite(const char* const _file) = 0;
@@ -85,6 +85,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the function will fail.
+			*   File can now be written to with Write()
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -100,12 +101,12 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory.
+			*	the current working directory. File can now be read from with Read()
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
 			*	\retval SUCCESS  Succesfully opened the file.
-			*	\retval FAILURE  A file is alread open or the file could not be found/created.
+			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN OpenTextWrite(const char* const _file) = 0;
@@ -115,18 +116,21 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory.
+			*	the current working directory. File can now be written to with Write()
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
 			*	\retval SUCCESS  Succesfully opened the file.
-			*	\retval FAILURE  A file is alread open or the file could not be found/created.
+			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GRETURN AppendTextWrite(const char* const _file) = 0;
 
-			//! Writes binary to the currently opened file.
+			//! Writes binary data to the currently opened file.
 			/*!
+			*	Will append or truncate file based on how the currently
+			*	opened file was opened
+			*
 			*	\param [in] _inData The data to write out to file.
 			*	\param [in] _numBytes The number of bytes to write out to the file.
 			*  
@@ -138,6 +142,9 @@ namespace GW
 
 			//! Reads binary from the currently opened file.
 			/*!
+			*	Reads binary data and stores it into a char* until the byte limit
+			*	is reached
+			*
 			*	\param [out] _outData The variable to store the read in bytes.
 			*	\param [in] _numBytes The number of bytes to read in from the file.
 			*
@@ -149,6 +156,9 @@ namespace GW
 
 			//! Writes text to the currently opened file.
 			/*!
+			*	Will append or truncate file based on how the currently 
+			*	opened file was opened
+			*
 			*	\param [in] _inData Null terminated string to write out.
 			*
 			*	\retval SUCCESS  Successful write. 
@@ -160,7 +170,8 @@ namespace GW
 			//! Reads text to the currently opened file.
 			/*!
 			*
-			*	Reads text from the current file until either the size is reached or delimiter is reached.
+			*	Reads text from the current file until either the size is
+			*	reached or delimiter is reached.
 			*
 			*	\param [out] _outData Null terminated string to write out.
 			*	\param [in] _outDataSize The size of _outData.
@@ -181,14 +192,14 @@ namespace GW
 
 			//! Flushes the current file.
 			/*!
-			*	\retval SUCCESS  File successfully flushed and closed.
+			*	\retval SUCCESS  File successfully flushed.
 			*	\retval FAILURE  A file is not currently open.
 			*/
 			virtual GRETURN FlushFile() = 0;
 
 			//! Changes the current working directory.
 			/*!
-			*	This sets the directory where we will look in with any of the open functions or other directory functions.
+			*	This sets the directory we will look into with any of the Open functions or other directory functions.
 			*	Paths that are not relative to the directory the program was ran from should be passed in as absolute paths.
 			*
 			*	\param [in] _dir An absolute path to the directory to set as the current working directory.
@@ -202,7 +213,7 @@ namespace GW
 
 			//! Retrieves the absolute path of the current working directory
 			/*!
-			*	This is the directory where we will look for any file open commands.
+			*	This is the directory we will look into for any file Open commands.
 			*	This is by Windows standard guaranteed to be 255 or less. 
 			*
 			*	\param [out] _outDir An absolute path to the directory to set as the current working directory.
@@ -226,7 +237,7 @@ namespace GW
 			//! Gets the names of all files in the current working directory.
 			/*!
 			*	This function will retrieve just the file names and extensions.
-			*	Any open function using these names will assume the files are in the current working directory.
+			*	Any Open function using these names will assume the files are in the current working directory.
 			*	Any change of the current working directory will make these names invalid until called again.
 			*
 			*	\param [out] _outFiles Stores the names of the files retrieved.
@@ -257,7 +268,8 @@ namespace GW
 		/*!
 		*	The GFile created by this function will have its current working directory defaulted to 
 		*	the directory where the program was ran from. Call SetCurrentWorkingDirectory to change it.
-		*	No file will be opened in creation of GFile. Call an open function to open one.
+		*	No file will be opened in creation of GFile. Call an Open function to open one.
+		*	Reference count of created object is initialized to one
 		*
 		*	\param [out] _outFile The Gfile that was created.
 		*

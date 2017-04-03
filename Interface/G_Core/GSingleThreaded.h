@@ -32,6 +32,7 @@ namespace GW
 			// All Gateware API interfaces contain no variables & are pure virtual
 		public:
 			// This class contains no unique routines that must be overridden
+			// Overridden and downstream operations need not be thread safe
 		};
 	}// end CORE namespace
 };// end GW namespace

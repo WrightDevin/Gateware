@@ -3,7 +3,7 @@
 
 /*
 File: GInput.h
-Purpose: A Gateware interface that handles high-speed keyboard and mouse input (temp description, written by Nic Russell) 
+Purpose: A Gateware interface that handles high-speed keyboard and mouse input (placeholder description, written by Nic Russell) 
 Author: ?????????
 Contributors: N/A
 Last Modified: ????????????
@@ -40,6 +40,9 @@ namespace GW
 			//! Get the current state of any key.
 			/*!
 			*
+			*	Use keycodes in GKeyDefines as input to this function to check the state
+			*	of a particular key or button
+			*
 			*	\param [in] _keyCode The key code of the key to check
 			*	\param [out] errorCode If function fails this will hold the errorCode
 			*
@@ -50,7 +53,7 @@ namespace GW
 
 			//! Get the change in mouse position.
 			/*!
-			*
+			* 
 			*	\param [out] x a reference to a float to store the mouse delta position x.
 			*	\param [out] y a reference to a float to store the mouse delta position y.
 			*
@@ -72,15 +75,18 @@ namespace GW
 
 			//! Get the key mask.
 			/*!
+			*	The key mask lets the input object know which of the functions below are  
+			*	active by manipulating individual bits of an unsigned int
+			*
 			*	\retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
 			*/
 			virtual unsigned int GetKeyMask() = 0;
-
-
 		};
 
 		//! Creates a GInput Object.
 		/*!
+		*	Initializes a window based on the void* data passed in. The created 
+		*	GInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outInput
 		*	\param [in] _data (Windows) The handle to the window (HWND).
