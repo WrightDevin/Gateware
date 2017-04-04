@@ -3,10 +3,10 @@
 
 /*
 File: GInput.h
-Purpose: A Gateware interface that handles high-speed keyboard and mouse input (placeholder description, written by Nic Russell) 
-Author: ?????????
+Purpose: A Gateware interface that handles high-speed keyboard and mouse input 
+Author: Peter Farber
 Contributors: N/A
-Last Modified: ????????????
+Last Modified: Feb 1st 2017
 Copyright: 7thGate Software LLC.
 License: MIT
 */

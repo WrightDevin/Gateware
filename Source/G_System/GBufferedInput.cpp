@@ -332,8 +332,8 @@ GRETURN BufferedInput::InitializeMac(void * _data) {
     //Need to convert data back into an NSWindow*
     NSWindow * currentResponder = ((__bridge NSWindow*)_data);
 
-    //We only want to process the message and pass it on. So if there is already  <---(already what? -Nic Russell)
-    //we set our responders next responder to be the current next responder
+	//We only want to process the message and pass it on. So if there is already   
+	//a responder we set our responders next responder to be the current next responder
     [responder setNextResponder:currentResponder.nextResponder];
 
     //We then set out responder to the next responder of the window
