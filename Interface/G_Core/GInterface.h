@@ -6,6 +6,7 @@
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 9/29/2016
+	Interface Status: Final
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -40,7 +41,7 @@ namespace GW
 			*	\retval SUCCESS Successfully ran
 			*	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
 			*/
-			virtual GRETURN GetCount(unsigned int &_outCount) = 0;
+			virtual GReturn GetCount(unsigned int& _outCount) = 0;
 			
 			//! Increase the total number of active references to this object.
 			/*!
@@ -49,7 +50,7 @@ namespace GW
 			*	\retval SUCCESS Successfully incremented the internal reference count.
 			*	\retval FAILURE Incrementation of internal reference count would overflow the value.
 			*/
-			virtual GRETURN IncrementCount() = 0;
+			virtual GReturn IncrementCount() = 0;
 
 			//! Decrease the total number of active references to this object.
 			/*!
@@ -58,7 +59,7 @@ namespace GW
 			*	\retval SUCCESS Successfully decremented the internal reference count.
 			*	\retval FAILURE Decrementing of internal reference count would underflow the value.
 			*/
-			virtual GRETURN DecrementCount() = 0;
+			virtual GReturn DecrementCount() = 0;
 
 			//! Requests an interface that may or may not be supported by this object.
 			/*!
@@ -71,7 +72,7 @@ namespace GW
 			*	\retval SUCCESS The interface is support and function succeded.
 			*	\retval INTERFACE_UNSUPPORTED The requested interface is not supported.
 			*/
-			virtual GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) = 0;
+			virtual GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace

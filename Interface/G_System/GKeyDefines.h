@@ -138,8 +138,8 @@ namespace GW
 		//! The structure used to pass into Input libraries on Linux
 		struct LINUX_WINDOW
 		{
-			void * _Window;			/*< _Window void pointer storing the window handle. */
-			void * _Display;		/*< _data Data void pointer storing the display handle. */
+			void* window;			/*< window void pointer storing the window handle. */
+			void* display;		/*< data Data void pointer storing the display handle. */
 		};
 
 #pragma pack(pop)

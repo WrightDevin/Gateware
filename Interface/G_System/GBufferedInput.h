@@ -6,6 +6,7 @@
 	Author: Peter Farber
 	Contributors: N/A
 	Last Modified: 11/16/2016
+	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -24,20 +25,20 @@ namespace GW
 #pragma pack(push, 1)
 
 		//! G_INPUT_DATA will hold any information you may need about an Input Event.
-		struct G_INPUT_DATA
+		struct GBUFFEREDINPUT_EVENT_DATA
 		{
-			int _data;				/*!<  Data storing the key/button information. */ 
-			int _x;					/*!<  Window Mouse position x when event is sent. */
-			int _y;					/*!<  Window Mouse position y when event is sent. */
-			int _screenX;			/*!<  Screen Mouse position x when event is sent. */
-			int _screenY;			/*!<  Screen Mouse position y when event is sent. */
-			unsigned int _keyMask;	/*!<  Bit flags for (CapsLock, NumLock, ScrollLock, Shift, and Control). */
+			int data;				/*!<  Data storing the key/button information. */ 
+			int x;					/*!<  Window Mouse position x when event is sent. */
+			int y;					/*!<  Window Mouse position y when event is sent. */
+			int screenX;			/*!<  Screen Mouse position x when event is sent. */
+			int screenY;			/*!<  Screen Mouse position y when event is sent. */
+			unsigned int keyMask;	/*!<  Bit flags for (CapsLock, NumLock, ScrollLock, Shift, and Control). */
 		};
 
 #pragma pack(pop)
 
-		//! GBInput_Events hold the possible events that can be sent from GBufferedInput.
-		enum GBInput_Events {
+		//! GBufferedInputEvents hold the possible events that can be sent from GBufferedInput.
+		enum GBufferedInputEvents {
 			KEYPRESSED,				/*!<  Key pressed event. */ 
 			KEYRELEASED,			/*!<  Key released event. */ 
 			BUTTONPRESSED,			/*!<  Button pressed event. */ 
@@ -63,15 +64,15 @@ namespace GW
 		*	Created GBufferedInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outBufferedInput
-		*	\param [in] _data (Windows) The handle to the window (HWND).
-		*	\param [in] _data (Linux) LINUX_WINDOW data.
-		*	\param [in] _data (Max) NSWindow data.
+		*	\param [in] data (Windows) The handle to the window (HWND).
+		*	\param [in] data (Linux) LINUX_WINDOW data.
+		*	\param [in] data (Max) NSWindow data.
 		*
 		*	\retval SUCCESS no problems found.
 		*	\retval FAILURE could not make an BufferedInput Object.
-		*	\retval INVALID_ARGUMENT _outInput and or _data is nullptr.
+		*	\retval INVALID_ARGUMENT _outInput and or data is nullptr.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outBufferedInput, void * _data);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGBufferedInput(GBufferedInput** _outBufferedInput, void* data);
 	} // end SYSTEM namespace
 } // end GW namespace
 

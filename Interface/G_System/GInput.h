@@ -6,7 +6,8 @@ File: GInput.h
 Purpose: A Gateware interface that handles high-speed keyboard and mouse input 
 Author: Peter Farber
 Contributors: N/A
-Last Modified: Feb 1st 2017
+Last Modified: 2/1/2017
+Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -49,7 +50,7 @@ namespace GW
 			*	\retval 0 The Key is not pressed.
 			*	\retval 1 The Key is pressed.
 			*/
-			virtual float GetState(int _keyCode, GRETURN * errorCode = nullptr) = 0;
+			virtual float GetState(int _keyCode, GReturn* errorCode = nullptr) = 0;
 
 			//! Get the change in mouse position.
 			/*!
@@ -59,7 +60,7 @@ namespace GW
 			*
 			*	\retval SUCCESS no problems found. Values stored in x and y
 			*/
-			virtual GRETURN GetMouseDelta(float &x, float &y) = 0;
+			virtual GReturn GetMouseDelta(float& x, float& y) = 0;
 
 			//! Get the most recent mouse position.
 			/*!
@@ -69,7 +70,7 @@ namespace GW
 			*
 			*	\retval SUCCESS no problems found. Values stored in x and y
 			*/
-			virtual GRETURN GetMousePosition(float &x, float &y) = 0;
+			virtual GReturn GetMousePosition(float& x, float& y) = 0;
 
 
 
@@ -89,15 +90,15 @@ namespace GW
 		*	Created GInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outInput
-		*	\param [in] _data (Windows) The handle to the window (HWND).
-		*	\param [in] _data (Linux) LINUX_WINDOW data.
-		*	\param [in] _data (Max) NSWindow data.
+		*	\param [in] data (Windows) The handle to the window (HWND).
+		*	\param [in] data (Linux) LINUX_WINDOW data.
+		*	\param [in] data (Max) NSWindow data.
 		*
 		*	\retval SUCCESS no problems found.
 		*	\retval FAILURE could not make an Input Object.
-		*	\retval INVALID_ARGUMENT _outInput and or _data is nullptr.
+		*	\retval INVALID_ARGUMENT _outInput and or data is nullptr.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGInput(GInput** _outInput, void * _data);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGInput(GInput** _outInput, void * data);
 	} // end SYSTEM namespace
 } // end GW namespace
 

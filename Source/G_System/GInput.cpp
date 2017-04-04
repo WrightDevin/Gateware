@@ -18,13 +18,13 @@ private:
 
 	/* GInterface */
 
-	void * hWnd;
+	void* hWnd;
 
-	unsigned int m_referenceCount;
+	unsigned int referenceCount;
 
-	std::atomic_bool m_threadOpen;
+	std::atomic_bool threadOpen;
 
-	std::thread * m_inputThread;
+	std::thread* inputThread;
 
 #ifdef _WIN32
 #elif __linux__
@@ -42,35 +42,35 @@ public:
 
 	void InputThread();
 
-	GRETURN InitializeWindows(void * _data);
-	GRETURN InitializeLinux(void * _data);
-	GRETURN InitializeMac(void * _data);
+	GReturn InitializeWindows(void * data);
+	GReturn InitializeLinux(void * data);
+	GReturn InitializeMac(void * data);
 
 	/* GInput */
 
-	float GetState(int _keyCode, GRETURN * errorCode);
-	GRETURN GetMouseDelta(float &x, float &y);
-	GRETURN GetMousePosition(float &x, float &y);
+	float GetState(int _keyCode, GReturn * errorCode);
+	GReturn GetMouseDelta(float &x, float &y);
+	GReturn GetMousePosition(float &x, float &y);
 	unsigned int GetKeyMask();
 
 	/* GInterface */
 
-	GRETURN GetCount(unsigned int &_outCount);
-	GRETURN IncrementCount();
-	GRETURN DecrementCount();
-	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
+	GReturn GetCount(unsigned int &_outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
 };
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GRETURN CreateGInput(GW::SYSTEM::GInput** _outPointer, void * _data)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(GW::SYSTEM::GInput** _outPointer, void * data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::SYSTEM::CreateGInput(_outPointer, _data);
+	return GW::SYSTEM::CreateGInput(_outPointer, data);
 }
 
-GRETURN GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * _data) {
+GReturn GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * data) {
 
-	if (_outFpointer == nullptr || _data == nullptr) {
+	if (_outFpointer == nullptr || data == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
@@ -81,7 +81,7 @@ GRETURN GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * _data) {
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(_data);
+	_mInput->InitializeWindows(data);
 #elif __APPLE__
 	_mInput->InitializeMac(_data);
 #elif __linux__
@@ -97,39 +97,39 @@ GRETURN GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * _data) {
 }
 
 Input::Input() {
-	m_referenceCount = 1;
+	referenceCount = 1;
 }
 
 Input::~Input() {
 
 }
 
-GRETURN Input::GetCount(unsigned int &_outCount) {
+GReturn Input::GetCount(unsigned int &_outCount) {
 
-	_outCount = m_referenceCount;
-
-	return SUCCESS;
-}
-
-GRETURN Input::IncrementCount() {
-
-	m_referenceCount += 1;
+	_outCount = referenceCount;
 
 	return SUCCESS;
 }
 
-GRETURN Input::DecrementCount() {
+GReturn Input::IncrementCount() {
 
-	m_referenceCount -= 1;
+	referenceCount += 1;
 
-	if (m_referenceCount == 0) {
+	return SUCCESS;
+}
+
+GReturn Input::DecrementCount() {
+
+	referenceCount -= 1;
+
+	if (referenceCount == 0) {
 		delete this;
 	}
 
 	return SUCCESS;
 }
 
-GRETURN Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
+GReturn Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
@@ -157,9 +157,9 @@ GRETURN Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterf
 	return SUCCESS;
 }
 
-GRETURN Input::InitializeWindows(void * _data) {
+GReturn Input::InitializeWindows(void * data) {
 #ifdef _WIN32
-	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	_userWinProc = SetWindowLongPtr((HWND)data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 
@@ -218,45 +218,45 @@ GRETURN Input::InitializeWindows(void * _data) {
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
 	rID[0].dwFlags = RIDEV_NOLEGACY;
-	rID[0].hwndTarget = (HWND)_data;
+	rID[0].hwndTarget = (HWND)data;
 
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
 	rID[1].dwFlags = RIDEV_NOLEGACY;
-	rID[1].hwndTarget = (HWND)_data;
+	rID[1].hwndTarget = (HWND)data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 	}
 
 	//Capslock
 	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+		TURNON_BIT(keyMask, G_MASK_CAPS_LOCK);
 	}
 
 	//Numlock
 	if ((GetKeyState(VK_NUMLOCK) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+		TURNON_BIT(keyMask, G_MASK_NUM_LOCK);
 	}
 
 	//ScrollLock
 	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_SCROLL_LOCK);
+		TURNON_BIT(keyMask, G_MASK_SCROLL_LOCK);
 	}
 #endif
 
 	return SUCCESS;
 }
 
-GRETURN Input::InitializeLinux(void * _data) {
+GReturn Input::InitializeLinux(void * data) {
 
 #ifdef __linux__
-	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
+	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
 	memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
 	Display * _display;
-	//Cast the void* _linuxWindow._Display to a display pointer to pass to XSelectInput.
+	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
 	_display = (Display *)(_linuxWindow._Display);
-	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
+	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
 	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
 	//Select the type of Input events we wish to recieve.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
@@ -266,15 +266,15 @@ GRETURN Input::InitializeLinux(void * _data) {
     ///XAutoRepeatOff(_display);
 
 	//Set our thread to open.
-	m_threadOpen = true;
+	threadOpen = true;
 	//Create the Linux Input thread.
-	m_inputThread = new std::thread(&Input::InputThread, this);
+	inputThread = new std::thread(&Input::InputThread, this);
 
 	return SUCCESS;
 
 }
 
-GRETURN Input::InitializeMac(void * _data) {
+GReturn Input::InitializeMac(void * data) {
 
 #ifdef __APPLE__
 
@@ -301,12 +301,12 @@ GRETURN Input::InitializeMac(void * _data) {
 	return SUCCESS;
 }
 
-float Input::GetState(int _keyCode, GRETURN * errorCode) {
+float Input::GetState(int _keyCode, GReturn * errorCode) {
 
 	if (errorCode != nullptr) {
-		*errorCode = GRETURN::SUCCESS;
+		*errorCode = GReturn::SUCCESS;
 		if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
-			*errorCode = GRETURN::FEATURE_UNSUPPORTED;
+			*errorCode = GReturn::FEATURE_UNSUPPORTED;
 		}
 	}
 
@@ -314,7 +314,7 @@ float Input::GetState(int _keyCode, GRETURN * errorCode) {
 
 }
 
-GRETURN Input::GetMouseDelta(float &x, float &y) {
+GReturn Input::GetMouseDelta(float &x, float &y) {
 
 	x = _mouseDeltaX;
 	y = _mouseDeltaY;
@@ -322,7 +322,7 @@ GRETURN Input::GetMouseDelta(float &x, float &y) {
 	return SUCCESS;
 }
 
-GRETURN Input::GetMousePosition(float &x, float &y) {
+GReturn Input::GetMousePosition(float &x, float &y) {
 
 	x = _mousePositionX;
 	y = _mousePositionY;
@@ -331,7 +331,7 @@ GRETURN Input::GetMousePosition(float &x, float &y) {
 }
 
 unsigned int Input::GetKeyMask() {
-	return _keyMask;
+	return keyMask;
 }
 
 void Input::InputThread()
@@ -342,7 +342,7 @@ void Input::InputThread()
 
 	while (_threadOpen)
 	{
-        //Cast the void* _linuxWindow. _Display to a display pointer to pass to XNextEvent.
+        //Cast the void* _linuxWindow. display to a display pointer to pass to XNextEvent.
 		Display * _display = (Display*)(_linuxWindow._Display);
 		char keys_return[32];
         XQueryKeymap(_display, keys_return);
@@ -358,7 +358,7 @@ void Input::InputThread()
 
         Window a, b;
         XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &_keyMask);
-        //printf("KeyMask: %d\n", _keyMask);
+        //printf("KeyMask: %d\n", keyMask);
 
         if(_keyMask & Button1Mask){
             //printf("Left\n");

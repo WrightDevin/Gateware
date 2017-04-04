@@ -18,7 +18,7 @@ int _mouseScreenPositionX = 0;
 int _mouseScreenPositionY = 0;
 int _mouseDeltaX = 0;
 int _mouseDeltaY = 0;
-unsigned int _keyMask;
+unsigned int keyMask;
 
 #ifdef _WIN32
 	//Variables
@@ -49,44 +49,44 @@ unsigned int _keyMask;
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
 			unsigned int _event = 0;
-			unsigned int _data = 0;
+			unsigned int data = 0;
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD)
 			{
 				//Get G_KEY
-				_data = Keycodes[raw->data.keyboard.MakeCode][0];
+				data = Keycodes[raw->data.keyboard.MakeCode][0];
 				//Set state released or pressed.
 				switch (raw->data.keyboard.Message) {
 				case 256:
-					n_Keys[_data] = 1;
-					switch (_data) {
+					n_Keys[data] = 1;
+					switch (data) {
 					case G_KEY_RIGHTSHIFT:
 					case G_KEY_LEFTSHIFT:
-						TURNON_BIT(_keyMask, G_MASK_SHIFT);
+						TURNON_BIT(keyMask, G_MASK_SHIFT);
 						break;
 					case G_KEY_CONTROL:
-						TURNON_BIT(_keyMask, G_MASK_CONTROL);
+						TURNON_BIT(keyMask, G_MASK_CONTROL);
 						break;
 					case G_KEY_CAPSLOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_CAPS_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_CAPS_LOCK);
 						break;
 					case G_KEY_NUMLOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_NUM_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_NUM_LOCK);
 						break;
 					case G_KEY_SCROLL_LOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_SCROLL_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_SCROLL_LOCK);
 						break;
 					}
 					break;
 				case 257:
-					n_Keys[_data] = 0;
-					switch (_data) {
+					n_Keys[data] = 0;
+					switch (data) {
 					case G_KEY_RIGHTSHIFT:
 					case G_KEY_LEFTSHIFT:
-						TURNOFF_BIT(_keyMask, G_MASK_SHIFT);
+						TURNOFF_BIT(keyMask, G_MASK_SHIFT);
 						break;
 					case G_KEY_CONTROL:
-						TURNOFF_BIT(_keyMask, G_MASK_CONTROL);
+						TURNOFF_BIT(keyMask, G_MASK_CONTROL);
 						break;
 					}
 					break;
@@ -99,24 +99,24 @@ unsigned int _keyMask;
 				switch (raw->data.mouse.ulButtons) {
 				case 1:
 				case 2:
-					_data = G_BUTTON_LEFT;
+					data = G_BUTTON_LEFT;
 					break;
 				case 4:
 				case 8:
-					_data = G_BUTTON_RIGHT;
+					data = G_BUTTON_RIGHT;
 					break;
 				case 16:
 				case 32:
-					_data = G_BUTTON_MIDDLE;
+					data = G_BUTTON_MIDDLE;
 					break;
 				}
 
 				//switch (raw->data.mouse.usButtonData) {
 				//case 120:
-				//	_data = G_MOUSE_SCROLL_UP;
+				//	data = G_MOUSE_SCROLL_UP;
 				//	break;
 				//case 65416:
-				//	_data = G_MOUSE_SCROLL_DOWN;
+				//	data = G_MOUSE_SCROLL_DOWN;
 				//	break;
 				//}
 
@@ -125,26 +125,26 @@ unsigned int _keyMask;
 				case 1:
 				case 4:
 				case 16:
-					n_Keys[_data] = 1;
+					n_Keys[data] = 1;
 					break;
 					//Released
 				case 2:
 				case 8:
 				case 32:
-					n_Keys[_data] = 0;
+					n_Keys[data] = 0;
 					break;
 				case 1024:
-					n_Keys[_data] = 1;
+					n_Keys[data] = 1;
 					break;
 				}
 
 
 			}
 
-			//if (_data != G_MOUSE_SCROLL_UP) {
+			//if (data != G_MOUSE_SCROLL_UP) {
 			//	n_Keys[G_MOUSE_SCROLL_UP] = 0;
 			//}
-			//if (_data != G_MOUSE_SCROLL_DOWN) {
+			//if (data != G_MOUSE_SCROLL_DOWN) {
 			//	n_Keys[G_MOUSE_SCROLL_DOWN] = 0;
 			//}
 

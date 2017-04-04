@@ -7,6 +7,7 @@
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
+	Interface Status: Final
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */

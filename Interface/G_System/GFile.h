@@ -6,6 +6,7 @@
 	Author: Justin W. Parks
 	Contributors: N/A
 	Last Modified: 11/16/2016
+	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -48,7 +49,7 @@ namespace GW
 			*	\retval FAILURE  A file is already opened.
 			*	\retval INVALID_ARGUMENT  A null pointer was passed in.
 			*/
-			virtual GRETURN OpenBinaryRead(const char* const _file) = 0;
+			virtual GReturn OpenBinaryRead(const char* const _file) = 0;
 
 			//! Opens a file for binary write with truncation.
 			/*!
@@ -63,7 +64,7 @@ namespace GW
 			*	\retval FAILURE  A file is already open or file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN OpenBinaryWrite(const char* const _file) = 0;
+			virtual GReturn OpenBinaryWrite(const char* const _file) = 0;
 
 			//! Opens a file for binary write with append.
 			/*!
@@ -78,7 +79,7 @@ namespace GW
 			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN AppendBinaryWrite(const char* const _file) = 0;
+			virtual GReturn AppendBinaryWrite(const char* const _file) = 0;
 
 			//! Opens a file for text read.
 			/*!
@@ -94,7 +95,7 @@ namespace GW
 			*	\retval FAILURE  A file is already open.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN OpenTextRead(const char* const _file) = 0;
+			virtual GReturn OpenTextRead(const char* const _file) = 0;
 
 			//! Opens a file for text write with truncation.
 			/*!
@@ -109,7 +110,7 @@ namespace GW
 			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN OpenTextWrite(const char* const _file) = 0;
+			virtual GReturn OpenTextWrite(const char* const _file) = 0;
 
 			//! Opens a file for text write with append.
 			/*!
@@ -124,7 +125,7 @@ namespace GW
 			*	\retval FAILURE  A file is already open or the file could not be found/created.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN AppendTextWrite(const char* const _file) = 0;
+			virtual GReturn AppendTextWrite(const char* const _file) = 0;
 
 			//! Writes binary data to the currently opened file.
 			/*!
@@ -138,7 +139,7 @@ namespace GW
 			*	\retval FAILURE  Either a file is not open or the write failed.
 			*	\retval INVALID_ARGUMENT  Either a nullptr was passed in or a size of 0 bytes was passed in.
 			*/
-			virtual GRETURN Write(const char* const _inData, unsigned int _numBytes) = 0;
+			virtual GReturn Write(const char* const _inData, unsigned int _numBytes) = 0;
 
 			//! Reads binary from the currently opened file.
 			/*!
@@ -152,7 +153,7 @@ namespace GW
 			*	\retval FAILURE  Either file is not open or read failed. _outData will be null.
 			*	\retval INVALID_ARGUMENT A byte size of 0 was passed in.
 			*/
-			virtual GRETURN Read(char* _outData, unsigned int _numBytes) = 0;
+			virtual GReturn Read(char* _outData, unsigned int _numBytes) = 0;
 
 			//! Writes text to the currently opened file.
 			/*!
@@ -165,7 +166,7 @@ namespace GW
 			*	\retval FAILURE  Either file is not open or read failed.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN WriteLine(const char* const _inData) = 0;
+			virtual GReturn WriteLine(const char* const _inData) = 0;
 
 			//! Reads text to the currently opened file.
 			/*!
@@ -181,21 +182,21 @@ namespace GW
 			*	\retval FAILURE  Either file is not open or read failed.
 			*	\retval INVALID_ARGUMENT  Either a nullptr was passed in or the size request is 0.
 			*/
-			virtual GRETURN ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) = 0;
+			virtual GReturn ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) = 0;
 
 			//! Flushes and closes the current file.
 			/*!
 			*	\retval SUCCESS  File successfully flushed and closed.
 			*	\retval FAILURE  A file is not currently open.
 			*/
-			virtual GRETURN CloseFile() = 0;
+			virtual GReturn CloseFile() = 0;
 
 			//! Flushes the current file.
 			/*!
 			*	\retval SUCCESS  File successfully flushed.
 			*	\retval FAILURE  A file is not currently open.
 			*/
-			virtual GRETURN FlushFile() = 0;
+			virtual GReturn FlushFile() = 0;
 
 			//! Changes the current working directory.
 			/*!
@@ -209,7 +210,7 @@ namespace GW
 			*	\retval FAILURE  Failed to open directory (Could be because it was not found).
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in
 			*/
-			virtual GRETURN SetCurrentWorkingDirectory(const char* const _dir) = 0;
+			virtual GReturn SetCurrentWorkingDirectory(const char* const _dir) = 0;
 
 			//! Retrieves the absolute path of the current working directory
 			/*!
@@ -223,7 +224,7 @@ namespace GW
 			*	\retval FAILURE  The current working directory is invalid or _outDir was not big enough. _outDir will be null.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in or the size is 0.
 			*/
-			virtual GRETURN GetCurrentWorkingDirectory(char* _outDir, unsigned int _dirSize) = 0;
+			virtual GReturn GetCurrentWorkingDirectory(char* _outDir, unsigned int _dirSize) = 0;
 
 			//! Gets the number of files in the current working directory.
 			/*!
@@ -232,7 +233,7 @@ namespace GW
 			*	\retval SUCCESS  Successfully counted the files in the directory.
 			*	\retval FAILURE  Either currently working directory is invalid or count failed. _outSize will be -1;
 			*/
-			virtual GRETURN GetDirectorySize(unsigned int& _outSize) = 0;
+			virtual GReturn GetDirectorySize(unsigned int& _outSize) = 0;
 
 			//! Gets the names of all files in the current working directory.
 			/*!
@@ -247,7 +248,7 @@ namespace GW
 			*	\retval SUCCESS  Successfully retrieved the file names.
 			*	\retval FAILURE  Either current working directory is invalid or obtaining file names failed.
 			*/
-			virtual GRETURN GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) = 0;
+			virtual GReturn GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) = 0;
 
 			//! Gets the size of the specified file in bytes.
 			/*!
@@ -261,7 +262,7 @@ namespace GW
 			*	\retval SUCCESS  Successfully retrieved the file size.
 			*	\retval FILE_NOT_FOUND  Could not locate the file. Check that the current working directory is valid.
 			*/
-			virtual GRETURN GetFileSize(const char* const _file, unsigned int& _outSize) = 0;
+			virtual GReturn GetFileSize(const char* const _file, unsigned int& _outSize) = 0;
 		}; // end GFile class
 
 		//!Creates a GFile Object
@@ -277,7 +278,7 @@ namespace GW
 		*	\retval FAILURE  GFile could not be created.
 		*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGFile(GFile** _outFile);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGFile(GFile** _outFile);
 	} // end SYSTEM namespace
 } // end GW namespace
 

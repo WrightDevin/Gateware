@@ -7,6 +7,7 @@
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
+	Interface Status: Final
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -47,7 +48,7 @@ namespace GW
 			*	\retval SUCCESS The listener was successfully registered.
 			*	\retval REDUNDANT_OPERATION The listener has already been registered by a previous call.
 			*/
-			 virtual GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask) = 0;
+			 virtual GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask) = 0;
 			
 			//! A successfully deregistered listener will no longer receive events and have its reference count decremented by one.
 			/*!
@@ -55,7 +56,7 @@ namespace GW
 			*
 			*	\retval SUCCESS The listener was successfully deregistered.
 			*/
-			virtual GRETURN DeregisterListener(GListener *_removeListener) = 0;
+			virtual GReturn DeregisterListener(GListener* _removeListener) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace

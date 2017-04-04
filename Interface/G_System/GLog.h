@@ -7,6 +7,7 @@
 	Author: Justin W. Parks
 	Contributors: N/A
 	Last Modified: 12/14/2016
+	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -49,7 +50,7 @@ namespace GW
 			*	\retval FAILURE  The queue has reached maximum size (call flush).
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
-			virtual GRETURN Log(const char* const _log) = 0;
+			virtual GReturn Log(const char* const _log) = 0;
 			
 			//! Logs a null terminated string with a category.
 			/*!
@@ -65,7 +66,7 @@ namespace GW
 			*	\retval FAILURE  The queue has reached maximum size (call flush).
 			*	\retval INVALID_ARGUMENT  Either _category or _log are nullptr.
 			*/
-			virtual GRETURN LogCatergorized(const char* const _category, const char* const _log) = 0;
+			virtual GReturn LogCatergorized(const char* const _category, const char* const _log) = 0;
 			
 			//! Turns verbose logging on or off.
 			/*!
@@ -93,7 +94,7 @@ namespace GW
 			*	\retval SUCCESS  Successfully dumped the logs
 			*	\retval FAILURE  Most likely a file corruption or a file is not open.
 			*/
-			virtual GRETURN Flush() = 0;
+			virtual GReturn Flush() = 0;
 		}; // end GLog class
 
 		//! Creates a GLog object
@@ -110,7 +111,7 @@ namespace GW
 		*	\retval FAILURE  GLog was not created. _outLog will be null
 		*	\retval INVALID_ARGUMENT  Either one or both arguments are nullptrs.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGLog(const char* const _fileName, GLog** _outLog);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGLog(const char* const _fileName, GLog** _outLog);
 
 		//! Creates a GLog object
 		/*!
@@ -127,7 +128,7 @@ namespace GW
 		*	\retval FAILURE  GLog was not created. _outLog will be null.
 		*	\retval INVALID_ARGUMENT Either one or both the arguments are nullptr.
 		*/
-		GATEWARE_EXPORT_IMPLICIT GRETURN CreateGLogCustom(GFile* _file, GLog** _outLog);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGLogCustom(GFile* _file, GLog** _outLog);
 	} // end CORE namespace
 } // end GW namespace
 

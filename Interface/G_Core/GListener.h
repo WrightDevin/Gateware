@@ -7,6 +7,7 @@
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
+	Interface Status: Final
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
@@ -38,7 +39,7 @@ namespace GW
 			*	\param [in] _eventData The data of the event.
 			*	\param [in] _dataSize The size of _eventData in bytes.
 			*/
-			virtual GRETURN OnEvent(const GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _dataSize) = 0;
+			virtual GReturn OnEvent(const GUUIID& _senderInterface, unsigned int _eventID, void* _eventData, unsigned int _dataSize) = 0;
 		};
 	}// end CORE namespace
 };// end GW namespace

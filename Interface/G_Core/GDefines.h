@@ -48,7 +48,7 @@ namespace GW
 #pragma pack(pop)
 
 	//! Listing of common error codes returned by Gateware functions.
-	enum GRETURN
+	enum GReturn
 	{
 		SUCCESS					= 0xFFFFFFFF, /*< The function succeded. */
 		FAILURE					= 0, /*< The function failed (Check function documentation for possible reasons).*/
@@ -63,19 +63,19 @@ namespace GW
 
 //! Macro used to determine if a function succeeded
 /*!
-*	\param [in] _greturn_ The GRETURN value to check.
+*	\param [in] _greturn_ The GReturn value to check.
 *
-*	\retval true GRETURN value passed in was SUCCESS
-*	\retval false GRETURN value passed in was a failure code
+*	\retval true GReturn value passed in was SUCCESS
+*	\retval false GReturn value passed in was a failure code
 */
 #define G_SUCCESS(_greturn_) ((~(_greturn_)) == 0x00000000)
 
 //! Macro used to determine if a function has failed
 /*
-*	\param [in] _greturn_ The GRETURN value to check.
+*	\param [in] _greturn_ The GReturn value to check.
 *
-*	\retval true GRETURN value passed in was a failure code
-*	\retval false GRETURN value passed in was SUCCESS
+*	\retval true GReturn value passed in was a failure code
+*	\retval false GReturn value passed in was SUCCESS
 */
 #define G_FAIL(_greturn_) ((_greturn_) < 0xFFFFFFFF)
 

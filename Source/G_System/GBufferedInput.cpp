@@ -17,13 +17,13 @@ class BufferedInput : public GBufferedInput {
 private:
 
 	//The atomic value is for thread safety.(Like a mutex without using a mutex).
-	std::atomic<unsigned int> m_referenceCount;
+	std::atomic<unsigned int> referenceCount;
 
-	std::atomic_bool m_threadOpen;
+	std::atomic_bool threadOpen;
 
-	std::thread * m_inputThread;
+	std::thread* inputThread;
 
-	std::mutex m_mutex;
+	std::mutex mutex;
 
 #ifdef _WIN32
 #elif __linux__
@@ -40,47 +40,47 @@ public:
 	void InputThread();
 
 
-	GRETURN InitializeWindows(void * _data);
-	GRETURN InitializeLinux(void * _data);
-	GRETURN InitializeMac(void * _data);
+	GReturn InitializeWindows(void * data);
+	GReturn InitializeLinux(void * data);
+	GReturn InitializeMac(void * data);
 
-	GRETURN GetCount(unsigned int &_outCount);
-	GRETURN IncrementCount();
-	GRETURN DecrementCount();
-	GRETURN RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
-	GRETURN RegisterListener(GListener *_addListener, unsigned long long _eventMask);
-	GRETURN DeregisterListener(GListener *_removeListener);
+	GReturn GetCount(unsigned int &_outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
+	GReturn RegisterListener(GListener *_addListener, unsigned long long _eventMask);
+	GReturn DeregisterListener(GListener *_removeListener);
 
 };
 
 
 BufferedInput::BufferedInput() {
-	m_referenceCount = 1;
+	referenceCount = 1;
 }
 
 BufferedInput::~BufferedInput() {
 
 }
 
-GRETURN BufferedInput::GetCount(unsigned int &_outCount) {
+GReturn BufferedInput::GetCount(unsigned int &_outCount) {
 
-	_outCount = m_referenceCount;
-
-	return SUCCESS;
-}
-
-GRETURN BufferedInput::IncrementCount() {
-
-	m_referenceCount += 1;
+	_outCount = referenceCount;
 
 	return SUCCESS;
 }
 
-GRETURN BufferedInput::DecrementCount() {
+GReturn BufferedInput::IncrementCount() {
 
-	m_referenceCount -= 1;
+	referenceCount += 1;
 
-	if (m_referenceCount == 0) {
+	return SUCCESS;
+}
+
+GReturn BufferedInput::DecrementCount() {
+
+	referenceCount -= 1;
+
+	if (referenceCount == 0) {
 
 #ifdef __linux__
 		_threadOpen = false;
@@ -93,7 +93,7 @@ GRETURN BufferedInput::DecrementCount() {
 	return SUCCESS;
 }
 
-GRETURN BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
+GReturn BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
@@ -127,13 +127,13 @@ GRETURN BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outp
 	return SUCCESS;
 }
 
-GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long long _eventMask) {
+GReturn BufferedInput::RegisterListener(GListener *_addListener, unsigned long long _eventMask) {
 
 	if (_addListener == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
-	m_mutex.lock();
+	mutex.lock();
 
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_addListener);
 	if (iter != _listeners.end()) {
@@ -143,26 +143,26 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 	_listeners[_addListener] = _eventMask;
 	IncrementCount();
 
-	m_mutex.unlock();
+	mutex.unlock();
 
 	return SUCCESS;
 
 }
 
-GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
+GReturn BufferedInput::DeregisterListener(GListener *_removeListener) {
 
 	if (_removeListener == nullptr) {
 		return INVALID_ARGUMENT;
 	}
-	m_mutex.lock();
+	mutex.lock();
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
 	if (iter != _listeners.end()) {
 		_listeners.erase(iter);
-		m_mutex.unlock();
+		mutex.unlock();
 		DecrementCount();
 	}
 	else {
-		m_mutex.unlock();
+		mutex.unlock();
 		return FAILURE;
 	}
 
@@ -170,16 +170,16 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GRETURN CreateGBufferedInput(GBufferedInput** _outPointer, void * _data)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(GBufferedInput** _outPointer, void * data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::SYSTEM::CreateGBufferedInput(_outPointer, _data);
+	return GW::SYSTEM::CreateGBufferedInput(_outPointer, data);
 }
 
-GRETURN GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * _data) {
+GReturn GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * data) {
 
 
-	if (_outPointer == nullptr || _data == nullptr) {
+	if (_outPointer == nullptr || data == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
@@ -190,7 +190,7 @@ GRETURN GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * _d
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(_data);
+	_mInput->InitializeWindows(data);
 #elif __APPLE__
 	_mInput->InitializeMac(_data);
 #elif __linux__
@@ -203,12 +203,12 @@ GRETURN GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * _d
 
 }
 
-GRETURN BufferedInput::InitializeWindows(void * _data) {
+GReturn BufferedInput::InitializeWindows(void * data) {
 
 #ifdef _WIN32
 
-	_keyMask = 0;
-	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	keyMask = 0;
+	_userWinProc = SetWindowLongPtr((HWND)data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 		//The user has not setup a windows proc prior to this point.
@@ -268,13 +268,13 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
 	rID[0].dwFlags = RIDEV_NOLEGACY;
-	rID[0].hwndTarget = (HWND)_data;
+	rID[0].hwndTarget = (HWND)data;
 
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
 	rID[1].dwFlags = RIDEV_NOLEGACY;
-	rID[1].hwndTarget = (HWND)_data;
+	rID[1].hwndTarget = (HWND)data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 
@@ -282,17 +282,17 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 
 	//Capslock
 	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+		TURNON_BIT(keyMask, G_MASK_CAPS_LOCK);
 	}
 
 	//Numlock
 	if ((GetKeyState(VK_NUMLOCK) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+		TURNON_BIT(keyMask, G_MASK_NUM_LOCK);
 	}
 
 	//ScrollLock
 	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
-		TURNON_BIT(_keyMask, G_MASK_SCROLL_LOCK);
+		TURNON_BIT(keyMask, G_MASK_SCROLL_LOCK);
 	}
 #endif
 
@@ -301,24 +301,24 @@ GRETURN BufferedInput::InitializeWindows(void * _data) {
 	return SUCCESS;
 }
 
-GRETURN BufferedInput::InitializeLinux(void * _data) {
+GReturn BufferedInput::InitializeLinux(void * data) {
 
 #ifdef __linux__
-	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
+	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display * _display;
-	//Cast the void* _linuxWindow._Display to a display pointer to pass to XSelectInput.
+	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow._Display);
-	//Copy void* _linuxWindow._Window into a Window class to pass to XSelectInput.
+	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
     memcpy(&_window, _linuxWindow._Window, sizeof(_window));
 	//Select the type of Input events we wish to receive.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
 
 	//Set our thread to open.
-    m_threadOpen = true;
+    threadOpen = true;
 	//Create the Linux Input thread.
-	m_inputThread = new std::thread(&BufferedInput::InputThread, this);
+	inputThread = new std::thread(&BufferedInput::InputThread, this);
 
 
 
@@ -326,7 +326,7 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 
 }
 
-GRETURN BufferedInput::InitializeMac(void * _data) {
+GReturn BufferedInput::InitializeMac(void * data) {
 
 #ifdef __APPLE__
     //Need to convert data back into an NSWindow*

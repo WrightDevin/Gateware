@@ -12,7 +12,7 @@ namespace {
 
 	//! Map of Listeners to send event information to.
 	std::map<GListener *, unsigned long long> _listeners;
-    unsigned int _keyMask;
+    unsigned int keyMask;
 
 
 
@@ -45,47 +45,47 @@ namespace {
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
 			int _event = -1;
-			int _data = -1;
+			int data = -1;
 
-			G_INPUT_DATA _dataStruct;
+			GBUFFEREDINPUT_EVENT_DATA _dataStruct;
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD)
 			{
 				//Get G_KEY
-				_data = Keycodes[raw->data.keyboard.MakeCode][0];
+				data = Keycodes[raw->data.keyboard.MakeCode][0];
 
 				//Set state released or pressed.
 				switch (raw->data.keyboard.Message) {
 				case 256:
 					_event = KEYPRESSED;
-					switch (_data) {
+					switch (data) {
 					case G_KEY_RIGHTSHIFT:
 					case G_KEY_LEFTSHIFT:
-						TURNON_BIT(_keyMask, G_MASK_SHIFT);
+						TURNON_BIT(keyMask, G_MASK_SHIFT);
 						break;
 					case G_KEY_CONTROL:
-						TURNON_BIT(_keyMask, G_MASK_CONTROL);
+						TURNON_BIT(keyMask, G_MASK_CONTROL);
 						break;
 					case G_KEY_CAPSLOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_CAPS_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_CAPS_LOCK);
 						break;
 					case G_KEY_NUMLOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_NUM_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_NUM_LOCK);
 						break;
 					case G_KEY_SCROLL_LOCK:
-						TOGGLE_BIT(_keyMask, G_MASK_SCROLL_LOCK);
+						TOGGLE_BIT(keyMask, G_MASK_SCROLL_LOCK);
 						break;
 					}
 					break;
 				case 257:
 					_event = KEYRELEASED;
-					switch (_data) {
+					switch (data) {
 					case G_KEY_RIGHTSHIFT:
 					case G_KEY_LEFTSHIFT:
-						TURNOFF_BIT(_keyMask, G_MASK_SHIFT);
+						TURNOFF_BIT(keyMask, G_MASK_SHIFT);
 						break;
 					case G_KEY_CONTROL:
-						TURNOFF_BIT(_keyMask, G_MASK_CONTROL);
+						TURNOFF_BIT(keyMask, G_MASK_CONTROL);
 						break;
 					}
 					break;
@@ -98,24 +98,24 @@ namespace {
 				switch (raw->data.mouse.ulButtons) {
 				case 1:
 				case 2:
-					_data = G_BUTTON_LEFT;
+					data = G_BUTTON_LEFT;
 					break;
 				case 4:
 				case 8:
-					_data = G_BUTTON_RIGHT;
+					data = G_BUTTON_RIGHT;
 					break;
 				case 16:
 				case 32:
-					_data = G_BUTTON_MIDDLE;
+					data = G_BUTTON_MIDDLE;
 					break;
 				}
 
 				switch (raw->data.mouse.usButtonData) {
 				case 120:
-					_data = G_MOUSE_SCROLL_UP;
+					data = G_MOUSE_SCROLL_UP;
 					break;
 				case 65416:
-					_data = G_MOUSE_SCROLL_DOWN;
+					data = G_MOUSE_SCROLL_DOWN;
 					break;
 				}
 
@@ -140,26 +140,26 @@ namespace {
 				}
 
 			}
-			_dataStruct._data = _data;
+			_dataStruct.data = data;
 
 			POINT p;
 			if (GetCursorPos(&p))
 			{
-				_dataStruct._screenX = p.x;
-				_dataStruct._screenY = p.y;
+				_dataStruct.screenX = p.x;
+				_dataStruct.screenY = p.y;
 			}
 			if (ScreenToClient(window, &p))
 			{
-				_dataStruct._x = p.x;
-				_dataStruct._y = p.y;
+				_dataStruct.x = p.x;
+				_dataStruct.y = p.y;
 			}
 
-			_dataStruct._keyMask = _keyMask;
+			_dataStruct.keyMask = keyMask;
 
-			if (_dataStruct._data != -1 && _event != -1) {
+			if (_dataStruct.data != -1 && _event != -1) {
 				std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
 				for (; iter != _listeners.end(); ++iter) {
-					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
 				}
 			}
 
