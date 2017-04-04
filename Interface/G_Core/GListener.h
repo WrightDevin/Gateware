@@ -1,5 +1,5 @@
-#ifndef _GLISTENER_H
-#define _GLISTENER_H
+#ifndef GLISTENER_H
+#define GLISTENER_H
 
 /*
 	File: GListener.h

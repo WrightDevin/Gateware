@@ -1,5 +1,5 @@
-#ifndef _GFILE_H
-#define _GFILE_H
+#ifndef GFILE_H
+#define GFILE_H
 /*
 	File: GFile.h
 	Purpose: A Gateware interface that handles both binary and textual file io and directory
@@ -269,7 +269,7 @@ namespace GW
 		*	The GFile created by this function will have its current working directory defaulted to 
 		*	the directory where the program was ran from. Call SetCurrentWorkingDirectory to change it.
 		*	No file will be opened in creation of GFile. Call an Open function to open one.
-		*	Reference count of created object is initialized to one
+		*	Created GFile object will have its reference count initialized to one.
 		*
 		*	\param [out] _outFile The Gfile that was created.
 		*

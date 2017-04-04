@@ -101,7 +101,7 @@ GW::GRETURN LogFile::Init(const char* const _fileName)
 	if (G_FAIL(rv))
 		return rv;
 
-	//Open the GFile for text write out appending the write out
+	//Open the GFile for text write out with append
 	rv = m_logFile->AppendTextWrite(_fileName);
 	if (G_FAIL(rv))
 		return rv;

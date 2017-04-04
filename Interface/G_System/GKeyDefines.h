@@ -1,5 +1,5 @@
-#ifndef _GBIGLOBALNAMESPACE_H
-#define _GBIGLOBALNAMESPACE_H
+#ifndef GBIGLOBALNAMESPACE_H
+#define GBIGLOBALNAMESPACE_H
 /*
 	File: GKeyDefines.h
 	Purpose: The Gateware key representations

@@ -1,5 +1,5 @@
-#ifndef _GBUFFEREDINPUT_H
-#define _GBUFFEREDINPUT_H
+#ifndef GBUFFEREDINPUT_H
+#define GBUFFEREDINPUT_H
 /*
 	File: GKeyDefines.h
 	Purpose: This Interface offers thread safe raw buffered input
@@ -60,7 +60,7 @@ namespace GW
 		//! Creates a GBufferedInput Object.
 		/*!
 		*	Initializes a window based on the void* data passed in. The created 
-		*	GBufferedInput object will have its reference count initialized to one.
+		*	Created GBufferedInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outBufferedInput
 		*	\param [in] _data (Windows) The handle to the window (HWND).

@@ -1,5 +1,5 @@
-#ifndef _GLOG_H
-#define _GLOG_H
+#ifndef GLOG_H
+#define GLOG_H
 
 /*
 	File: GLog.h

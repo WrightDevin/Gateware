@@ -1,5 +1,5 @@
-#ifndef _GINPUT_H
-#define _GINPUT_H
+#ifndef GINPUT_H
+#define GINPUT_H
 
 /*
 File: GInput.h
@@ -86,12 +86,12 @@ namespace GW
 		//! Creates a GInput Object.
 		/*!
 		*	Initializes a window based on the void* data passed in. The created 
-		*	GInput object will have its reference count initialized to one.
+		*	Created GInput object will have its reference count initialized to one.
 		*
 		*	\param [out] _outInput
 		*	\param [in] _data (Windows) The handle to the window (HWND).
-		*	\param [in] _data (Linux) Not Yet Implemented.
-		*	\param [in] _data (Max) Not Yet Implemented.
+		*	\param [in] _data (Linux) LINUX_WINDOW data.
+		*	\param [in] _data (Max) NSWindow data.
 		*
 		*	\retval SUCCESS no problems found.
 		*	\retval FAILURE could not make an Input Object.

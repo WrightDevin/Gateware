@@ -1,5 +1,5 @@
-#ifndef _GMULTITHREADED_H
-#define _GMULTITHREADED_H
+#ifndef GMULTITHREADED_H
+#define GMULTITHREADED_H
 
 /*!
 	File: GMultiThreaded.h

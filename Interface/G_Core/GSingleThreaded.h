@@ -1,5 +1,5 @@
-#ifndef _GSINGLETHREADED_H
-#define _GSINGLETHREADED_H
+#ifndef GSINGLETHREADED_H
+#define GSINGLETHREADED_H
 
 /*!
 	File: GSingleThreaded.h
