@@ -1,5 +1,5 @@
-#ifndef _GDEFINES_H
-#define _GDEFINES_H
+#ifndef GDEFINES_H
+#define GDEFINES_H
 
 /*
 	File: GDefines.h

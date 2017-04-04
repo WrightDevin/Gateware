@@ -1,5 +1,5 @@
-#ifndef _GBROADCASTING_H
-#define _GBROADCASTING_H
+#ifndef GBROADCASTING_H
+#define GBROADCASTING_H
 
 /*!
 	File: GBroadcasting.h

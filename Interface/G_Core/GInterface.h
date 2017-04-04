@@ -1,5 +1,5 @@
-#ifndef _GINTERFACE_H
-#define _GINTERFACE_H
+#ifndef GINTERFACE_H
+#define GINTERFACE_H
 /*!
 	File: GInterface.h
 	Purpose: The fundamental interface which all Gateware interfaces must adhere to at a minimum.

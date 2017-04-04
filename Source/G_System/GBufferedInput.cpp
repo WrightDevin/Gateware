@@ -17,13 +17,13 @@ class BufferedInput : public GBufferedInput {
 private:
 
 	//The atomic value is for thread safety.(Like a mutex without using a mutex).
-	std::atomic<unsigned int> n_referenceCount;
+	std::atomic<unsigned int> m_referenceCount;
 
-	std::atomic_bool _threadOpen;
+	std::atomic_bool m_threadOpen;
 
-	std::thread * _inputThread;
+	std::thread * m_inputThread;
 
-	std::mutex _Mutex;
+	std::mutex m_mutex;
 
 #ifdef _WIN32
 #elif __linux__
@@ -55,7 +55,7 @@ public:
 
 
 BufferedInput::BufferedInput() {
-	n_referenceCount = 1;
+	m_referenceCount = 1;
 }
 
 BufferedInput::~BufferedInput() {
@@ -64,23 +64,23 @@ BufferedInput::~BufferedInput() {
 
 GRETURN BufferedInput::GetCount(unsigned int &_outCount) {
 
-	_outCount = n_referenceCount;
+	_outCount = m_referenceCount;
 
 	return SUCCESS;
 }
 
 GRETURN BufferedInput::IncrementCount() {
 
-	n_referenceCount += 1;
+	m_referenceCount += 1;
 
 	return SUCCESS;
 }
 
 GRETURN BufferedInput::DecrementCount() {
 
-	n_referenceCount -= 1;
+	m_referenceCount -= 1;
 
-	if (n_referenceCount == 0) {
+	if (m_referenceCount == 0) {
 
 #ifdef __linux__
 		_threadOpen = false;
@@ -133,7 +133,7 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 		return INVALID_ARGUMENT;
 	}
 
-	_Mutex.lock();
+	m_mutex.lock();
 
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_addListener);
 	if (iter != _listeners.end()) {
@@ -143,7 +143,7 @@ GRETURN BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 	_listeners[_addListener] = _eventMask;
 	IncrementCount();
 
-	_Mutex.unlock();
+	m_mutex.unlock();
 
 	return SUCCESS;
 
@@ -154,15 +154,15 @@ GRETURN BufferedInput::DeregisterListener(GListener *_removeListener) {
 	if (_removeListener == nullptr) {
 		return INVALID_ARGUMENT;
 	}
-	_Mutex.lock();
+	m_mutex.lock();
 	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
 	if (iter != _listeners.end()) {
 		_listeners.erase(iter);
-		_Mutex.unlock();
+		m_mutex.unlock();
 		DecrementCount();
 	}
 	else {
-		_Mutex.unlock();
+		m_mutex.unlock();
 		return FAILURE;
 	}
 
@@ -316,9 +316,9 @@ GRETURN BufferedInput::InitializeLinux(void * _data) {
 #endif
 
 	//Set our thread to open.
-    _threadOpen = true;
+    m_threadOpen = true;
 	//Create the Linux Input thread.
-	_inputThread = new std::thread(&BufferedInput::InputThread, this);
+	m_inputThread = new std::thread(&BufferedInput::InputThread, this);
 
 
 

@@ -20,11 +20,11 @@ private:
 
 	void * hWnd;
 
-	unsigned int n_referenceCount;
+	unsigned int m_referenceCount;
 
-	std::atomic_bool _threadOpen;
+	std::atomic_bool m_threadOpen;
 
-	std::thread * _inputThread;
+	std::thread * m_inputThread;
 
 #ifdef _WIN32
 #elif __linux__
@@ -97,7 +97,7 @@ GRETURN GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * _data) {
 }
 
 Input::Input() {
-	n_referenceCount = 1;
+	m_referenceCount = 1;
 }
 
 Input::~Input() {
@@ -106,23 +106,23 @@ Input::~Input() {
 
 GRETURN Input::GetCount(unsigned int &_outCount) {
 
-	_outCount = n_referenceCount;
+	_outCount = m_referenceCount;
 
 	return SUCCESS;
 }
 
 GRETURN Input::IncrementCount() {
 
-	n_referenceCount += 1;
+	m_referenceCount += 1;
 
 	return SUCCESS;
 }
 
 GRETURN Input::DecrementCount() {
 
-	n_referenceCount -= 1;
+	m_referenceCount -= 1;
 
-	if (n_referenceCount == 0) {
+	if (m_referenceCount == 0) {
 		delete this;
 	}
 
@@ -266,9 +266,9 @@ GRETURN Input::InitializeLinux(void * _data) {
     ///XAutoRepeatOff(_display);
 
 	//Set our thread to open.
-	_threadOpen = true;
+	m_threadOpen = true;
 	//Create the Linux Input thread.
-	_inputThread = new std::thread(&Input::InputThread, this);
+	m_inputThread = new std::thread(&Input::InputThread, this);
 
 	return SUCCESS;
 
