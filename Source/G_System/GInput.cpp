@@ -42,46 +42,46 @@ public:
 
 	void InputThread();
 
-	GReturn InitializeWindows(void * data);
-	GReturn InitializeLinux(void * data);
-	GReturn InitializeMac(void * data);
+	GReturn InitializeWindows(void* _data);
+	GReturn InitializeLinux(void* _data);
+	GReturn InitializeMac(void* _data);
 
 	/* GInput */
 
-	float GetState(int _keyCode, GReturn * errorCode);
-	GReturn GetMouseDelta(float &x, float &y);
-	GReturn GetMousePosition(float &x, float &y);
+	float GetState(int _keyCode, GReturn* _errorCode);
+	GReturn GetMouseDelta(float& _x, float& _y);
+	GReturn GetMousePosition(float& _x, float& _y);
 	unsigned int GetKeyMask();
 
 	/* GInterface */
 
-	GReturn GetCount(unsigned int &_outCount);
+	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
-	GReturn RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 };
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(GW::SYSTEM::GInput** _outPointer, void * data)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(GW::SYSTEM::GInput** _outPointer, void* _data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::SYSTEM::CreateGInput(_outPointer, data);
+	return GW::SYSTEM::CreateGInput(_outPointer, _data);
 }
 
-GReturn GW::SYSTEM::CreateGInput(GInput** _outFpointer, void * data) {
+GReturn GW::SYSTEM::CreateGInput(GInput** _outFpointer, void* _data) {
 
-	if (_outFpointer == nullptr || data == nullptr) {
+	if (_outFpointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
-	Input * _mInput = new Input();
+	Input* _mInput = new Input();
 
 	if (_mInput == nullptr) {
 		return FAILURE;
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(data);
+	_mInput->InitializeWindows(_data);
 #elif __APPLE__
 	_mInput->InitializeMac(_data);
 #elif __linux__
@@ -104,7 +104,7 @@ Input::~Input() {
 
 }
 
-GReturn Input::GetCount(unsigned int &_outCount) {
+GReturn Input::GetCount(unsigned int& _outCount) {
 
 	_outCount = referenceCount;
 
@@ -129,7 +129,7 @@ GReturn Input::DecrementCount() {
 	return SUCCESS;
 }
 
-GReturn Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
+GReturn Input::RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
@@ -157,9 +157,9 @@ GReturn Input::RequestInterface(const GUUIID &_interfaceID, void** _outputInterf
 	return SUCCESS;
 }
 
-GReturn Input::InitializeWindows(void * data) {
+GReturn Input::InitializeWindows(void* _data) {
 #ifdef _WIN32
-	_userWinProc = SetWindowLongPtr((HWND)data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 
@@ -218,13 +218,13 @@ GReturn Input::InitializeWindows(void * data) {
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
 	rID[0].dwFlags = RIDEV_NOLEGACY;
-	rID[0].hwndTarget = (HWND)data;
+	rID[0].hwndTarget = (HWND)_data;
 
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
 	rID[1].dwFlags = RIDEV_NOLEGACY;
-	rID[1].hwndTarget = (HWND)data;
+	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 	}
@@ -248,14 +248,14 @@ GReturn Input::InitializeWindows(void * data) {
 	return SUCCESS;
 }
 
-GReturn Input::InitializeLinux(void * data) {
+GReturn Input::InitializeLinux(void* _data) {
 
 #ifdef __linux__
 	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
 	memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
 	Display * _display;
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
-	_display = (Display *)(_linuxWindow._Display);
+	_display = (Display*)(_linuxWindow._Display);
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
 	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
 	//Select the type of Input events we wish to recieve.
@@ -274,7 +274,7 @@ GReturn Input::InitializeLinux(void * data) {
 
 }
 
-GReturn Input::InitializeMac(void * data) {
+GReturn Input::InitializeMac(void* _data) {
 
 #ifdef __APPLE__
 
@@ -301,12 +301,12 @@ GReturn Input::InitializeMac(void * data) {
 	return SUCCESS;
 }
 
-float Input::GetState(int _keyCode, GReturn * errorCode) {
+float Input::GetState(int _keyCode, GReturn* _errorCode) {
 
-	if (errorCode != nullptr) {
-		*errorCode = GReturn::SUCCESS;
+	if (_errorCode != nullptr) {
+		*_errorCode = GReturn::SUCCESS;
 		if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
-			*errorCode = GReturn::FEATURE_UNSUPPORTED;
+			*_errorCode = GReturn::FEATURE_UNSUPPORTED;
 		}
 	}
 
@@ -314,18 +314,18 @@ float Input::GetState(int _keyCode, GReturn * errorCode) {
 
 }
 
-GReturn Input::GetMouseDelta(float &x, float &y) {
+GReturn Input::GetMouseDelta(float& _x, float& _y) {
 
-	x = _mouseDeltaX;
-	y = _mouseDeltaY;
+	_x = _mouseDeltaX;
+	_y = _mouseDeltaY;
 
 	return SUCCESS;
 }
 
-GReturn Input::GetMousePosition(float &x, float &y) {
+GReturn Input::GetMousePosition(float& _x, float& _y) {
 
-	x = _mousePositionX;
-	y = _mousePositionY;
+	_x = _mousePositionX;
+	_y = _mousePositionY;
 
 	return SUCCESS;
 }

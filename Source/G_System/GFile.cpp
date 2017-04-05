@@ -107,13 +107,13 @@ public:
 
 	GW::GReturn GetFileSize(const char* const _file, unsigned int& _outSize) override;
 
-	GW::GReturn GetCount(unsigned int &_outCount) override;
+	GW::GReturn GetCount(unsigned int& _outCount) override;
 
 	GW::GReturn IncrementCount() override;
 
 	GW::GReturn DecrementCount() override;
 
-	GW::GReturn RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface) override;
+	GW::GReturn RequestInterface(const GW::GUUIID& _interfaceID, void** _outputInterface) override;
 
 	GW::GReturn Init(); //The init function for this class in order to initialize variables
 };
@@ -600,7 +600,7 @@ GW::GReturn FileIO::GetFileSize(const char* const _file, unsigned int& _outSize)
 	return GW::SUCCESS;
 }
 
-GW::GReturn FileIO::GetCount(unsigned int &_outCount)
+GW::GReturn FileIO::GetCount(unsigned int& _outCount)
 {
 	//Store reference count
 	_outCount = refCount;
@@ -632,7 +632,7 @@ GW::GReturn FileIO::DecrementCount()
 	return GW::SUCCESS;
 }
 
-GW::GReturn FileIO::RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface)
+GW::GReturn FileIO::RequestInterface(const GW::GUUIID& _interfaceID, void** _outputInterface)
 {
 	if (_outputInterface == nullptr)
 		return GW::INVALID_ARGUMENT;

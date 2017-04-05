@@ -40,16 +40,16 @@ public:
 	void InputThread();
 
 
-	GReturn InitializeWindows(void * data);
-	GReturn InitializeLinux(void * data);
-	GReturn InitializeMac(void * data);
+	GReturn InitializeWindows(void* _data);
+	GReturn InitializeLinux(void* _data);
+	GReturn InitializeMac(void* _data);
 
-	GReturn GetCount(unsigned int &_outCount);
+	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
-	GReturn RequestInterface(const GUUIID &_interfaceID, void** _outputInterface);
-	GReturn RegisterListener(GListener *_addListener, unsigned long long _eventMask);
-	GReturn DeregisterListener(GListener *_removeListener);
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
+	GReturn DeregisterListener(GListener* _removeListener);
 
 };
 
@@ -62,7 +62,7 @@ BufferedInput::~BufferedInput() {
 
 }
 
-GReturn BufferedInput::GetCount(unsigned int &_outCount) {
+GReturn BufferedInput::GetCount(unsigned int& _outCount) {
 
 	_outCount = referenceCount;
 
@@ -93,13 +93,13 @@ GReturn BufferedInput::DecrementCount() {
 	return SUCCESS;
 }
 
-GReturn BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outputInterface) {
+GReturn BufferedInput::RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
 	if (_interfaceID == SYSTEM::GBufferedInputUUIID)
 	{
-		GBufferedInput * convert = reinterpret_cast<GBufferedInput*>(this);
+		GBufferedInput* convert = reinterpret_cast<GBufferedInput*>(this);
 		convert->IncrementCount();
 		(*_outputInterface) = convert;
 	}
@@ -127,7 +127,7 @@ GReturn BufferedInput::RequestInterface(const GUUIID &_interfaceID, void** _outp
 	return SUCCESS;
 }
 
-GReturn BufferedInput::RegisterListener(GListener *_addListener, unsigned long long _eventMask) {
+GReturn BufferedInput::RegisterListener(GListener* _addListener, unsigned long long _eventMask) {
 
 	if (_addListener == nullptr) {
 		return INVALID_ARGUMENT;
@@ -135,7 +135,7 @@ GReturn BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 
 	mutex.lock();
 
-	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_addListener);
+	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_addListener);
 	if (iter != _listeners.end()) {
 		return REDUNDANT_OPERATION;
 	}
@@ -149,13 +149,13 @@ GReturn BufferedInput::RegisterListener(GListener *_addListener, unsigned long l
 
 }
 
-GReturn BufferedInput::DeregisterListener(GListener *_removeListener) {
+GReturn BufferedInput::DeregisterListener(GListener* _removeListener) {
 
 	if (_removeListener == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 	mutex.lock();
-	std::map<GListener *, unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
+	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
 	if (iter != _listeners.end()) {
 		_listeners.erase(iter);
 		mutex.unlock();
@@ -170,27 +170,27 @@ GReturn BufferedInput::DeregisterListener(GListener *_removeListener) {
 }
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(GBufferedInput** _outPointer, void * data)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(GBufferedInput** _outPointer, void* _data)
 {
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
-	return GW::SYSTEM::CreateGBufferedInput(_outPointer, data);
+	return GW::SYSTEM::CreateGBufferedInput(_outPointer, _data);
 }
 
-GReturn GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * data) {
+GReturn GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void* _data) {
 
 
-	if (_outPointer == nullptr || data == nullptr) {
+	if (_outPointer == nullptr || _data == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
-	BufferedInput * _mInput = new BufferedInput();
+	BufferedInput* _mInput = new BufferedInput();
 
 	if (_mInput == nullptr) {
 		return FAILURE;
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(data);
+	_mInput->InitializeWindows(_data);
 #elif __APPLE__
 	_mInput->InitializeMac(_data);
 #elif __linux__
@@ -203,12 +203,12 @@ GReturn GW::SYSTEM::CreateGBufferedInput(GBufferedInput** _outPointer, void * da
 
 }
 
-GReturn BufferedInput::InitializeWindows(void * data) {
+GReturn BufferedInput::InitializeWindows(void* _data) {
 
 #ifdef _WIN32
 
 	keyMask = 0;
-	_userWinProc = SetWindowLongPtr((HWND)data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 		//The user has not setup a windows proc prior to this point.
@@ -268,13 +268,13 @@ GReturn BufferedInput::InitializeWindows(void * data) {
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
 	rID[0].dwFlags = RIDEV_NOLEGACY;
-	rID[0].hwndTarget = (HWND)data;
+	rID[0].hwndTarget = (HWND)_data;
 
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
 	rID[1].dwFlags = RIDEV_NOLEGACY;
-	rID[1].hwndTarget = (HWND)data;
+	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 
@@ -301,12 +301,12 @@ GReturn BufferedInput::InitializeWindows(void * data) {
 	return SUCCESS;
 }
 
-GReturn BufferedInput::InitializeLinux(void * data) {
+GReturn BufferedInput::InitializeLinux(void* _data) {
 
 #ifdef __linux__
-	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
+	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
-    Display * _display;
+    Display* _display;
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow._Display);
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
@@ -326,11 +326,11 @@ GReturn BufferedInput::InitializeLinux(void * data) {
 
 }
 
-GReturn BufferedInput::InitializeMac(void * data) {
+GReturn BufferedInput::InitializeMac(void* _data) {
 
 #ifdef __APPLE__
-    //Need to convert data back into an NSWindow*
-    NSWindow * currentResponder = ((__bridge NSWindow*)_data);
+    //Need to convert _data back into an NSWindow*
+    NSWindow* currentResponder = ((__bridge NSWindow*)_data);
 
 	//We only want to process the message and pass it on. So if there is already   
 	//a responder we set our responders next responder to be the current next responder
@@ -362,9 +362,9 @@ void BufferedInput::InputThread()
 	while (_threadOpen)
 	{
 
-        std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+        std::map<GListener* , unsigned long long>::iterator iter = _listeners.begin();
 
-        Display * _display = (Display*)_linuxWindow._Display;
+        Display* _display = (Display*)_linuxWindow._Display;
 
         Window a, b;
         XQueryPointer(_display, _window, &a, &b, &_dataStruct._screenX, &_dataStruct._screenY, &_dataStruct._x, &_dataStruct._y, &_dataStruct._keyMask);
