@@ -12,13 +12,13 @@
 	License: MIT
 */
 
-// GSingleThreaded Inherits directly from GInterface 
+// GSingleThreaded Inherits directly from GInterface.
 #include "GInterface.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong
+	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace CORE
 	{
 		//! Unique Identifier for this interface. {088E5BC2-8BF4-4972-9537-FACBFA142789}
@@ -30,10 +30,10 @@ namespace GW
 		//! This interface is only used to label and query interfaces which are not designed internally to support thread safety. 
 		class GSingleThreaded : public GInterface
 		{
-			// All Gateware API interfaces contain no variables & are pure virtual
+			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
-			// This class contains no unique routines that must be overridden
-			// Overridden and downstream operations need not be thread safe
+			// This class contains no unique routines that must be overridden.
+			// Overridden and downstream operations need not be thread safe.
 		};
 	}// end CORE namespace
 };// end GW namespace

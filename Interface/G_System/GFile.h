@@ -2,7 +2,7 @@
 #define GFILE_H
 /*
 	File: GFile.h
-	Purpose: A Gateware interface that handles both binary and textual file io and directory
+	Purpose: A Gateware interface that handles both binary and textual file io and directory.
 	Author: Justin W. Parks
 	Contributors: N/A
 	Last Modified: 11/16/2016
@@ -11,13 +11,13 @@
 	License: MIT
 */
 
-// GFile Inherits directly from GMultiThreaded 
+// GFile Inherits directly from GMultiThreaded.
 #include "../G_Core/GMultiThreaded.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong.
+	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
 		//! Unique Identifier for this interface. {3BE0F240-C3E7-424B-888E-F2994B6D1E48}
@@ -26,14 +26,14 @@ namespace GW
 			0x3be0f240, 0xc3e7, 0x424b,{ 0x88, 0x8e, 0xf2, 0x99, 0x4b, 0x6d, 0x1e, 0x48 }
 		};
 
-		//! Cross platform FileIO/Directory handling
+		//! Cross platform FileIO/Directory handling.
 		/*!
-		*	Handles file input/output operations, as well as, directory information and file information
-		*	Inherits from GMultiThreaded, therfore its implementation must be thread safe
+		*	Handles file input/output operations, as well as directory information and file information.
+		*	Inherits from GMultiThreaded, therfore its implementation must be thread safe.
 		*/
 		class GFile : public CORE::GMultiThreaded
 		{
-			// All Gateware API interfaces contain no variables & are pure virtual
+			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
 
 			//! Opens a file for binary read.
@@ -56,7 +56,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory. File can now be read from with Read()
+			*	the current working directory. File can now be read from with Read().
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -71,7 +71,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory. File can now be written to with Write()
+			*	the current working directory. File can now be written to with Write().
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -86,7 +86,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the function will fail.
-			*   File can now be written to with Write()
+			*   File can now be written to with Write().
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -102,7 +102,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory. File can now be read from with Read()
+			*	the current working directory. File can now be read from with Read().
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -117,7 +117,7 @@ namespace GW
 			*	The file name passed into the function should be passed like it is a relative path.
 			*	The function will look in the current working directory for the file.
 			*	If the file is not found in the current working directory, the file will be created in
-			*	the current working directory. File can now be written to with Write()
+			*	the current working directory. File can now be written to with Write().
 			*
 			*	\param [in] _file The file name of the file to open.
 			*
@@ -130,7 +130,7 @@ namespace GW
 			//! Writes binary data to the currently opened file.
 			/*!
 			*	Will append or truncate file based on how the currently
-			*	opened file was opened
+			*	opened file was opened.
 			*
 			*	\param [in] _inData The data to write out to file.
 			*	\param [in] _numBytes The number of bytes to write out to the file.
@@ -144,7 +144,7 @@ namespace GW
 			//! Reads binary from the currently opened file.
 			/*!
 			*	Reads binary data and stores it into a char* until the byte limit
-			*	is reached
+			*	is reached.
 			*
 			*	\param [out] _outData The variable to store the read in bytes.
 			*	\param [in] _numBytes The number of bytes to read in from the file.
@@ -158,7 +158,7 @@ namespace GW
 			//! Writes text to the currently opened file.
 			/*!
 			*	Will append or truncate file based on how the currently 
-			*	opened file was opened
+			*	opened file was opened.
 			*
 			*	\param [in] _inData Null terminated string to write out.
 			*
@@ -208,11 +208,11 @@ namespace GW
 			*	\retval SUCCESS  Succesfully set the current working directory.
 			*	\retval FILE_NOT_FOUND  The directory could not be found.
 			*	\retval FAILURE  Failed to open directory (Could be because it was not found).
-			*	\retval INVALID_ARGUMENT  A nullptr was passed in
+			*	\retval INVALID_ARGUMENT  A nullptr was passed in.
 			*/
 			virtual GReturn SetCurrentWorkingDirectory(const char* const _dir) = 0;
 
-			//! Retrieves the absolute path of the current working directory
+			//! Retrieves the absolute path of the current working directory.
 			/*!
 			*	This is the directory we will look into for any file Open commands.
 			*	This is by Windows standard guaranteed to be 255 or less. 
@@ -220,7 +220,7 @@ namespace GW
 			*	\param [out] _outDir An absolute path to the directory to set as the current working directory.
 			*	\param [in] _dirSize The size of _outDir.
 			*
-			*	\retval SUCCESS  Successfully obtained the working directory
+			*	\retval SUCCESS  Successfully obtained the working directory.
 			*	\retval FAILURE  The current working directory is invalid or _outDir was not big enough. _outDir will be null.
 			*	\retval INVALID_ARGUMENT  A nullptr was passed in or the size is 0.
 			*/
@@ -231,7 +231,7 @@ namespace GW
 			*	\param [out] _outSize The number of files in the directory.
 			*
 			*	\retval SUCCESS  Successfully counted the files in the directory.
-			*	\retval FAILURE  Either currently working directory is invalid or count failed. _outSize will be -1;
+			*	\retval FAILURE  Either currently working directory is invalid or count failed. _outSize will be -1.
 			*/
 			virtual GReturn GetDirectorySize(unsigned int& _outSize) = 0;
 
@@ -265,14 +265,14 @@ namespace GW
 			virtual GReturn GetFileSize(const char* const _file, unsigned int& _outSize) = 0;
 		}; // end GFile class
 
-		//!Creates a GFile Object
+		//!Creates a GFile Object.
 		/*!
 		*	The GFile created by this function will have its current working directory defaulted to 
 		*	the directory where the program was ran from. Call SetCurrentWorkingDirectory to change it.
 		*	No file will be opened in creation of GFile. Call an Open function to open one.
 		*	Created GFile object will have its reference count initialized to one.
 		*
-		*	\param [out] _outFile The Gfile that was created.
+		*	\param [out] _outFile Will contain the GFile object if successfully created.
 		*
 		*	\retval SUCCESS  Gfile successfully created.
 		*	\retval FAILURE  GFile could not be created.

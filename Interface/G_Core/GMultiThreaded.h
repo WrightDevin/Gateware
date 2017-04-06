@@ -12,13 +12,13 @@
 	License: MIT
 */
 
-// GMultiThreaded Inherits directly from GInterface 
+// GMultiThreaded Inherits directly from GInterface.
 #include "GInterface.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong
+	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace CORE
 	{
 		//! Unique Identifier for this interface. {B0B2C21C-B7A0-42A2-BBF6-A893D66AB006}
@@ -30,10 +30,10 @@ namespace GW
 		//! This interface is only used to label and query interfaces which promise to 100% internally support thread safety. 
 		class GMultiThreaded : public GInterface
 		{
-			// All Gateware API interfaces contain no variables & are pure virtual
+			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
-			// This class contains no unique routines that must be overridden
-			// However, unlike GSingleThreaded all overridden and downstream operations MUST be thread safe
+			// This class contains no unique routines that must be overridden.
+			// However, unlike GSingleThreaded all overridden and downstream operations MUST be thread safe.
 		};
 	}// end CORE namespace
 };// end GW namespace

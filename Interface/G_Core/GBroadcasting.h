@@ -12,13 +12,13 @@
 	License: MIT
 */
 
-// GBroadcasting Inherits directly from GMultiThreaded 
+// GBroadcasting Inherits directly from GMultiThreaded. 
 #include "GListener.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong
+	//! The core namespace to which all Gateware fundamental interfaces must belong.
 	namespace CORE
 	{
 		//! Unique Identifier for this interface. {FF23C564-940B-44A2-9E5F-CE264659D69A}
@@ -34,12 +34,12 @@ namespace GW
 		*/
 		class GBroadcasting : public GMultiThreaded
 		{
-			// All Gateware API interfaces contain no variables & are pure virtual
+			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
 
-			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional)
+			//! Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional).
 			/*!
-			*	Listeners registered to a broadcaster will have their reference counts increased by one until deregistered
+			*	Listeners registered to a broadcaster will have their reference counts increased by one until deregistered.
 			*	
 			*
 			*	\param [in] _addListener The listener object that is registering for messages.

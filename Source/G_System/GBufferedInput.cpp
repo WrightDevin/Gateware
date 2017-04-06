@@ -1,4 +1,4 @@
-// Override export symbols for DLL builds (must be included before interface code)
+// Override export symbols for DLL builds (must be included before interface code).
 #include "../DLL_Export_Symbols.h"
 
 #ifndef __APPLE__
@@ -172,7 +172,7 @@ GReturn BufferedInput::DeregisterListener(GListener* _removeListener) {
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(GBufferedInput** _outPointer, void* _data)
 {
-	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below
+	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below.
 	return GW::SYSTEM::CreateGBufferedInput(_outPointer, _data);
 }
 
@@ -231,7 +231,7 @@ GReturn BufferedInput::InitializeWindows(void* _data) {
 
 	int nNoOfDevices = 0;
 	//Using the new List and number of devices,
-	//Populate the raw input device list.
+	//populate the raw input device list.
 	if ((nNoOfDevices = GetRawInputDeviceList(pRawInputDeviceList, &numDevices, sizeof(RAWINPUTDEVICELIST))) == ((UINT)-1)) {
 
 	}
@@ -329,21 +329,21 @@ GReturn BufferedInput::InitializeLinux(void* _data) {
 GReturn BufferedInput::InitializeMac(void* _data) {
 
 #ifdef __APPLE__
-    //Need to convert _data back into an NSWindow*
+    //Need to convert _data back into an NSWindow*.
     NSWindow* currentResponder = ((__bridge NSWindow*)_data);
 
 	//We only want to process the message and pass it on. So if there is already   
-	//a responder we set our responders next responder to be the current next responder
+	//a responder we set our responders next responder to be the current next responder.
     [responder setNextResponder:currentResponder.nextResponder];
 
-    //We then set out responder to the next responder of the window
+    //We then set out responder to the next responder of the window.
     [currentResponder setNextResponder:responder];
 
-    //We also need to make our responder the first responder of the window
+    //We also need to make our responder the first responder of the window.
     [currentResponder makeFirstResponder:responder];
 
     //In order to get mouse button presses we need to set our responder to be
-    //The next responder in the contentView as well
+    //The next responder in the contentView as well.
     [currentResponder.contentView setNextResponder:responder];
 
 
@@ -371,7 +371,7 @@ void BufferedInput::InputThread()
         //printf("Pos ( %d, %d), Mask: (%d)\n", screenx, screeny, mask);
 
         char keys_return[32];
-        //Get the current state of all keys
+        //Get the current state of all keys.
         XQueryKeymap(_display, keys_return);
         //Loop through all the keys and check to see if they match the saved state of all the keys.
         for(unsigned int i = 5; i < 126; i++){

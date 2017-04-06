@@ -2,7 +2,7 @@
 #define GBIGLOBALNAMESPACE_H
 /*
 	File: GKeyDefines.h
-	Purpose: The Gateware key representations
+	Purpose: The Gateware key representations.
 	Author: Peter Farber
 	Contributors: N/A
 	Last Modified: 11/16/2016
@@ -128,14 +128,14 @@
 #define G_MASK_ALT              0x6
 #define G_MASK_FUNCTION         0x7
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong.
+	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
 #pragma pack(push, 1)
-		//! The structure used to pass into Input libraries on Linux
+		//! The structure used to pass into Input libraries on Linux.
 		struct LINUX_WINDOW
 		{
 			void* window;			/*< window void pointer storing the window handle. */

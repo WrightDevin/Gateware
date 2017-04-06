@@ -2,7 +2,7 @@
 #define GBUFFEREDINPUT_H
 /*
 	File: GKeyDefines.h
-	Purpose: This Interface offers thread safe raw buffered input
+	Purpose: This Interface offers thread safe raw buffered input.
 	Author: Peter Farber
 	Contributors: N/A
 	Last Modified: 11/16/2016
@@ -14,14 +14,14 @@
 #include "../G_Core/GBroadcasting.h"
 #include "../G_System/GKeyDefines.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong.
+	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
 
-// Ensure identical binary padding for structures on all platforms
+// Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
 
 		//! G_INPUT_DATA will hold any information you may need about an Input Event.
@@ -61,9 +61,9 @@ namespace GW
 		//! Creates a GBufferedInput Object.
 		/*!
 		*	Initializes a window based on the void* data passed in. The created 
-		*	Created GBufferedInput object will have its reference count initialized to one.
+		*	GBufferedInput object will have its reference count initialized to one.
 		*
-		*	\param [out] _outBufferedInput
+		*	\param [out] _outBufferedInput Will contain the GBufferedInput object if successfully created.
 		*	\param [in] data (Windows) The handle to the window (HWND).
 		*	\param [in] data (Linux) LINUX_WINDOW data.
 		*	\param [in] data (Max) NSWindow data.

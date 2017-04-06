@@ -3,7 +3,7 @@
 
 /*
 File: GInput.h
-Purpose: A Gateware interface that handles high-speed keyboard and mouse input 
+Purpose: A Gateware interface that handles high-speed keyboard and mouse input.
 Author: Peter Farber
 Contributors: N/A
 Last Modified: 2/1/2017
@@ -15,10 +15,10 @@ License: MIT
 #include "../G_Core/GSingleThreaded.h"
 #include "../G_System/GKeyDefines.h"
 
-//! The core namespace to which all Gateware interfaces/structures/defines must belong
+//! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The core namespace to which all Gateware fundamental interfaces must belong.
+	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
 		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
@@ -42,10 +42,10 @@ namespace GW
 			/*!
 			*
 			*	Use keycodes in GKeyDefines as input to this function to check the state
-			*	of a particular key or button
+			*	of a particular key or button.
 			*
-			*	\param [in] _keyCode The key code of the key to check
-			*	\param [out] errorCode If function fails this will hold the errorCode
+			*	\param [in] _keyCode The key code of the key to check.
+			*	\param [out] errorCode If function fails this will hold the errorCode.
 			*
 			*	\retval 0 The Key is not pressed.
 			*	\retval 1 The Key is pressed.
@@ -58,7 +58,7 @@ namespace GW
 			*	\param [out] x a reference to a float to store the mouse delta position x.
 			*	\param [out] y a reference to a float to store the mouse delta position y.
 			*
-			*	\retval SUCCESS no problems found. Values stored in x and y
+			*	\retval SUCCESS no problems found. Values stored in x and y.
 			*/
 			virtual GReturn GetMouseDelta(float& x, float& y) = 0;
 
@@ -68,7 +68,7 @@ namespace GW
 			*	\param [out] x a reference to a float to store the mouse position x.
 			*	\param [out] y a reference to a float to store the mouse position y.
 			*
-			*	\retval SUCCESS no problems found. Values stored in x and y
+			*	\retval SUCCESS no problems found. Values stored in x and y.
 			*/
 			virtual GReturn GetMousePosition(float& x, float& y) = 0;
 
@@ -77,7 +77,7 @@ namespace GW
 			//! Get the key mask.
 			/*!
 			*	The key mask lets the input object know which of the functions below are  
-			*	active by manipulating individual bits of an unsigned int
+			*	active by manipulating individual bits of an unsigned int.
 			*
 			*	\retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
 			*/
@@ -89,7 +89,7 @@ namespace GW
 		*	Initializes a window based on the void* data passed in. The created 
 		*	Created GInput object will have its reference count initialized to one.
 		*
-		*	\param [out] _outInput
+		*	\param [out] _outInput Will contain the GInput object if successfully created.
 		*	\param [in] data (Windows) The handle to the window (HWND).
 		*	\param [in] data (Linux) LINUX_WINDOW data.
 		*	\param [in] data (Max) NSWindow data.

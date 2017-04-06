@@ -38,7 +38,7 @@ namespace GW
 			/*!
 			*	\param [out] _outCount The total number of active references of this object.
 			*
-			*	\retval SUCCESS Successfully ran
+			*	\retval SUCCESS Successfully ran.
 			*	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
 			*/
 			virtual GReturn GetCount(unsigned int& _outCount) = 0;
@@ -63,13 +63,13 @@ namespace GW
 
 			//! Requests an interface that may or may not be supported by this object.
 			/*!
-			*	Similiar to DirectX queryInterface function. Can be used by the end-user to
-			*	query and implement an interface update
+			*	 Can be used by the end-user to query for a new interface using the 
+			*	 unique ID of the interface they want and implement an interface update.
 			*
 			*	\param [in] _interfaceID The GUUIID of the interface you are requesting.
 			*	\param [out] _outputInterface Where the interface will be stored if function is successful.
 			*
-			*	\retval SUCCESS The interface is support and function succeded.
+			*	\retval SUCCESS The interface is supported and function succeded.
 			*	\retval INTERFACE_UNSUPPORTED The requested interface is not supported.
 			*/
 			virtual GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) = 0;
