@@ -24,7 +24,7 @@ namespace GW
 // Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
 
-		//! G_INPUT_DATA will hold any information you may need about an Input Event.
+		//! GBUFFEREDINPUT_EVENT_DATA will hold any information you may need about an Input Event.
 		struct GBUFFEREDINPUT_EVENT_DATA
 		{
 			int data;				/*!<  Data storing the key/button information. */ 
