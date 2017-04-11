@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['flush',['Flush',['../class_g_w_1_1_c_o_r_e_1_1_g_log.html#a1e0bb42d95ddd42fa019d5cd6050ff97',1,'GW::CORE::GLog']]],
-  ['flushfile',['FlushFile',['../class_g_w_1_1_c_o_r_e_1_1_g_file.html#a185d248041bf79161654a00ddb38c314',1,'GW::CORE::GFile']]]
+  ['fileio',['FileIO',['../classFileIO.html',1,'']]],
+  ['flush',['Flush',['../classGW_1_1SYSTEM_1_1GLog.html#a07147c15ecb17caa1c83974b3c54f7d4',1,'GW::SYSTEM::GLog::Flush()'],['../classLogFile.html#a47ffb41f72625b1c7865ac2cd58dea18',1,'LogFile::Flush()']]],
+  ['flushfile',['FlushFile',['../classGW_1_1SYSTEM_1_1GFile.html#ae3105b637ef87af268722a696b8657a9',1,'GW::SYSTEM::GFile::FlushFile()'],['../classFileIO.html#a8e5afdb1a734f37e422ff0147561a3a1',1,'FileIO::FlushFile()']]]
 ];

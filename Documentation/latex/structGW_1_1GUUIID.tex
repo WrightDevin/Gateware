@@ -1,0 +1,51 @@
+\hypertarget{structGW_1_1GUUIID}{}\section{GW\+:\+:G\+U\+U\+I\+ID Struct Reference}
+\label{structGW_1_1GUUIID}\index{G\+W\+::\+G\+U\+U\+I\+ID@{G\+W\+::\+G\+U\+U\+I\+ID}}
+
+
+Gateware Universally Unique Interface I\+Dentifier.  
+
+
+
+
+{\ttfamily \#include $<$G\+Defines.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{structGW_1_1GUUIID_a84e8d2cc912c79229af8dd9a898e1ace}{operator==} (const \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID} \&\+\_\+cmp) const \hypertarget{structGW_1_1GUUIID_a84e8d2cc912c79229af8dd9a898e1ace}{}\label{structGW_1_1GUUIID_a84e8d2cc912c79229af8dd9a898e1ace}
+
+\begin{DoxyCompactList}\small\item\em Comparison operator overload. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int {\bfseries byte4}\hypertarget{structGW_1_1GUUIID_a017e04c2cb5c5bab165bf4ec0fa3ca55}{}\label{structGW_1_1GUUIID_a017e04c2cb5c5bab165bf4ec0fa3ca55}
+
+\item 
+unsigned short {\bfseries byte2a}\hypertarget{structGW_1_1GUUIID_a57b18450de3bffef5a6e39d9dcb6b68f}{}\label{structGW_1_1GUUIID_a57b18450de3bffef5a6e39d9dcb6b68f}
+
+\item 
+unsigned short {\bfseries byte2b}\hypertarget{structGW_1_1GUUIID_ab5045e59e0d3aa82a27208a063b9cbb6}{}\label{structGW_1_1GUUIID_ab5045e59e0d3aa82a27208a063b9cbb6}
+
+\item 
+unsigned char {\bfseries byte8} \mbox{[}8\mbox{]}\hypertarget{structGW_1_1GUUIID_a631f2e8efb3ddd9794c068e0b9000cce}{}\label{structGW_1_1GUUIID_a631f2e8efb3ddd9794c068e0b9000cce}
+
+\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>unsigned long long {\bfseries part1}\\
+\>unsigned long long {\bfseries part2}\\
+\}; \hypertarget{structGW_1_1GUUIID_aa51f004bf72e52a4e15b7568b9a7ec50}{}\label{structGW_1_1GUUIID_aa51f004bf72e52a4e15b7568b9a7ec50}
+\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Gateware Universally Unique Interface I\+Dentifier. 
+
+Each \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID} defines a unique 128bit number identifying a particular version of an interface. This allows interfaces to be upgraded down the line safely without breaking legacy code. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Interface/\+G\+\_\+\+Core/G\+Defines.\+h\end{DoxyCompactItemize}

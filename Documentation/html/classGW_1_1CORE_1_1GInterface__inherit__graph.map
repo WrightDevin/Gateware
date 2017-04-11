@@ -1,0 +1,13 @@
+<map id="GW::CORE::GInterface" name="GW::CORE::GInterface">
+<area shape="rect" id="node2" href="$classGW_1_1CORE_1_1GMultiThreaded.html" title="This interface is only used to label and query interfaces which promise to 100% internally support th..." alt="" coords="219,107,411,133"/>
+<area shape="rect" id="node10" href="$classGW_1_1CORE_1_1GSingleThreaded.html" title="This interface is only used to label and query interfaces which are not designed internally to suppor..." alt="" coords="215,183,415,209"/>
+<area shape="rect" id="node3" href="$classGW_1_1CORE_1_1GBroadcasting.html" title="The GBroadcasting Interface is capable of registering &amp; deregistering GListener interfaces. " alt="" coords="463,5,649,32"/>
+<area shape="rect" id="node5" href="$classGW_1_1CORE_1_1GListener.html" title="A GListener Interface may be registered with a GBroadcaster interface to receive event notifications..." alt="" coords="478,56,634,83"/>
+<area shape="rect" id="node6" href="$classGW_1_1SYSTEM_1_1GFile.html" title="Cross platform FileIO/Directory handling. " alt="" coords="483,107,629,133"/>
+<area shape="rect" id="node8" href="$classGW_1_1SYSTEM_1_1GLog.html" title="Cross platform threadsafe logger. " alt="" coords="483,157,629,184"/>
+<area shape="rect" id="node4" href="$classGW_1_1SYSTEM_1_1GBufferedInput.html" title="A Multi&#45;threaded buffered input library. " alt="" coords="697,5,901,32"/>
+<area shape="rect" id="node7" href="$classFileIO.html" title="FileIO" alt="" coords="771,107,828,133"/>
+<area shape="rect" id="node9" href="$classLogFile.html" title="LogFile" alt="" coords="767,157,831,184"/>
+<area shape="rect" id="node11" href="$classGW_1_1SYSTEM_1_1GInput.html" title="A single threaded input library. " alt="" coords="479,208,633,235"/>
+<area shape="rect" id="node12" href="$classInput.html" title="Input" alt="" coords="774,208,825,235"/>
+</map>

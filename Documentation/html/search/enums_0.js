@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gbinput_5fevents',['GBInput_Events',['../namespace_g_w_1_1_c_o_r_e.html#ad9b7ad6dcc306c2d2029ad1981f5dbe2',1,'GW::CORE']]],
-  ['greturn',['GRETURN',['../namespace_g_w.html#a69b1aaebac1cac8049825f035884c95b',1,'GW']]]
+  ['gbufferedinputevents',['GBufferedInputEvents',['../namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcb',1,'GW::SYSTEM']]],
+  ['greturn',['GReturn',['../namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21',1,'GW']]]
 ];

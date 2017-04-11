@@ -1,0 +1,10 @@
+<map id="GW::CORE::GMultiThreaded" name="GW::CORE::GMultiThreaded">
+<area shape="rect" id="node3" href="$classGW_1_1CORE_1_1GBroadcasting.html" title="The GBroadcasting Interface is capable of registering &amp; deregistering GListener interfaces. " alt="" coords="14,155,201,181"/>
+<area shape="rect" id="node5" href="$classGW_1_1CORE_1_1GListener.html" title="A GListener Interface may be registered with a GBroadcaster interface to receive event notifications..." alt="" coords="225,155,381,181"/>
+<area shape="rect" id="node6" href="$classGW_1_1SYSTEM_1_1GFile.html" title="Cross platform FileIO/Directory handling. " alt="" coords="406,155,553,181"/>
+<area shape="rect" id="node8" href="$classGW_1_1SYSTEM_1_1GLog.html" title="Cross platform threadsafe logger. " alt="" coords="577,155,723,181"/>
+<area shape="rect" id="node2" href="$classGW_1_1CORE_1_1GInterface.html" title="Base interface all Gateware interfaces must support at a minimum. " alt="" coords="311,5,472,32"/>
+<area shape="rect" id="node4" href="$classGW_1_1SYSTEM_1_1GBufferedInput.html" title="A Multi&#45;threaded buffered input library. " alt="" coords="5,229,209,256"/>
+<area shape="rect" id="node7" href="$classFileIO.html" title="FileIO" alt="" coords="451,229,508,256"/>
+<area shape="rect" id="node9" href="$classLogFile.html" title="LogFile" alt="" coords="618,229,682,256"/>
+</map>

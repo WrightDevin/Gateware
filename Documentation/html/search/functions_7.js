@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['log',['Log',['../class_g_w_1_1_c_o_r_e_1_1_g_log.html#a9b9ec52b1b35eb2fd9a63ec7312fd31a',1,'GW::CORE::GLog']]],
-  ['logcatergorized',['LogCatergorized',['../class_g_w_1_1_c_o_r_e_1_1_g_log.html#ab7dbe43179c1de11c9ddac9d6cba01cf',1,'GW::CORE::GLog']]]
+  ['log',['Log',['../classGW_1_1SYSTEM_1_1GLog.html#a9e21e702d012065fe799b4c49f7ac670',1,'GW::SYSTEM::GLog::Log()'],['../classLogFile.html#a6848c12fad15f2c835e5215234f75c5a',1,'LogFile::Log()']]],
+  ['logcatergorized',['LogCatergorized',['../classGW_1_1SYSTEM_1_1GLog.html#a5d10397fa6aeeebaf8430df6029ec3c5',1,'GW::SYSTEM::GLog::LogCatergorized()'],['../classLogFile.html#a5e5f24ccd4c6f925dd8bc1ced512b530',1,'LogFile::LogCatergorized()']]]
 ];
