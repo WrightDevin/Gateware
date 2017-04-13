@@ -11,7 +11,7 @@
 	License: MIT
 */
 
-// Contains all defined elements shared among base interfaces.
+//! Contains all defined elements shared among base interfaces.
 #include "GDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

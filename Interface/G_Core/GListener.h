@@ -12,7 +12,7 @@
 	License: MIT
 */
 
-// GListener Inherits directly from GMultiThreaded.
+//! GListener Inherits directly from GMultiThreaded.
 #include "GMultiThreaded.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

@@ -11,7 +11,7 @@
 	License: MIT
 */
 
-// GFile Inherits directly from GMultiThreaded.
+//! GFile Inherits directly from GMultiThreaded.
 #include "../G_Core/GMultiThreaded.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

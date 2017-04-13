@@ -2,7 +2,7 @@
 #define GBUFFEREDINPUT_H
 /*
 	File: GKeyDefines.h
-	Purpose: This Interface offers thread safe raw buffered input.
+	Purpose: This Interface offers event based thread safe raw buffered input.
 	Author: Peter Farber
 	Contributors: N/A
 	Last Modified: 11/16/2016
