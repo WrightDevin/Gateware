@@ -3,7 +3,7 @@
 
 /*!
 	File: GBroadcasting.h
-	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface. <--description for GListener. Consider revising (Russell)
+	Purpose: A Gateware interface that allows an object derived from GListener to receive select events from a GBroadcaster
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
