@@ -1,7 +1,7 @@
 #ifndef GLISTENER_H
 #define GLISTENER_H
 
-/*
+/*!
 	File: GListener.h
 	Purpose: A Gateware interface that can safely listen & respond to events sent from a GBroadcating interface.
 	Author: Lari H. Norri
@@ -12,7 +12,7 @@
 	License: MIT
 */
 
-//! GListener Inherits directly from GMultiThreaded.
+//! GListener inherits directly from GMultiThreaded.
 #include "GMultiThreaded.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -28,6 +28,10 @@ namespace GW
 		};
 
 		//! A GListener Interface may be registered with a GBroadcaster interface to receive event notifications.
+		/*!
+		*	GListener is directly inherited from GMultiThreaded, therefore its implementation 
+		*	must be thread safe.
+		*/
 		class GListener : public GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual.

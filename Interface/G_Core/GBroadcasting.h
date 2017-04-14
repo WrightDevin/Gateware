@@ -3,7 +3,7 @@
 
 /*!
 	File: GBroadcasting.h
-	Purpose: A Gateware interface that allows an object derived from GListener to receive select events from a GBroadcaster
+	Purpose: A Gateware interface that allows an object derived from GListener to receive select events from a GBroadcaster.
 	Author: Lari H. Norri
 	Contributors: N/A
 	Last Modified: 10/13/2016
@@ -12,7 +12,6 @@
 	License: MIT
 */
 
-//! GBroadcasting Inherits directly from GMultiThreaded. 
 #include "GListener.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -31,6 +30,8 @@ namespace GW
 		/*! 
 		*	The GBroadcaster will notify all registered listeners with the listeners OnEvent function.
 		*	The events being registered for can be filtered with the _eventMask (optional).
+		*	GBroadcasting Inherits directly from GMultiThreaded, therefore its implementation
+		*	must be thread safe.
 		*/
 		class GBroadcasting : public GMultiThreaded
 		{

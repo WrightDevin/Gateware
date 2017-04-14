@@ -1,7 +1,7 @@
 #ifndef GDEFINES_H
 #define GDEFINES_H
 
-/*
+/*!
 	File: GDefines.h
 	Purpose: Lists the core #defines and MACROS used by the Gateware interfaces.
 	Author: Lari H. Norri
@@ -16,6 +16,7 @@ namespace GW
 {
 // Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
+
 	//! Gateware Universally Unique Interface IDentifier.
 	/*! 
 	*	Each GUUIID defines a unique 128bit number identifying a particular version of an interface.

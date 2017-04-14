@@ -62,15 +62,25 @@ public:
 };
 
 // This is an DLL exported version of the create function, the name is not mangled for explicit linking.
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(GW::SYSTEM::GInput** _outPointer, void* _data)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(void* _windowHandle, unsigned int _handleSize, GW::SYSTEM::GInput** _outPointer)
 {
+	unsigned int handleSize = 0;
+
+#ifdef _WIN32
+	handleSize = sizeof(HWND);
+#elif __APPLE__
+	handleSize = sizeof(NSWindow);
+#elif __linux__
+	handleSize = sizeof(LINUX_WINDOW);
+#endif
+
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below.
-	return GW::SYSTEM::CreateGInput(_outPointer, _data);
+	return GW::SYSTEM::CreateGInput(_windowHandle, handleSize, _outPointer);
 }
 
-GReturn GW::SYSTEM::CreateGInput(GInput** _outFpointer, void* _data) {
+GReturn GW::SYSTEM::CreateGInput(void* _windowHandle, unsigned int _handleSize, GInput** _outFpointer) {
 
-	if (_outFpointer == nullptr || _data == nullptr) {
+	if (_outFpointer == nullptr || _windowHandle == nullptr) {
 		return INVALID_ARGUMENT;
 	}
 
@@ -81,11 +91,11 @@ GReturn GW::SYSTEM::CreateGInput(GInput** _outFpointer, void* _data) {
 	}
 
 #ifdef _WIN32
-	_mInput->InitializeWindows(_data);
+	_mInput->InitializeWindows(_windowHandle);
 #elif __APPLE__
-	_mInput->InitializeMac(_data);
+	_mInput->InitializeMac(_windowHandle);
 #elif __linux__
-	_mInput->InitializeLinux(_data);
+	_mInput->InitializeLinux(_windowHandle);
 #endif
 
 
