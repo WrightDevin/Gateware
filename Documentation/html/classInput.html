@@ -272,7 +272,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
 </div><div class="memdoc">
 
 <p>Get the key mask. </p>
-<p>The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int.</p>
+<p>The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int. Values for G_MASK can be found in GKeyDefines.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">G_MASK</td><td>(_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK). </td></tr>
@@ -295,13 +295,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
           <td class="memname"><a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> Input::GetMouseDelta </td>
           <td>(</td>
           <td class="paramtype">float &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
+          <td class="paramname"><em>_x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float &amp;&#160;</td>
-          <td class="paramname"><em>y</em>&#160;</td>
+          <td class="paramname"><em>_y</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -319,19 +319,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
 <p>Get the change in mouse position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>a reference to a float to store the mouse delta position x. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>a reference to a float to store the mouse delta position y.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_x</td><td>a reference to a float to store the mouse delta position x. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_y</td><td>a reference to a float to store the mouse delta position y.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">SUCCESS</td><td>no problems found. Values stored in x and y. </td></tr>
+    <tr><td class="paramname">SUCCESS</td><td>no problems found. Values stored in _x and _y. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#a2c968f0195241813dea705fb9a02a8b5">GW::SYSTEM::GInput</a>.</p>
+<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#a775fca7ad71371f369e3ad69fb32603a">GW::SYSTEM::GInput</a>.</p>
 
 </div>
 </div>
@@ -346,13 +346,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
           <td class="memname"><a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> Input::GetMousePosition </td>
           <td>(</td>
           <td class="paramtype">float &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
+          <td class="paramname"><em>_x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float &amp;&#160;</td>
-          <td class="paramname"><em>y</em>&#160;</td>
+          <td class="paramname"><em>_y</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -370,19 +370,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
 <p>Get the most recent mouse position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>a reference to a float to store the mouse position x. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>a reference to a float to store the mouse position y.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_x</td><td>a reference to a float to store the mouse position x. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_y</td><td>a reference to a float to store the mouse position y.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">SUCCESS</td><td>no problems found. Values stored in x and y. </td></tr>
+    <tr><td class="paramname">SUCCESS</td><td>no problems found. Values stored in _x and _y. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#af0d0f1a00a2ebd04d5d697d1468c3c00">GW::SYSTEM::GInput</a>.</p>
+<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#a351eb04ac4a8699f6e4e416860d264b2">GW::SYSTEM::GInput</a>.</p>
 
 </div>
 </div>
@@ -403,7 +403,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> *&#160;</td>
-          <td class="paramname"><em>errorCode</em>&#160;</td>
+          <td class="paramname"><em>_errorCode</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -423,7 +423,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">_keyCode</td><td>The key code of the key to check. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">errorCode</td><td>If function fails this will hold the errorCode.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_errorCode</td><td>If function fails this will hold the errorCode. (optional)</td></tr>
   </table>
   </dd>
 </dl>
@@ -435,7 +435,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InputThread</b> ()</t
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#a7a3e93a3730d05cfeb92fc1dd93ad07a">GW::SYSTEM::GInput</a>.</p>
+<p>Implements <a class="el" href="classGW_1_1SYSTEM_1_1GInput.html#adde23f6e5640e8143e7e7835ee9774ec">GW::SYSTEM::GInput</a>.</p>
 
 </div>
 </div>

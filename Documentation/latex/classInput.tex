@@ -115,7 +115,7 @@ Implements \hyperlink{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122e
 
 Get the key mask. 
 
-The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int.
+The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int. Values for G\+\_\+\+M\+A\+SK can be found in G\+Key\+Defines.
 
 
 \begin{DoxyRetVals}{Return values}
@@ -130,8 +130,8 @@ Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a071a399bc9c400f0cd333958d911c
 \index{Get\+Mouse\+Delta@{Get\+Mouse\+Delta}!Input@{Input}}
 \subsubsection[{\texorpdfstring{Get\+Mouse\+Delta(float \&\+\_\+x, float \&\+\_\+y)}{GetMouseDelta(float &_x, float &_y)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Get\+Mouse\+Delta (
 \begin{DoxyParamCaption}
-\item[{float \&}]{x, }
-\item[{float \&}]{y}
+\item[{float \&}]{\+\_\+x, }
+\item[{float \&}]{\+\_\+y}
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a82d54ae7aa3ecacebe42480eb0aff985}{}\label{classInput_a82d54ae7aa3ecacebe42480eb0aff985}
 
@@ -140,26 +140,26 @@ Get the change in mouse position.
 
 
 \begin{DoxyParams}[1]{Parameters}
-\mbox{\tt out}  & {\em x} & a reference to a float to store the mouse delta position x. \\
+\mbox{\tt out}  & {\em \+\_\+x} & a reference to a float to store the mouse delta position x. \\
 \hline
-\mbox{\tt out}  & {\em y} & a reference to a float to store the mouse delta position y.\\
+\mbox{\tt out}  & {\em \+\_\+y} & a reference to a float to store the mouse delta position y.\\
 \hline
 \end{DoxyParams}
 
 \begin{DoxyRetVals}{Return values}
-{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in x and y. \\
+{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in \+\_\+x and \+\_\+y. \\
 \hline
 \end{DoxyRetVals}
 
 
-Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a2c968f0195241813dea705fb9a02a8b5}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a775fca7ad71371f369e3ad69fb32603a}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
 
 \index{Input@{Input}!Get\+Mouse\+Position@{Get\+Mouse\+Position}}
 \index{Get\+Mouse\+Position@{Get\+Mouse\+Position}!Input@{Input}}
 \subsubsection[{\texorpdfstring{Get\+Mouse\+Position(float \&\+\_\+x, float \&\+\_\+y)}{GetMousePosition(float &_x, float &_y)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Get\+Mouse\+Position (
 \begin{DoxyParamCaption}
-\item[{float \&}]{x, }
-\item[{float \&}]{y}
+\item[{float \&}]{\+\_\+x, }
+\item[{float \&}]{\+\_\+y}
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a93d7ab591a1d1e8d619318834c75207a}{}\label{classInput_a93d7ab591a1d1e8d619318834c75207a}
 
@@ -168,26 +168,26 @@ Get the most recent mouse position.
 
 
 \begin{DoxyParams}[1]{Parameters}
-\mbox{\tt out}  & {\em x} & a reference to a float to store the mouse position x. \\
+\mbox{\tt out}  & {\em \+\_\+x} & a reference to a float to store the mouse position x. \\
 \hline
-\mbox{\tt out}  & {\em y} & a reference to a float to store the mouse position y.\\
+\mbox{\tt out}  & {\em \+\_\+y} & a reference to a float to store the mouse position y.\\
 \hline
 \end{DoxyParams}
 
 \begin{DoxyRetVals}{Return values}
-{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in x and y. \\
+{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in \+\_\+x and \+\_\+y. \\
 \hline
 \end{DoxyRetVals}
 
 
-Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_af0d0f1a00a2ebd04d5d697d1468c3c00}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a351eb04ac4a8699f6e4e416860d264b2}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
 
 \index{Input@{Input}!Get\+State@{Get\+State}}
 \index{Get\+State@{Get\+State}!Input@{Input}}
 \subsubsection[{\texorpdfstring{Get\+State(int \+\_\+key\+Code, G\+Return $\ast$\+\_\+error\+Code)}{GetState(int _keyCode, GReturn *_errorCode)}}]{\setlength{\rightskip}{0pt plus 5cm}float Input\+::\+Get\+State (
 \begin{DoxyParamCaption}
 \item[{int}]{\+\_\+key\+Code, }
-\item[{{\bf G\+Return} $\ast$}]{error\+Code}
+\item[{{\bf G\+Return} $\ast$}]{\+\_\+error\+Code}
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a7e468df0f31131f3fbcbc6de87d01ec2}{}\label{classInput_a7e468df0f31131f3fbcbc6de87d01ec2}
 
@@ -200,7 +200,7 @@ Use keycodes in G\+Key\+Defines as input to this function to check the state of 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em \+\_\+key\+Code} & The key code of the key to check. \\
 \hline
-\mbox{\tt out}  & {\em error\+Code} & If function fails this will hold the error\+Code.\\
+\mbox{\tt out}  & {\em \+\_\+error\+Code} & If function fails this will hold the error\+Code. (optional)\\
 \hline
 \end{DoxyParams}
 
@@ -212,7 +212,7 @@ Use keycodes in G\+Key\+Defines as input to this function to check the state of 
 \end{DoxyRetVals}
 
 
-Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a7a3e93a3730d05cfeb92fc1dd93ad07a}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_adde23f6e5640e8143e7e7835ee9774ec}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
 
 \index{Input@{Input}!Increment\+Count@{Increment\+Count}}
 \index{Increment\+Count@{Increment\+Count}!Input@{Input}}
