@@ -159,3 +159,53 @@
 	"../../Interface/G_System/GBufferedInput.h"
 	<list>
 
+1492109665 source:/home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GBI_Callback.cpp
+	"../../Source/G_System/GI_Static.cpp"
+	"../../Interface/G_System/GBufferedInput.h"
+	<list>
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GI_Static.cpp
+	"../../Interface/G_System/GKeyDefines.h"
+	<map>
+	<Windows.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/Xresource.h>
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_System/GKeyDefines.h
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_System/GBufferedInput.h
+	"../G_Core/GBroadcasting.h"
+	"../G_System/GKeyDefines.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GBroadcasting.h
+	"GListener.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GListener.h
+	"GMultiThreaded.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GMultiThreaded.h
+	"GInterface.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GInterface.h
+	"GDefines.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GDefines.h
+
+1493304575 source:/home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GBufferedInput.cpp
+	"../DLL_Export_Symbols.h"
+	"../../Source/G_System/GBI_Callback.cpp"
+	<mutex>
+	<atomic>
+	<queue>
+	<thread>
+	<iostream>
+	<cstring>
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/DLL_Export_Symbols.h
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GBI_Callback.cpp
+	"../../Source/G_System/GI_Static.cpp"
+	"../../Interface/G_System/GBufferedInput.h"
+	<list>
+

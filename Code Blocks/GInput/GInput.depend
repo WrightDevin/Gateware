@@ -76,3 +76,43 @@
 
 1491512995 /home/gdbstools/Gateware/gateware.git.0/Interface/G_Core/GDefines.h
 
+1493304792 source:/home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GInput.cpp
+	"../DLL_Export_Symbols.h"
+	"../../Source/G_System/GI_Callback.cpp"
+	<mutex>
+	<atomic>
+	<thread>
+	<cstring>
+	<iostream>
+	<time.h>
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/DLL_Export_Symbols.h
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GI_Callback.cpp
+	"../../Source/G_System/GI_Static.cpp"
+	"../../Interface/G_System/GInput.h"
+	<queue>
+	<unordered_set>
+
+1492109665 /home/osboxes/Desktop/Gateware/gateware.git.0/Source/G_System/GI_Static.cpp
+	"../../Interface/G_System/GKeyDefines.h"
+	<map>
+	<Windows.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/Xresource.h>
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_System/GKeyDefines.h
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_System/GInput.h
+	"../G_Core/GSingleThreaded.h"
+	"../G_System/GKeyDefines.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GSingleThreaded.h
+	"GInterface.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GInterface.h
+	"GDefines.h"
+
+1492184345 /home/osboxes/Desktop/Gateware/gateware.git.0/Interface/G_Core/GDefines.h
+

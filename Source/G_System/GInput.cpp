@@ -28,7 +28,7 @@ private:
 
 #ifdef _WIN32
 #elif __linux__
-	LINUX_WINDOW _linuxWindow;
+	SYSTEM::LINUX_WINDOW _linuxWindow;
 #elif __APPPLE__
 
 #endif
@@ -71,7 +71,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(void* _windowHandle, unsigned int 
 #elif __APPLE__
 	handleSize = sizeof(NSWindow);
 #elif __linux__
-	handleSize = sizeof(LINUX_WINDOW);
+	handleSize = sizeof(SYSTEM::LINUX_WINDOW);
 #endif
 
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below.
@@ -262,12 +262,12 @@ GReturn Input::InitializeLinux(void* _data) {
 
 #ifdef __linux__
 	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
-	memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
+	memcpy(&_linuxWindow, _data, sizeof(SYSTEM::LINUX_WINDOW));
 	Display * _display;
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
-	_display = (Display*)(_linuxWindow._Display);
+	_display = (Display*)(_linuxWindow.display);
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
-	memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+	memcpy(&_window, _linuxWindow.window, sizeof(_window));
 	//Select the type of Input events we wish to recieve.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 
@@ -291,7 +291,7 @@ GReturn Input::InitializeMac(void* _data) {
     //Need to convert data back into an NSWindow*.
     NSWindow * currentResponder = ((__bridge NSWindow*)_data);
 
-    //We only want to process the message and pass it on. So if there is already   
+    //We only want to process the message and pass it on. So if there is already
     //a responder we set our responders next responder to be the current next responder.
     [responder setNextResponder:currentResponder.nextResponder];
 
@@ -350,10 +350,10 @@ void Input::InputThread()
 #ifdef __linux__
 	int _code = -1;
 
-	while (_threadOpen)
+	while (threadOpen)
 	{
         //Cast the void* _linuxWindow. display to a display pointer to pass to XNextEvent.
-		Display * _display = (Display*)(_linuxWindow._Display);
+		Display * _display = (Display*)(_linuxWindow.display);
 		char keys_return[32];
         XQueryKeymap(_display, keys_return);
         for(unsigned int i = 0; i < 128; i++){
@@ -367,20 +367,20 @@ void Input::InputThread()
 
 
         Window a, b;
-        XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &_keyMask);
+        XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &keyMask);
         //printf("KeyMask: %d\n", keyMask);
 
-        if(_keyMask & Button1Mask){
+        if(keyMask & Button1Mask){
             //printf("Left\n");
             n_Keys[G_BUTTON_LEFT];
 
         }
-        if(_keyMask & Button3Mask){
+        if(keyMask & Button3Mask){
             //printf("Right\n");
             n_Keys[G_BUTTON_RIGHT];
         }
 
-        if(_keyMask & Button2Mask){
+        if(keyMask & Button2Mask){
             //printf("Middle\n");
             n_Keys[G_BUTTON_MIDDLE];
         }

@@ -83,9 +83,9 @@ GReturn BufferedInput::DecrementCount() {
 	if (referenceCount == 0) {
 
 #ifdef __linux__
-		_threadOpen = false;
-		_inputThread->join();
-		delete _inputThread;
+		threadOpen = false;
+		inputThread->join();
+		delete inputThread;
 #endif
 		delete this;
 	}
@@ -318,9 +318,9 @@ GReturn BufferedInput::InitializeLinux(void* _data) {
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display* _display;
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
-    _display = (Display *)(_linuxWindow._Display);
+    _display = (Display *)(_linuxWindow.display);
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
-    memcpy(&_window, _linuxWindow._Window, sizeof(_window));
+    memcpy(&_window, _linuxWindow.window, sizeof(_window));
 	//Select the type of Input events we wish to receive.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
@@ -342,7 +342,7 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //Need to convert _data back into an NSWindow*.
     NSWindow* currentResponder = ((__bridge NSWindow*)_data);
 
-	//We only want to process the message and pass it on. So if there is already   
+	//We only want to process the message and pass it on. So if there is already
 	//a responder we set our responders next responder to be the current next responder.
     [responder setNextResponder:currentResponder.nextResponder];
 
@@ -367,17 +367,17 @@ void BufferedInput::InputThread()
 #ifdef __linux__
     int _event = -1;
     int _code = -1;
-    G_INPUT_DATA _dataStruct;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
 
-	while (_threadOpen)
+	while (threadOpen)
 	{
 
         std::map<GListener* , unsigned long long>::iterator iter = _listeners.begin();
 
-        Display* _display = (Display*)_linuxWindow._Display;
+        Display* _display = (Display*)_linuxWindow.display;
 
         Window a, b;
-        XQueryPointer(_display, _window, &a, &b, &_dataStruct._screenX, &_dataStruct._screenY, &_dataStruct._x, &_dataStruct._y, &_dataStruct._keyMask);
+        XQueryPointer(_display, _window, &a, &b, &_dataStruct.screenX, &_dataStruct.screenY, &_dataStruct.x, &_dataStruct.y, &_dataStruct.keyMask);
         //printf("Pos ( %d, %d), Mask: (%d)\n", screenx, screeny, mask);
 
         char keys_return[32];
@@ -386,7 +386,7 @@ void BufferedInput::InputThread()
         //Loop through all the keys and check to see if they match the saved state of all the keys.
         for(unsigned int i = 5; i < 126; i++){
             _code = Keycodes[i][1];
-            _dataStruct._data = _code;
+            _dataStruct.data = _code;
             //Save the state of current key.
             unsigned int key = keys_return[(i >>3)] & (1 << (i & 7));
             //If a key does not match send an event saying it has been updated.
@@ -399,71 +399,71 @@ void BufferedInput::InputThread()
                 printf("%d\n", _code);
                 //Send the event to all registered listeners.
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
             n_Keys[_code] = key;
         }
 
-        if(_dataStruct._keyMask & Button1Mask){
+        if(_dataStruct.keyMask & Button1Mask){
             if(!n_Keys[G_BUTTON_LEFT]){
-                _dataStruct._data = G_BUTTON_LEFT;
+                _dataStruct.data = G_BUTTON_LEFT;
                 _event = BUTTONPRESSED;
                 n_Keys[G_BUTTON_LEFT] = 1;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }else{
             if(n_Keys[G_BUTTON_LEFT] ){
-                _dataStruct._data = G_BUTTON_LEFT;
+                _dataStruct.data = G_BUTTON_LEFT;
                 _event = BUTTONRELEASED;
                 n_Keys[G_BUTTON_LEFT] = 0;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }
-        if(_dataStruct._keyMask & Button3Mask){
+        if(_dataStruct.keyMask & Button3Mask){
             if(!n_Keys[G_BUTTON_RIGHT]){
-                _dataStruct._data = G_BUTTON_RIGHT;
+                _dataStruct.data = G_BUTTON_RIGHT;
                 _event = BUTTONPRESSED;
                 n_Keys[G_BUTTON_RIGHT] = 1;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }else{
             if(n_Keys[G_BUTTON_RIGHT]){
-                _dataStruct._data = G_BUTTON_RIGHT;
+                _dataStruct.data = G_BUTTON_RIGHT;
                 _event = BUTTONRELEASED;
                 n_Keys[G_BUTTON_RIGHT] = 0;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }
-        if(_dataStruct._keyMask & Button2Mask){
+        if(_dataStruct.keyMask & Button2Mask){
             if(!n_Keys[G_BUTTON_MIDDLE]){
-                _dataStruct._data = G_BUTTON_MIDDLE;
+                _dataStruct.data = G_BUTTON_MIDDLE;
                 _event = BUTTONPRESSED;
                 n_Keys[G_BUTTON_MIDDLE] = 1;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }else{
             if(n_Keys[G_BUTTON_MIDDLE]){
-                _dataStruct._data = G_BUTTON_MIDDLE;
+                _dataStruct.data = G_BUTTON_MIDDLE;
                 _event = BUTTONRELEASED;
                 n_Keys[G_BUTTON_MIDDLE] = 0;
                 for (; iter != _listeners.end(); ++iter) {
-                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+                    iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
                 }
             }
         }
 
-        printf("Keymask: %d \n", _dataStruct._keyMask);
+        printf("Keymask: %d \n", _dataStruct.keyMask);
 
 
 	}
