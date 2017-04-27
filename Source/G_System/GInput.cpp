@@ -69,7 +69,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGInput(void* _windowHandle, unsigned int 
 #ifdef _WIN32
 	handleSize = sizeof(HWND);
 #elif __APPLE__
-	handleSize = sizeof(NSWindow);
+	handleSize = sizeof(NSWindow*);
 #elif __linux__
 	handleSize = sizeof(SYSTEM::LINUX_WINDOW);
 #endif

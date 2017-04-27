@@ -177,7 +177,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(void* _windowHandle, unsig
 #ifdef _WIN32
 	handleSize = sizeof(HWND);
 #elif __APPLE__
-	handleSize = sizeof(NSWindow);
+	handleSize = sizeof(NSWindow*);
 #elif __linux__
 	handleSize = sizeof(LINUX_WINDOW);
 #endif
