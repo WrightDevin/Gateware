@@ -1,0 +1,284 @@
+\hypertarget{classInput}{}\section{Input Class Reference}
+\label{classInput}\index{Input@{Input}}
+
+
+Inheritance diagram for Input\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=230pt]{classInput__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Input\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=230pt]{classInput__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries Input\+Thread} ()\hypertarget{classInput_a373c67d7fd7e2b81a0f498afb201b124}{}\label{classInput_a373c67d7fd7e2b81a0f498afb201b124}
+
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} {\bfseries Initialize\+Windows} (void $\ast$\+\_\+data)\hypertarget{classInput_a180c021bb7e2e2a77325027f1e79d7fe}{}\label{classInput_a180c021bb7e2e2a77325027f1e79d7fe}
+
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a1d195bdfcab3c160f99b1010face1e61}{Initialize\+Linux} (void $\ast$\+\_\+data)
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} {\bfseries Initialize\+Mac} (void $\ast$\+\_\+data)\hypertarget{classInput_ad83dda6b9dd9388be971ff580451cfb9}{}\label{classInput_ad83dda6b9dd9388be971ff580451cfb9}
+
+\item 
+float \hyperlink{classInput_a7e468df0f31131f3fbcbc6de87d01ec2}{Get\+State} (int \+\_\+key\+Code, \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} $\ast$\+\_\+error\+Code)
+\begin{DoxyCompactList}\small\item\em Get the current state of any key. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a82d54ae7aa3ecacebe42480eb0aff985}{Get\+Mouse\+Delta} (float \&\+\_\+x, float \&\+\_\+y)
+\begin{DoxyCompactList}\small\item\em Get the change in mouse position. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a93d7ab591a1d1e8d619318834c75207a}{Get\+Mouse\+Position} (float \&\+\_\+x, float \&\+\_\+y)
+\begin{DoxyCompactList}\small\item\em Get the most recent mouse position. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classInput_a8f9b65ea323da8c25a5e70eb6746d4ab}{Get\+Key\+Mask} ()
+\begin{DoxyCompactList}\small\item\em Get the key mask. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a2fd6659ae76357836c4c9b3e7070ffb0}{Get\+Count} (unsigned int \&\+\_\+out\+Count)
+\begin{DoxyCompactList}\small\item\em Return the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a3c2103023cbb1fa583f910539bb6cce3}{Increment\+Count} ()
+\begin{DoxyCompactList}\small\item\em Increase the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a5c44b3dc2be21c1bad5f32a43a7b7a55}{Decrement\+Count} ()
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classInput_a29f3c56e9fec9f9073c1e18f120a69cd}{Request\+Interface} (const \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\index{Input@{Input}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Decrement\+Count()}{DecrementCount()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Decrement\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a5c44b3dc2be21c1bad5f32a43a7b7a55}{}\label{classInput_a5c44b3dc2be21c1bad5f32a43a7b7a55}
+
+
+Decrease the total number of active references to this object. 
+
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_a19a368c77ad0aa7f49b5a4f772f173ba}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Input@{Input}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Get\+Count(unsigned int \&\+\_\+out\+Count)}{GetCount(unsigned int &_outCount)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Get\+Count (
+\begin{DoxyParamCaption}
+\item[{unsigned int \&}]{\+\_\+out\+Count}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a2fd6659ae76357836c4c9b3e7070ffb0}{}\label{classInput_a2fd6659ae76357836c4c9b3e7070ffb0}
+
+
+Return the total number of active references to this object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corrupt. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122ee9e76}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Input@{Input}!Get\+Key\+Mask@{Get\+Key\+Mask}}
+\index{Get\+Key\+Mask@{Get\+Key\+Mask}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Get\+Key\+Mask()}{GetKeyMask()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Input\+::\+Get\+Key\+Mask (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a8f9b65ea323da8c25a5e70eb6746d4ab}{}\label{classInput_a8f9b65ea323da8c25a5e70eb6746d4ab}
+
+
+Get the key mask. 
+
+The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int. Values for G\+\_\+\+M\+A\+SK can be found in G\+Key\+Defines.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em G\+\_\+\+M\+A\+SK} & (\+\_\+\+S\+H\+I\+FT, \+\_\+\+C\+O\+N\+T\+R\+OL, \+\_\+\+C\+A\+P\+S\+\_\+\+L\+O\+CK, \+\_\+\+N\+U\+M\+\_\+\+L\+O\+CK, \+\_\+\+S\+C\+R\+O\+L\+L\+\_\+\+L\+O\+CK). \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a071a399bc9c400f0cd333958d911c8c2}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+
+\index{Input@{Input}!Get\+Mouse\+Delta@{Get\+Mouse\+Delta}}
+\index{Get\+Mouse\+Delta@{Get\+Mouse\+Delta}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Get\+Mouse\+Delta(float \&\+\_\+x, float \&\+\_\+y)}{GetMouseDelta(float &_x, float &_y)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Get\+Mouse\+Delta (
+\begin{DoxyParamCaption}
+\item[{float \&}]{\+\_\+x, }
+\item[{float \&}]{\+\_\+y}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a82d54ae7aa3ecacebe42480eb0aff985}{}\label{classInput_a82d54ae7aa3ecacebe42480eb0aff985}
+
+
+Get the change in mouse position. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+x} & a reference to a float to store the mouse delta position x. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+y} & a reference to a float to store the mouse delta position y.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in \+\_\+x and \+\_\+y. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a775fca7ad71371f369e3ad69fb32603a}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+
+\index{Input@{Input}!Get\+Mouse\+Position@{Get\+Mouse\+Position}}
+\index{Get\+Mouse\+Position@{Get\+Mouse\+Position}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Get\+Mouse\+Position(float \&\+\_\+x, float \&\+\_\+y)}{GetMousePosition(float &_x, float &_y)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Get\+Mouse\+Position (
+\begin{DoxyParamCaption}
+\item[{float \&}]{\+\_\+x, }
+\item[{float \&}]{\+\_\+y}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a93d7ab591a1d1e8d619318834c75207a}{}\label{classInput_a93d7ab591a1d1e8d619318834c75207a}
+
+
+Get the most recent mouse position. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+x} & a reference to a float to store the mouse position x. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+y} & a reference to a float to store the mouse position y.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. Values stored in \+\_\+x and \+\_\+y. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_a351eb04ac4a8699f6e4e416860d264b2}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+
+\index{Input@{Input}!Get\+State@{Get\+State}}
+\index{Get\+State@{Get\+State}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Get\+State(int \+\_\+key\+Code, G\+Return $\ast$\+\_\+error\+Code)}{GetState(int _keyCode, GReturn *_errorCode)}}]{\setlength{\rightskip}{0pt plus 5cm}float Input\+::\+Get\+State (
+\begin{DoxyParamCaption}
+\item[{int}]{\+\_\+key\+Code, }
+\item[{{\bf G\+Return} $\ast$}]{\+\_\+error\+Code}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a7e468df0f31131f3fbcbc6de87d01ec2}{}\label{classInput_a7e468df0f31131f3fbcbc6de87d01ec2}
+
+
+Get the current state of any key. 
+
+Use keycodes in G\+Key\+Defines as input to this function to check the state of a particular key or button.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+key\+Code} & The key code of the key to check. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+error\+Code} & If function fails this will hold the error\+Code. (optional)\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em 0} & The Key is not pressed. \\
+\hline
+{\em 1} & The Key is pressed. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GInput_adde23f6e5640e8143e7e7835ee9774ec}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}.
+
+\index{Input@{Input}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Increment\+Count()}{IncrementCount()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Increment\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a3c2103023cbb1fa583f910539bb6cce3}{}\label{classInput_a3c2103023cbb1fa583f910539bb6cce3}
+
+
+Increase the total number of active references to this object. 
+
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_a2d710f20bb78e544e8309b5b75c21260}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Input@{Input}!Initialize\+Linux@{Initialize\+Linux}}
+\index{Initialize\+Linux@{Initialize\+Linux}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Initialize\+Linux(void $\ast$\+\_\+data)}{InitializeLinux(void *_data)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Initialize\+Linux (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{\+\_\+data}
+\end{DoxyParamCaption}
+)}\hypertarget{classInput_a1d195bdfcab3c160f99b1010face1e61}{}\label{classInput_a1d195bdfcab3c160f99b1010face1e61}
+X\+Auto\+Repeat\+Off(\+\_\+display); \index{Input@{Input}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!Input@{Input}}
+\subsubsection[{\texorpdfstring{Request\+Interface(const G\+U\+U\+I\+I\+D \&\+\_\+interface\+I\+D, void $\ast$$\ast$\+\_\+output\+Interface)}{RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} Input\+::\+Request\+Interface (
+\begin{DoxyParamCaption}
+\item[{const {\bf G\+U\+U\+I\+ID} \&}]{\+\_\+interface\+ID, }
+\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classInput_a29f3c56e9fec9f9073c1e18f120a69cd}{}\label{classInput_a29f3c56e9fec9f9073c1e18f120a69cd}
+
+
+Requests an interface that may or may not be supported by this object. 
+
+Can be used by the end-\/user to query for a new interface using the unique ID of the interface they want and implement an interface update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The G\+U\+U\+I\+ID of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is supported and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_ad6c8324970172784964f484686d4fdad}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Source/\+G\+\_\+\+System/G\+Input.\+cpp\end{DoxyCompactItemize}

@@ -12,7 +12,7 @@
 	License: MIT
 */
 
-// GMultiThreaded Inherits directly from GInterface.
+//! GMultiThreaded inherits directly from GInterface.
 #include "GInterface.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

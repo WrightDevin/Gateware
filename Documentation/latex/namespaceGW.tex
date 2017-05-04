@@ -1,0 +1,75 @@
+\hypertarget{namespaceGW}{}\section{GW Namespace Reference}
+\label{namespaceGW}\index{GW@{GW}}
+
+
+The core namespace to which all Gateware interfaces/structures/defines must belong.  
+
+
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceGW_1_1CORE}{C\+O\+RE}
+\begin{DoxyCompactList}\small\item\em The core namespace to which all Gateware fundamental interfaces must belong. \end{DoxyCompactList}\item 
+ \hyperlink{namespaceGW_1_1SYSTEM}{S\+Y\+S\+T\+EM}
+\begin{DoxyCompactList}\small\item\em The namespace to which all Gateware library interfaces must belong. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID}
+\begin{DoxyCompactList}\small\item\em Gateware Universally Unique Interface I\+Dentifier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \{ \\*
+{\bfseries S\+U\+C\+C\+E\+SS} = 0x\+F\+F\+F\+F\+F\+F\+FF, 
+{\bfseries F\+A\+I\+L\+U\+RE} = 0, 
+{\bfseries I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} = 1, 
+{\bfseries M\+E\+M\+O\+R\+Y\+\_\+\+C\+O\+R\+R\+U\+P\+T\+I\+ON} = 2, 
+\\*
+{\bfseries I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} = 3, 
+{\bfseries F\+I\+L\+E\+\_\+\+N\+O\+T\+\_\+\+F\+O\+U\+ND} = 4, 
+{\bfseries R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} = 5, 
+{\bfseries F\+E\+A\+T\+U\+R\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} = 6
+ \}\hypertarget{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{}\label{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}
+\begin{DoxyCompactList}\small\item\em Listing of common error codes returned by Gateware functions. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The core namespace to which all Gateware interfaces/structures/defines must belong. 
+
+G\+Input inherits directly from G\+Single\+Threaded.
+
+G\+File inherits directly from G\+Multi\+Threaded.
+
+G\+Buffered\+Input inherits directly from G\+Broadcasting.
+
+G\+Single\+Threaded inherits directly from G\+Interface.
+
+G\+Multi\+Threaded inherits directly from G\+Interface.
+
+G\+Listener inherits directly from G\+Multi\+Threaded.
+
+Contains all defined elements shared among base interfaces.
+
+The core namespace to which all Gateware interfaces must belong.
+
+File\+: \hyperlink{GBroadcasting_8h_source}{G\+Broadcasting.\+h} Purpose\+: A Gateware interface that allows an object derived from G\+Listener to receive select events from a G\+Broadcaster. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 10/13/2016 Interface Status\+: Final Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+IT
+
+File\+: \hyperlink{GDefines_8h_source}{G\+Defines.\+h} Purpose\+: Lists the core \#defines and M\+A\+C\+R\+OS used by the Gateware interfaces. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 12/12/2016 Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+IT
+
+File\+: \hyperlink{GInterface_8h_source}{G\+Interface.\+h} Purpose\+: The fundamental interface which all Gateware interfaces must adhere to at a minimum. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 9/29/2016 Interface Status\+: Final Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GListener_8h_source}{G\+Listener.\+h} Purpose\+: A Gateware interface that can safely listen \& respond to events sent from a G\+Broadcating interface. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 10/13/2016 Interface Status\+: Final Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GMultiThreaded_8h_source}{G\+Multi\+Threaded.\+h} Purpose\+: Indentifies any Gateware interface which is guaranteed to be safely accessed across multiple threads. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 10/13/2016 Interface Status\+: Final Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GSingleThreaded_8h_source}{G\+Single\+Threaded.\+h} Purpose\+: Indentifies any Gateware interface which may N\+OT be safely accessed across multiple threads. Author\+: Lari H. Norri Contributors\+: N/A Last Modified\+: 10/13/2016 Interface Status\+: Final Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GBufferedInput_8h_source}{G\+Buffered\+Input.\+h} Purpose\+: This Interface offers event based thread safe raw buffered input. Author\+: Peter Farber Contributors\+: N/A Last Modified\+: 11/16/2016 Interface Status\+: Beta Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GFile_8h_source}{G\+File.\+h} Purpose\+: A Gateware interface that handles both binary and textual file io and directory. Author\+: Justin W. Parks Contributors\+: N/A Last Modified\+: 11/16/2016 Interface Status\+: Beta Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GInput_8h_source}{G\+Input.\+h} Purpose\+: A Gateware interface that handles high-\/speed keyboard and mouse input. Author\+: Peter Farber Contributors\+: N/A Last Modified\+: 2/1/2017 Interface Status\+: Beta Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong.
+
+File\+: \hyperlink{GLog_8h_source}{G\+Log.\+h} Purpose\+: A Gateware interface that handles logging in a thread safe manner. Author\+: Justin W. Parks Contributors\+: N/A Last Modified\+: 12/14/2016 Interface Status\+: Beta Copyright\+: 7th\+Gate Software L\+LC. License\+: M\+I\+T\+The core namespace to which all Gateware interfaces/structures/defines must belong. 

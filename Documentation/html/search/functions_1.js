@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['closefile',['CloseFile',['../class_g_w_1_1_c_o_r_e_1_1_g_file.html#aa27e2ab5af9fa18400f8bad9ea4deb39',1,'GW::CORE::GFile']]],
-  ['creategbufferedinput',['CreateGBufferedInput',['../namespace_g_w_1_1_c_o_r_e.html#a004bf4f838aee645e39d1ce291866df4',1,'GW::CORE']]],
-  ['creategfile',['CreateGFile',['../namespace_g_w_1_1_c_o_r_e.html#a3ce877cd50653c58bbffd852cebb7a9e',1,'GW::CORE']]],
-  ['createginput',['CreateGInput',['../namespace_g_w_1_1_c_o_r_e.html#aec1bf5a7404f981ce2b33a35324d7f80',1,'GW::CORE']]],
-  ['createglog',['CreateGLog',['../namespace_g_w_1_1_c_o_r_e.html#a9bdc51fd3fbbb50336dfb4c0b4d35d69',1,'GW::CORE']]],
-  ['createglogcustom',['CreateGLogCustom',['../namespace_g_w_1_1_c_o_r_e.html#a2ef608a8d0b103f2501dea9999b80f93',1,'GW::CORE']]]
+  ['closefile',['CloseFile',['../classGW_1_1SYSTEM_1_1GFile.html#ae661d107c461145bb095dcfc76519f54',1,'GW::SYSTEM::GFile::CloseFile()'],['../classFileIO.html#a906610c8653ba8ca476dc46679851590',1,'FileIO::CloseFile()']]],
+  ['creategbufferedinput',['CreateGBufferedInput',['../namespaceGW_1_1SYSTEM.html#a6a376b5c4723fc447f76dca57a743cc6',1,'GW::SYSTEM']]],
+  ['creategfile',['CreateGFile',['../namespaceGW_1_1SYSTEM.html#ac9771a16cab78948d5a495a68977c506',1,'GW::SYSTEM']]],
+  ['createginput',['CreateGInput',['../namespaceGW_1_1SYSTEM.html#a3d44fe65cc4625bab683bd4a39809d59',1,'GW::SYSTEM']]],
+  ['createglog',['CreateGLog',['../namespaceGW_1_1SYSTEM.html#a11f58ef9ffaf1ffbce25562bd5a10bc3',1,'GW::SYSTEM']]],
+  ['createglogcustom',['CreateGLogCustom',['../namespaceGW_1_1SYSTEM.html#afe08ea421c9c918ea447ae47b9a631a9',1,'GW::SYSTEM']]]
 ];

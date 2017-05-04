@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['keypressed',['KEYPRESSED',['../namespace_g_w_1_1_c_o_r_e.html#ad9b7ad6dcc306c2d2029ad1981f5dbe2abf46538d2576fa9163bb7e2d8810d87d',1,'GW::CORE']]],
-  ['keyreleased',['KEYRELEASED',['../namespace_g_w_1_1_c_o_r_e.html#ad9b7ad6dcc306c2d2029ad1981f5dbe2ab848c4cec6f9e7274eac0eb89d89f062',1,'GW::CORE']]]
+  ['keypressed',['KEYPRESSED',['../namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960',1,'GW::SYSTEM']]],
+  ['keyreleased',['KEYRELEASED',['../namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688',1,'GW::SYSTEM']]]
 ];

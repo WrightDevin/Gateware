@@ -9,6 +9,8 @@ var NAVTREE =
       [ "GBufferedInput", "index.html#APIGBufferedInput", null ]
     ] ],
     [ "Bug Reporting", "index.html#Reporting", null ],
+    [ "LICENSE", "md_LICENSE.html", null ],
+    [ "README", "md_README.html", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -36,7 +38,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_g_broadcasting_8h_source.html"
+"DLL__Export__Symbols_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,7 +1,7 @@
 #ifndef GLOG_H
 #define GLOG_H
 
-/*
+/*!
 	File: GLog.h
 	Purpose: A Gateware interface that handles logging in a thread safe manner.
 	Author: Justin W. Parks
@@ -12,7 +12,7 @@
 	License: MIT
 */
 
-// GFile Inherits directly from GMultiThreaded. 
+//! GFile inherits directly from GMultiThreaded. 
 #include "../G_Core/GMultiThreaded.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -27,11 +27,15 @@ namespace GW
 			0x79ac4197, 0x1a78, 0x4a86,{ 0xa4, 0xa4, 0xe8, 0x47, 0x73, 0xa2, 0xf6, 0xdf }
 		};
 
-		//Forward declaration so we can use GFile* in a function.
+		// Forward declaration so we can use GFile* in a function.
 		class GFile;
 
 
 		//! Cross platform threadsafe logger.
+		/*! 
+		*	GLog inherits directly from GMultiThreaded, therefore its implementation 
+		*	must be thread safe.
+		*/
 		class GLog : public CORE::GMultiThreaded
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual.
@@ -74,7 +78,6 @@ namespace GW
 			*	to your log messages.
 			*
 			*	\param [in] _value true to turn on or false to turn off.
-			*
 			*/
 			virtual void EnableVerboseLogging(bool _value) = 0;
 			
@@ -83,7 +86,6 @@ namespace GW
 			*	Use this function to ensure or prevent the additional console logging.
 			*
 			*	\param [in] _value true to turn on or false to turn off.
-			*
 			*/
 			virtual void EnableConsoleLogging(bool _value) = 0;
 			
@@ -100,8 +102,8 @@ namespace GW
 		//! Creates a GLog object.
 		/*!
 		*	This function will create a GLog object with the log file being created in the directory
-		*	the program was ran from. If you want to control where the log file is going to be created at
-		*	then use the overridden function to pass in a GFile* that is pre set the way you want it.
+		*	the program was ran from. If you want to control where the log file is going to be created 
+		*	then use the custom function below to pass in a GFile* that is pre set the way you want it.
 		*	Reference count of created object is initialized to one.
 		*
 		*	\param [in] _fileName The name of the log file.
@@ -118,9 +120,8 @@ namespace GW
 		*	This function will create a GLog object with the GFile object that was passed in.
 		*	This is so you can have more control over your log by setting up a GFile in advance.
 		*	The GFile object should already have a file open for text writing.
-		*	Created GLog and GFile objects will have their reference counts initialized to one.
+		*	Created GLog object will have its reference count initialized to one.
 		*	
-		*
 		*	\param [in] _file The GFile object that this log will use.
 		*	\param [out] _outLog Will contain the GLog object if successfully created.
 		*

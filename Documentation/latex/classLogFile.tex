@@ -1,0 +1,297 @@
+\hypertarget{classLogFile}{}\section{Log\+File Class Reference}
+\label{classLogFile}\index{Log\+File@{Log\+File}}
+
+
+Inheritance diagram for Log\+File\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{classLogFile__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Log\+File\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{classLogFile__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} {\bfseries Init} (const char $\ast$const \+\_\+file\+Name)\hypertarget{classLogFile_a3347793c16a8888a130b10404c9e5ece}{}\label{classLogFile_a3347793c16a8888a130b10404c9e5ece}
+
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} {\bfseries Init} (\hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+File} $\ast$\+\_\+file)\hypertarget{classLogFile_afd658429cf77f9bbf48e2ebb72b9c6e2}{}\label{classLogFile_afd658429cf77f9bbf48e2ebb72b9c6e2}
+
+\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_a6848c12fad15f2c835e5215234f75c5a}{Log} (const char $\ast$const \+\_\+log) override
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_a5e5f24ccd4c6f925dd8bc1ced512b530}{Log\+Catergorized} (const char $\ast$const \+\_\+category, const char $\ast$const \+\_\+log) override
+\begin{DoxyCompactList}\small\item\em Logs a null terminated string with a category. \end{DoxyCompactList}\item 
+void \hyperlink{classLogFile_a250bcfaccded12f7da9a06b6f6336fa5}{Enable\+Verbose\+Logging} (bool \+\_\+value) override
+\begin{DoxyCompactList}\small\item\em Turns verbose logging on or off. \end{DoxyCompactList}\item 
+void \hyperlink{classLogFile_a903b31947e1c100309dcc5b20548262c}{Enable\+Console\+Logging} (bool \+\_\+value) override
+\begin{DoxyCompactList}\small\item\em Turns console logging on or off. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_a47ffb41f72625b1c7865ac2cd58dea18}{Flush} () override
+\begin{DoxyCompactList}\small\item\em Forces a log dump to file. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_ab2abbdb01e2b904f112e5e7b20c59a81}{Get\+Count} (unsigned int \&\+\_\+out\+Count) override
+\begin{DoxyCompactList}\small\item\em Return the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_aff5871b4f2434b6ca722b89581416da0}{Increment\+Count} () override
+\begin{DoxyCompactList}\small\item\em Increase the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_a555ef35fcdce23ebad05f7dcabaf0757}{Decrement\+Count} () override
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active references to this object. \end{DoxyCompactList}\item 
+\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+W\+::\+G\+Return} \hyperlink{classLogFile_a8b8e63b9c62846b1b9e0cf8b79429ba5}{Request\+Interface} (const \hyperlink{structGW_1_1GUUIID}{G\+W\+::\+G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface) override
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\index{Log\+File@{Log\+File}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Decrement\+Count() override}{DecrementCount() override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Decrement\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a555ef35fcdce23ebad05f7dcabaf0757}{}\label{classLogFile_a555ef35fcdce23ebad05f7dcabaf0757}
+
+
+Decrease the total number of active references to this object. 
+
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_a19a368c77ad0aa7f49b5a4f772f173ba}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Log\+File@{Log\+File}!Enable\+Console\+Logging@{Enable\+Console\+Logging}}
+\index{Enable\+Console\+Logging@{Enable\+Console\+Logging}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Enable\+Console\+Logging(bool \+\_\+value) override}{EnableConsoleLogging(bool _value) override}}]{\setlength{\rightskip}{0pt plus 5cm}void Log\+File\+::\+Enable\+Console\+Logging (
+\begin{DoxyParamCaption}
+\item[{bool}]{\+\_\+value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a903b31947e1c100309dcc5b20548262c}{}\label{classLogFile_a903b31947e1c100309dcc5b20548262c}
+
+
+Turns console logging on or off. 
+
+Use this function to ensure or prevent the additional console logging.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GLog_abceb9fdf502b11f2fe72de5edd8f187d}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}.
+
+\index{Log\+File@{Log\+File}!Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}}
+\index{Enable\+Verbose\+Logging@{Enable\+Verbose\+Logging}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Enable\+Verbose\+Logging(bool \+\_\+value) override}{EnableVerboseLogging(bool _value) override}}]{\setlength{\rightskip}{0pt plus 5cm}void Log\+File\+::\+Enable\+Verbose\+Logging (
+\begin{DoxyParamCaption}
+\item[{bool}]{\+\_\+value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a250bcfaccded12f7da9a06b6f6336fa5}{}\label{classLogFile_a250bcfaccded12f7da9a06b6f6336fa5}
+
+
+Turns verbose logging on or off. 
+
+Use this function to ensure or prevent the addition of date, time, and thread\+ID to your log messages.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+value} & true to turn on or false to turn off. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GLog_a4323c96541a34fb0344828a1c20ec254}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}.
+
+\index{Log\+File@{Log\+File}!Flush@{Flush}}
+\index{Flush@{Flush}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Flush() override}{Flush() override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Flush (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a47ffb41f72625b1c7865ac2cd58dea18}{}\label{classLogFile_a47ffb41f72625b1c7865ac2cd58dea18}
+
+
+Forces a log dump to file. 
+
+This will force a log dump to the file and clear the log queue.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully dumped the logs. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Most likely a file corruption or a file is not open. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GLog_a07147c15ecb17caa1c83974b3c54f7d4}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}.
+
+\index{Log\+File@{Log\+File}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Get\+Count(unsigned int \&\+\_\+out\+Count) override}{GetCount(unsigned int &_outCount) override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Get\+Count (
+\begin{DoxyParamCaption}
+\item[{unsigned int \&}]{\+\_\+out\+Count}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_ab2abbdb01e2b904f112e5e7b20c59a81}{}\label{classLogFile_ab2abbdb01e2b904f112e5e7b20c59a81}
+
+
+Return the total number of active references to this object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corrupt. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122ee9e76}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Log\+File@{Log\+File}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Increment\+Count() override}{IncrementCount() override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Increment\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_aff5871b4f2434b6ca722b89581416da0}{}\label{classLogFile_aff5871b4f2434b6ca722b89581416da0}
+
+
+Increase the total number of active references to this object. 
+
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_a2d710f20bb78e544e8309b5b75c21260}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+\index{Log\+File@{Log\+File}!Log@{Log}}
+\index{Log@{Log}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Log(const char $\ast$const \+\_\+log) override}{Log(const char *const _log) override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Log (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$const}]{\+\_\+log}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a6848c12fad15f2c835e5215234f75c5a}{}\label{classLogFile_a6848c12fad15f2c835e5215234f75c5a}
+
+
+Logs a null terminated string. 
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line. The string is logged to the internal G\+File object.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximum size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GLog_a9e21e702d012065fe799b4c49f7ac670}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}.
+
+\index{Log\+File@{Log\+File}!Log\+Catergorized@{Log\+Catergorized}}
+\index{Log\+Catergorized@{Log\+Catergorized}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Log\+Catergorized(const char $\ast$const \+\_\+category, const char $\ast$const \+\_\+log) override}{LogCatergorized(const char *const _category, const char *const _log) override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Log\+Catergorized (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$const}]{\+\_\+category, }
+\item[{const char $\ast$const}]{\+\_\+log}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a5e5f24ccd4c6f925dd8bc1ced512b530}{}\label{classLogFile_a5e5f24ccd4c6f925dd8bc1ced512b530}
+
+
+Logs a null terminated string with a category. 
+
+Date, Time, and thread ID will be appended to the front of the message unless specified otherwise (See Enable\+Verbose\+Logging). A new line character will be appended to the end of the string so your log messages do not require a new line. The string is logged to the internal G\+File object.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+category} & The category the log belongs in. ie. E\+R\+R\+OR, W\+A\+R\+N\+I\+NG, I\+N\+FO, etc. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+log} & The message to log out.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully queued the message to the log. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & The queue has reached maximum size (call flush). \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either \+\_\+category or \+\_\+log are nullptr. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1SYSTEM_1_1GLog_a5d10397fa6aeeebaf8430df6029ec3c5}{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Log}.
+
+\index{Log\+File@{Log\+File}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!Log\+File@{Log\+File}}
+\subsubsection[{\texorpdfstring{Request\+Interface(const G\+W\+::\+G\+U\+U\+I\+I\+D \&\+\_\+interface\+I\+D, void $\ast$$\ast$\+\_\+output\+Interface) override}{RequestInterface(const GW::GUUIID &_interfaceID, void **_outputInterface) override}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} Log\+File\+::\+Request\+Interface (
+\begin{DoxyParamCaption}
+\item[{const {\bf G\+W\+::\+G\+U\+U\+I\+ID} \&}]{\+\_\+interface\+ID, }
+\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{classLogFile_a8b8e63b9c62846b1b9e0cf8b79429ba5}{}\label{classLogFile_a8b8e63b9c62846b1b9e0cf8b79429ba5}
+
+
+Requests an interface that may or may not be supported by this object. 
+
+Can be used by the end-\/user to query for a new interface using the unique ID of the interface they want and implement an interface update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The G\+U\+U\+I\+ID of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is supported and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implements \hyperlink{classGW_1_1CORE_1_1GInterface_ad6c8324970172784964f484686d4fdad}{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Source/\+G\+\_\+\+System/G\+Log.\+cpp\end{DoxyCompactItemize}

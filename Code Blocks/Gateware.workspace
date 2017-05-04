@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Gateware">
-		<Project filename="../../../../Gateware/gateware.git.0/Code Blocks/GFile/GFile.cbp" />
-		<Project filename="../../../../Gateware/gateware.git.0/Code Blocks/GLog/GLog.cbp" />
-		<Project filename="../../../../Gateware/gateware.git.0/Code Blocks/GBufferedInput/GBufferedInput.cbp" />
-		<Project filename="../../../../Gateware/gateware.git.0/Code Blocks/GInput/GInput.cbp" />
-		<Project filename="../../../../Gateware/gateware-test-suite.git.0/Demo Application/DemoApplication/DemoApp.cbp" />
+		<Project filename="GBufferedInput/GBufferedInput.cbp" />
+		<Project filename="GFile/GFile.cbp" />
+		<Project filename="GInput/GInput.cbp" />
+		<Project filename="GLog/GLog.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

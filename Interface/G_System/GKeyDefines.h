@@ -1,6 +1,7 @@
 #ifndef GBIGLOBALNAMESPACE_H
 #define GBIGLOBALNAMESPACE_H
-/*
+
+/*!
 	File: GKeyDefines.h
 	Purpose: The Gateware key representations.
 	Author: Peter Farber
@@ -9,7 +10,6 @@
 	Copyright: 7thGate Software LLC.
 	License: MIT
 */
-
 
 #define G_KEY_UNKNOWN			0x00
 
@@ -138,8 +138,8 @@ namespace GW
 		//! The structure used to pass into Input libraries on Linux.
 		struct LINUX_WINDOW
 		{
-			void* window;			/*< window void pointer storing the window handle. */
-			void* display;		/*< data Data void pointer storing the display handle. */
+			void* window;	/*< window Void pointer storing the window handle. */
+			void* display;	/*< display Void pointer storing the display handle. */
 		};
 
 #pragma pack(pop)

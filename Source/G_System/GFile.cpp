@@ -60,7 +60,7 @@ class FileIO : public GW::SYSTEM::GFile
 {
 	DIR* currDirStream;  //Maintains the current directory.
 	fstream file;  //Maintains the current file (if one is open).
-	
+
 	string currDir;  //A cached directory path for faster fetching.
 
 	atomic<unsigned int> dirSize;  //A cached directory size for faster fetching.
@@ -324,7 +324,7 @@ GW::GReturn FileIO::Write(const char* const _inData, unsigned int _numBytes)
 	file.write((wchar_t*)_inData, _numBytes);
 
 #elif defined(__APPLE__) || defined(__linux__)
-	m_file.write(_inData, _numBytes);
+	file.write(_inData, _numBytes);
 
 #endif
 	lock.unlock();
@@ -353,7 +353,7 @@ GW::GReturn FileIO::Read(char* _outData, unsigned int _numBytes)
 	file.read((wchar_t*)_outData, _numBytes);
 
 #elif defined (__APPLE__) || (__linux__)
-	m_file.read(_outData, _numBytes);
+	file.read(_outData, _numBytes);
 
 #endif
 	lock.unlock();
@@ -386,7 +386,7 @@ GW::GReturn FileIO::WriteLine(const char* const _inData)
 #elif defined(__APPLE__) || defined(__linux__)
 
 	//Write out the string.
-	m_file << writeOutString;
+	file << writeOutString;
 
 #endif
 
@@ -420,7 +420,7 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #elif defined(__APPLE__) || defined(__linux__)
 
 	//Just read in data normally.
-	getline(m_file, outString, _delimiter);
+	getline(file, outString, _delimiter);
 #endif
 
 	//Copy the data over to the out parameter.

@@ -1,0 +1,5 @@
+<map id="FileIO" name="FileIO">
+<area shape="rect" id="node2" href="$classGW_1_1SYSTEM_1_1GFile.html" title="Cross platform FileIO/Directory handling. " alt="" coords="28,155,175,181"/>
+<area shape="rect" id="node3" href="$classGW_1_1CORE_1_1GMultiThreaded.html" title="This interface is only used to label and query interfaces which promise to 100% internally support th..." alt="" coords="5,80,197,107"/>
+<area shape="rect" id="node4" href="$classGW_1_1CORE_1_1GInterface.html" title="Base interface all Gateware interfaces must support at a minimum. " alt="" coords="21,5,182,32"/>
+</map>

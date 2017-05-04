@@ -1,5 +1,6 @@
 #ifndef GINTERFACE_H
 #define GINTERFACE_H
+
 /*!
 	File: GInterface.h
 	Purpose: The fundamental interface which all Gateware interfaces must adhere to at a minimum.
@@ -11,7 +12,7 @@
 	License: MIT
 */
 
-// Contains all defined elements shared among base interfaces.
+//! Contains all defined elements shared among base interfaces.
 #include "GDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

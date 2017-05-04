@@ -1,0 +1,239 @@
+\hypertarget{namespaceGW_1_1SYSTEM}{}\section{GW\+:\+:S\+Y\+S\+T\+EM Namespace Reference}
+\label{namespaceGW_1_1SYSTEM}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+
+
+The namespace to which all Gateware library interfaces must belong.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input}
+\begin{DoxyCompactList}\small\item\em A Multi-\/threaded buffered input library. \end{DoxyCompactList}\item 
+struct \hyperlink{structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA}{G\+B\+U\+F\+F\+E\+R\+E\+D\+I\+N\+P\+U\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA}{G\+B\+U\+F\+F\+E\+R\+E\+D\+I\+N\+P\+U\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA} will hold any information you may need about an \hyperlink{classInput}{Input} Event. \end{DoxyCompactList}\item 
+class \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File}
+\begin{DoxyCompactList}\small\item\em Cross platform File\+I\+O/\+Directory handling. \end{DoxyCompactList}\item 
+class \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input}
+\begin{DoxyCompactList}\small\item\em A single threaded input library. \end{DoxyCompactList}\item 
+class \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log}
+\begin{DoxyCompactList}\small\item\em Cross platform threadsafe logger. \end{DoxyCompactList}\item 
+struct \hyperlink{structGW_1_1SYSTEM_1_1LINUX__WINDOW}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}
+\begin{DoxyCompactList}\small\item\em The structure used to pass into \hyperlink{classInput}{Input} libraries on Linux. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcb}{G\+Buffered\+Input\+Events} \{ \\*
+\hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}{K\+E\+Y\+P\+R\+E\+S\+S\+ED}, 
+\hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}, 
+\hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}, 
+\hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}, 
+\\*
+\hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}
+ \}\begin{DoxyCompactList}\small\item\em G\+Buffered\+Input\+Events holds the possible events that can be sent from G\+Buffered\+Input. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_a6a376b5c4723fc447f76dca57a743cc6}{Create\+G\+Buffered\+Input} (void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input} $\ast$$\ast$\+\_\+out\+Buffered\+Input)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_ac9771a16cab78948d5a495a68977c506}{Create\+G\+File} (\hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} $\ast$$\ast$\+\_\+out\+File)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_a3d44fe65cc4625bab683bd4a39809d59}{Create\+G\+Input} (void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input} $\ast$$\ast$\+\_\+out\+Input)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input} Object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_a11f58ef9ffaf1ffbce25562bd5a10bc3}{Create\+G\+Log} (const char $\ast$const \+\_\+file\+Name, \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_afe08ea421c9c918ea447ae47b9a631a9}{Create\+G\+Log\+Custom} (\hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} $\ast$\+\_\+file, \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The namespace to which all Gateware library interfaces must belong. 
+
+\subsection{Enumeration Type Documentation}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!G\+Buffered\+Input\+Events@{G\+Buffered\+Input\+Events}}
+\index{G\+Buffered\+Input\+Events@{G\+Buffered\+Input\+Events}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{G\+Buffered\+Input\+Events}{GBufferedInputEvents}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Buffered\+Input\+Events}}\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcb}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcb}
+
+
+G\+Buffered\+Input\+Events holds the possible events that can be sent from \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input}. 
+
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{K\+E\+Y\+P\+R\+E\+S\+S\+ED@{K\+E\+Y\+P\+R\+E\+S\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!K\+E\+Y\+P\+R\+E\+S\+S\+ED@{K\+E\+Y\+P\+R\+E\+S\+S\+ED}}\item[{\em 
+K\+E\+Y\+P\+R\+E\+S\+S\+ED\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960}
+}]Key pressed event. \index{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED@{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED@{K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED}}\item[{\em 
+K\+E\+Y\+R\+E\+L\+E\+A\+S\+ED\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688}
+}]Key released event. \index{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED@{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED@{B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED}}\item[{\em 
+B\+U\+T\+T\+O\+N\+P\+R\+E\+S\+S\+ED\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba56314f1a5b4d09751ed354a45a3a78fb}
+}]Mouse/\+Pointer Button pressed event. \index{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED@{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED@{B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED}}\item[{\em 
+B\+U\+T\+T\+O\+N\+R\+E\+L\+E\+A\+S\+ED\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcba9f7d6e613de276b27e471cd30eac08de}
+}]Mouse/\+Pointer Button released event. \index{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL@{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!M\+O\+U\+S\+E\+S\+C\+R\+O\+LL@{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}}\item[{\em 
+M\+O\+U\+S\+E\+S\+C\+R\+O\+LL\hypertarget{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}{}\label{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}
+}]Mouse/\+Pointer scroll event. \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}}
+\index{Create\+G\+Buffered\+Input@{Create\+G\+Buffered\+Input}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+Buffered\+Input(void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, G\+Buffered\+Input $\ast$$\ast$\+\_\+out\+Buffered\+Input)}{CreateGBufferedInput(void *_windowHandle, unsigned int _handleSize, GBufferedInput **_outBufferedInput)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Buffered\+Input (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{\+\_\+window\+Handle, }
+\item[{unsigned int}]{\+\_\+handle\+Size, }
+\item[{{\bf G\+Buffered\+Input} $\ast$$\ast$}]{\+\_\+out\+Buffered\+Input}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_a6a376b5c4723fc447f76dca57a743cc6}{}\label{namespaceGW_1_1SYSTEM_a6a376b5c4723fc447f76dca57a743cc6}
+
+
+Creates a \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input} Object. 
+
+Initializes a handle to a window based on the void$\ast$ data passed in. The created \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Linux) \hyperlink{structGW_1_1SYSTEM_1_1LINUX__WINDOW}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW} data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Mac) N\+S\+Window data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+handle\+Size} & The size of the handle to the window in bytes. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Buffered\+Input} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an \hyperlink{classBufferedInput}{Buffered\+Input} Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+window\+Handle is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+File@{Create\+G\+File}}
+\index{Create\+G\+File@{Create\+G\+File}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+File(\+G\+File $\ast$$\ast$\+\_\+out\+File)}{CreateGFile(GFile **_outFile)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+File (
+\begin{DoxyParamCaption}
+\item[{{\bf G\+File} $\ast$$\ast$}]{\+\_\+out\+File}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_ac9771a16cab78948d5a495a68977c506}{}\label{namespaceGW_1_1SYSTEM_ac9771a16cab78948d5a495a68977c506}
+
+
+Creates a \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} Object. 
+
+The \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} created by this function will have its current working directory defaulted to the directory where the program was ran from. Call Set\+Current\+Working\+Directory to change it. No file will be opened in creation of \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File}. Call an Open function to open one. Created \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+File} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Gfile successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} could not be created. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & A nullptr was passed in. \\
+\hline
+\end{DoxyRetVals}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Input@{Create\+G\+Input}}
+\index{Create\+G\+Input@{Create\+G\+Input}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+Input(void $\ast$\+\_\+window\+Handle, unsigned int \+\_\+handle\+Size, G\+Input $\ast$$\ast$\+\_\+out\+Input)}{CreateGInput(void *_windowHandle, unsigned int _handleSize, GInput **_outInput)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Input (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{\+\_\+window\+Handle, }
+\item[{unsigned int}]{\+\_\+handle\+Size, }
+\item[{{\bf G\+Input} $\ast$$\ast$}]{\+\_\+out\+Input}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_a3d44fe65cc4625bab683bd4a39809d59}{}\label{namespaceGW_1_1SYSTEM_a3d44fe65cc4625bab683bd4a39809d59}
+
+
+Creates a \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input} Object. 
+
+Initializes a handle to a window based on the void$\ast$ data passed in. The created \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Windows) The handle to the window (H\+W\+ND). \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Linux) \hyperlink{structGW_1_1SYSTEM_1_1LINUX__WINDOW}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW} data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+window\+Handle} & (Mac) N\+S\+Window data. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+handle\+Size} & The size of the handle to the window in bytes. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Input} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & no problems found. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & could not make an \hyperlink{classInput}{Input} Object. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & \+\_\+out\+Input and or \+\_\+window\+Handle is nullptr. \\
+\hline
+\end{DoxyRetVals}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Log@{Create\+G\+Log}}
+\index{Create\+G\+Log@{Create\+G\+Log}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+Log(const char $\ast$const \+\_\+file\+Name, G\+Log $\ast$$\ast$\+\_\+out\+Log)}{CreateGLog(const char *const _fileName, GLog **_outLog)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Log (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$const}]{\+\_\+file\+Name, }
+\item[{{\bf G\+Log} $\ast$$\ast$}]{\+\_\+out\+Log}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_a11f58ef9ffaf1ffbce25562bd5a10bc3}{}\label{namespaceGW_1_1SYSTEM_a11f58ef9ffaf1ffbce25562bd5a10bc3}
+
+
+Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. 
+
+This function will create a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object with the log file being created in the directory the program was ran from. If you want to control where the log file is going to be created then use the custom function below to pass in a G\+File$\ast$ that is pre set the way you want it. Reference count of created object is initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file\+Name} & The name of the log file. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} was not created. \+\_\+out\+Log will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both arguments are nullptrs. \\
+\hline
+\end{DoxyRetVals}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Log\+Custom@{Create\+G\+Log\+Custom}}
+\index{Create\+G\+Log\+Custom@{Create\+G\+Log\+Custom}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+Log\+Custom(\+G\+File $\ast$\+\_\+file, G\+Log $\ast$$\ast$\+\_\+out\+Log)}{CreateGLogCustom(GFile *_file, GLog **_outLog)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+W\+::\+G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Log\+Custom (
+\begin{DoxyParamCaption}
+\item[{{\bf G\+File} $\ast$}]{\+\_\+file, }
+\item[{{\bf G\+Log} $\ast$$\ast$}]{\+\_\+out\+Log}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_afe08ea421c9c918ea447ae47b9a631a9}{}\label{namespaceGW_1_1SYSTEM_afe08ea421c9c918ea447ae47b9a631a9}
+
+
+Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. 
+
+This function will create a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object with the \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} object that was passed in. This is so you can have more control over your log by setting up a \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} in advance. The \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} object should already have a file open for text writing. Created \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+file} & The \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} object that this log will use. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Log} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} was not created. \+\_\+out\+Log will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both the arguments are nullptr. \\
+\hline
+\end{DoxyRetVals}

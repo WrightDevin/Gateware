@@ -1,0 +1,152 @@
+\hypertarget{classGW_1_1CORE_1_1GInterface}{}\section{GW\+:\+:C\+O\+RE\+:\+:G\+Interface Class Reference}
+\label{classGW_1_1CORE_1_1GInterface}\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+
+
+Base interface all Gateware interfaces must support at a minimum.  
+
+
+
+
+{\ttfamily \#include $<$G\+Interface.\+h$>$}
+
+
+
+Inheritance diagram for GW\+:\+:C\+O\+RE\+:\+:G\+Interface\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classGW_1_1CORE_1_1GInterface__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122ee9e76}{Get\+Count} (unsigned int \&\+\_\+out\+Count)=0
+\begin{DoxyCompactList}\small\item\em Return the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1CORE_1_1GInterface_a2d710f20bb78e544e8309b5b75c21260}{Increment\+Count} ()=0
+\begin{DoxyCompactList}\small\item\em Increase the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1CORE_1_1GInterface_a19a368c77ad0aa7f49b5a4f772f173ba}{Decrement\+Count} ()=0
+\begin{DoxyCompactList}\small\item\em Decrease the total number of active references to this object. \end{DoxyCompactList}\item 
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1CORE_1_1GInterface_ad6c8324970172784964f484686d4fdad}{Request\+Interface} (const \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID} \&\+\_\+interface\+ID, void $\ast$$\ast$\+\_\+output\+Interface)=0
+\begin{DoxyCompactList}\small\item\em Requests an interface that may or may not be supported by this object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base interface all Gateware interfaces must support at a minimum. 
+
+Core features include\+: Interface Upgrades, Reference Counting, Event Broadcasting. 
+
+\subsection{Member Function Documentation}
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Decrement\+Count@{Decrement\+Count}}
+\index{Decrement\+Count@{Decrement\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection[{\texorpdfstring{Decrement\+Count()=0}{DecrementCount()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Decrement\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1CORE_1_1GInterface_a19a368c77ad0aa7f49b5a4f772f173ba}{}\label{classGW_1_1CORE_1_1GInterface_a19a368c77ad0aa7f49b5a4f772f173ba}
+
+
+Decrease the total number of active references to this object. 
+
+Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully decremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Decrementing of internal reference count would underflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \hyperlink{classFileIO_ab7e4806ca819c3fcdeeb40a2af5f0298}{File\+IO}, \hyperlink{classLogFile_a555ef35fcdce23ebad05f7dcabaf0757}{Log\+File}, and \hyperlink{classInput_a5c44b3dc2be21c1bad5f32a43a7b7a55}{Input}.
+
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Get\+Count@{Get\+Count}}
+\index{Get\+Count@{Get\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection[{\texorpdfstring{Get\+Count(unsigned int \&\+\_\+out\+Count)=0}{GetCount(unsigned int &_outCount)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Get\+Count (
+\begin{DoxyParamCaption}
+\item[{unsigned int \&}]{\+\_\+out\+Count}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122ee9e76}{}\label{classGW_1_1CORE_1_1GInterface_aacf5834174a7024f8a3c361122ee9e76}
+
+
+Return the total number of active references to this object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em \+\_\+out\+Count} & The total number of active references of this object.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully ran. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Either class does not exist or the internal reference count is corrupt. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \hyperlink{classFileIO_a20566e320ec4cc0d5615bc3bc1fa3013}{File\+IO}, \hyperlink{classLogFile_ab2abbdb01e2b904f112e5e7b20c59a81}{Log\+File}, and \hyperlink{classInput_a2fd6659ae76357836c4c9b3e7070ffb0}{Input}.
+
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Increment\+Count@{Increment\+Count}}
+\index{Increment\+Count@{Increment\+Count}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection[{\texorpdfstring{Increment\+Count()=0}{IncrementCount()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Increment\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1CORE_1_1GInterface_a2d710f20bb78e544e8309b5b75c21260}{}\label{classGW_1_1CORE_1_1GInterface_a2d710f20bb78e544e8309b5b75c21260}
+
+
+Increase the total number of active references to this object. 
+
+End users should only call this operation if they are familiar with reference counting behavior.
+
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & Successfully incremented the internal reference count. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & Incrementation of internal reference count would overflow the value. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \hyperlink{classFileIO_a9f2c9a4d13577e14a2c94b0e9617d80b}{File\+IO}, \hyperlink{classLogFile_aff5871b4f2434b6ca722b89581416da0}{Log\+File}, and \hyperlink{classInput_a3c2103023cbb1fa583f910539bb6cce3}{Input}.
+
+\index{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}!Request\+Interface@{Request\+Interface}}
+\index{Request\+Interface@{Request\+Interface}!G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface@{G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface}}
+\subsubsection[{\texorpdfstring{Request\+Interface(const G\+U\+U\+I\+I\+D \&\+\_\+interface\+I\+D, void $\ast$$\ast$\+\_\+output\+Interface)=0}{RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+C\+O\+R\+E\+::\+G\+Interface\+::\+Request\+Interface (
+\begin{DoxyParamCaption}
+\item[{const {\bf G\+U\+U\+I\+ID} \&}]{\+\_\+interface\+ID, }
+\item[{void $\ast$$\ast$}]{\+\_\+output\+Interface}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1CORE_1_1GInterface_ad6c8324970172784964f484686d4fdad}{}\label{classGW_1_1CORE_1_1GInterface_ad6c8324970172784964f484686d4fdad}
+
+
+Requests an interface that may or may not be supported by this object. 
+
+Can be used by the end-\/user to query for a new interface using the unique ID of the interface they want and implement an interface update.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+interface\+ID} & The \hyperlink{structGW_1_1GUUIID}{G\+U\+U\+I\+ID} of the interface you are requesting. \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+output\+Interface} & Where the interface will be stored if function is successful.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & The interface is supported and function succeded. \\
+\hline
+{\em I\+N\+T\+E\+R\+F\+A\+C\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & The requested interface is not supported. \\
+\hline
+\end{DoxyRetVals}
+
+
+Implemented in \hyperlink{classFileIO_a3fb39527fac479474c6ef5045dbc1551}{File\+IO}, \hyperlink{classLogFile_a8b8e63b9c62846b1b9e0cf8b79429ba5}{Log\+File}, and \hyperlink{classInput_a29f3c56e9fec9f9073c1e18f120a69cd}{Input}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Interface/\+G\+\_\+\+Core/G\+Interface.\+h\end{DoxyCompactItemize}
