@@ -59,10 +59,10 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identified for this interface. { }
+		//! Unique Identifier for this interface. {A5D7746F-FAAE-42BF-AC16-5C25551CA7B6}.
 		static const GUUIID GWindowUUIID =
 		{
-
+			0xa5d7746f, 0xfaae, 0x42bf,{ 0xac, 0x16, 0x5c, 0x25, 0x55, 0x1c, 0xa7, 0xb6 } 
 		};
 
 		//! A thread-safe window creation and management library.
@@ -77,12 +77,70 @@ namespace GW
 
 		public:
 			
+			//! Creates and displays a window.
+			/*!
+			*	The window is displayed with the size, position and style specified in the parameters.
+			*   If width and height are greater than the native resolution, the passed in
+			*   GWindowStyle will be overwritten to be the fullscreen version if it is not already.
+			*
+			*	\param [in] _x The x position of the window on the screen.
+			*	\param [in] _y The y position of the window on the screen.
+			*	\param [in] _width The width of the window.
+			*	\param [in] _height The height of the window.
+			*	\param [in] _style The style of the window. (see GWindowStyle for style options)
+			*
+			*	\retval SUCCESS The window was successfully created and displayed.
+			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware
+			*							 or the style specified is not a valid GWindowStyle.
+			*	\retval FAILURE The window could not be created.
+			*/
 			virtual GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 
+			//! Gives the currently opened window the specified size, position and style
+			/*!
+			*	If width and height are greater than the native resolution, the passed in
+			*	GWindowStyle will be overwritten to be the fullscreen version if it is not already.
+			*
+			*	\param [in] _x The x position on screen to move the window to.
+			*	\param [in] _y The y position on screen to move the window to.
+			*	\param [in] _width The width to give the window.
+			*	\param [in] _height The height to give the window.
+			*	\param [in] _style The style to give to the window. (see GWindowStyle for style options)
+			*
+			*	\retval SUCCESS The window successfully had its attributes changed.
+			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware
+			*							 or the style specified is not a valid GWindowStyle.
+			*	\retval REDUNDANT_OPERATION No window exists to edit. 
+			*/
 			virtual GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 
+			//! Repositions the currently opened window to the specified x and y pixels on screen.
+			/*!
+			*	X and Y upper-limits are based on the native resolution of the user.
+			*
+			*	\param [in] _x The x position on screen to move the window to.
+			*	\param [in] _y The y position on screen to move the window to.
+			*
+			*	\retval SUCCESS The window was successfully moved.
+			*	\retval INVALID_ARGUMENT One of the position parameters are outside the limits of the hardware.
+			*   \retval REDUNDANT_OPERATION No window exists to move.
+			*	
+			*/	
 			virtual GReturn MoveWindow(int _x, int _y) = 0;
 
+			//! Resizes the currently opened window to the specified width and height.
+			/*!
+			*	If width and height are greater than the native resolution, the GWindowStyle 
+			*	will be overwritten to be the fullscreen version if it is not already.
+			*
+			*	\param [in] _x The width to resize the window to.
+			*	\param [in] _y The height to resize the window to.
+			*
+			*	\retval SUCCESS The window was successfully resized.
+			*	\retval INVALID_ARGUMENT One of the size parameters are less than or equal to 0.
+			*   \retval REDUNDANT_OPERATION No window exists to resize.
+			*
+			*/
 			virtual GReturn ResizeWindow(int _width, int _height) = 0;
 
 			virtual GReturn Maximize() = 0;

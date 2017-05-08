@@ -3,7 +3,11 @@
 
 #include "../../Interface/G_System/GWindow.h"
 
-class Window : public GW::SYSTEM::GWindow
+using namespace GW;
+using namespace SYSTEM;
+using namespace CORE;
+
+class Window : public GWindow
 {
 private:
 
@@ -12,19 +16,19 @@ public:
 	Window();
 	virtual ~Window();
 
-	 GW::GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+	 GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 	 
-	 GW::GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 	
-	 GW::GReturn MoveWindow(int _x, int _y) = 0;
+	 GReturn MoveWindow(int _x, int _y) = 0;
 
-	 GW::GReturn ResizeWindow(int _width, int _height) = 0;
+	 GReturn ResizeWindow(int _width, int _height) = 0;
 	 
-	 GW::GReturn Maximize() = 0;
+	 GReturn Maximize() = 0;
 	 
-	 GW::GReturn Minimize() = 0;
+	 GReturn Minimize() = 0;
 	 
-	 GW::GReturn ChangeWindowStyle(GWindowStyle _style) = 0;
+	 GReturn ChangeWindowStyle(GWindowStyle _style) = 0;
 
 	 int GetWidth() = 0;
 

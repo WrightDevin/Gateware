@@ -48,6 +48,9 @@
 #endif
 
 //The using statements for specifically what we are using.
+using namespace GW;
+using namespace SYSTEM;
+using namespace CORE;
 using namespace INTERNAL;
 using std::string;
 using std::fstream;
@@ -73,49 +76,49 @@ public:
 	FileIO();
 	virtual ~FileIO();
 
-	GW::GReturn OpenBinaryRead(const char* const _file) override;
+	GReturn OpenBinaryRead(const char* const _file) override;
 
-	GW::GReturn OpenBinaryWrite(const char* const _file) override;
+	GReturn OpenBinaryWrite(const char* const _file) override;
 
-	GW::GReturn AppendBinaryWrite(const char* const _file) override;
+	GReturn AppendBinaryWrite(const char* const _file) override;
 
-	GW::GReturn OpenTextRead(const char* const _file) override;
+	GReturn OpenTextRead(const char* const _file) override;
 
-	GW::GReturn OpenTextWrite(const char* const _file) override;
+	GReturn OpenTextWrite(const char* const _file) override;
 
-	GW::GReturn AppendTextWrite(const char* const _file) override;
+	GReturn AppendTextWrite(const char* const _file) override;
 
-	GW::GReturn Write(const char* const _inData, unsigned int _numBytes) override;
+	GReturn Write(const char* const _inData, unsigned int _numBytes) override;
 
-	GW::GReturn Read(char* _outData, unsigned int _numBytes) override;
+	GReturn Read(char* _outData, unsigned int _numBytes) override;
 
-	GW::GReturn WriteLine(const char* const _inData) override;
+	GReturn WriteLine(const char* const _inData) override;
 
-	GW::GReturn ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) override;
+	GReturn ReadLine(char* _outData, unsigned int _outDataSize, char _delimiter) override;
 
-	GW::GReturn CloseFile() override;
+	GReturn CloseFile() override;
 
-	GW::GReturn FlushFile() override;
+	GReturn FlushFile() override;
 
-	GW::GReturn SetCurrentWorkingDirectory(const char* const _dir) override;
+	GReturn SetCurrentWorkingDirectory(const char* const _dir) override;
 
-	GW::GReturn GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
+	GReturn GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize) override;
 
-	GW::GReturn GetDirectorySize(unsigned int& _outSize) override;
+	GReturn GetDirectorySize(unsigned int& _outSize) override;
 
-	GW::GReturn GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) override;
+	GReturn GetFilesFromDirectory(char* _outFiles[], unsigned int _numFiles, unsigned int _fileNameSize) override;
 
-	GW::GReturn GetFileSize(const char* const _file, unsigned int& _outSize) override;
+	GReturn GetFileSize(const char* const _file, unsigned int& _outSize) override;
 
-	GW::GReturn GetCount(unsigned int& _outCount) override;
+	GReturn GetCount(unsigned int& _outCount) override;
 
-	GW::GReturn IncrementCount() override;
+	GReturn IncrementCount() override;
 
-	GW::GReturn DecrementCount() override;
+	GReturn DecrementCount() override;
 
-	GW::GReturn RequestInterface(const GW::GUUIID& _interfaceID, void** _outputInterface) override;
+	GReturn RequestInterface(const GW::GUUIID& _interfaceID, void** _outputInterface) override;
 
-	GW::GReturn Init(); //The init function for this class in order to initialize variables.
+	GReturn Init(); //The init function for this class in order to initialize variables.
 };
 
 FileIO::FileIO() : refCount(1)
