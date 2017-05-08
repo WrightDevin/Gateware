@@ -125,6 +125,7 @@ Global
 		..\..\gateware-test-suite.git.0\Visual Studio\SharedTestSource\SharedTestSource.vcxitems*{b5d2ff35-6e1c-4da2-ba56-f78069917949}*SharedItemsImports = 4
 		..\..\gateware-test-suite.git.0\Visual Studio\SharedTestSource\SharedTestSource.vcxitems*{bb67afb5-cdfc-44d4-843b-c5e3ebfcad0e}*SharedItemsImports = 4
 		GBufferedInput Source\GBufferedInput Source.vcxitems*{bcfadf99-0044-48cb-bc18-2d8128fc6969}*SharedItemsImports = 9
+		GWindow Source\GWindow Source.vcxitems*{cfea0373-6118-4bea-a003-0cf80f8dd142}*SharedItemsImports = 4
 		GInput Source\GInput Source.vcxitems*{d0e7a119-03f2-4680-8acf-0b989568352e}*SharedItemsImports = 4
 		GInput Source\GInput Source.vcxitems*{f56c4551-9038-4416-b534-97850dcd5566}*SharedItemsImports = 4
 	EndGlobalSection

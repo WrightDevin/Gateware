@@ -23,7 +23,7 @@ namespace GW
 	namespace SYSTEM
 	{
 
-// Ensure identical binary padding for structures on all platforms.
+//! Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
 
 		//! GBUFFEREDINPUT_EVENT_DATA will hold any information you may need about an Input Event.
