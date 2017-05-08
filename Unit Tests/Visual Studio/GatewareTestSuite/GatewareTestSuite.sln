@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GatewareTestSuite", "GatewareTestSuite.vcxproj", "{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedTestSource", "..\SharedTestSource\SharedTestSource.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GatewareTestSuite DLL", "..\GatewareTestSuite DLL\GatewareTestSuite DLL.vcxproj", "{B5D2FF35-6E1C-4DA2-BA56-F78069917949}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "[DISABLED] GatewareTestSuite DLL Explicit", "..\GatewareTestSuite DLL Explicit\GatewareTestSuite DLL Explicit.vcxproj", "{A82A99EB-2B24-49C5-BC30-0DDF64A09539}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SharedTestSource\SharedTestSource.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		..\SharedTestSource\SharedTestSource.vcxitems*{a82a99eb-2b24-49c5-bc30-0ddf64a09539}*SharedItemsImports = 4
+		..\SharedTestSource\SharedTestSource.vcxitems*{b5d2ff35-6e1c-4da2-ba56-f78069917949}*SharedItemsImports = 4
+		..\SharedTestSource\SharedTestSource.vcxitems*{bb67afb5-cdfc-44d4-843b-c5e3ebfcad0e}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Debug|x64.ActiveCfg = Debug|x64
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Debug|x64.Build.0 = Debug|x64
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Debug|x86.ActiveCfg = Debug|Win32
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Debug|x86.Build.0 = Debug|Win32
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Release|x64.ActiveCfg = Release|x64
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Release|x64.Build.0 = Release|x64
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Release|x86.ActiveCfg = Release|Win32
+		{BB67AFB5-CDFC-44D4-843B-C5E3EBFCAD0E}.Release|x86.Build.0 = Release|Win32
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Debug|x64.ActiveCfg = Debug|x64
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Debug|x64.Build.0 = Debug|x64
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Debug|x86.ActiveCfg = Debug|Win32
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Debug|x86.Build.0 = Debug|Win32
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Release|x64.ActiveCfg = Release|x64
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Release|x64.Build.0 = Release|x64
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Release|x86.ActiveCfg = Release|Win32
+		{B5D2FF35-6E1C-4DA2-BA56-F78069917949}.Release|x86.Build.0 = Release|Win32
+		{A82A99EB-2B24-49C5-BC30-0DDF64A09539}.Debug|x64.ActiveCfg = Debug|x64
+		{A82A99EB-2B24-49C5-BC30-0DDF64A09539}.Debug|x86.ActiveCfg = Debug|Win32
+		{A82A99EB-2B24-49C5-BC30-0DDF64A09539}.Release|x64.ActiveCfg = Release|x64
+		{A82A99EB-2B24-49C5-BC30-0DDF64A09539}.Release|x86.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
