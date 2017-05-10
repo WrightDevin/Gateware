@@ -184,6 +184,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(void* _windowHandle, unsig
 
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below.
 	return GW::SYSTEM::CreateGBufferedInput(_windowHandle, handleSize, _outPointer);
+	
 }
 
 GReturn GW::SYSTEM::CreateGBufferedInput(void* _windowHandle, unsigned int _handleSize, GBufferedInput** _outPointer) {

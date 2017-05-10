@@ -20,6 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GFileTest.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GInputTests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GLogTest.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindowTests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\TestListener.cpp" />
   </ItemGroup>
   <ItemGroup>

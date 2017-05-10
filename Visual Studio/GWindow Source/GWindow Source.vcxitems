@@ -14,6 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)GWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindow.cpp" />
   </ItemGroup>
 </Project>

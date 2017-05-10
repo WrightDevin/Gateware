@@ -66,70 +66,70 @@ AppWindow::~AppWindow()
 
 GReturn AppWindow::CreateWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::MoveWindow(int _x, int _y)
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::ResizeWindow(int _width, int _height)
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::Maximize()
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::Minimize()
 {
-
+	return FAILURE;
 }
 
 GReturn AppWindow::ChangeWindowStyle(GWindowStyle _style)
 {
-
+	return FAILURE;
 }
 
 int AppWindow::GetWidth()
 {
-
+	return -1;
 }
 
 int AppWindow::GetHeight()
 {
-
+	return -1;
 }
 
 int AppWindow::GetX()
 {
-
+	return -1;
 }
 
 int AppWindow::GetY()
 {
-
+	return -1;
 }
 
 void* AppWindow::GetWindowHandle()
 {
-
+	return nullptr;
 }
 
 bool AppWindow::IsFullscreen()
 {
-
+	return false;
 }
 
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
 {
-
+	return FAILURE;
 }
