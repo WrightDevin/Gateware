@@ -80,9 +80,10 @@ namespace GW
 			
 			//! Creates and displays a window.
 			/*!
-			*	The window is displayed with the size, position and style specified in the parameters.
+			*	The window is opened with the size, position and style specified in the parameters.
 			*   If width and height are greater than the native resolution, the passed in
 			*   GWindowStyle will be overwritten to be the fullscreen version if it is not already.
+			*	If the passed in style is not a valid style, WINDOWEDBORDERED will be used as default.
 			*
 			*	\param [in] _x The x position of the window on the screen.
 			*	\param [in] _y The y position of the window on the screen.
@@ -91,11 +92,11 @@ namespace GW
 			*	\param [in] _style The style of the window. (see GWindowStyle for style options)
 			*
 			*	\retval SUCCESS The window was successfully created and displayed.
-			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware
-			*							 or the style specified is not a valid GWindowStyle.
+			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware.
+			*	\retval REDUNDANT_OPERATION The GWindow object already has a window open
 			*	\retval FAILURE The window could not be created.
 			*/
-			virtual GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+			virtual GReturn OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 
 			//! Gives the currently opened window the specified size, position and style.
 			/*!
@@ -109,8 +110,7 @@ namespace GW
 			*	\param [in] _style The style to give to the window. (see GWindowStyle for style options)
 			*
 			*	\retval SUCCESS The window successfully had its attributes changed.
-			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware
-			*							 or the style specified is not a valid GWindowStyle.
+			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware.
 			*	\retval REDUNDANT_OPERATION No window exists to edit. 
 			*/
 			virtual GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
@@ -235,7 +235,7 @@ namespace GW
 		   *	\param [out] _outWindow Will contain the GWindow object if successfully created. 
 		   *
 		   *	\retval SUCCESS  GWindow was successfully created.
-		   *	\retval FAILURE  GWindow was not created. _outLog will be null.
+		   *	\retval FAILURE  GWindow was not created. _outWindow will be null.
 		   *	\retval INVALID_ARGUMENT Either one or some arguments are nullptrs or invalid integers.
 		   */
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow);

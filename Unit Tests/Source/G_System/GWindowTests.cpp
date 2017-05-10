@@ -6,8 +6,107 @@
 ///=============================================================================
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE 
-//CRASHES, FALSE FAILURES, or FALSE PASSES
+//CRASHES, FALSE FAILURES, or FALSE PASSES.
+using namespace GW;
+using namespace SYSTEM;
+using namespace CORE;
 
-//Global variables needed for all Test Cases
-GW::SYSTEM::GWindow* appWindow = nullptr; //Our buffered input object
-GW::CORE::GListener* windowListener = nullptr; //Our listener object
+// Global variables needed for all Test Cases.
+GWindow* appWindow = nullptr; // Our window object.
+GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
+GListener* windowListener = nullptr; // Our listener object.
+
+TEST_CASE("Create GWindow object.", "[CreateGWindow]")
+{
+	// Fail cases
+	CHECK(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, nullptr) == INVALID_ARGUMENT);
+	CHECK(CreateGWindow(-1, -1, -1, -1, MINIMIZED, &appWindow) == INVALID_ARGUMENT);
+	
+	// Set up unopened Window
+	CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow);
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, &appWindow)));
+	REQUIRE(G_SUCCESS(CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow)));
+	REQUIRE(appWindow != nullptr);
+	REQUIRE(unopenedWindow != nullptr);
+}
+
+TEST_CASE("Open a Window.", "[OpenWindow]")
+{
+	// Fail cases
+	CHECK(appWindow->OpenWindow(-1, -1, -1, -1, WINDOWEDBORDERED) == INVALID_ARGUMENT);
+	
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED)));
+	REQUIRE(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
+}
+
+TEST_CASE("Reconfigure the open Window.", "[ReconfigureWindow]")
+{
+	// Fail cases
+	CHECK(appWindow->ReconfigureWindow(-1, -1, -1, -1, WINDOWEDBORDERLESS) == INVALID_ARGUMENT);
+	CHECK(unopenedWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED)));
+}
+
+TEST_CASE("Moving Window.", "[MoveWindow]")
+{
+	// Fail cases
+	CHECK(appWindow->MoveWindow(-1, -1) == INVALID_ARGUMENT);
+	CHECK(unopenedWindow->MoveWindow(42, 42) == REDUNDANT_OPERATION);
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->MoveWindow(42, 42)));
+}
+
+TEST_CASE("Resizing Window.", "[ResizeWindow]")
+{
+	// Fail cases
+	CHECK(appWindow->ResizeWindow(-1, -1) == INVALID_ARGUMENT);
+	CHECK(unopenedWindow->ResizeWindow(300, 300) == REDUNDANT_OPERATION);
+	CHECK(unopenedWindow->Maximize() == REDUNDANT_OPERATION);
+	CHECK(unopenedWindow->Minimize() == REDUNDANT_OPERATION);
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->ResizeWindow(300, 300)));
+	REQUIRE(G_SUCCESS(appWindow->Maximize()));
+	REQUIRE(G_SUCCESS(appWindow->Minimize()));
+}
+
+TEST_CASE("Changing Window style.", "[ChangeWindowStyle]")
+{
+	// Fail cases
+	CHECK(unopenedWindow->ChangeWindowStyle(FULLSCREENBORDERED) == REDUNDANT_OPERATION);
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
+}
+
+TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [GetY]")
+{
+	// Minimize window for test
+	REQUIRE(G_SUCCESS(appWindow->Minimize()));
+
+	// Fail cases
+	CHECK(appWindow->GetWidth() == 0);
+	CHECK(unopenedWindow->GetHeight() == -1);
+	CHECK(unopenedWindow->GetWidth() == -1);
+	CHECK(unopenedWindow->GetX() == -1);
+	CHECK(unopenedWindow->GetY() == -1);
+	CHECK(unopenedWindow->GetWindowHandle() == nullptr);
+	CHECK(appWindow->IsFullscreen() == false);
+
+	// Resize windows for pass tests
+	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
+
+	// Pass cases 
+	REQUIRE(appWindow->GetHeight() > 0);
+	REQUIRE(appWindow->GetWidth() > 0);
+	REQUIRE(appWindow->GetX() > 0);
+	REQUIRE(appWindow->GetY() > 0);
+	REQUIRE(appWindow->IsFullscreen() == true);
+	REQUIRE(appWindow->GetWindowHandle() != nullptr);
+}

@@ -11,6 +11,8 @@ using std::atomic;
 
 class AppWindow : public GWindow
 {
+private:
+
 	atomic<unsigned int> refCount;
 
 	atomic<int> xPos;
@@ -20,26 +22,25 @@ class AppWindow : public GWindow
 
 	GWindowStyle style;
 
-private:
 
 public:
 
 	AppWindow();
 	virtual ~AppWindow();
 
-	 GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+	 GReturn OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 	 
-	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 	
-	 GReturn MoveWindow(int _x, int _y) = 0;
+	 GReturn MoveWindow(int _x, int _y);
 
-	 GReturn ResizeWindow(int _width, int _height) = 0;
+	 GReturn ResizeWindow(int _width, int _height);
 	 
-	 GReturn Maximize() = 0;
+	 GReturn Maximize();
 	 
-	 GReturn Minimize() = 0;
+	 GReturn Minimize();
 	 
-	 GReturn ChangeWindowStyle(GWindowStyle _style) = 0;
+	 GReturn ChangeWindowStyle(GWindowStyle _style);
 
 	 GReturn GetCount(unsigned int& _outCount);
 
@@ -53,22 +54,22 @@ public:
 
 	 GReturn DeregisterListener(GListener* _removeListener);
 
-	 int GetWidth() = 0;
+	 int GetWidth();
 
-	 int GetHeight() = 0;
+	 int GetHeight();
 
-	 int GetX() = 0;
+	 int GetX();
 
-	 int GetY() = 0;
+	 int GetY();
 
-	 void* GetWindowHandle() = 0;
+	 void* GetWindowHandle();
 
-	 bool IsFullscreen() = 0;
+	 bool IsFullscreen();
 };
 
-AppWindow::AppWindow() : refCount(1)
+AppWindow::AppWindow() : refCount(1) , xPos(0) , yPos(0) , width(0) , height(0) , style(WINDOWEDBORDERED)
 {
-
+	
 }
 
 AppWindow::~AppWindow()
@@ -76,7 +77,7 @@ AppWindow::~AppWindow()
 
 }
 
-GReturn AppWindow::CreateWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
+GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
 {
 	return FAILURE;
 }
@@ -173,5 +174,16 @@ bool AppWindow::IsFullscreen()
 
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
 {
+	return GW::SYSTEM::CreateGWindow(_x, _y, _width, _height, _style, _outWindow);
+}
+
+GReturn GW::SYSTEM::CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
+{
+	if (_outWindow == nullptr)
+		return INVALID_ARGUMENT;
+
+	AppWindow* Window = new AppWindow();
+
+	*_outWindow = Window;
 	return FAILURE;
 }

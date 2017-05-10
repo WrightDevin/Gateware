@@ -33,9 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\TestListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\nicho\Desktop\Gateware\gateware.git.0\Unit Tests\Visual Studio\SharedTestSource\..\..\Source\G_System\GWindowTests.cpp">
-      <Filter>G_System</Filter>
-    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindowTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Source\CATCH.hpp">
