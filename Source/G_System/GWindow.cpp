@@ -41,6 +41,18 @@ public:
 	 
 	 GReturn ChangeWindowStyle(GWindowStyle _style) = 0;
 
+	 GReturn GetCount(unsigned int& _outCount);
+
+	 GReturn IncrementCount();
+
+	 GReturn DecrementCount();
+
+	 GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+
+	 GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
+
+	 GReturn DeregisterListener(GListener* _removeListener);
+
 	 int GetWidth() = 0;
 
 	 int GetHeight() = 0;
@@ -95,6 +107,36 @@ GReturn AppWindow::Minimize()
 }
 
 GReturn AppWindow::ChangeWindowStyle(GWindowStyle _style)
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::GetCount(unsigned int& _outCount)
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::IncrementCount()
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::DecrementCount()
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputInterface)
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
+{
+	return FAILURE;
+}
+
+GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 {
 	return FAILURE;
 }
