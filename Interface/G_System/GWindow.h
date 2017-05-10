@@ -46,6 +46,7 @@ namespace GW
 			WINDOWEDBORDERLESS,
 			FULLSCREENBORDERED,
 			FULLSCREENBORDERLESS,
+			MINIMIZED,
 		};
 
 		//! GWindowInputEvents holds the possible events a GWindow window can broadcast.
@@ -96,7 +97,7 @@ namespace GW
 			*/
 			virtual GReturn CreateWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 
-			//! Gives the currently opened window the specified size, position and style
+			//! Gives the currently opened window the specified size, position and style.
 			/*!
 			*	If width and height are greater than the native resolution, the passed in
 			*	GWindowStyle will be overwritten to be the fullscreen version if it is not already.
@@ -123,8 +124,7 @@ namespace GW
 			*
 			*	\retval SUCCESS The window was successfully moved.
 			*	\retval INVALID_ARGUMENT One of the position parameters are outside the limits of the hardware.
-			*   \retval REDUNDANT_OPERATION No window exists to move.
-			*	
+			*   \retval REDUNDANT_OPERATION No window exists to move.	
 			*/	
 			virtual GReturn MoveWindow(int _x, int _y) = 0;
 
@@ -139,30 +139,105 @@ namespace GW
 			*	\retval SUCCESS The window was successfully resized.
 			*	\retval INVALID_ARGUMENT One of the size parameters are less than or equal to 0.
 			*   \retval REDUNDANT_OPERATION No window exists to resize.
-			*
 			*/
 			virtual GReturn ResizeWindow(int _width, int _height) = 0;
 
+			//! Resizes the currently opened window to the native maximum resolution.
+			/*!
+			*	GWindowStyle will be overwritten to be the fullscreen version 
+			*	if it is not already.
+			*
+			*	\retval SUCCESS The window was successfully maximized.
+			*   \retval REDUNDANT_OPERATION No window exists to maximize.
+			*/
 			virtual GReturn Maximize() = 0;
 
+			//! Minimizes the currently opened window.
+			/*!
+			*	GWindowStyle will be overwritten to be the minimized
+			*	style if it is not already.
+			*
+			*	\retval SUCCESS The window was successfully minimized.
+			*   \retval REDUNDANT_OPERATION No window exists to minimize.
+			*/
 			virtual GReturn Minimize() = 0;
 
+			//! Sets the currently opened window's style to the specified style. 
+			/*!
+			*	GWindowStyle will be overwritten and the window resized or moved
+			*	accordingly.
+			*
+			*	\param [in] _style The GWindowStyle to change the window to.
+			*
+			*	\retval SUCCESS The window style was successfully changed.
+			*   \retval REDUNDANT_OPERATION No window exists to change.
+			*/
 			virtual GReturn ChangeWindowStyle(GWindowStyle _style) = 0;
 
+			//! Returns the width in pixels of the currently opened window.
+			/*!
+			*	\retval 0 The window is minimized.
+			*   \retval -1 No window exists to query size from.
+			*	\retval else Width was successfully queried and returned.
+			*/
 			virtual int GetWidth() = 0;
 
+			//! Returns the height in pixels of the currently opened window.
+			/*!
+			*	\retval 0 The window is minimized.
+			*   \retval -1 No window exists to query size from.
+			*	\retval else Height was successfully queried and returned.
+			*/
 			virtual int GetHeight() = 0;
 
+			//! Returns the X position in pixels of the currently opened window.
+			/*!
+			*   \retval -1 No window exists to query position from.
+			*	\retval else X position was successfully queried and returned.
+			*/
 			virtual int GetX() = 0;
 
+			//! Returns the Y position in pixels of the currently opened window.
+			/*!
+			*   \retval -1 No window exists to query position from.
+			*	\retval else Y position was successfully queried and returned.
+			*/
 			virtual int GetY() = 0;
 
+			//! Returns the platform specific window handle to the currently opened window.
+			/*!
+			*	On Windows the void* is an HWND, on Linux a LINUX_WINDOW, and on Mac an 
+			*	NSWindow. Methods exist to query window information right from these handles.
+			*
+			*   \retval void* The void* data to the window handle.
+			*/
 			virtual void* GetWindowHandle() = 0;
 
+			//! Returns a bool specifying whether or not the currently opened window is fullscreen.
+			/*!
+			*   \retval true The window is fullscreen.
+			*	\retval false The window is not fullscreen.
+			*/
 			virtual bool IsFullscreen() = 0;
 
 		}; // end GWindow class
 
+		   //! Creates and outputs a new GWindow object.
+		   /*!
+		   *	Initializes a handle to a GWindow object with the parameters specified. Created
+		   *	GWindow object will have its reference count initialized to one.
+		   *
+		   *	\param [in] _x The x position of the window on the screen.
+		   *	\param [in] _y The y position of the window on the screen.
+		   *	\param [in] _width The width of the window.
+		   *	\param [in] _height The height of the window.
+		   *	\param [in] _style The style of the window. (see GWindowStyle for style options)
+		   *	\param [out] _outWindow Will contain the GWindow object if successfully created. 
+		   *
+		   *	\retval SUCCESS  GWindow was successfully created.
+		   *	\retval FAILURE  GWindow was not created. _outLog will be null.
+		   *	\retval INVALID_ARGUMENT Either one or some arguments are nullptrs or invalid integers.
+		   */
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow);
 	} // end SYSTEM namespace
 } // end GW namespace
