@@ -1,5 +1,5 @@
 #include "Common.h"
-
+#include "TestListener.h"
 
 ///=============================================================================
 //==============================TEST CASES======================================
@@ -14,7 +14,7 @@ using namespace CORE;
 // Global variables needed for all Test Cases.
 GWindow* appWindow = nullptr; // Our window object.
 GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
-GListener* windowListener = nullptr; // Our listener object.
+TestListener* windowListener = nullptr; // Our listener object.
 
 TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 {
@@ -40,6 +40,18 @@ TEST_CASE("Open a Window.", "[OpenWindow]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED)));
 	REQUIRE(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
+}
+
+TEST_CASE("GWindow Register Listeners.", "[RegisterListener]")
+{
+	// Create our new test listener
+	windowListener = new TestListener();
+	
+	// Fail case
+	CHECK(appWindow->RegisterListener(nullptr, 0) == GW::INVALID_ARGUMENT);
+	
+	// Pass case
+	REQUIRE(G_SUCCESS(appWindow->RegisterListener(windowListener, 0)));
 }
 
 TEST_CASE("Reconfigure the open Window.", "[ReconfigureWindow]")
@@ -109,4 +121,33 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	REQUIRE(appWindow->GetY() > 0);
 	REQUIRE(appWindow->IsFullscreen() == true);
 	REQUIRE(appWindow->GetWindowHandle() != nullptr);
+}
+
+TEST_CASE("Sending events to listeners.", "[OnEvent]")
+{
+	// Fail case 
+	CHECK(windowListener->GetWindowTestValue() == 1);
+
+	// Tell window to maximize
+	ShowWindowAsync((HWND)appWindow->GetWindowHandle(), SW_SHOWMAXIMIZED);
+
+	// Pass case
+	REQUIRE(windowListener->GetWindowTestValue() == 1);
+}
+
+TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
+{
+	unsigned int refCount = 0;
+
+	//Check that this case fails appropriately
+	CHECK(appWindow->DeregisterListener(nullptr) == GW::INVALID_ARGUMENT);
+
+	//The following case should pass
+	REQUIRE(G_SUCCESS(appWindow->DeregisterListener(windowListener)));
+	windowListener->GetCount(refCount);
+
+	CHECK(refCount == 1);
+
+	windowListener->DecrementCount();
+	appWindow->DecrementCount();
 }

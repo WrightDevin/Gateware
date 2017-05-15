@@ -9,6 +9,7 @@ extern bool keys[256]; //Will be used to keep track of whether keys were pressed
 //Used to keep track of what the library says my mouse position is
 extern int mouseX;
 extern int mouseY;
+extern int windowTestValue;
 
 class TestListener : public GW::CORE::GListener
 {
@@ -27,6 +28,9 @@ public:
   GW::GReturn IncrementCount();
   GW::GReturn DecrementCount();
   GW::GReturn RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface);
+
+  //Helper function for testing
+  int GetWindowTestValue();
 };
 
 #endif // TESTLISTENER_H

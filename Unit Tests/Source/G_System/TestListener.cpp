@@ -10,6 +10,9 @@ bool keys[256]; //Will be used to keep track of rather keys were pressed or rele
 int mouseX = 0;
 int mouseY = 0;
 
+//Used to test the broadcasting of GWindow
+int windowTestValue = 0;
+
 GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _sizeOfData)
 {
 	GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA data;
@@ -100,7 +103,11 @@ GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned i
 		}
 		break;
 
+		// GWindowTests uses this case to test the Broadcasting functionality
+		// of the GWindow class. BUTTONPRESSED == 2 and MAXIMIZE == 2
 	case GW::SYSTEM::BUTTONPRESSED:
+	{
+		windowTestValue = 1;
 		switch (data.data)
 		{
 		case G_BUTTON_LEFT:
@@ -114,7 +121,7 @@ GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned i
 			break;
 		}
 		break;
-
+	}
 	case GW::SYSTEM::BUTTONRELEASED:
 		switch (data.data)
 		{
@@ -164,4 +171,9 @@ GW::GReturn TestListener::RequestInterface(const GW::GUUIID& _interfaceID, void*
 {
 	//NOT IMPLEMENTED
 	return GW::SUCCESS;
+}
+
+int TestListener::GetWindowTestValue()
+{
+	return windowTestValue;
 }
