@@ -30,19 +30,28 @@ namespace GW
 		unsigned char	byte8[8];
 
 		//For faster comparison.
-		union
-		{
-			unsigned long long part1;
-			unsigned long long part2;
-		};
+		//union
+		//{
+		//	unsigned long long part1;
+		//	unsigned long long part2;
+		//};
 
 		//! Comparison operator overload.
 		bool operator==(const GUUIID& _cmp) const
 		{
-			if (part1 != _cmp.part1 || part2 != _cmp.part2)
+			const unsigned long long * part1a = reinterpret_cast<const unsigned long long *>(&byte4),
+						             * part2a = reinterpret_cast<const unsigned long long *>(byte8),
+				                     * part1b = reinterpret_cast<const unsigned long long *>(&_cmp.byte4),
+				                     * part2b = reinterpret_cast<const unsigned long long *>(&_cmp.byte8);
+
+			if (*part1a != *part1b || *part2a != *part2b)
 				return false;
 
 			return true;
+			//if (part1 != _cmp.part1 || part2 != _cmp.part2)
+			//	return false;
+			//
+			//return true;
 		}
 	}; // Gateware guuiid mimic microsoft GUID structure in byte pattern.
 	   // Use built-in Visual Studio tools to generate unique ID for new interfaces.

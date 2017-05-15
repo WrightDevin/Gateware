@@ -34,7 +34,7 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 
 TEST_CASE("Open a Window.", "[OpenWindow]")
 {
-	// Fail cases
+	// Fail case
 	CHECK(appWindow->OpenWindow(-1, -1, -1, -1, WINDOWEDBORDERED) == INVALID_ARGUMENT);
 	
 	// Pass cases
@@ -90,10 +90,10 @@ TEST_CASE("Resizing Window.", "[ResizeWindow]")
 
 TEST_CASE("Changing Window style.", "[ChangeWindowStyle]")
 {
-	// Fail cases
+	// Fail case
 	CHECK(unopenedWindow->ChangeWindowStyle(FULLSCREENBORDERED) == REDUNDANT_OPERATION);
 
-	// Pass cases
+	// Pass case
 	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
 }
 
@@ -123,7 +123,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	REQUIRE(appWindow->GetWindowHandle() != nullptr);
 }
 
-TEST_CASE("Sending events to listeners.", "[OnEvent]")
+TEST_CASE("Sending events to listeners.", "")
 {
 	// Fail case 
 	CHECK(windowListener->GetWindowTestValue() == 1);
@@ -139,10 +139,10 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 {
 	unsigned int refCount = 0;
 
-	//Check that this case fails appropriately
+	// Fail case
 	CHECK(appWindow->DeregisterListener(nullptr) == GW::INVALID_ARGUMENT);
 
-	//The following case should pass
+	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->DeregisterListener(windowListener)));
 	windowListener->GetCount(refCount);
 

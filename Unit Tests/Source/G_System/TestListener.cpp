@@ -15,133 +15,164 @@ int windowTestValue = 0;
 
 GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _sizeOfData)
 {
-	GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA data;
-	memcpy(&data, _eventData, _sizeOfData);
-
-	switch (_eventID)
-	{
-	case GW::SYSTEM::KEYPRESSED:
-		switch (data.data)
+		if (_senderInterface == GW::SYSTEM::GWindowUUIID)
 		{
-		case G_KEY_A:
-			keys['A'] = true;
-			break;
-		case G_KEY_S:
-			keys['S'] = true;
-			break;
-		case G_KEY_D:
-			keys['D'] = true;
-			break;
-		case G_KEY_W:
-			keys['W'] = true;
-			break;
-		case G_KEY_1:
-			keys['1'] = true;
-			break;
-		case G_KEY_2:
-			keys['2'] = true;
-			break;
-		case G_KEY_3:
-			keys['3'] = true;
-			break;
-		case G_KEY_4:
-			keys['4'] = true;
-			break;
-		case G_KEY_LEFT:
-			keys[0] = true;
-			break;
-		case G_KEY_RIGHT:
-			keys[1] = true;
-			break;
-		case G_KEY_UP:
-			keys[2] = true;
-			break;
-		case G_KEY_DOWN:
-			keys[3] = true;
-			break;
-		}
-		break;
-	case GW::SYSTEM::KEYRELEASED:
-		switch (data.data)
-		{
-		case G_KEY_A:
-			keys['A'] = false;
-			break;
-		case G_KEY_S:
-			keys['S'] = false;
-			break;
-		case G_KEY_D:
-			keys['D'] = false;
-			break;
-		case G_KEY_W:
-			keys['W'] = false;
-			break;
-		case G_KEY_1:
-			keys['1'] = false;
-			break;
-		case G_KEY_2:
-			keys['2'] = false;
-			break;
-		case G_KEY_3:
-			keys['3'] = false;
-			break;
-		case G_KEY_4:
-			keys['4'] = false;
-			break;
-		case G_KEY_LEFT:
-			keys[0] = false;
-			break;
-		case G_KEY_RIGHT:
-			keys[1] = false;
-			break;
-		case G_KEY_UP:
-			keys[2] = false;
-			break;
-		case G_KEY_DOWN:
-			keys[3] = false;
-			break;
-		}
-		break;
+			GW::SYSTEM::GWINDOW_EVENT_DATA data;
+			memcpy(&data, _eventData, _sizeOfData);
 
-		// GWindowTests uses this case to test the Broadcasting functionality
-		// of the GWindow class. BUTTONPRESSED == 2 and MAXIMIZE == 2
-	case GW::SYSTEM::BUTTONPRESSED:
-	{
-		windowTestValue = 1;
-		switch (data.data)
-		{
-		case G_BUTTON_LEFT:
-			keys[4] = true;
-			break;
-		case G_BUTTON_MIDDLE:
-			keys[5] = true;
-			break;
-		case G_BUTTON_RIGHT:
-			keys[6] = true;
-			break;
-		}
-		break;
-	}
-	case GW::SYSTEM::BUTTONRELEASED:
-		switch (data.data)
-		{
-		case G_BUTTON_LEFT:
-			keys[4] = false;
-			break;
-		case G_BUTTON_MIDDLE:
-			keys[5] = false;
-			break;
-		case G_BUTTON_RIGHT:
-			keys[6] = false;
-			break;
-		}
-		break;
-	}
+			switch (_eventID)
+			{
+			case GW::SYSTEM::NOTIFY:
+				break;
 
-	mouseX = data.screenX;
-	mouseY = data.screenY;
+			case GW::SYSTEM::MINIMIZE:
+				break;
 
-	return GW::SUCCESS;
+			case GW::SYSTEM::MAXIMIZE:
+				windowTestValue = 1;
+				break;
+
+			case GW::SYSTEM::RESIZE:
+				break;
+
+			case GW::SYSTEM::MOVE:
+				break;
+
+			case GW::SYSTEM::DESTROY:
+				break;
+			}
+		}
+
+		else if(_senderInterface == GW::SYSTEM::GBufferedInputUUIID)
+		{
+			GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA data;
+			memcpy(&data, _eventData, _sizeOfData);
+
+			switch (_eventID)
+			{
+			case GW::SYSTEM::KEYPRESSED:
+				switch (data.data)
+				{
+				case G_KEY_A:
+					keys['A'] = true;
+					break;
+				case G_KEY_S:
+					keys['S'] = true;
+					break;
+				case G_KEY_D:
+					keys['D'] = true;
+					break;
+				case G_KEY_W:
+					keys['W'] = true;
+					break;
+				case G_KEY_1:
+					keys['1'] = true;
+					break;
+				case G_KEY_2:
+					keys['2'] = true;
+					break;
+				case G_KEY_3:
+					keys['3'] = true;
+					break;
+				case G_KEY_4:
+					keys['4'] = true;
+					break;
+				case G_KEY_LEFT:
+					keys[0] = true;
+					break;
+				case G_KEY_RIGHT:
+					keys[1] = true;
+					break;
+				case G_KEY_UP:
+					keys[2] = true;
+					break;
+				case G_KEY_DOWN:
+					keys[3] = true;
+					break;
+				}
+				break;
+			case GW::SYSTEM::KEYRELEASED:
+				switch (data.data)
+				{
+				case G_KEY_A:
+					keys['A'] = false;
+					break;
+				case G_KEY_S:
+					keys['S'] = false;
+					break;
+				case G_KEY_D:
+					keys['D'] = false;
+					break;
+				case G_KEY_W:
+					keys['W'] = false;
+					break;
+				case G_KEY_1:
+					keys['1'] = false;
+					break;
+				case G_KEY_2:
+					keys['2'] = false;
+					break;
+				case G_KEY_3:
+					keys['3'] = false;
+					break;
+				case G_KEY_4:
+					keys['4'] = false;
+					break;
+				case G_KEY_LEFT:
+					keys[0] = false;
+					break;
+				case G_KEY_RIGHT:
+					keys[1] = false;
+					break;
+				case G_KEY_UP:
+					keys[2] = false;
+					break;
+				case G_KEY_DOWN:
+					keys[3] = false;
+					break;
+				}
+				break;
+
+				// GWindowTests uses this case to test the Broadcasting functionality
+				// of the GWindow class. BUTTONPRESSED == 2 and MAXIMIZE == 2
+			case GW::SYSTEM::BUTTONPRESSED:
+			{
+				windowTestValue = 1;
+				switch (data.data)
+				{
+				case G_BUTTON_LEFT:
+					keys[4] = true;
+					break;
+				case G_BUTTON_MIDDLE:
+					keys[5] = true;
+					break;
+				case G_BUTTON_RIGHT:
+					keys[6] = true;
+					break;
+				}
+				break;
+			}
+			case GW::SYSTEM::BUTTONRELEASED:
+				switch (data.data)
+				{
+				case G_BUTTON_LEFT:
+					keys[4] = false;
+					break;
+				case G_BUTTON_MIDDLE:
+					keys[5] = false;
+					break;
+				case G_BUTTON_RIGHT:
+					keys[6] = false;
+					break;
+				}
+				break;
+			}
+
+			mouseX = data.screenX;
+			mouseY = data.screenY;
+
+			return GW::SUCCESS;
+		}
 }
 
 //GInterface overrides

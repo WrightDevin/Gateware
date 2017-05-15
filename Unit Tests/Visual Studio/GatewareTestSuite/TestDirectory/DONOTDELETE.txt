@@ -1,4 +1,4 @@
-﻿[Mon May 15 11:40:00 2017] ThreadID[18452]	Something I wanna do.
+﻿[Mon May 15 14:50:32 2017] ThreadID[23020]	Something I wanna do.
 Something else I wanna do.
 [MINE]	Something I wanna do more
-[Mon May 15 11:40:00 2017] ThreadID[18452]	[MINE]	Something I wanna do more
+[Mon May 15 14:50:32 2017] ThreadID[23020]	[MINE]	Something I wanna do more
