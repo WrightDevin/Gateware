@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>10</integer>
 		</dict>
+		<key>GBufferedInput amd64 copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
+		</dict>
 		<key>GBufferedInput amd64.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -48,6 +53,11 @@
 			<true/>
 		</dict>
 		<key>8F01B0A21E240445004F4D72</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8FD6D0661ECB603700D9BA05</key>
 		<dict>
 			<key>primary</key>
 			<true/>

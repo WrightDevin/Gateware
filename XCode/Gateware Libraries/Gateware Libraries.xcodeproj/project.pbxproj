@@ -71,6 +71,7 @@
 		8F01B02D1E240290004F4D72 /* GInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GInput.xcodeproj; path = GInput/GInput.xcodeproj; sourceTree = "<group>"; };
 		8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
 		8F52C7961E60E811007845EA /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GWindow.xcodeproj; path = GWindow/GWindow.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +88,7 @@
 		8F01AFC21E2401BC004F4D72 = {
 			isa = PBXGroup;
 			children = (
+				8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */,
 				8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */,
 				8F01B02D1E240290004F4D72 /* GInput.xcodeproj */,
 				8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */,
@@ -127,6 +129,13 @@
 			children = (
 				8F01B0501E2402D4004F4D72 /* GBufferedInput.a */,
 				8FD304361E240835007B55CC /* GBufferedInput.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8FD6D05C1ECB5F2900D9BA05 /* Products */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -202,6 +211,10 @@
 				{
 					ProductGroup = 8F01AFFC1E240223004F4D72 /* Products */;
 					ProjectRef = 8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */;
+				},
+				{
+					ProductGroup = 8FD6D05C1ECB5F2900D9BA05 /* Products */;
+					ProjectRef = 8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */;
 				},
 			);
 			projectRoot = "";
