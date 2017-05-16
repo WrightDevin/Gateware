@@ -133,11 +133,8 @@ GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned i
 				}
 				break;
 
-				// GWindowTests uses this case to test the Broadcasting functionality
-				// of the GWindow class. BUTTONPRESSED == 2 and MAXIMIZE == 2
 			case GW::SYSTEM::BUTTONPRESSED:
 			{
-				windowTestValue = 1;
 				switch (data.data)
 				{
 				case G_BUTTON_LEFT:
