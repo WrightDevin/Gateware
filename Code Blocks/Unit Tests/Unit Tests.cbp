@@ -89,12 +89,13 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-lx11" />
 			<Add directory="../../Interface" />
 		</Compiler>
 		<Linker>
 			<Add option="-lX11" />
 			<Add option="-pthread" />
-			<Add directory="../Libraries/Linux/amd64/Debug" />
 		</Linker>
 		<Unit filename="../../Unit Tests/Source/CATCH.hpp" />
 		<Unit filename="../../Unit Tests/Source/G_Core/UnitTestMain.cpp" />
