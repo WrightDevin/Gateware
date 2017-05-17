@@ -126,13 +126,15 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 TEST_CASE("Sending events to listeners.", "")
 {
 	// Fail case
-	//CHECK(windowListener->GetWindowTestValue() == 1);
+	CHECK(windowListener->GetWindowTestValue() == 1);
 
+#ifdef _WIN32
 	// Tell window to maximize
-	//ShowWindowAsync((HWND)appWindow->GetWindowHandle(), SW_SHOWMAXIMIZED);
+	ShowWindowAsync((HWND)appWindow->GetWindowHandle(), SW_SHOWMAXIMIZED);
+#endif
 
 	// Pass case
-	//REQUIRE(windowListener->GetWindowTestValue() == 1);
+	REQUIRE(windowListener->GetWindowTestValue() == 1);
 }
 
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
