@@ -170,6 +170,7 @@ GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned i
 
 			return GW::SUCCESS;
 		}
+    return GW::FAILURE;
 }
 
 //GInterface overrides

@@ -9,24 +9,20 @@
 /* Begin PBXBuildFile section */
 		35EE81151E033D3A009FBC24 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81141E033D3A009FBC24 /* Cocoa.framework */; };
 		35EE81211E0425F6009FBC24 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81141E033D3A009FBC24 /* Cocoa.framework */; };
-		35EE81271E04263A009FBC24 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81181E033D64009FBC24 /* GBufferedInput.a */; };
 		35EE812D1E042666009FBC24 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81141E033D3A009FBC24 /* Cocoa.framework */; };
 		35EE81381E042692009FBC24 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81141E033D3A009FBC24 /* Cocoa.framework */; };
-		8F17D7211E295E6500F1627A /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F17D7201E295E6500F1627A /* GInput.a */; };
-		8F56712E1E96A918004295FC /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F56712D1E96A918004295FC /* GFile.a */; };
-		8F5671301E96A92F004295FC /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F56712F1E96A92F004295FC /* GInput.a */; };
-		8F5671321E96A942004295FC /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5671311E96A942004295FC /* GLog.a */; settings = {ATTRIBUTES = (Required, ); }; };
-		8F7231CC1E96DB62009D474A /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C93D1E26C88D00066FE6 /* GBufferedInput.a */; };
-		8F7231CD1E96DB62009D474A /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C93E1E26C88D00066FE6 /* GFile.a */; };
-		8F7231CE1E96DB62009D474A /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C93F1E26C88D00066FE6 /* GLog.a */; };
-		8F7231D01E96DB62009D474A /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F7231CF1E96DB62009D474A /* GInput.a */; };
-		8F7231D11E96DB84009D474A /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C9431E26C89F00066FE6 /* GBufferedInput.a */; };
-		8F7231D21E96DB84009D474A /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C9441E26C89F00066FE6 /* GFile.a */; };
-		8F7231D31E96DB84009D474A /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5671351E96AA75004295FC /* GInput.a */; };
-		8F7231D41E96DB84009D474A /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5671371E96AA89004295FC /* GLog.a */; };
-		8FC4C91D1E26C68D00066FE6 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35EE81161E033D4B009FBC24 /* GBufferedInput.a */; };
-		8FC4C9201E26C68D00066FE6 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C91E1E26C68D00066FE6 /* GFile.a */; };
-		8FC4C9211E26C68D00066FE6 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC4C91F1E26C68D00066FE6 /* GLog.a */; };
+		8F841D1D1ECCF32B00365E91 /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D1B1ECCF30E00365E91 /* GInput.a */; };
+		8F841D1F1ECCF35200365E91 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D1E1ECCF35200365E91 /* GBufferedInput.a */; };
+		8F841D211ECCF36400365E91 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D201ECCF36400365E91 /* GFile.a */; };
+		8F841D231ECCF37F00365E91 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D221ECCF37F00365E91 /* GLog.a */; };
+		8F841D281ECCF3CE00365E91 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D241ECCF3CE00365E91 /* GBufferedInput.a */; };
+		8F841D291ECCF3CE00365E91 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D251ECCF3CE00365E91 /* GFile.a */; };
+		8F841D2A1ECCF3CE00365E91 /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D261ECCF3CE00365E91 /* GInput.a */; };
+		8F841D2B1ECCF3CE00365E91 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D271ECCF3CE00365E91 /* GLog.a */; };
+		8F841D301ECCF42100365E91 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2C1ECCF42100365E91 /* GBufferedInput.a */; };
+		8F841D311ECCF42100365E91 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2D1ECCF42100365E91 /* GFile.a */; };
+		8F841D321ECCF42100365E91 /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2E1ECCF42100365E91 /* GInput.a */; };
+		8F841D331ECCF42100365E91 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2F1ECCF42100365E91 /* GLog.a */; };
 		8FE15CE91E3676F7005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEA1E36771E005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEB1E367724005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
@@ -87,6 +83,18 @@
 		8F5671351E96AA75004295FC /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Release/GInput.a; sourceTree = "<group>"; };
 		8F5671371E96AA89004295FC /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Release/GLog.a; sourceTree = "<group>"; };
 		8F7231CF1E96DB62009D474A /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Release/GInput.a; sourceTree = "<group>"; };
+		8F841D1B1ECCF30E00365E91 /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../Libraries/Mac/i386/Release/GInput.a; sourceTree = "<group>"; };
+		8F841D1E1ECCF35200365E91 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../Libraries/Mac/i386/Release/GBufferedInput.a; sourceTree = "<group>"; };
+		8F841D201ECCF36400365E91 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../Libraries/Mac/i386/Release/GFile.a; sourceTree = "<group>"; };
+		8F841D221ECCF37F00365E91 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../Libraries/Mac/i386/Release/GLog.a; sourceTree = "<group>"; };
+		8F841D241ECCF3CE00365E91 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../Libraries/Mac/i386/Debug/GBufferedInput.a; sourceTree = "<group>"; };
+		8F841D251ECCF3CE00365E91 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../Libraries/Mac/i386/Debug/GFile.a; sourceTree = "<group>"; };
+		8F841D261ECCF3CE00365E91 /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../Libraries/Mac/i386/Debug/GInput.a; sourceTree = "<group>"; };
+		8F841D271ECCF3CE00365E91 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../Libraries/Mac/i386/Debug/GLog.a; sourceTree = "<group>"; };
+		8F841D2C1ECCF42100365E91 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../Libraries/Mac/amd64/Release/GBufferedInput.a; sourceTree = "<group>"; };
+		8F841D2D1ECCF42100365E91 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../Libraries/Mac/amd64/Release/GFile.a; sourceTree = "<group>"; };
+		8F841D2E1ECCF42100365E91 /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../Libraries/Mac/amd64/Release/GInput.a; sourceTree = "<group>"; };
+		8F841D2F1ECCF42100365E91 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../Libraries/Mac/amd64/Release/GLog.a; sourceTree = "<group>"; };
 		8FC4C91E1E26C68D00066FE6 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Debug/GFile.a; sourceTree = "<group>"; };
 		8FC4C91F1E26C68D00066FE6 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Debug/GLog.a; sourceTree = "<group>"; };
 		8FC4C93D1E26C88D00066FE6 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Release/GBufferedInput.a; sourceTree = "<group>"; };
@@ -112,10 +120,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F17D7211E295E6500F1627A /* GInput.a in Frameworks */,
-				8FC4C9201E26C68D00066FE6 /* GFile.a in Frameworks */,
-				8FC4C9211E26C68D00066FE6 /* GLog.a in Frameworks */,
-				8FC4C91D1E26C68D00066FE6 /* GBufferedInput.a in Frameworks */,
+				8F841D281ECCF3CE00365E91 /* GBufferedInput.a in Frameworks */,
+				8F841D291ECCF3CE00365E91 /* GFile.a in Frameworks */,
+				8F841D2A1ECCF3CE00365E91 /* GInput.a in Frameworks */,
+				8F841D2B1ECCF3CE00365E91 /* GLog.a in Frameworks */,
 				35EE81151E033D3A009FBC24 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -124,10 +132,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F5671321E96A942004295FC /* GLog.a in Frameworks */,
-				8F5671301E96A92F004295FC /* GInput.a in Frameworks */,
-				8F56712E1E96A918004295FC /* GFile.a in Frameworks */,
-				35EE81271E04263A009FBC24 /* GBufferedInput.a in Frameworks */,
 				35EE81211E0425F6009FBC24 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,10 +140,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F7231D01E96DB62009D474A /* GInput.a in Frameworks */,
-				8F7231CC1E96DB62009D474A /* GBufferedInput.a in Frameworks */,
-				8F7231CD1E96DB62009D474A /* GFile.a in Frameworks */,
-				8F7231CE1E96DB62009D474A /* GLog.a in Frameworks */,
+				8F841D231ECCF37F00365E91 /* GLog.a in Frameworks */,
+				8F841D211ECCF36400365E91 /* GFile.a in Frameworks */,
+				8F841D1F1ECCF35200365E91 /* GBufferedInput.a in Frameworks */,
+				8F841D1D1ECCF32B00365E91 /* GInput.a in Frameworks */,
 				35EE812D1E042666009FBC24 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,10 +152,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F7231D11E96DB84009D474A /* GBufferedInput.a in Frameworks */,
-				8F7231D21E96DB84009D474A /* GFile.a in Frameworks */,
-				8F7231D31E96DB84009D474A /* GInput.a in Frameworks */,
-				8F7231D41E96DB84009D474A /* GLog.a in Frameworks */,
+				8F841D301ECCF42100365E91 /* GBufferedInput.a in Frameworks */,
+				8F841D311ECCF42100365E91 /* GFile.a in Frameworks */,
+				8F841D321ECCF42100365E91 /* GInput.a in Frameworks */,
+				8F841D331ECCF42100365E91 /* GLog.a in Frameworks */,
 				35EE81381E042692009FBC24 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -201,6 +205,18 @@
 		35EE81131E033D3A009FBC24 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8F841D2C1ECCF42100365E91 /* GBufferedInput.a */,
+				8F841D2D1ECCF42100365E91 /* GFile.a */,
+				8F841D2E1ECCF42100365E91 /* GInput.a */,
+				8F841D2F1ECCF42100365E91 /* GLog.a */,
+				8F841D241ECCF3CE00365E91 /* GBufferedInput.a */,
+				8F841D251ECCF3CE00365E91 /* GFile.a */,
+				8F841D261ECCF3CE00365E91 /* GInput.a */,
+				8F841D271ECCF3CE00365E91 /* GLog.a */,
+				8F841D221ECCF37F00365E91 /* GLog.a */,
+				8F841D201ECCF36400365E91 /* GFile.a */,
+				8F841D1E1ECCF35200365E91 /* GBufferedInput.a */,
+				8F841D1B1ECCF30E00365E91 /* GInput.a */,
 				8F7231CF1E96DB62009D474A /* GInput.a */,
 				8F5671371E96AA89004295FC /* GLog.a */,
 				8F5671351E96AA75004295FC /* GInput.a */,
@@ -457,7 +473,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = "/tmp/$(PROJECT_NAME).dst";
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = "gateware-test-suite.git.0/Build";
@@ -471,7 +487,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = "/tmp/$(PROJECT_NAME).dst";
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = "gateware-test-suite.git.0/Build";
 				VALID_ARCHS = i386;
@@ -483,7 +499,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
@@ -495,7 +511,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
 			};
@@ -506,7 +522,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
@@ -518,7 +534,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = i386;
 			};
@@ -529,7 +545,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
@@ -542,7 +558,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
-				HEADER_SEARCH_PATHS = ../../../../Gateware.git.0/Interface;
+				HEADER_SEARCH_PATHS = ../../../../Interface;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
 				asfd = "";

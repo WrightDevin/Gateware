@@ -111,30 +111,30 @@
 }
 
 -(void)GetKeyMask:(NSEvent *)theEvent{
-    _keyMask = 0;
+    keyMask = 0;
 	//Get the unsigned int of all the modifier flags.
     NSUInteger flags = [theEvent modifierFlags];
 	//Check individual modifier flags and turn them on respectivly to our keymask(unsigned int).
     if (flags & NSEventModifierFlagShift) {
-        TURNON_BIT(_keyMask, G_MASK_SHIFT);
+        TURNON_BIT(keyMask, G_MASK_SHIFT);
     }
     if (flags & NSEventModifierFlagOption) {
-        TURNON_BIT(_keyMask, G_MASK_ALT);
+        TURNON_BIT(keyMask, G_MASK_ALT);
     }
     if (flags & NSEventModifierFlagCommand) {
-        TURNON_BIT(_keyMask, G_MASK_COMMAND);
+        TURNON_BIT(keyMask, G_MASK_COMMAND);
     }
     if (flags & NSEventModifierFlagControl) {
-        TURNON_BIT(_keyMask, G_MASK_CONTROL);
+        TURNON_BIT(keyMask, G_MASK_CONTROL);
     }
     if (flags & NSEventModifierFlagCapsLock) {
-        TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+        TURNON_BIT(keyMask, G_MASK_CAPS_LOCK);
     }
     if (flags & NSEventModifierFlagFunction) {
-        TURNON_BIT(_keyMask, G_MASK_FUNCTION);
+        TURNON_BIT(keyMask, G_MASK_FUNCTION);
     }
     if (flags & NSEventModifierFlagNumericPad) {
-        TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+        TURNON_BIT(keyMask, G_MASK_NUM_LOCK);
     }
     
 }
