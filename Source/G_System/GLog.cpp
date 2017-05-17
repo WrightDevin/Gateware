@@ -445,11 +445,11 @@ GW::GReturn GW::SYSTEM::CreateGLogCustom(GFile* _file, GLog** _outLog)
 //the closing of GFile when the log is destroyed.
 void LogFile::LogWorker()
 {
-	unique_lock<mutex> queueLock(queueLock);
+	unique_lock<mutex> localQueueLock(queueLock);
 	while (threadRunning || logQueue.size() != 0)
 	{
 		//Will lock the mutex when awaken and unlock it when put back to sleep.
-		conditional.wait_for(queueLock, std::chrono::seconds(THREAD_SLEEP_TIME));
+		conditional.wait_for(localQueueLock, std::chrono::seconds(THREAD_SLEEP_TIME));
 
 		//If there is anything to write.
 		if (logQueue.size() != 0)
