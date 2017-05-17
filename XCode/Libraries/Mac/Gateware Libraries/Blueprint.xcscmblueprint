@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9527E5C03326AC3E2713BBB454C30ECC3B7CD369",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "9527E5C03326AC3E2713BBB454C30ECC3B7CD369" : 9223372036854775807,
+    "9FE9ED9D855C0A0A74BC689B343338866CA195CD" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7CB604FD-91EC-4236-B81F-C28DEBC0A159",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "9527E5C03326AC3E2713BBB454C30ECC3B7CD369" : "gateware.git.0\/",
+    "9FE9ED9D855C0A0A74BC689B343338866CA195CD" : "gateware-test-suite.git.0\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Gateware Libraries",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "XCode\/Gateware Libraries\/Gateware Libraries.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/edo.fullsail.edu\/underdog\/git\/gateware.git.0",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9527E5C03326AC3E2713BBB454C30ECC3B7CD369"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/edo.fullsail.edu\/underdog\/git\/gateware-test-suite.git.0",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9FE9ED9D855C0A0A74BC689B343338866CA195CD"
+    }
+  ]
+}

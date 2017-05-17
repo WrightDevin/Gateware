@@ -6,12 +6,29 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8F4D7BD01ECC99BB008FE314 /* GWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */; };
+		8F4D7BD11ECC99DC008FE314 /* GWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F4D7BB51ECC9609008FE314 /* GWindow.h */; };
+		8F4D7BD31ECC99F5008FE314 /* GDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F4D7BD21ECC99F5008FE314 /* GDefines.h */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		8FD6D07A1ECB60E200D9BA05 /* libGWindow amd64.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGWindow amd64.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GWindow.cpp; path = ../../../Source/G_System/GWindow.cpp; sourceTree = "<group>"; };
+		8F4D7BB51ECC9609008FE314 /* GWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GWindow.h; path = ../../../Interface/G_System/GWindow.h; sourceTree = "<group>"; };
+		8F4D7BCC1ECC981D008FE314 /* libGWindow amd64.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGWindow amd64.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F4D7BD21ECC99F5008FE314 /* GDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GDefines.h; path = ../../../Interface/G_Core/GDefines.h; sourceTree = "<group>"; };
+		8F4D7BD81ECC9A28008FE314 /* libGWindow i386.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGWindow i386.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8FD6D0771ECB60E200D9BA05 /* Frameworks */ = {
+		8F4D7BC91ECC981D008FE314 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F4D7BD51ECC9A28008FE314 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -24,6 +41,9 @@
 		8FD6D0541ECB5F2800D9BA05 = {
 			isa = PBXGroup;
 			children = (
+				8F4D7BD21ECC99F5008FE314 /* GDefines.h */,
+				8F4D7BB51ECC9609008FE314 /* GWindow.h */,
+				8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */,
 				8FD6D07B1ECB60E200D9BA05 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -31,7 +51,8 @@
 		8FD6D07B1ECB60E200D9BA05 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8FD6D07A1ECB60E200D9BA05 /* libGWindow amd64.a */,
+				8F4D7BCC1ECC981D008FE314 /* libGWindow amd64.a */,
+				8F4D7BD81ECC9A28008FE314 /* libGWindow i386.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -39,7 +60,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		8FD6D0781ECB60E200D9BA05 /* Headers */ = {
+		8F4D7BCA1ECC981D008FE314 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F4D7BD11ECC99DC008FE314 /* GWindow.h in Headers */,
+				8F4D7BD31ECC99F5008FE314 /* GDefines.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F4D7BD61ECC9A28008FE314 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -49,13 +79,13 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8FD6D0791ECB60E200D9BA05 /* GWindow amd64 */ = {
+		8F4D7BCB1ECC981D008FE314 /* GWindow amd64 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8FD6D07C1ECB60E200D9BA05 /* Build configuration list for PBXNativeTarget "GWindow amd64" */;
+			buildConfigurationList = 8F4D7BCD1ECC981D008FE314 /* Build configuration list for PBXNativeTarget "GWindow amd64" */;
 			buildPhases = (
-				8FD6D0761ECB60E200D9BA05 /* Sources */,
-				8FD6D0771ECB60E200D9BA05 /* Frameworks */,
-				8FD6D0781ECB60E200D9BA05 /* Headers */,
+				8F4D7BC81ECC981D008FE314 /* Sources */,
+				8F4D7BC91ECC981D008FE314 /* Frameworks */,
+				8F4D7BCA1ECC981D008FE314 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -63,7 +93,24 @@
 			);
 			name = "GWindow amd64";
 			productName = "GWindow amd64";
-			productReference = 8FD6D07A1ECB60E200D9BA05 /* libGWindow amd64.a */;
+			productReference = 8F4D7BCC1ECC981D008FE314 /* libGWindow amd64.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		8F4D7BD71ECC9A28008FE314 /* GWindow i386 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F4D7BD91ECC9A28008FE314 /* Build configuration list for PBXNativeTarget "GWindow i386" */;
+			buildPhases = (
+				8F4D7BD41ECC9A28008FE314 /* Sources */,
+				8F4D7BD51ECC9A28008FE314 /* Frameworks */,
+				8F4D7BD61ECC9A28008FE314 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "GWindow i386";
+			productName = "GWindow i386";
+			productReference = 8F4D7BD81ECC9A28008FE314 /* libGWindow i386.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -74,7 +121,12 @@
 			attributes = {
 				LastUpgradeCheck = 0810;
 				TargetAttributes = {
-					8FD6D0791ECB60E200D9BA05 = {
+					8F4D7BCB1ECC981D008FE314 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = JBAX5FBJRL;
+						ProvisioningStyle = Automatic;
+					};
+					8F4D7BD71ECC9A28008FE314 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = JBAX5FBJRL;
 						ProvisioningStyle = Automatic;
@@ -93,13 +145,22 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8FD6D0791ECB60E200D9BA05 /* GWindow amd64 */,
+				8F4D7BCB1ECC981D008FE314 /* GWindow amd64 */,
+				8F4D7BD71ECC9A28008FE314 /* GWindow i386 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8FD6D0761ECB60E200D9BA05 /* Sources */ = {
+		8F4D7BC81ECC981D008FE314 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F4D7BD01ECC99BB008FE314 /* GWindow.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F4D7BD41ECC9A28008FE314 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -109,19 +170,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		8FD6D0591ECB5F2900D9BA05 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		8FD6D05A1ECB5F2900D9BA05 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Release;
-		};
-		8FD6D07D1ECB60E200D9BA05 /* Debug */ = {
+		8F4D7BCE1ECC981D008FE314 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -144,6 +193,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/amd64/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = JBAX5FBJRL;
@@ -164,16 +214,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
-		8FD6D07E1ECB60E200D9BA05 /* Release */ = {
+		8F4D7BCF1ECC981D008FE314 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -196,6 +245,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/amd64/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JBAX5FBJRL;
@@ -210,17 +260,143 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				NEW_SETTING = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+		8F4D7BDA1ECC9A28008FE314 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/i386/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JBAX5FBJRL;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = i386;
+			};
+			name = Debug;
+		};
+		8F4D7BDB1ECC9A28008FE314 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/i386/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JBAX5FBJRL;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = i386;
+			};
+			name = Release;
+		};
+		8FD6D0591ECB5F2900D9BA05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+			};
+			name = Debug;
+		};
+		8FD6D05A1ECB5F2900D9BA05 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8F4D7BCD1ECC981D008FE314 /* Build configuration list for PBXNativeTarget "GWindow amd64" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F4D7BCE1ECC981D008FE314 /* Debug */,
+				8F4D7BCF1ECC981D008FE314 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		8F4D7BD91ECC9A28008FE314 /* Build configuration list for PBXNativeTarget "GWindow i386" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F4D7BDA1ECC9A28008FE314 /* Debug */,
+				8F4D7BDB1ECC9A28008FE314 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		8FD6D0581ECB5F2900D9BA05 /* Build configuration list for PBXProject "GWindow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -229,14 +405,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
-		};
-		8FD6D07C1ECB60E200D9BA05 /* Build configuration list for PBXNativeTarget "GWindow amd64" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8FD6D07D1ECB60E200D9BA05 /* Debug */,
-				8FD6D07E1ECB60E200D9BA05 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
