@@ -11,7 +11,7 @@
 //Test case file names will not be larger than 40 characters
 #define FILE_NAME_SIZE 40
 
-//THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE 
+//THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
 
 //Globals used for all test cases.
@@ -46,8 +46,8 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
 #elif __APPLE__
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"XCode / Gateware / GTests / TestDirectory")));
-#elif __linux__ 
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"CodeBlocks / GTests / TestDirectory")));
+#elif __linux__
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
 #endif
 		//REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../gateware-test-suite.git.0/XCode/Gateware/GTests/TestDirectory")));
 	}
@@ -229,9 +229,9 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		//Pass cases
 		REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
         std::cout << files[0];
-		REQUIRE(strcmp(files[0], "DONOTDELETE.txt") == 0);
+		REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
 		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
-		REQUIRE(strcmp(files[2], u8"g_test.gtest") == 0);
+		REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
 		for (unsigned int i = 0; i < dirSize; ++i)
 			delete[] files[i];
 	}
