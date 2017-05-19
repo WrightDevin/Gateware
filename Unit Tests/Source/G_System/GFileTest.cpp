@@ -229,9 +229,16 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		//Pass cases
 		REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
         std::cout << files[0];
+
+#ifdef _WIN32
+		REQUIRE(strcmp(files[0], "DONOTDELETE.txt") == 0);
+		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
+		REQUIRE(strcmp(files[2], u8"g_test.gtest") == 0);
+#elif
 		REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
 		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
 		REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
+#endif
 		for (unsigned int i = 0; i < dirSize; ++i)
 			delete[] files[i];
 	}
