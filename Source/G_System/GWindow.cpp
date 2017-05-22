@@ -1,7 +1,7 @@
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../../Source/DLL_Export_Symbols.h"
 
-#include "../../Interface/G_System/GWindow.h"
+#include "../../Source/G_System/GWindow_Callback.cpp"
 #include <atomic>
 
 using namespace GW;
