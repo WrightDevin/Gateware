@@ -1,12 +1,28 @@
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../../Source/DLL_Export_Symbols.h"
+#include "../../Source/G_System/GI_Static.cpp"
+#include "../../Interface/G_System/GWindow.h"
+
+using namespace GW;
+using namespace CORE;
+using namespace SYSTEM;
+
+namespace
+{
+	// GWindow global variables.
+
+	//! Map of Listeners to send event information to.
+	std::map<GListener *, unsigned long long> listeners;
+
+	//! Store the users implementation of the windows procedure.
+	LONG_PTR userWinProc;
+	//! Store the global handle to the Windows window.
+	HWND wndHandle;
+}
 
 #include "../../Source/G_System/GWindow_Callback.cpp"
 #include <atomic>
 
-using namespace GW;
-using namespace SYSTEM;
-using namespace CORE;
 using std::atomic;
 
 class AppWindow : public GWindow
@@ -77,9 +93,114 @@ AppWindow::~AppWindow()
 
 }
 
-GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
+GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
-	return FAILURE;
+	if (wndHandle)
+		return REDUNDANT_OPERATION;
+
+	if (_x < 0 || _y < 0 || _width < 0 || _height < 0)
+		return INVALID_ARGUMENT;
+
+	WNDCLASSEX winClass;
+	ZeroMemory(&winClass, sizeof(WNDCLASSEX));
+
+	LPCWSTR appName = L"GWindow Test App";
+	
+	winClass.cbSize = sizeof(WNDCLASSEX);
+	winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	winClass.hCursor = LoadCursorW(NULL, IDC_CROSS);
+	winClass.hIcon = LoadIconW(0, IDI_EXCLAMATION);
+	winClass.hInstance = GetModuleHandleW(0);
+	winClass.lpfnWndProc = GWindowProc;
+	winClass.lpszClassName = appName;
+	winClass.style = CS_HREDRAW | CS_VREDRAW;
+
+	RegisterClassExW(&winClass);
+	
+	int width, height, x, y = 0;
+
+	if (_width > 1920)
+		width = 1920;
+	else
+		width = _width;
+
+	if (_height > 1080)
+		height = 1080;
+	else
+		height = _height;
+
+	if (_x > 1920)
+		x = 1920;
+	else
+		x = _x;
+
+	if (_y > 1080)
+		y = 1080;
+	else
+		y = _y;
+
+	RECT windowRect = { x, y, width, height };
+	
+	switch (_style)
+	{
+	case WINDOWEDBORDERED:
+	{
+		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
+
+		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW,
+			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			NULL, NULL, GetModuleHandleW(0), 0);
+	}
+	break;
+
+	case WINDOWEDBORDERLESS:
+	{
+		AdjustWindowRect(&windowRect, WS_POPUP, false);
+
+		wndHandle = CreateWindowW(appName, L"Win32Window", WS_POPUP,
+			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			NULL, NULL, GetModuleHandleW(0), 0);
+	}
+	break;
+
+	case FULLSCREENBORDERED:
+	{
+		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW | WS_MAXIMIZE, false);
+
+		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW | WS_MAXIMIZE,
+			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			NULL, NULL, GetModuleHandleW(0), 0);
+	}
+	break;
+
+	case FULLSCREENBORDERLESS:
+	{
+		AdjustWindowRect(&windowRect, WS_POPUP | WS_MAXIMIZE, false);
+
+		wndHandle = CreateWindowW(appName, L"Win32Window", WS_POPUP | WS_MAXIMIZE,
+			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			NULL, NULL, GetModuleHandleW(0), 0);
+	}
+	break;
+
+	case MINIMIZED:
+	{
+		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW | WS_MINIMIZE, false);
+
+		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW | WS_MINIMIZE,
+			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			NULL, NULL, GetModuleHandleW(0), 0);
+	}
+	break;
+	}
+	
+	if (wndHandle)
+	{
+		ShowWindow(wndHandle, SW_SHOW);
+		return SUCCESS;
+	}
+	else
+		return FAILURE;
 }
 
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int height, GWindowStyle _style)

@@ -1,27 +1,14 @@
 #pragma once
-
-#include "../../Source/G_System/GI_Static.cpp"
-#include "../../Interface/G_System/GWindow.h"
+//#include "../../Source/G_System/GI_Static.cpp"
+//#include "../../Interface/G_System/GWindow.h"
 
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 
-namespace
-{
-	//! Map of Listeners to send event information to.
-	std::map<GListener *, unsigned long long> listeners;
-
-#ifdef _WIN32
-
-	//Variables
-
-	//! Store the users implementation of the windows procedure.
-	LONG_PTR _userWinProc;
-
-
 	//Methods
-	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
+	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) 
+	{
 		switch (msg)
 		{
 		case WM_SIZE:
@@ -119,8 +106,8 @@ namespace
 		{
 			break;
 		}
-		return CallWindowProcW((WNDPROC)_userWinProc, window, msg, wp, lp);
+		return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
 		}
-#endif
+		Sleep(0);
+
 	}
-}
