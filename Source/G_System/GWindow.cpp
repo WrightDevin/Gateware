@@ -2,6 +2,7 @@
 #include "../../Source/DLL_Export_Symbols.h"
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GWindow.h"
+#include "GUtility.h"
 
 using namespace GW;
 using namespace CORE;
@@ -44,10 +45,12 @@ public:
 	AppWindow();
 	virtual ~AppWindow();
 
-	 GReturn OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
+	 GReturn OpenWindow();
 	 
 	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
-	
+	 
+	 GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
+
 	 GReturn MoveWindow(int _x, int _y);
 
 	 GReturn ResizeWindow(int _width, int _height);
@@ -93,13 +96,10 @@ AppWindow::~AppWindow()
 
 }
 
-GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
+GReturn AppWindow::OpenWindow()
 {
 	if (wndHandle)
 		return REDUNDANT_OPERATION;
-
-	if (_x < 0 || _y < 0 || _width < 0 || _height < 0)
-		return INVALID_ARGUMENT;
 
 	WNDCLASSEX winClass;
 	ZeroMemory(&winClass, sizeof(WNDCLASSEX));
@@ -116,32 +116,10 @@ GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int _height, GWindowSt
 	winClass.style = CS_HREDRAW | CS_VREDRAW;
 
 	RegisterClassExW(&winClass);
+
+	RECT windowRect = { xPos, yPos, width, height };
 	
-	int width, height, x, y = 0;
-
-	if (_width > 1920)
-		width = 1920;
-	else
-		width = _width;
-
-	if (_height > 1080)
-		height = 1080;
-	else
-		height = _height;
-
-	if (_x > 1920)
-		x = 1920;
-	else
-		x = _x;
-
-	if (_y > 1080)
-		y = 1080;
-	else
-		y = _y;
-
-	RECT windowRect = { x, y, width, height };
-	
-	switch (_style)
+	switch (style)
 	{
 	case WINDOWEDBORDERED:
 	{
@@ -150,6 +128,9 @@ GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int _height, GWindowSt
 		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW,
 			0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
 			NULL, NULL, GetModuleHandleW(0), 0);
+
+		if(!wndHandle)
+			printf("CreateWindowW error: %d\r\n", GetLastError());
 	}
 	break;
 
@@ -203,19 +184,82 @@ GReturn AppWindow::OpenWindow(int _x, int _y, int _width, int _height, GWindowSt
 		return FAILURE;
 }
 
-GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int height, GWindowStyle _style)
+GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
-	return FAILURE;
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+
+	GReturn Gret = InitWindow(_x, _y, _width, _height, _style);
+	if (Gret != SUCCESS)
+		return Gret;
+
+	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
+	if (Winret == 0)
+		return FAILURE;
+	else
+		return SUCCESS;
+}
+
+GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
+{
+	if (_x < 0 || _y < 0 || _width < 0 || _height < 0 || _style < 0 || _style > 4)
+		return INVALID_ARGUMENT;
+
+	if (_width > 1920)
+		width = 1920;
+	else
+		width = _width;
+
+	if (_height > 1080)
+		height = 1080;
+	else
+		height = _height;
+
+	if (_x > 1920)
+		xPos = 1920;
+	else
+		xPos = _x;
+
+	if (_y > 1080)
+		yPos = 1080;
+	else
+		yPos = _y;
+
+	style = _style;
+	
+	return SUCCESS;
 }
 
 GReturn AppWindow::MoveWindow(int _x, int _y)
 {
-	return FAILURE;
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+
+	GReturn Gret = InitWindow(_x, _y, width, height, style);
+	if (Gret != SUCCESS)
+		return Gret;
+
+	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
+	if (Winret == 0)
+		return FAILURE;
+	else
+		return SUCCESS;
 }
 
 GReturn AppWindow::ResizeWindow(int _width, int _height)
 {
-	return FAILURE;
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+
+	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
+	if (Gret != SUCCESS)
+		return Gret;
+
+	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
+	if (Winret == 0)
+		return FAILURE;
+	else
+		return SUCCESS;
 }
 
 GReturn AppWindow::Maximize()
@@ -235,22 +279,68 @@ GReturn AppWindow::ChangeWindowStyle(GWindowStyle _style)
 
 GReturn AppWindow::GetCount(unsigned int& _outCount)
 {
-	return FAILURE;
+	_outCount = refCount;
+	return SUCCESS;
 }
 
 GReturn AppWindow::IncrementCount()
 {
-	return FAILURE;
+	//Check for possible overflow.
+	if (refCount == G_UINT_MAX)
+		return FAILURE;
+
+	++refCount;
+
+	return SUCCESS;
 }
 
 GReturn AppWindow::DecrementCount()
 {
-	return FAILURE;
+	//Check to make sure underflow will not occur.
+	if (refCount == 0)
+	{
+		delete this;
+		return FAILURE;
+	}
+		
+	--refCount;
+
+	return SUCCESS;
 }
 
 GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputInterface)
 {
-	return FAILURE;
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (_interfaceID == GWindowUUIID)
+	{
+		GWindow* convert = reinterpret_cast<GWindow*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GBroadcastingUUIID)
+	{
+		GBroadcasting* convert = reinterpret_cast<GBroadcasting*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GMultiThreadedUUIID)
+	{
+		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
+	return SUCCESS;
 }
 
 GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
@@ -265,27 +355,27 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 int AppWindow::GetWidth()
 {
-	return -1;
+	return width;
 }
 
 int AppWindow::GetHeight()
 {
-	return -1;
+	return height;
 }
 
 int AppWindow::GetX()
 {
-	return -1;
+	return xPos;
 }
 
 int AppWindow::GetY()
 {
-	return -1;
+	return yPos;
 }
 
 void* AppWindow::GetWindowHandle()
 {
-	return nullptr;
+	return wndHandle;
 }
 
 bool AppWindow::IsFullscreen()
@@ -305,6 +395,15 @@ GReturn GW::SYSTEM::CreateGWindow(int _x, int _y, int _width, int _height, GWind
 
 	AppWindow* Window = new AppWindow();
 
+	if (Window == nullptr)
+		return FAILURE;
+
+	GReturn Gret = Window->InitWindow(_x, _y, _width, _height, _style);
+
+	if (Gret == INVALID_ARGUMENT)
+		return Gret;
+
 	*_outWindow = Window;
-	return FAILURE;
+
+	return SUCCESS;
 }

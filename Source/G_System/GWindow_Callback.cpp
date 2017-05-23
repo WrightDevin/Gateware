@@ -108,6 +108,6 @@ using namespace SYSTEM;
 		}
 		return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
 		}
-		Sleep(0);
+		//Sleep(0);
 
 	}

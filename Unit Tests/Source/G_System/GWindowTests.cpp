@@ -34,12 +34,11 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 
 TEST_CASE("Open a Window.", "[OpenWindow]")
 {
-	// Fail case
-	CHECK(appWindow->OpenWindow(-1, -1, -1, -1, WINDOWEDBORDERED) == INVALID_ARGUMENT);
+	// Pass case
+	REQUIRE(G_SUCCESS(appWindow->OpenWindow()));
 
-	// Pass cases
-	REQUIRE(G_SUCCESS(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED)));
-	REQUIRE(appWindow->OpenWindow(100, 100, 500, 500, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
+	// Fail case
+	REQUIRE(appWindow->OpenWindow() == REDUNDANT_OPERATION);
 }
 
 TEST_CASE("GWindow Register Listeners.", "[RegisterListener]")

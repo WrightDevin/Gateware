@@ -78,25 +78,18 @@ namespace GW
 
 		public:
 			
-			//! Creates and displays a window.
+			//! Initializes a window handle and displays a window.
 			/*!
-			*	The window is opened with the size, position and style specified in the parameters.
-			*   If width and height are greater than the native resolution, the passed in
-			*   GWindowStyle will be overwritten to be the fullscreen version if it is not already.
-			*	If the passed in style is not a valid style, WINDOWEDBORDERED will be used as default.
-			*
-			*	\param [in] _x The x position of the window on the screen.
-			*	\param [in] _y The y position of the window on the screen.
-			*	\param [in] _width The width of the window.
-			*	\param [in] _height The height of the window.
-			*	\param [in] _style The style of the window. (see GWindowStyle for style options)
+			*	The window is opened with the size, position and style specified in the parameters
+			*	passed into the CreateGWindow function. Parameters were checked for invalid values
+			*	during the initialization of the window after creation, so it is assumed the window
+			*	has valid parameters before this function is called.
 			*
 			*	\retval SUCCESS The window was successfully created and displayed.
-			*	\retval INVALID_ARGUMENT One of the size parameters are outside the limits of the hardware.
 			*	\retval REDUNDANT_OPERATION The GWindow object already has a window open
 			*	\retval FAILURE The window could not be created.
 			*/
-			virtual GReturn OpenWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+			virtual GReturn OpenWindow() = 0;
 
 			//! Gives the currently opened window the specified size, position and style.
 			/*!
