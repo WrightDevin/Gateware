@@ -1,6 +1,4 @@
 #pragma once
-//#include "../../Source/G_System/GI_Static.cpp"
-//#include "../../Interface/G_System/GWindow.h"
 
 using namespace GW;
 using namespace CORE;

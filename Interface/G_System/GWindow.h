@@ -93,8 +93,10 @@ namespace GW
 
 			//! Gives the currently opened window the specified size, position and style.
 			/*!
-			*	If width and height are greater than the native resolution, the passed in
+			*	If width and height are equal to or greater than the native resolution, the passed in
 			*	GWindowStyle will be overwritten to be the fullscreen version if it is not already.
+			*	If position parameters are less than 0 then 0 will be used. If position parameters 
+			*	are greater than native resoultion, maximum native resolution parameters will be used.
 			*
 			*	\param [in] _x The x position on screen to move the window to.
 			*	\param [in] _y The y position on screen to move the window to.
@@ -110,13 +112,14 @@ namespace GW
 
 			//! Repositions the currently opened window to the specified x and y pixels on screen.
 			/*!
-			*	X and Y upper-limits are based on the native resolution of the user.
-			*
+			*	If position parameters are less than 0 then 0 will be used. If position parameters 
+			*	are greater than native resoultion, maximum native resolution parameters will be used.
+			*   
 			*	\param [in] _x The x position on screen to move the window to.
 			*	\param [in] _y The y position on screen to move the window to.
 			*
 			*	\retval SUCCESS The window was successfully moved.
-			*	\retval INVALID_ARGUMENT One of the position parameters are outside the limits of the hardware.
+			*	\retval INVALID_ARGUMENT The style passed in is invalid
 			*   \retval REDUNDANT_OPERATION No window exists to move.	
 			*/	
 			virtual GReturn MoveWindow(int _x, int _y) = 0;
@@ -125,6 +128,8 @@ namespace GW
 			/*!
 			*	If width and height are greater than the native resolution, the GWindowStyle 
 			*	will be overwritten to be the fullscreen version if it is not already.
+			*   If position parameters are less than 0 then 0 will be used. If position parameters 
+			*	are greater than native resoultion, maximum native resolution parameters will be used.
 			*
 			*	\param [in] _x The width to resize the window to.
 			*	\param [in] _y The height to resize the window to.
@@ -151,7 +156,8 @@ namespace GW
 			*	style if it is not already.
 			*
 			*	\retval SUCCESS The window was successfully minimized.
-			*   \retval REDUNDANT_OPERATION No window exists to minimize.
+			*   \retval REDUNDANT_OPERATION No window exists to minimize 
+			*								or window is already maximized.
 			*/
 			virtual GReturn Minimize() = 0;
 

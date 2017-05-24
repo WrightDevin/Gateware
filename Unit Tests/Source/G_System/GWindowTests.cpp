@@ -20,10 +20,6 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 {
 	// Fail cases
 	CHECK(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, nullptr) == INVALID_ARGUMENT);
-	CHECK(CreateGWindow(-1, -1, -1, -1, MINIMIZED, &appWindow) == INVALID_ARGUMENT);
-
-	// Set up unopened Window
-	CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, &appWindow)));
@@ -56,7 +52,7 @@ TEST_CASE("GWindow Register Listeners.", "[RegisterListener]")
 TEST_CASE("Reconfigure the open Window.", "[ReconfigureWindow]")
 {
 	// Fail cases
-	CHECK(appWindow->ReconfigureWindow(-1, -1, -1, -1, WINDOWEDBORDERLESS) == INVALID_ARGUMENT);
+	CHECK(appWindow->ReconfigureWindow(-1, -1, -1, -1, (GWindowStyle)20) == INVALID_ARGUMENT);
 	CHECK(unopenedWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
 
 	// Pass cases
@@ -66,7 +62,6 @@ TEST_CASE("Reconfigure the open Window.", "[ReconfigureWindow]")
 TEST_CASE("Moving Window.", "[MoveWindow]")
 {
 	// Fail cases
-	CHECK(appWindow->MoveWindow(-1, -1) == INVALID_ARGUMENT);
 	CHECK(unopenedWindow->MoveWindow(42, 42) == REDUNDANT_OPERATION);
 
 	// Pass cases
@@ -76,7 +71,6 @@ TEST_CASE("Moving Window.", "[MoveWindow]")
 TEST_CASE("Resizing Window.", "[ResizeWindow]")
 {
 	// Fail cases
-	CHECK(appWindow->ResizeWindow(-1, -1) == INVALID_ARGUMENT);
 	CHECK(unopenedWindow->ResizeWindow(300, 300) == REDUNDANT_OPERATION);
 	CHECK(unopenedWindow->Maximize() == REDUNDANT_OPERATION);
 	CHECK(unopenedWindow->Minimize() == REDUNDANT_OPERATION);
@@ -98,26 +92,23 @@ TEST_CASE("Changing Window style.", "[ChangeWindowStyle]")
 
 TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [GetY]")
 {
-	// Minimize window for test
-	REQUIRE(G_SUCCESS(appWindow->Minimize()));
-
 	// Fail cases
-	CHECK(appWindow->GetWidth() == 0);
+	CHECK(G_FAIL(appWindow->GetWidth() == 0));
 	CHECK(unopenedWindow->GetHeight() == -1);
 	CHECK(unopenedWindow->GetWidth() == -1);
 	CHECK(unopenedWindow->GetX() == -1);
 	CHECK(unopenedWindow->GetY() == -1);
-	CHECK(unopenedWindow->GetWindowHandle() == nullptr);
+	CHECK(unopenedWindow->GetWindowHandle() == 0);
 	CHECK(appWindow->IsFullscreen() == false);
 
 	// Resize windows for pass tests
 	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
 
 	// Pass cases
-	REQUIRE(appWindow->GetHeight() > 0);
-	REQUIRE(appWindow->GetWidth() > 0);
-	REQUIRE(appWindow->GetX() > 0);
-	REQUIRE(appWindow->GetY() > 0);
+	REQUIRE(appWindow->GetHeight() != -1);
+	REQUIRE(appWindow->GetWidth() != -1);
+	REQUIRE(appWindow->GetX() != -1);
+	REQUIRE(appWindow->GetY() != -1);
 	REQUIRE(appWindow->IsFullscreen() == true);
 	REQUIRE(appWindow->GetWindowHandle() != nullptr);
 }
