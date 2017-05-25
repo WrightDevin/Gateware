@@ -87,11 +87,14 @@ TEST_CASE("Changing Window style.", "[ChangeWindowStyle]")
 	CHECK(unopenedWindow->ChangeWindowStyle(FULLSCREENBORDERED) == REDUNDANT_OPERATION);
 
 	// Pass case
-	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
+	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(WINDOWEDBORDERLESS)));
 }
 
 TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [GetY]")
 {
+	// Set window parameters for query tests
+	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED)));
+
 	// Fail cases
 	CHECK(G_FAIL(appWindow->GetWidth() == 0));
 	CHECK(unopenedWindow->GetHeight() == -1);
