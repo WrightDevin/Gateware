@@ -17,8 +17,6 @@ namespace
 
 	//! Store the users implementation of the windows procedure.
 	LONG_PTR userWinProc;
-	//! Store the global handle to the Windows window.
-	//HWND wndHandle;
 }
 
 #include "../../Source/G_System/GWindow_Callback.cpp"
@@ -106,64 +104,61 @@ GReturn AppWindow::OpenWindow()
 	WNDCLASSEX winClass;
 	ZeroMemory(&winClass, sizeof(WNDCLASSEX));
 
-	winClass.hInstance = GetModuleHandleW(0);
-	LPCWSTR appName = L"GWindow Test App";
+	LPCWSTR appName = L"GWindow Application";
 	
 	winClass.cbSize = sizeof(WNDCLASSEX);
 	winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	winClass.hCursor = LoadCursorW(NULL, IDC_CROSS);
-	winClass.hIcon = LoadIconW(0, IDI_EXCLAMATION);
+	winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
 	winClass.lpfnWndProc = GWindowProc;
 	winClass.lpszClassName = appName;
-	winClass.style = CS_HREDRAW | CS_VREDRAW;
+	winClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	winClass.hInstance = GetModuleHandleW(0);
 
 	if (!RegisterClassExW(&winClass))
-		return FAILURE;
+	{
+		printf("RegisterClassExW Error : %d \n", GetLastError());
+	}
+		
 
 	RECT windowRect = { xPos, yPos, width, height };
-	
+	DWORD windowsStyle;
+
 	if (style == WINDOWEDBORDERED)
 	{
-		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
-
-		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-			xPos, yPos, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
-			NULL, NULL, winClass.hInstance, 0);
+		windowsStyle = WS_OVERLAPPEDWINDOW;
 	}
 
 	else if (style == WINDOWEDBORDERLESS)
 	{
-		AdjustWindowRect(&windowRect, WS_POPUP, false);
-
-		wndHandle = CreateWindowW(appName, L"Win32Window", WS_POPUP,
-			xPos, yPos, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
-			NULL, NULL, GetModuleHandleW(0), 0);
+		windowsStyle = WS_POPUP;
 	}
 
 	else if (style == FULLSCREENBORDERED)
 	{
-		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
-
-		wndHandle = CreateWindowW(appName, L"Win32Window", WS_OVERLAPPEDWINDOW,
-			xPos, yPos, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-			NULL, NULL, GetModuleHandleW(0), 0);
+		windowsStyle = WS_OVERLAPPEDWINDOW;
 	}
 
 	else if (style == FULLSCREENBORDERLESS)
 	{
-		AdjustWindowRect(&windowRect, WS_POPUP, false);
-
-		wndHandle = CreateWindowW(appName, L"Win32Window", WS_POPUP,
-			0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-			NULL, NULL, GetModuleHandleW(0), 0);
+		windowsStyle = WS_POPUP;
 	}
 
+	//Create the window
+	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos, 800, 800, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
 	{
-		BOOL ret = ShowWindow(wndHandle, SW_SHOWNORMAL);
-		if(ret != 0)
-			return SUCCESS;
+		if (ShowWindow(wndHandle, SW_SHOWDEFAULT) != 0)
+		{
+			printf("ShowWindow Error Message : %d \n", GetLastError());
+			return FAILURE;
+		}
+
+		SetWindowPos(wndHandle, HWND_TOP, 500, 500, 800, 800, SWP_SHOWWINDOW);
+		
+		printf("ShowWindow Error Message : %d \n", GetLastError());
+
 	}
 	else if (wndHandle && style == MINIMIZED)
 	{

@@ -22,7 +22,7 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 	CHECK(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, nullptr) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, &appWindow)));
+	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 800, 800, WINDOWEDBORDERED, &appWindow)));
 	REQUIRE(G_SUCCESS(CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow)));
 	REQUIRE(appWindow != nullptr);
 	REQUIRE(unopenedWindow != nullptr);

@@ -46,7 +46,7 @@
 		ZeroMemory(&wndClass, sizeof(WNDCLASSEX));
 
 		wndClass.cbSize = sizeof(WNDCLASSEX);
-		wndClass.style = CS_OWNDC;
+		wndClass.style = CS_HREDRAW;
 		wndClass.lpfnWndProc = WndProc;
 		wndClass.lpszClassName = L"RasterSurfaceApplication";
 		wndClass.hInstance = GetModuleHandleW(0);
