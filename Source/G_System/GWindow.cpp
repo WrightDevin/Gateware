@@ -109,7 +109,7 @@ GReturn AppWindow::OpenWindow()
 	winClass.cbSize = sizeof(WNDCLASSEX);
 	winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	winClass.hCursor = LoadCursorW(NULL, IDC_CROSS);
-	winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
+	winClass.hIcon = LoadIconW(0, IDI_EXCLAMATION);
 	winClass.lpfnWndProc = GWindowProc;
 	winClass.lpszClassName = appName;
 	winClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -120,32 +120,21 @@ GReturn AppWindow::OpenWindow()
 		printf("RegisterClassExW Error : %d \n", GetLastError());
 	}
 		
-
-	RECT windowRect = { xPos, yPos, width, height };
 	DWORD windowsStyle;
 
-	if (style == WINDOWEDBORDERED)
+	if (style == WINDOWEDBORDERED || style == FULLSCREENBORDERED)
 	{
 		windowsStyle = WS_OVERLAPPEDWINDOW;
 	}
 
-	else if (style == WINDOWEDBORDERLESS)
-	{
-		windowsStyle = WS_POPUP;
-	}
-
-	else if (style == FULLSCREENBORDERED)
-	{
-		windowsStyle = WS_OVERLAPPEDWINDOW;
-	}
-
-	else if (style == FULLSCREENBORDERLESS)
+	else if (style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
 	{
 		windowsStyle = WS_POPUP;
 	}
 
 	//Create the window
-	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos, 800, 800, NULL, NULL, GetModuleHandleW(0), 0);
+	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos, 
+							  xPos + width, yPos + height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
 	{
@@ -154,12 +143,13 @@ GReturn AppWindow::OpenWindow()
 			printf("ShowWindow Error Message : %d \n", GetLastError());
 			return FAILURE;
 		}
-
-		SetWindowPos(wndHandle, HWND_TOP, 500, 500, 800, 800, SWP_SHOWWINDOW);
-		
-		printf("ShowWindow Error Message : %d \n", GetLastError());
-
+		else
+		{
+			return SUCCESS;
+		}
+			
 	}
+
 	else if (wndHandle && style == MINIMIZED)
 	{
 		ShowWindow(wndHandle, SW_MINIMIZE);
@@ -167,6 +157,8 @@ GReturn AppWindow::OpenWindow()
 	}
 	else
 		return FAILURE;
+
+	
 }
 
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
@@ -180,8 +172,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	if (Gret != SUCCESS)
 		return Gret;
 
-	if (previousStyle != style)
-	{
 		switch (style)
 		{
 		case WINDOWEDBORDERED:
@@ -189,10 +179,17 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
 			if (winRet == 0)
+			{
+				printf("SetWindowPos Error : %d \n", GetLastError());
 				return FAILURE;
-			else
-				return SUCCESS;
+			}
 
+			if(previousStyle == MINIMIZED)
+				ShowWindow(wndHandle, SW_RESTORE);
+			else
+				ShowWindow(wndHandle, SW_SHOW);
+
+			return SUCCESS;
 		}
 		break;
 
@@ -201,65 +198,75 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
 			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
 			if (winRet == 0)
+			{
+				printf("SetWindowPos Error : %d \n", GetLastError());
 				return FAILURE;
+			}
+
+
+			if (previousStyle == MINIMIZED)
+				ShowWindow(wndHandle, SW_RESTORE);
 			else
-				return SUCCESS;
+				ShowWindow(wndHandle, SW_SHOW);
+
+			return SUCCESS;
 		}
 		break;
 
 		case FULLSCREENBORDERED:
 		{
-			RECT windowRect = { xPos, yPos, width, height };
+			RECT windowRect;
 			GetWindowRect(wndHandle, &windowRect);
 
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+			BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
+									   windowRect.bottom - windowRect.top, SWP_NOREDRAW);
 			if (winRet == 0)
 				return FAILURE;
 
-		
-			GetWindowRect(wndHandle, &windowRect);
 
-			return InitWindow(windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, style);
+			if (previousStyle == MINIMIZED)
+				ShowWindow(wndHandle, SW_RESTORE);
+			else
+				ShowWindow(wndHandle, SW_MAXIMIZE);
+
+			return SUCCESS;
 			
 		}
 		break;
 
 		case FULLSCREENBORDERLESS:
 		{
+			RECT windowRect;
+			GetWindowRect(wndHandle, &windowRect);
+
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+			BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
+				windowRect.bottom - windowRect.top, SWP_NOREDRAW);
 			if (winRet == 0)
 				return FAILURE;
 
-			RECT windowRect = { xPos, yPos, width, height };
-			GetWindowRect(wndHandle, &windowRect);
+			if (previousStyle == MINIMIZED)
+				ShowWindow(wndHandle, SW_RESTORE);
+			else
+				ShowWindow(wndHandle, SW_MAXIMIZE);
 			
-			return InitWindow(windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, style);
+			return SUCCESS;
 		}
 		break;
 
 		case MINIMIZED:
 		{
-			//SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_MINIMIZE);
-			//BOOL winRet = SetWindowPos(wndHandle, nullptr, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
-			//if (winRet == 0)
-			//	return FAILURE;
-			//
-			//RECT windowRect = { xPos, yPos, width, height };
-			//GetWindowRect(wndHandle, &windowRect);
 			ShowWindow(wndHandle, SW_MINIMIZE);
 
 			RECT windowRect = { xPos, yPos, width, height };
 			GetWindowRect(wndHandle, &windowRect);
 
-			return InitWindow(windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, style);
+			return SUCCESS;
+			//return InitWindow(windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, style);
 		}
 		break;
 		}
-	}
-	RECT windowRect = { xPos, yPos, width, height };
-	GetWindowRect(wndHandle, &windowRect);
 
 	return SUCCESS;
 }
@@ -269,39 +276,15 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 	if (_style < 0 || _style > 4)
 		return INVALID_ARGUMENT;
 
-	int xMax = GetSystemMetrics(SM_CXSCREEN);
-	int yMax = GetSystemMetrics(SM_CYSCREEN);
-
-	if (_width > xMax)
-		width = xMax;
-	else if (_width < 0)
-		width = 0;
 	else
+	{
 		width = _width;
-
-	if (_height > yMax)
-		height = yMax;
-	else if (_height < 0)
-		height = 0;
-	else
 		height = _height;
-
-	if (_x > xMax)
-		xPos = xMax;
-	else if (_x < 0)
-		xPos = 0;
-	else
 		xPos = _x;
-
-	if (_y > yMax)
-		yPos = yMax;
-	else if (_y < 0)
-		yPos = 0;
-	else
 		yPos = _y;
+		style = _style;
+	}
 
-	style = _style;
-	
 	return SUCCESS;
 }
 
@@ -331,9 +314,6 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return Gret;
 
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-
-	RECT windowRect = { xPos, yPos, width, height };
-	GetWindowRect(wndHandle, &windowRect);
 
 	if (Winret == 0)
 		return FAILURE;
@@ -530,8 +510,10 @@ bool AppWindow::IsFullscreen()
 {
 	int xMax = GetSystemMetrics(SM_CXSCREEN);
 	int yMax = GetSystemMetrics(SM_CYSCREEN);
-	
-	if (GetWidth() >= xMax && GetHeight() >= yMax)
+	int borderHeight = GetSystemMetrics(SM_CYCAPTION);
+	int resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
+
+	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
 		return true;
 	else
 		return false;

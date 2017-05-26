@@ -105,7 +105,7 @@ using namespace SYSTEM;
 			return DefWindowProcW(window, msg, wp, lp);
 			break;
 		}
-		return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
+		//return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
 		}
 		//Sleep(0);
 

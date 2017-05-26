@@ -22,7 +22,7 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 	CHECK(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, nullptr) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 800, 800, WINDOWEDBORDERED, &appWindow)));
+	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1920, 1080, WINDOWEDBORDERED, &appWindow)));
 	REQUIRE(G_SUCCESS(CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow)));
 	REQUIRE(appWindow != nullptr);
 	REQUIRE(unopenedWindow != nullptr);
@@ -56,7 +56,7 @@ TEST_CASE("Reconfigure the open Window.", "[ReconfigureWindow]")
 	CHECK(unopenedWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED) == REDUNDANT_OPERATION);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERED)));
+	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(250, 500, 1000, 1000, WINDOWEDBORDERLESS)));
 }
 
 TEST_CASE("Moving Window.", "[MoveWindow]")
@@ -87,7 +87,7 @@ TEST_CASE("Changing Window style.", "[ChangeWindowStyle]")
 	CHECK(unopenedWindow->ChangeWindowStyle(FULLSCREENBORDERED) == REDUNDANT_OPERATION);
 
 	// Pass case
-	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(WINDOWEDBORDERLESS)));
+	REQUIRE(G_SUCCESS(appWindow->ChangeWindowStyle(WINDOWEDBORDERED)));
 }
 
 TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [GetY]")
