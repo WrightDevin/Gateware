@@ -4,8 +4,9 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 
+#ifdef __WIN32
 	//Methods
-	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) 
+	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
 		switch (msg)
 		{
@@ -99,7 +100,7 @@ using namespace SYSTEM;
 			}
 		}
 		break;
-			
+
 		default:
 		{
 			return DefWindowProcW(window, msg, wp, lp);
@@ -110,3 +111,16 @@ using namespace SYSTEM;
 		//Sleep(0);
 
 	}
+#endif // __WIN32
+
+
+#ifdef __linux__
+
+    void LinuxWndProc(LINUX_WINDOW linuxWnd)
+    {
+        XEvent event;
+        XNextEvent(linuxWnd.display, &event);
+
+
+    }
+#endif // __linux__

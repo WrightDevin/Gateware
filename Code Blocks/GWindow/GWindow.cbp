@@ -79,6 +79,7 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="../../Source/G_System/GWindow.cpp" />
+		<Unit filename="../../Source/G_System/GWindow_Callback.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

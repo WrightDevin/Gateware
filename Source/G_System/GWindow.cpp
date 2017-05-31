@@ -14,30 +14,32 @@ namespace
 
 	//! Map of Listeners to send event information to.
 	std::map<GListener *, unsigned long long> listeners;
-
-	//! Store the users implementation of the windows procedure.
-	LONG_PTR userWinProc;
 }
 
 #include "../../Source/G_System/GWindow_Callback.cpp"
 #include <atomic>
 #include <mutex>
+#include <string.h>
 
 class AppWindow : public GWindow
 {
 private:
 
+#ifdef __WIN32
+	std::atomic<HWND> wndHandle;
+#elif __linux__
+    LINUX_WINDOW linuxWnd;
+#endif
+
 	std::atomic<unsigned int> refCount;
-	
+
 	std::atomic<int> xPos;
 	std::atomic<int> yPos;
 	std::atomic<int> width;
 	std::atomic<int> height;
-	
-	std::atomic<HWND> wndHandle;
 
 	GWindowStyle style;
-	unsigned int style2;
+
 	std::mutex refMutex;
 
 public:
@@ -46,19 +48,19 @@ public:
 	virtual ~AppWindow();
 
 	 GReturn OpenWindow();
-	 
+
 	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
-	 
+
 	 GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
 	 GReturn MoveWindow(int _x, int _y);
 
 	 GReturn ResizeWindow(int _width, int _height);
-	 
+
 	 GReturn Maximize();
-	 
+
 	 GReturn Minimize();
-	 
+
 	 GReturn ChangeWindowStyle(GWindowStyle _style);
 
 	 GReturn GetCount(unsigned int& _outCount);
@@ -86,9 +88,13 @@ public:
 	 bool IsFullscreen();
 };
 
-AppWindow::AppWindow() : refCount(1) , xPos(0) , yPos(0) , width(0) , height(0) , style(FULLSCREENBORDERED), style2(WINDOWEDBORDERED), wndHandle(0)
+AppWindow::AppWindow() : refCount(1) , xPos(0) , yPos(0) , width(0) , height(0) , style(FULLSCREENBORDERED)
 {
-	
+#ifdef __WIN32
+    ZeroMemory(&wndHandle, sizeof(HWND));
+#elif __linux__
+    memset(&linuxWnd, 0, sizeof(LINUX_WINDOW));
+#endif // __WIN32
 }
 
 AppWindow::~AppWindow()
@@ -98,6 +104,7 @@ AppWindow::~AppWindow()
 
 GReturn AppWindow::OpenWindow()
 {
+#ifdef __WIN32
 	if (wndHandle)
 		return REDUNDANT_OPERATION;
 
@@ -105,7 +112,7 @@ GReturn AppWindow::OpenWindow()
 	ZeroMemory(&winClass, sizeof(WNDCLASSEX));
 
 	LPCWSTR appName = L"GWindow Application";
-	
+
 	winClass.cbSize = sizeof(WNDCLASSEX);
 	winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	winClass.hCursor = LoadCursorW(NULL, IDC_CROSS);
@@ -119,7 +126,7 @@ GReturn AppWindow::OpenWindow()
 	{
 		printf("RegisterClassExW Error : %d \n", GetLastError());
 	}
-		
+
 	DWORD windowsStyle;
 
 	if (style == WINDOWEDBORDERED || style == FULLSCREENBORDERED)
@@ -133,7 +140,7 @@ GReturn AppWindow::OpenWindow()
 	}
 
 	//Create the window
-	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos, 
+	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
 							  xPos + width, yPos + height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
@@ -147,7 +154,7 @@ GReturn AppWindow::OpenWindow()
 		{
 			return SUCCESS;
 		}
-			
+
 	}
 
 	else if (wndHandle && style == MINIMIZED)
@@ -157,15 +164,22 @@ GReturn AppWindow::OpenWindow()
 	}
 	else
 		return FAILURE;
+#elif __linux__
 
-	
+return FAILURE;
+
+#endif
+
 }
 
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
+#elif __linux__
 
+#endif
 	GWindowStyle previousStyle = style;
 
 	GReturn Gret = InitWindow(_x, _y, _width, _height, _style);
@@ -176,6 +190,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		{
 		case WINDOWEDBORDERED:
 		{
+		#ifdef __WIN32
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
 			if (winRet == 0)
@@ -190,11 +205,15 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 				ShowWindow(wndHandle, SW_SHOW);
 
 			return SUCCESS;
+			#elif __linux__
+
+			#endif // __linux__
 		}
 		break;
 
 		case WINDOWEDBORDERLESS:
 		{
+		#ifdef __WIN32
 			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
 			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
 			if (winRet == 0)
@@ -210,11 +229,16 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 				ShowWindow(wndHandle, SW_SHOW);
 
 			return SUCCESS;
+
+			#elif __linux__
+
+			#endif // __linux__
 		}
 		break;
 
 		case FULLSCREENBORDERED:
 		{
+		#ifdef __WIN32
 			RECT windowRect;
 			GetWindowRect(wndHandle, &windowRect);
 
@@ -231,12 +255,16 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 				ShowWindow(wndHandle, SW_MAXIMIZE);
 
 			return SUCCESS;
-			
+
+        #elif __linux__
+
+        #endif // __linux__
 		}
 		break;
 
 		case FULLSCREENBORDERLESS:
 		{
+		#ifdef __WIN32
 			RECT windowRect;
 			GetWindowRect(wndHandle, &windowRect);
 
@@ -250,20 +278,27 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 				ShowWindow(wndHandle, SW_RESTORE);
 			else
 				ShowWindow(wndHandle, SW_MAXIMIZE);
-			
+
 			return SUCCESS;
+        #elif __linux__
+
+        #endif // __linux__
 		}
 		break;
 
 		case MINIMIZED:
 		{
+		#ifdef __WIN32
 			ShowWindow(wndHandle, SW_MINIMIZE);
 
 			RECT windowRect = { xPos, yPos, width, height };
 			GetWindowRect(wndHandle, &windowRect);
 
 			return SUCCESS;
-			//return InitWindow(windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, style);
+        #elif __linux__
+
+        #endif // __linux__
+
 		}
 		break;
 		}
@@ -290,35 +325,51 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 
 GReturn AppWindow::MoveWindow(int _x, int _y)
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
+#elif __linux__
+
+#endif // __linux__
 
 	GReturn Gret = InitWindow(_x, _y, width, height, style);
 	if (Gret != SUCCESS)
 		return Gret;
 
+#ifdef __WIN32
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-	if (Winret == 0)
+    if (Winret == 0)
 		return FAILURE;
 	else
 		return SUCCESS;
+#elif __linux__
+
+#endif // __linux__
+
 }
 
 GReturn AppWindow::ResizeWindow(int _width, int _height)
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
+#elif __linux__
 
+#endif // __linux__
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
 	if (Gret != SUCCESS)
 		return Gret;
 
+#ifdef __WIN32
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-
-	if (Winret == 0)
+    if (Winret == 0)
 		return FAILURE;
 	else
 		return SUCCESS;
+#elif __linux__
+
+#endif // __linux__
+
 }
 
 GReturn AppWindow::Maximize()
@@ -369,7 +420,7 @@ GReturn AppWindow::DecrementCount()
 		delete this;
 		return FAILURE;
 	}
-		
+
 	--refCount;
 
 	return SUCCESS;
@@ -455,6 +506,7 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 int AppWindow::GetWidth()
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return -1;
 
@@ -462,11 +514,15 @@ int AppWindow::GetWidth()
 	GetWindowRect(wndHandle, &windowRect);
 
 	width = windowRect.right - windowRect.left;
+#elif __linux__
+
+#endif // __linux__
 	return width;
 }
 
 int AppWindow::GetHeight()
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return -1;
 
@@ -474,11 +530,15 @@ int AppWindow::GetHeight()
 	GetWindowRect(wndHandle, &windowRect);
 
 	height = windowRect.bottom - windowRect.top;
+#elif __linux__
+
+#endif // __linux__
 	return height;
 }
 
 int AppWindow::GetX()
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return -1;
 
@@ -486,11 +546,15 @@ int AppWindow::GetX()
 	GetWindowRect(wndHandle, &windowRect);
 
 	xPos = windowRect.left;
+#elif __linux__
+
+#endif // __linux__
 	return xPos;
 }
 
 int AppWindow::GetY()
 {
+#ifdef __WIN32
 	if (!wndHandle)
 		return -1;
 
@@ -498,20 +562,35 @@ int AppWindow::GetY()
 	GetWindowRect(wndHandle, &windowRect);
 
 	yPos = windowRect.top;
+#elif __linux__
+
+#endif // __linux__
 	return yPos;
 }
 
 void* AppWindow::GetWindowHandle()
 {
+#ifdef __WIN32
 	return wndHandle;
+#elif __linux__
+    return linuxWnd.display;
+#endif
 }
 
 bool AppWindow::IsFullscreen()
 {
-	int xMax = GetSystemMetrics(SM_CXSCREEN);
-	int yMax = GetSystemMetrics(SM_CYSCREEN);
-	int borderHeight = GetSystemMetrics(SM_CYCAPTION);
-	int resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
+    int xMax = 0;
+    int yMax = 0;
+    int borderHeight = 0;
+    int resizeBarHeight = 0;
+#ifdef __WIN32
+	 xMax = GetSystemMetrics(SM_CXSCREEN);
+	 yMax = GetSystemMetrics(SM_CYSCREEN);
+	 borderHeight = GetSystemMetrics(SM_CYCAPTION);
+	 resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
+#elif __linux__
+
+#endif // __linux__
 
 	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
 		return true;

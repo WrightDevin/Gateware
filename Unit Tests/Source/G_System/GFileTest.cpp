@@ -234,7 +234,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		REQUIRE(strcmp(files[0], "DONOTDELETE.txt") == 0);
 		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
 		REQUIRE(strcmp(files[2], u8"g_test.gtest") == 0);
-#elif
+#elif  __linux__
 		REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
 		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
 		REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
