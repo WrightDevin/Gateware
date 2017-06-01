@@ -118,8 +118,31 @@ using namespace SYSTEM;
 
     void LinuxWndProc(LINUX_WINDOW linuxWnd)
     {
-        XEvent event;
-        XNextEvent(linuxWnd.display, &event);
+
+		XEvent event;
+		GWINDOW_EVENT_DATA eventStruct;
+
+		XNextEvent((Display*)linuxWnd.display, &event);
+
+		while (true)
+		{
+
+			switch (event.type)
+			{
+			case ConfigureNotify:
+				if (event.xconfigure.x >= 1920 && event.xconfigure.y >= 1080)
+					eventStruct.eventFlags = RESIZE;
+				else if (event
+					eventStruct.height = windowRect.top - windowRect.bottom;
+				eventStruct.width = windowRect.right - windowRect.left;
+				eventStruct.windowHandle = window;
+				eventStruct.windowX = windowRect.left;
+				eventStruct.windowY = windowRect.top;
+				break;
+
+			}
+		}
+
 
 
     }
