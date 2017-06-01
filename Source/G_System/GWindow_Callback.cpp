@@ -4,7 +4,7 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 
-#ifdef __WIN32
+#ifdef _WIN32
 	//Methods
 	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
