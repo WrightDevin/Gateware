@@ -116,12 +116,13 @@ using namespace SYSTEM;
 
 		default:
 		{
+            Sleep(0);
 			return DefWindowProcW(window, msg, wp, lp);
 			break;
 		}
 		//return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
 		}
-		//Sleep(0);
+
 
 	}
 #endif // __WIN32
@@ -129,17 +130,23 @@ using namespace SYSTEM;
 #ifdef __linux__
     void LinuxWndProc(LINUX_WINDOW linuxWnd)
     {
-        Atom propType, propHidden, prop;
+        Atom propType, propHidden, propFull, prop;
         unsigned char * propRet = NULL;
 		XEvent event;
 		GWINDOW_EVENT_DATA eventStruct;
 		Display * display = (Display*)linuxWnd.display;
 		Window window = (Window)linuxWnd.window;
-
+        Window rootRet;
+        int x, y;
+        int prevX, prevY;
+        unsigned int width, height, borderHeight, depth;
+        unsigned int prevWidth, prevHeight;
+        unsigned int eventFlag;
         int status;
 
         propType = XInternAtom(display, "_NET_WM_STATE", true);
         propHidden = XInternAtom(display, "_NET_WM_STATE_HIDDEN", true);
+        propFull = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", true);
 
 		while (true)
 		{
@@ -147,28 +154,64 @@ using namespace SYSTEM;
 			switch (event.type)
 			{
 			case ConfigureNotify:
-                status = XGetWindowProperty(display, window, propType, 0L, sizeof(Atom),
-                                            false, AnyPropertyType, nullptr, nullptr, nullptr,
-                                            nullptr, &propRet);
+            status = XGetWindowProperty(display, window, propType, 0L, sizeof(Atom),
+                                        false, AnyPropertyType, nullptr, nullptr, nullptr,
+                                        nullptr, &propRet);
+
                 if(status == Success && propRet)
                 {
-                     prop = ((Atom *)propRet)[0];
+                    prop = ((Atom *)propRet)[0];
+                    XGetGeometry(display, window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
-                     if(prop == propHidden)
-                     {
-                        //status = XGetGeometry(display, )
-                        eventStruct.eventFlags = MINIMIZE;
+                    if(prop == propHidden)
+                        eventFlag = MINIMIZE;
 
-                        if (eventStruct.eventFlags != -1)
-                        {
-                            int a = testInt;
-                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
-                            for (; iter != listeners.end(); ++iter)
-                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
-                        }
-                     }
+                    else if(prop == propFull)
+                        eventFlag = MAXIMIZE;
+
+                    else if(prevX != x || prevY != y)
+                        eventFlag = MOVE;
+
+                    else if(prevHeight != height || prevWidth != width)
+                        eventFlag = RESIZE;
+
+                     eventStruct.eventFlags = eventFlag;
+                     eventStruct.width = width;
+                     eventStruct.height = height;
+                     eventStruct.windowX = x;
+                     eventStruct.windowY = y;
+                     eventStruct.windowHandle = linuxWnd.display;
+
+                     prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+
+                    if (eventStruct.eventFlags != -1)
+                    {
+                        std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                        for (; iter != listeners.end(); ++iter)
+                            iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                    }
+
                 }
 				break;
+
+            case DestroyNotify:
+            XGetGeometry(display, window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+
+            eventStruct.eventFlags = DESTROY;
+            eventStruct.width = width;
+            eventStruct.height = height;
+            eventStruct.windowX = x;
+            eventStruct.windowY = y;
+            eventStruct.windowHandle = display;
+
+             if (eventStruct.eventFlags != -1)
+             {
+                std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                for (; iter != listeners.end(); ++iter)
+                    iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+             }
+             break;
+
 			}
 		}
     }
