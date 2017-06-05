@@ -75,11 +75,8 @@
 				</Linker>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add option="-Wall" />
-		</Compiler>
 		<Unit filename="../../Source/G_System/GWindow.cpp" />
-		<Unit filename="../../Source/G_System/GWindow_Callback.cpp" />
+		<Unit filename="../../Source/G_System/GWindow_Callback.hpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

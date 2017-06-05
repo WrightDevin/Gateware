@@ -13,10 +13,14 @@ namespace
 	// GWindow global variables.
 
 	//! Map of Listeners to send event information to.
-	std::map<GListener *, unsigned long long> listeners;
+    std::map<GListener *, unsigned long long> listeners;
+	int testInt;
 }
 
-#include "../../Source/G_System/GWindow_Callback.cpp"
+//static std::map<GListener *, unsigned long long> listeners;
+//static int testInt;
+
+#include "../../Source/G_System/GWindow_Callback.hpp"
 #include <atomic>
 #include <mutex>
 #include <string.h>

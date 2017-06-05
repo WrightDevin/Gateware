@@ -1,4 +1,17 @@
 #pragma once
+#include "../../Interface/G_System/GWindow.h"
+#include "GUtility.h"
+
+#ifdef __linux
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+#include <X11/Xutil.h>
+
+#include <map>
+
+//extern std::map<GListener *, unsigned long long> listeners;
+
+#endif
 
 using namespace GW;
 using namespace CORE;
@@ -113,37 +126,50 @@ using namespace SYSTEM;
 	}
 #endif // __WIN32
 
-
 #ifdef __linux__
-
     void LinuxWndProc(LINUX_WINDOW linuxWnd)
     {
-
+        Atom propType, propHidden, prop;
+        unsigned char * propRet = NULL;
 		XEvent event;
 		GWINDOW_EVENT_DATA eventStruct;
+		Display * display = (Display*)linuxWnd.display;
+		Window window = (Window)linuxWnd.window;
 
-		XNextEvent((Display*)linuxWnd.display, &event);
+        int status;
+
+        propType = XInternAtom(display, "_NET_WM_STATE", true);
+        propHidden = XInternAtom(display, "_NET_WM_STATE_HIDDEN", true);
 
 		while (true)
 		{
-
+            XNextEvent(display, &event);
 			switch (event.type)
 			{
 			case ConfigureNotify:
-				if (event.xconfigure.x >= 1920 && event.xconfigure.y >= 1080)
-					eventStruct.eventFlags = RESIZE;
-				else if (event
-					eventStruct.height = windowRect.top - windowRect.bottom;
-				eventStruct.width = windowRect.right - windowRect.left;
-				eventStruct.windowHandle = window;
-				eventStruct.windowX = windowRect.left;
-				eventStruct.windowY = windowRect.top;
-				break;
+                status = XGetWindowProperty(display, window, propType, 0L, sizeof(Atom),
+                                            false, AnyPropertyType, nullptr, nullptr, nullptr,
+                                            nullptr, &propRet);
+                if(status == Success && propRet)
+                {
+                     prop = ((Atom *)propRet)[0];
 
+                     if(prop == propHidden)
+                     {
+                        //status = XGetGeometry(display, )
+                        eventStruct.eventFlags = MINIMIZE;
+
+                        if (eventStruct.eventFlags != -1)
+                        {
+                            int a = testInt;
+                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                            for (; iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                        }
+                     }
+                }
+				break;
 			}
 		}
-
-
-
     }
 #endif // __linux__
