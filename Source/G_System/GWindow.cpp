@@ -4,6 +4,7 @@
 #include "../../Interface/G_System/GWindow.h"
 #include "GUtility.h"
 
+
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
@@ -13,12 +14,9 @@ namespace
 	// GWindow global variables.
 
 	//! Map of Listeners to send event information to.
-    std::map<GListener *, unsigned long long> listeners;
+	std::map<GListener *, unsigned long long> listeners;
 	int testInt;
 }
-
-//static std::map<GListener *, unsigned long long> listeners;
-//static int testInt;
 
 #include "../../Source/G_System/GWindow_Callback.hpp"
 #include <atomic>
@@ -32,7 +30,8 @@ private:
 #ifdef _WIN32
 	std::atomic<HWND> wndHandle;
 #elif __linux__
-    LINUX_WINDOW linuxWnd;
+	Display * display;
+	Window window;
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -51,53 +50,54 @@ public:
 	AppWindow();
 	virtual ~AppWindow();
 
-	 GReturn OpenWindow();
+	GReturn OpenWindow();
 
-	 GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
+	GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
-	 GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
+	GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
-	 GReturn MoveWindow(int _x, int _y);
+	GReturn MoveWindow(int _x, int _y);
 
-	 GReturn ResizeWindow(int _width, int _height);
+	GReturn ResizeWindow(int _width, int _height);
 
-	 GReturn Maximize();
+	GReturn Maximize();
 
-	 GReturn Minimize();
+	GReturn Minimize();
 
-	 GReturn ChangeWindowStyle(GWindowStyle _style);
+	GReturn ChangeWindowStyle(GWindowStyle _style);
 
-	 GReturn GetCount(unsigned int& _outCount);
+	GReturn GetCount(unsigned int& _outCount);
 
-	 GReturn IncrementCount();
+	GReturn IncrementCount();
 
-	 GReturn DecrementCount();
+	GReturn DecrementCount();
 
-	 GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 
-	 GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
+	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
 
-	 GReturn DeregisterListener(GListener* _removeListener);
+	GReturn DeregisterListener(GListener* _removeListener);
 
-	 int GetWidth();
+	int GetWidth();
 
-	 int GetHeight();
+	int GetHeight();
 
-	 int GetX();
+	int GetX();
 
-	 int GetY();
+	int GetY();
 
-	 void* GetWindowHandle();
+	void* GetWindowHandle();
 
-	 bool IsFullscreen();
+	bool IsFullscreen();
 };
 
-AppWindow::AppWindow() : refCount(1) , xPos(0) , yPos(0) , width(0) , height(0) , style(FULLSCREENBORDERED)
+AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), style(FULLSCREENBORDERED)
 {
 #ifdef _WIN32
-    ZeroMemory(&wndHandle, sizeof(HWND));
+	ZeroMemory(&wndHandle, sizeof(HWND));
 #elif __linux__
-    memset(&linuxWnd, 0, sizeof(LINUX_WINDOW));
+	display = nullptr;
+	memset(&window, 0, sizeof(window));
 #endif // __WIN32
 }
 
@@ -143,9 +143,13 @@ GReturn AppWindow::OpenWindow()
 		windowsStyle = WS_POPUP;
 	}
 
+	else if (style == MINIMIZED)
+	{
+		windowsStyle = WS_MINIMIZE;
+	}
 	//Create the window
 	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
-							  xPos + width, yPos + height, NULL, NULL, GetModuleHandleW(0), 0);
+		xPos + width, yPos + height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
 	{
@@ -168,9 +172,63 @@ GReturn AppWindow::OpenWindow()
 	}
 	else
 		return FAILURE;
-#elif __linux__
 
-return FAILURE;
+#elif __linux__
+	if (window)
+		return REDUNDANT_OPERATION;
+
+	typedef struct
+	{
+		unsigned long flags;
+		unsigned long functions;
+		unsigned long decorations;
+		long inputMode;
+		unsigned long status;
+
+	} Hints;
+
+	XSetWindowAttributes attributes;
+	Atom property;
+	unsigned long valueMask = 0;
+	XSizeHints rect;
+	Hints hint;
+	display = XOpenDisplay(NULL);
+	int screen = DefaultScreen(display);
+	int depth = DefaultDepth(display, 0);
+
+	attributes.background_pixel = XWhitePixel(display, 0);
+	attributes.border_pixel = XBlackPixel(display, 0);
+	//attributes.event_mask = KeyPressMask | StructureNotifyMask;
+	valueMask |= CWBackPixel;
+	valueMask |= CWBorderWidth;
+	valueMask |= CWEventMask;
+
+	// set rect hints
+	rect.flags = PSize | PPosition;
+
+	window = XCreateWindow(display, XRootWindow(display, screen), xPos, yPos, width, height, 10,
+		depth, CopyFromParent, CopyFromParent, valueMask, &attributes);
+
+	printf("error");
+	if (!window)
+		return FAILURE;
+
+	XStoreName(display, window, "BasicWindowApp");
+	/*
+	if(style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
+	{
+	hint.flags = 2;
+	hint.decorations = 0;
+
+	property = XInternAtom(display, "_MOTIF_WM_HINTS", 0);
+	XChangeProperty(display,window,property,property,32,PropModeReplace,(unsigned char *)&hint,5);
+	}
+	*/
+	XSetWMNormalHints(display, window, &rect);
+
+	XMapWindow(display, window)
+
+		return SUCCESS;
 
 #endif
 
@@ -190,122 +248,122 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	if (Gret != SUCCESS)
 		return Gret;
 
-		switch (style)
+	switch (style)
+	{
+	case WINDOWEDBORDERED:
+	{
+#ifdef _WIN32
+		SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
+		if (winRet == 0)
 		{
-		case WINDOWEDBORDERED:
+			printf("SetWindowPos Error : %d \n", GetLastError());
+			return FAILURE;
+		}
+
+		if (previousStyle == MINIMIZED)
+			ShowWindow(wndHandle, SW_RESTORE);
+		else
+			ShowWindow(wndHandle, SW_SHOW);
+
+		return SUCCESS;
+#elif __linux__
+
+#endif // __linux__
+	}
+	break;
+
+	case WINDOWEDBORDERLESS:
+	{
+#ifdef _WIN32
+		SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
+		BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
+		if (winRet == 0)
 		{
-		#ifdef _WIN32
-			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-			if (winRet == 0)
-			{
-				printf("SetWindowPos Error : %d \n", GetLastError());
-				return FAILURE;
-			}
-
-			if(previousStyle == MINIMIZED)
-				ShowWindow(wndHandle, SW_RESTORE);
-			else
-				ShowWindow(wndHandle, SW_SHOW);
-
-			return SUCCESS;
-			#elif __linux__
-
-			#endif // __linux__
+			printf("SetWindowPos Error : %d \n", GetLastError());
+			return FAILURE;
 		}
-		break;
-
-		case WINDOWEDBORDERLESS:
-		{
-		#ifdef _WIN32
-			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-			if (winRet == 0)
-			{
-				printf("SetWindowPos Error : %d \n", GetLastError());
-				return FAILURE;
-			}
 
 
-			if (previousStyle == MINIMIZED)
-				ShowWindow(wndHandle, SW_RESTORE);
-			else
-				ShowWindow(wndHandle, SW_SHOW);
+		if (previousStyle == MINIMIZED)
+			ShowWindow(wndHandle, SW_RESTORE);
+		else
+			ShowWindow(wndHandle, SW_SHOW);
 
-			return SUCCESS;
+		return SUCCESS;
 
-			#elif __linux__
+#elif __linux__
 
-			#endif // __linux__
-		}
-		break;
+#endif // __linux__
+	}
+	break;
 
-		case FULLSCREENBORDERED:
-		{
-		#ifdef _WIN32
-			RECT windowRect;
-			GetWindowRect(wndHandle, &windowRect);
+	case FULLSCREENBORDERED:
+	{
+#ifdef _WIN32
+		RECT windowRect;
+		GetWindowRect(wndHandle, &windowRect);
 
-			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
-									   windowRect.bottom - windowRect.top, SWP_NOREDRAW);
-			if (winRet == 0)
-				return FAILURE;
+		SetWindowLongPtr(wndHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top, SWP_NOREDRAW);
+		if (winRet == 0)
+			return FAILURE;
 
 
-			if (previousStyle == MINIMIZED)
-				ShowWindow(wndHandle, SW_RESTORE);
-			else
-				ShowWindow(wndHandle, SW_MAXIMIZE);
+		if (previousStyle == MINIMIZED)
+			ShowWindow(wndHandle, SW_RESTORE);
+		else
+			ShowWindow(wndHandle, SW_MAXIMIZE);
 
-			return SUCCESS;
+		return SUCCESS;
 
-        #elif __linux__
+#elif __linux__
 
-        #endif // __linux__
-		}
-		break;
+#endif // __linux__
+	}
+	break;
 
-		case FULLSCREENBORDERLESS:
-		{
-		#ifdef _WIN32
-			RECT windowRect;
-			GetWindowRect(wndHandle, &windowRect);
+	case FULLSCREENBORDERLESS:
+	{
+#ifdef _WIN32
+		RECT windowRect;
+		GetWindowRect(wndHandle, &windowRect);
 
-			SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
-			BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
-				windowRect.bottom - windowRect.top, SWP_NOREDRAW);
-			if (winRet == 0)
-				return FAILURE;
+		SetWindowLongPtr(wndHandle, GWL_STYLE, WS_POPUP);
+		BOOL winRet = SetWindowPos(wndHandle, nullptr, windowRect.left, windowRect.top, windowRect.right - windowRect.left,
+			windowRect.bottom - windowRect.top, SWP_NOREDRAW);
+		if (winRet == 0)
+			return FAILURE;
 
-			if (previousStyle == MINIMIZED)
-				ShowWindow(wndHandle, SW_RESTORE);
-			else
-				ShowWindow(wndHandle, SW_MAXIMIZE);
+		if (previousStyle == MINIMIZED)
+			ShowWindow(wndHandle, SW_RESTORE);
+		else
+			ShowWindow(wndHandle, SW_MAXIMIZE);
 
-			return SUCCESS;
-        #elif __linux__
+		return SUCCESS;
+#elif __linux__
 
-        #endif // __linux__
-		}
-		break;
+#endif // __linux__
+	}
+	break;
 
-		case MINIMIZED:
-		{
-		#ifdef _WIN32
-			ShowWindow(wndHandle, SW_MINIMIZE);
+	case MINIMIZED:
+	{
+#ifdef _WIN32
+		ShowWindow(wndHandle, SW_MINIMIZE);
 
-			RECT windowRect = { xPos, yPos, width, height };
-			GetWindowRect(wndHandle, &windowRect);
+		RECT windowRect = { xPos, yPos, width, height };
+		GetWindowRect(wndHandle, &windowRect);
 
-			return SUCCESS;
-        #elif __linux__
+		return SUCCESS;
+#elif __linux__
 
-        #endif // __linux__
+#endif // __linux__
 
-		}
-		break;
-		}
+	}
+	break;
+	}
 
 	return SUCCESS;
 }
@@ -324,6 +382,7 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 		style = _style;
 	}
 
+	//display = nullptr;
 	return SUCCESS;
 }
 
@@ -333,6 +392,8 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
 #elif __linux__
+	if (!display)
+		return REDUNDANT_OPERATION;
 
 #endif // __linux__
 
@@ -342,12 +403,15 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 
 #ifdef _WIN32
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-    if (Winret == 0)
+	if (Winret == 0)
 		return FAILURE;
 	else
 		return SUCCESS;
 #elif __linux__
-
+	if (XMoveWindow(display, window, xPos, yPos))
+		return SUCCESS;
+	else
+		return FAILURE;
 #endif // __linux__
 
 }
@@ -358,20 +422,25 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
 #elif __linux__
-
+	if (!display)
+		return REDUNDANT_OPERATION;
 #endif // __linux__
+
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
 	if (Gret != SUCCESS)
 		return Gret;
 
 #ifdef _WIN32
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
-    if (Winret == 0)
+	if (Winret == 0)
 		return FAILURE;
 	else
 		return SUCCESS;
 #elif __linux__
-
+	if (XResizeWindow(display, window, width, height))
+		return SUCCESS;
+	else
+		return FAILURE;
 #endif // __linux__
 
 }
@@ -519,7 +588,7 @@ int AppWindow::GetWidth()
 
 	width = windowRect.right - windowRect.left;
 #elif __linux__
-
+	width = XDisplayWidth(display, DefaultScreen(display));
 #endif // __linux__
 	return width;
 }
@@ -535,6 +604,7 @@ int AppWindow::GetHeight()
 
 	height = windowRect.bottom - windowRect.top;
 #elif __linux__
+	height = XDisplayHeight(display, DefaultScreen(display));
 
 #endif // __linux__
 	return height;
@@ -551,6 +621,14 @@ int AppWindow::GetX()
 
 	xPos = windowRect.left;
 #elif __linux__
+	XWindowAttributes attrib;
+	Window child;
+	int x, y;
+
+	XTranslateCoordinates(display, window, XRootWindow(display, DefaultScreen(display)), 0, 0, &x, &y, &child);
+	XGetWindowAttributes(display, window, &attrib);
+
+	xPos = x - attrib.x;
 
 #endif // __linux__
 	return xPos;
@@ -567,6 +645,14 @@ int AppWindow::GetY()
 
 	yPos = windowRect.top;
 #elif __linux__
+	XWindowAttributes attrib;
+	Window child;
+	int x, y;
+
+	XTranslateCoordinates(display, window, XRootWindow(display, DefaultScreen(display)), 0, 0, &x, &y, &child);
+	XGetWindowAttributes(display, window, &attrib);
+
+	yPos = y - attrib.y;
 
 #endif // __linux__
 	return yPos;
@@ -577,21 +663,21 @@ void* AppWindow::GetWindowHandle()
 #ifdef _WIN32
 	return wndHandle;
 #elif __linux__
-    return linuxWnd.display;
+	return display;
 #endif
 }
 
 bool AppWindow::IsFullscreen()
 {
-    int xMax = 0;
-    int yMax = 0;
-    int borderHeight = 0;
-    int resizeBarHeight = 0;
+	int xMax = 0;
+	int yMax = 0;
+	int borderHeight = 0;
+	int resizeBarHeight = 0;
 #ifdef _WIN32
-	 xMax = GetSystemMetrics(SM_CXSCREEN);
-	 yMax = GetSystemMetrics(SM_CYSCREEN);
-	 borderHeight = GetSystemMetrics(SM_CYCAPTION);
-	 resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
+	xMax = GetSystemMetrics(SM_CXSCREEN);
+	yMax = GetSystemMetrics(SM_CYSCREEN);
+	borderHeight = GetSystemMetrics(SM_CYCAPTION);
+	resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
 #elif __linux__
 
 #endif // __linux__
@@ -609,6 +695,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _
 
 GReturn GW::SYSTEM::CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
 {
+	int v = 9;
 	if (_outWindow == nullptr)
 		return INVALID_ARGUMENT;
 
