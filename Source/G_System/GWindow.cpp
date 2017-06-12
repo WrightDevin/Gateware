@@ -2,6 +2,8 @@
 #include "../../Source/DLL_Export_Symbols.h"
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GWindow.h"
+#include "unistd.h"
+#include <thread>
 #include "GUtility.h"
 
 
@@ -32,6 +34,29 @@ private:
 #elif __linux__
 	Display * display;
 	Window window;
+
+    std::thread* linuxLoop = nullptr;
+	Atom prop_type;
+    Atom prop_hidden;
+    Atom prop_hMax;
+    Atom prop_vMax;
+    Atom prop_remove;
+    Atom prop_hints;
+    Atom prop_iconic;
+    Atom prop_active;
+
+    typedef struct
+	{
+		unsigned long flags;
+		unsigned long functions;
+		unsigned long decorations;
+		long inputMode;
+		unsigned long status;
+
+	} Hints;
+
+	Hints hint;
+
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -97,7 +122,7 @@ AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), sty
 	ZeroMemory(&wndHandle, sizeof(HWND));
 #elif __linux__
 	display = nullptr;
-	memset(&window, 0, sizeof(window));
+	window = {0};
 #endif // __WIN32
 }
 
@@ -174,62 +199,74 @@ GReturn AppWindow::OpenWindow()
 		return FAILURE;
 
 #elif __linux__
+    XInitThreads();
 	if (window)
 		return REDUNDANT_OPERATION;
 
-	typedef struct
-	{
-		unsigned long flags;
-		unsigned long functions;
-		unsigned long decorations;
-		long inputMode;
-		unsigned long status;
-
-	} Hints;
-
 	XSetWindowAttributes attributes;
-	Atom property;
 	unsigned long valueMask = 0;
 	XSizeHints rect;
-	Hints hint;
 	display = XOpenDisplay(NULL);
 	int screen = DefaultScreen(display);
-	int depth = DefaultDepth(display, 0);
+	int depth = DefaultDepth(display, screen);
+    int x, y;
+    unsigned int wid, heig, borderHeight, depthRet;
 
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
-	//attributes.event_mask = KeyPressMask | StructureNotifyMask;
+	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask;
 	valueMask |= CWBackPixel;
-	valueMask |= CWBorderWidth;
+	//valueMask |= CWBorderWidth;
 	valueMask |= CWEventMask;
 
 	// set rect hints
 	rect.flags = PSize | PPosition;
 
-	window = XCreateWindow(display, XRootWindow(display, screen), xPos, yPos, width, height, 10,
-		depth, CopyFromParent, CopyFromParent, valueMask, &attributes);
+    x = xPos;
+    y = yPos;
+    wid = width;
+    heig = height;
 
-	printf("error");
+	window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
+		depth, InputOutput, CopyFromParent, valueMask, &attributes);
+
 	if (!window)
 		return FAILURE;
 
 	XStoreName(display, window, "BasicWindowApp");
-	/*
+
+
 	if(style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
 	{
 	hint.flags = 2;
 	hint.decorations = 0;
 
-	property = XInternAtom(display, "_MOTIF_WM_HINTS", 0);
-	XChangeProperty(display,window,property,property,32,PropModeReplace,(unsigned char *)&hint,5);
+	XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
 	}
-	*/
+
 	XSetWMNormalHints(display, window, &rect);
 
-	XMapWindow(display, window)
+	if(XMapWindow(display, window))
+	{
+        XSync(display, 0);
+        prop_type = XInternAtom(display, "_NET_WM_STATE", False);
+        prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+        prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+        prop_vMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+        prop_remove = XInternAtom(display, "_NET_WM_STATE_REMOVE", False);
+        prop_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
+        prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
+        prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
-		return SUCCESS;
+        linuxLoop = new std::thread(LinuxWndProc, display, window);
 
+        linuxLoop->detach();
+
+        return SUCCESS;
+	}
+
+    else
+        return FAILURE;
 #endif
 
 }
@@ -240,8 +277,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	if (!wndHandle)
 		return REDUNDANT_OPERATION;
 #elif __linux__
-
+    if(!display)
+        return REDUNDANT_OPERATION;
 #endif
+
 	GWindowStyle previousStyle = style;
 
 	GReturn Gret = InitWindow(_x, _y, _width, _height, _style);
@@ -268,7 +307,57 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		return SUCCESS;
 #elif __linux__
+        int x = xPos, y = yPos;
+        unsigned int w = width, h = height;
 
+        XClientMessageEvent ev;
+        memset (&ev, 0, sizeof ev);
+        ev.type = ClientMessage;
+        ev.window = window;
+        ev.message_type = prop_active;
+        ev.format = 32;
+        ev.data.l[0] = 1;
+        ev.data.l[1] = CurrentTime;
+        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
+                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+        sleep(1);
+        XFlush (display);
+
+        if(!stat)
+            return FAILURE;
+
+        XSync(display, 0);
+
+        hint.flags = 2;
+        hint.decorations = 5;
+
+        if(!XMoveResizeWindow(display, window, x, y, w, h))
+            return FAILURE;
+
+        if(!XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5))
+            return FAILURE;
+
+        XEvent unMaxEvent;
+        unMaxEvent.type = ClientMessage;
+        unMaxEvent.xclient.window = window;
+        unMaxEvent.xclient.message_type = prop_type;
+        unMaxEvent.xclient.format = 32;
+        unMaxEvent.xclient.data.l[0] = 0;
+        unMaxEvent.xclient.data.l[1] = prop_hMax;
+        unMaxEvent.xclient.data.l[2] = prop_vMax;
+        unMaxEvent.xclient.data.l[3] = 0;
+        unMaxEvent.xclient.data.l[4] = 0;
+
+        stat = XSendEvent(display, DefaultRootWindow(display), False,
+			    SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+        if (!stat)
+            return FAILURE;
+
+        sleep(1);
+        XSync(display, 0);
+
+        return SUCCESS;
 #endif // __linux__
 	}
 	break;
@@ -293,8 +382,57 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __linux__
+        int x = xPos, y = yPos;
+        unsigned int w = width, h = height;
 
+        XClientMessageEvent ev;
+        memset (&ev, 0, sizeof ev);
+        ev.type = ClientMessage;
+        ev.window = window;
+        ev.message_type = prop_active;
+        ev.format = 32;
+        ev.data.l[0] = 1;
+        ev.data.l[1] = CurrentTime;
+        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
+                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+        sleep(1);
+        XFlush (display);
+
+        if(!stat)
+            return FAILURE;
+
+        hint.flags = 2;
+        hint.decorations = 0;
+
+        if(!XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5))
+            return FAILURE;
+
+        if(!XMoveResizeWindow(display, window, x, y, w, h))
+            return FAILURE;
+
+        XEvent unMaxEvent;
+        unMaxEvent.type = ClientMessage;
+        unMaxEvent.xclient.window = window;
+        unMaxEvent.xclient.message_type = prop_type;
+        unMaxEvent.xclient.format = 32;
+        unMaxEvent.xclient.data.l[0] = 0;
+        unMaxEvent.xclient.data.l[1] = prop_hMax;
+        unMaxEvent.xclient.data.l[2] = prop_vMax;
+        unMaxEvent.xclient.data.l[3] = 0;
+        unMaxEvent.xclient.data.l[4] = 0;
+
+        stat = XSendEvent(display, window, False,
+			    SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+        if (!stat)
+            return FAILURE;
+
+        sleep(1);
+        XSync(display, 0);
+
+        return SUCCESS;
 #endif // __linux__
+
 	}
 	break;
 
@@ -320,6 +458,35 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 #elif __linux__
 
+        XClientMessageEvent ev;
+        memset (&ev, 0, sizeof ev);
+        ev.type = ClientMessage;
+        ev.window = window;
+        ev.message_type = prop_active;
+        ev.format = 32;
+        ev.data.l[0] = 1;
+        ev.data.l[1] = CurrentTime;
+        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
+                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+        sleep(1);
+        XFlush (display);
+
+        if(!stat)
+            return FAILURE;
+
+        hint.flags = 2;
+        hint.decorations = 5;
+
+        XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
+
+        if(!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
+            return FAILURE;
+
+        XSync(display, 0);
+
+            return SUCCESS;
+
 #endif // __linux__
 	}
 	break;
@@ -344,6 +511,34 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 #elif __linux__
 
+        XClientMessageEvent ev;
+        memset (&ev, 0, sizeof ev);
+        ev.type = ClientMessage;
+        ev.window = window;
+        ev.message_type = prop_active;
+        ev.format = 32;
+        ev.data.l[0] = 1;
+        ev.data.l[1] = CurrentTime;
+        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
+                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+        sleep(1);
+        XFlush (display);
+
+        if(!stat)
+            return FAILURE;
+
+        hint.flags = 2;
+        hint.decorations = 0;
+
+        XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
+
+        if(!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
+            return FAILURE;
+
+        XSync(display, 0);
+        return SUCCESS;
+
 #endif // __linux__
 	}
 	break;
@@ -358,6 +553,16 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		return SUCCESS;
 #elif __linux__
+
+        if(!XIconifyWindow(display, window, DefaultScreen(display)))
+            return FAILURE;
+
+        else
+        {
+            XFlush(display);
+            return SUCCESS;
+        }
+
 
 #endif // __linux__
 
@@ -409,7 +614,11 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		return SUCCESS;
 #elif __linux__
 	if (XMoveWindow(display, window, xPos, yPos))
-		return SUCCESS;
+	{
+        XSync(display, 0);
+        return SUCCESS;
+	}
+
 	else
 		return FAILURE;
 #endif // __linux__
@@ -438,7 +647,10 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return SUCCESS;
 #elif __linux__
 	if (XResizeWindow(display, window, width, height))
-		return SUCCESS;
+	{
+        XSync(display, 0);
+        return SUCCESS;
+	}
 	else
 		return FAILURE;
 #endif // __linux__
@@ -447,7 +659,7 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 
 GReturn AppWindow::Maximize()
 {
-	if (style == WINDOWEDBORDERED || MINIMIZED)
+	if (style == WINDOWEDBORDERED || style == MINIMIZED)
 	{
 		return ChangeWindowStyle(FULLSCREENBORDERED);
 	}
@@ -588,7 +800,17 @@ int AppWindow::GetWidth()
 
 	width = windowRect.right - windowRect.left;
 #elif __linux__
-	width = XDisplayWidth(display, DefaultScreen(display));
+    if (!display)
+        return -1;
+
+    Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
+
+    XSync(display, 0);
+
+	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
+    width = w;
 #endif // __linux__
 	return width;
 }
@@ -604,8 +826,16 @@ int AppWindow::GetHeight()
 
 	height = windowRect.bottom - windowRect.top;
 #elif __linux__
-	height = XDisplayHeight(display, DefaultScreen(display));
+    if (!display)
+        return -1;
+    Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
 
+    XSync(display, 0);
+
+	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
+    height = h;
 #endif // __linux__
 	return height;
 }
@@ -621,6 +851,9 @@ int AppWindow::GetX()
 
 	xPos = windowRect.left;
 #elif __linux__
+     if (!display)
+        return -1;
+
 	XWindowAttributes attrib;
 	Window child;
 	int x, y;
@@ -645,6 +878,9 @@ int AppWindow::GetY()
 
 	yPos = windowRect.top;
 #elif __linux__
+     if (!display)
+        return -1;
+
 	XWindowAttributes attrib;
 	Window child;
 	int x, y;
@@ -679,6 +915,32 @@ bool AppWindow::IsFullscreen()
 	borderHeight = GetSystemMetrics(SM_CYCAPTION);
 	resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
 #elif __linux__
+    Screen* scr = DefaultScreenOfDisplay(display);
+    xMax = scr->width;
+    yMax = scr->height;
+    //borderHeight = scr->mheight;
+    Atom actual_type_return, actual_type_return2;
+    int actual_format_return;
+    unsigned long nitems_return;
+    unsigned long   bytes_after_return;
+    unsigned char * prop_return = NULL;
+
+    int result = XGetWindowProperty(display, window, prop_type, 0L,
+                    sizeof(Atom),
+				    False,
+				    AnyPropertyType,
+				    &actual_type_return,
+				    &actual_format_return,
+				    &nitems_return, &bytes_after_return, &prop_return);
+
+    Atom vProp = ((Atom *)prop_return)[0];
+    Atom hProp = ((Atom *)prop_return)[1];
+
+    if(hProp == prop_hMax && vProp == prop_vMax)
+        return true;
+    else
+        return false;
+
 
 #endif // __linux__
 

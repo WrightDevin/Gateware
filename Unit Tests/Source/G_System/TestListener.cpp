@@ -33,6 +33,7 @@ GW::GReturn TestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned i
 				break;
 
 			case GW::SYSTEM::RESIZE:
+                windowTestValue = 1;
 				break;
 
 			case GW::SYSTEM::MOVE:

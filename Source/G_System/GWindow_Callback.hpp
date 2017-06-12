@@ -6,7 +6,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
-
+#include "unistd.h"
 #include <map>
 
 //extern std::map<GListener *, unsigned long long> listeners;
@@ -128,45 +128,47 @@ using namespace SYSTEM;
 #endif // __WIN32
 
 #ifdef __linux__
-    void LinuxWndProc(LINUX_WINDOW linuxWnd)
+    void LinuxWndProc(Display * _display, Window _window)
     {
         Atom propType, propHidden, propFull, prop;
         unsigned char * propRet = NULL;
 		XEvent event;
 		GWINDOW_EVENT_DATA eventStruct;
-		Display * display = (Display*)linuxWnd.display;
-		Window window = (Window)linuxWnd.window;
         Window rootRet;
         int x, y;
-        int prevX, prevY;
+        int prevX = 0; int prevY = 0;
         unsigned int width, height, borderHeight, depth;
-        unsigned int prevWidth, prevHeight;
+        unsigned int prevWidth = 0; unsigned int prevHeight = 0;
         unsigned int eventFlag;
         int status;
 
-        propType = XInternAtom(display, "_NET_WM_STATE", true);
-        propHidden = XInternAtom(display, "_NET_WM_STATE_HIDDEN", true);
-        propFull = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", true);
+        propType = XInternAtom(_display, "_NET_WM_STATE", true);
+        propHidden = XInternAtom(_display, "_NET_WM_STATE_HIDDEN", true);
+        propFull = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", true);
+        Atom a;
+        unsigned long b, c;
+        int d;
 
+        //_display = XOpenDisplay(0);
 		while (true)
 		{
-            XNextEvent(display, &event);
+            XNextEvent(_display, &event);
 			switch (event.type)
 			{
-			case ConfigureNotify:
-            status = XGetWindowProperty(display, window, propType, 0L, sizeof(Atom),
-                                        false, AnyPropertyType, nullptr, nullptr, nullptr,
-                                        nullptr, &propRet);
+			case PropertyNotify:
+
+            status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
+                                        false, AnyPropertyType, &a, &d, &b, &c, &propRet);
 
                 if(status == Success && propRet)
                 {
                     prop = ((Atom *)propRet)[0];
-                    XGetGeometry(display, window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+                    XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
                     if(prop == propHidden)
                         eventFlag = MINIMIZE;
 
-                    else if(prop == propFull)
+                    else if(prop == 301 || prop == 302)
                         eventFlag = MAXIMIZE;
 
                     else if(prevX != x || prevY != y)
@@ -180,11 +182,11 @@ using namespace SYSTEM;
                      eventStruct.height = height;
                      eventStruct.windowX = x;
                      eventStruct.windowY = y;
-                     eventStruct.windowHandle = linuxWnd.display;
+                     eventStruct.windowHandle = _display;
 
                      prevX = x; prevY = y; prevHeight = height; prevWidth = width;
 
-                    if (eventStruct.eventFlags != -1)
+                    if (eventStruct.eventFlags != -1 && listeners.size() > 0)
                     {
                         std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
                         for (; iter != listeners.end(); ++iter)
@@ -195,14 +197,14 @@ using namespace SYSTEM;
 				break;
 
             case DestroyNotify:
-            XGetGeometry(display, window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+            XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
             eventStruct.eventFlags = DESTROY;
             eventStruct.width = width;
             eventStruct.height = height;
             eventStruct.windowX = x;
             eventStruct.windowY = y;
-            eventStruct.windowHandle = display;
+            eventStruct.windowHandle = _display;
 
              if (eventStruct.eventFlags != -1)
              {
@@ -213,6 +215,7 @@ using namespace SYSTEM;
              break;
 
 			}
+        //sleep(0);
 		}
     }
 #endif // __linux__
