@@ -227,7 +227,7 @@ GReturn Input::InitializeWindows(void* _data) {
 	//KeyBoard
 	rID[0].usUsagePage = 0x01;
 	rID[0].usUsage = 0x06;
-	rID[0].dwFlags = RIDEV_NOLEGACY;
+	rID[0].dwFlags = RIDEV_EXINPUTSINK;
 	rID[0].hwndTarget = (HWND)_data;
 
 	//Mouse
