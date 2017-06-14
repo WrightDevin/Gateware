@@ -233,7 +233,7 @@ GReturn Input::InitializeWindows(void* _data) {
 	//Mouse
 	rID[1].usUsagePage = 0x01;
 	rID[1].usUsage = 0x02;
-	rID[1].dwFlags = RIDEV_NOLEGACY;
+	rID[1].dwFlags = RIDEV_EXINPUTSINK;
 	rID[1].hwndTarget = (HWND)_data;
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
