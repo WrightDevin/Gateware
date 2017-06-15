@@ -2,7 +2,11 @@
 #include "../../Source/DLL_Export_Symbols.h"
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GWindow.h"
+
+#ifdef __linux__
 #include "unistd.h"
+#endif
+
 #include <thread>
 #include "GUtility.h"
 
