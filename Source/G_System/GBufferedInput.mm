@@ -40,188 +40,188 @@
 }
 
 -(void)keyDown:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
 	//Get the key from the static list of keys.
-    _dataStruct._data = Keycodes[[theEvent keyCode]][2];
+    _dataStruct.data = Keycodes[[theEvent keyCode]][2];
 	//Call the GetKeyMask Function passing the event passed to this functions.
     [self GetKeyMask:theEvent];
 	//Set the keymask.
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
 	//Get the mouse position relative to the window.
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
 	//Get the mouse position relative to the screen.
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
 	//Send off the event.
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, KEYPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, KEYPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder keyDown:theEvent];
 }
 
 -(void)keyUp:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = Keycodes[[theEvent keyCode]][2];
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = Keycodes[[theEvent keyCode]][2];
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, KEYRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, KEYRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder keyUp:theEvent];
 }
 
 -(void)mouseDown:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_LEFT;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_LEFT;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder mouseDown:theEvent];
 }
 
 -(void)mouseUp:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_LEFT;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_LEFT;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder mouseUp:theEvent];
 }
 
 -(void)rightmouseDown:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_RIGHT;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_RIGHT;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder rightMouseDown:theEvent];
 }
 -(void)rightmouseUp:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_RIGHT;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_RIGHT;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder rightMouseUp:theEvent];
 }
 
 -(void)othermouseDown:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_MIDDLE;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_MIDDLE;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder otherMouseDown:theEvent];
 }
 
 -(void)othermouseUp:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
-    _dataStruct._data = G_BUTTON_MIDDLE;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
+    _dataStruct.data = G_BUTTON_MIDDLE;
     [self GetKeyMask:theEvent];
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
     std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
-        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+        iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
     if(self.nextResponder != nil)
         [self.nextResponder otherMouseUp:theEvent];
 }
 
 -(void)scrollWheel:(NSEvent *)theEvent{
-    G_INPUT_DATA _dataStruct;
+    GBUFFEREDINPUT_EVENT_DATA _dataStruct;
 	//Check wether the its a scroll up or down event.
     if([theEvent scrollingDeltaY] > 0){
-        _dataStruct._data = G_MOUSE_SCROLL_UP;
+        _dataStruct.data = G_MOUSE_SCROLL_UP;
     }
     if([theEvent scrollingDeltaY] < 0){
-        _dataStruct._data = G_MOUSE_SCROLL_DOWN;
+        _dataStruct.data = G_MOUSE_SCROLL_DOWN;
     }
 	//Get the keymask using the getkeymask function/
     [self GetKeyMask:theEvent];
 	//Set the keymask.
-    _dataStruct._keyMask = _keyMask;
+    _dataStruct.keyMask = keyMask;
 	//Get the mouse position relative to the window.
     NSPoint mousePosition = [theEvent locationInWindow];
-    _dataStruct._x = mousePosition.x;
-    _dataStruct._y = mousePosition.y;
+    _dataStruct.x = mousePosition.x;
+    _dataStruct.y = mousePosition.y;
 	//Get the mouse position relative to the screen.
     NSPoint screenMousePosition = [NSEvent mouseLocation];
-    _dataStruct._screenX = screenMousePosition.x;
-    _dataStruct._screenY = screenMousePosition.y;
+    _dataStruct.screenX = screenMousePosition.x;
+    _dataStruct.screenY = screenMousePosition.y;
 	//Make sure theres data to send and send the data to all registered listeners.
-    if(_dataStruct._data){
+    if(_dataStruct.data){
         std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
         for (; iter != _listeners.end(); ++iter) {
-            iter->first->OnEvent(GBufferedInputUUIID, MOUSESCROLL, (void*)&_dataStruct, sizeof(G_INPUT_DATA));
+            iter->first->OnEvent(GBufferedInputUUIID, MOUSESCROLL, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
         }
     }
     if(self.nextResponder != nil)
@@ -229,30 +229,30 @@
 }
 
 -(void)GetKeyMask:(NSEvent *)theEvent{
-    _keyMask = 0;
+    keyMask = 0;
 	//Get the unsigned int of all the modifier flags.
     NSUInteger flags = [theEvent modifierFlags];
 	//Check individual modifier flags and turn them on respectivly to our keymask(unsigned int).
     if (flags & NSEventModifierFlagShift) {
-        TURNON_BIT(_keyMask, G_MASK_SHIFT);
+        TURNON_BIT(keyMask, G_MASK_SHIFT);
     }
     if (flags & NSEventModifierFlagOption) {
-        TURNON_BIT(_keyMask, G_MASK_ALT);
+        TURNON_BIT(keyMask, G_MASK_ALT);
     }
     if (flags & NSEventModifierFlagCommand) {
-        TURNON_BIT(_keyMask, G_MASK_COMMAND);
+        TURNON_BIT(keyMask, G_MASK_COMMAND);
     }
     if (flags & NSEventModifierFlagControl) {
-        TURNON_BIT(_keyMask, G_MASK_CONTROL);
+        TURNON_BIT(keyMask, G_MASK_CONTROL);
     }
     if (flags & NSEventModifierFlagCapsLock) {
-        TURNON_BIT(_keyMask, G_MASK_CAPS_LOCK);
+        TURNON_BIT(keyMask, G_MASK_CAPS_LOCK);
     }
     if (flags & NSEventModifierFlagFunction) {
-        TURNON_BIT(_keyMask, G_MASK_FUNCTION);
+        TURNON_BIT(keyMask, G_MASK_FUNCTION);
     }
     if (flags & NSEventModifierFlagNumericPad) {
-        TURNON_BIT(_keyMask, G_MASK_NUM_LOCK);
+        TURNON_BIT(keyMask, G_MASK_NUM_LOCK);
     }
     
 }

@@ -24,22 +24,23 @@ namespace GW
 	*/
 	struct GUUIID // ALL GUUIID are stored little endian.
 	{
-		unsigned int	byte4;
-		unsigned short  byte2a;
-		unsigned short  byte2b;
-		unsigned char	byte8[8];
-
-		//For faster comparison.
 		union
 		{
-			unsigned long long part1;
-			unsigned long long part2;
+			struct
+			{
+				unsigned int	byte4;
+				unsigned short  byte2a;
+				unsigned short  byte2b;
+				unsigned char	byte8[8];
+			};
+			//For faster comparison.
+			unsigned long long parts[2];
 		};
 
 		//! Comparison operator overload.
 		bool operator==(const GUUIID& _cmp) const
 		{
-			if (part1 != _cmp.part1 || part2 != _cmp.part2)
+			if (parts[0] != _cmp.parts[0] || parts[1] != _cmp.parts[1])
 				return false;
 
 			return true;

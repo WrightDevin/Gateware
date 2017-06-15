@@ -9,8 +9,7 @@
 #include <G_System/GInput.h>
 #include <G_System/GLog.h>
 #include <G_System/GFile.h>
-
-
+#include <G_System/GWindow.h>
 //TODO: Add your library headers
 
 

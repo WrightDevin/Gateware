@@ -33,6 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\TestListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindowTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Source\CATCH.hpp">

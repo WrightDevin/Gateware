@@ -35,6 +35,20 @@
 			remoteGlobalIDString = 8F01B0441E2402D3004F4D72;
 			remoteInfo = GBufferedInput;
 		};
+		8F4D7BF01ECC9B36008FE314 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F4D7BCC1ECC981D008FE314;
+			remoteInfo = "GWindow amd64";
+		};
+		8F4D7BF21ECC9B36008FE314 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F4D7BD81ECC9A28008FE314;
+			remoteInfo = "GWindow i386";
+		};
 		8FD304351E240835007B55CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */;
@@ -70,7 +84,9 @@
 		8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLog.xcodeproj; path = GLog/GLog.xcodeproj; sourceTree = "<group>"; };
 		8F01B02D1E240290004F4D72 /* GInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GInput.xcodeproj; path = GInput/GInput.xcodeproj; sourceTree = "<group>"; };
 		8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
+		8F30464E1ECC9DD8003B6904 /* Gateware.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Gateware.xcodeproj; path = "../../Unit Tests/XCode/Gateware/Gateware.xcodeproj"; sourceTree = "<group>"; };
 		8F52C7961E60E811007845EA /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GWindow.xcodeproj; path = GWindow/GWindow.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +103,8 @@
 		8F01AFC21E2401BC004F4D72 = {
 			isa = PBXGroup;
 			children = (
+				8F30464E1ECC9DD8003B6904 /* Gateware.xcodeproj */,
+				8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */,
 				8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */,
 				8F01B02D1E240290004F4D72 /* GInput.xcodeproj */,
 				8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */,
@@ -127,6 +145,22 @@
 			children = (
 				8F01B0501E2402D4004F4D72 /* GBufferedInput.a */,
 				8FD304361E240835007B55CC /* GBufferedInput.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F30464F1ECC9DD8003B6904 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8FD6D05C1ECB5F2900D9BA05 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F4D7BF11ECC9B36008FE314 /* libGWindow amd64.a */,
+				8F4D7BF31ECC9B36008FE314 /* libGWindow i386.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -188,6 +222,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 8F30464F1ECC9DD8003B6904 /* Products */;
+					ProjectRef = 8F30464E1ECC9DD8003B6904 /* Gateware.xcodeproj */;
+				},
+				{
 					ProductGroup = 8F01B04C1E2402D3004F4D72 /* Products */;
 					ProjectRef = 8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */;
 				},
@@ -202,6 +240,10 @@
 				{
 					ProductGroup = 8F01AFFC1E240223004F4D72 /* Products */;
 					ProjectRef = 8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */;
+				},
+				{
+					ProductGroup = 8FD6D05C1ECB5F2900D9BA05 /* Products */;
+					ProjectRef = 8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -238,6 +280,20 @@
 			fileType = archive.ar;
 			path = GBufferedInput.a;
 			remoteRef = 8F01B04F1E2402D4004F4D72 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F4D7BF11ECC9B36008FE314 /* libGWindow amd64.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libGWindow amd64.a";
+			remoteRef = 8F4D7BF01ECC9B36008FE314 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F4D7BF31ECC9B36008FE314 /* libGWindow i386.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libGWindow i386.a";
+			remoteRef = 8F4D7BF21ECC9B36008FE314 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8FD304361E240835007B55CC /* GBufferedInput.a */ = {
