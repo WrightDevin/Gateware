@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F11A5901EF421A60071797C /* GWindow_Callback.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 8F11A58F1EF421A60071797C /* GWindow_Callback.hpp */; };
+		8F11A5951EF422690071797C /* GWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F11A5941EF422690071797C /* GWindow.mm */; };
+		8F11A5961EF422690071797C /* GWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F11A5941EF422690071797C /* GWindow.mm */; };
 		8F4D7BD01ECC99BB008FE314 /* GWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */; };
 		8F4D7BD11ECC99DC008FE314 /* GWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F4D7BB51ECC9609008FE314 /* GWindow.h */; };
 		8F4D7BD31ECC99F5008FE314 /* GDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F4D7BD21ECC99F5008FE314 /* GDefines.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8F11A58F1EF421A60071797C /* GWindow_Callback.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GWindow_Callback.hpp; path = ../../../Source/G_System/GWindow_Callback.hpp; sourceTree = "<group>"; };
+		8F11A5941EF422690071797C /* GWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GWindow.mm; sourceTree = "<group>"; };
 		8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GWindow.cpp; path = ../../../Source/G_System/GWindow.cpp; sourceTree = "<group>"; };
 		8F4D7BB51ECC9609008FE314 /* GWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GWindow.h; path = ../../../Interface/G_System/GWindow.h; sourceTree = "<group>"; };
 		8F4D7BCC1ECC981D008FE314 /* libGWindow amd64.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGWindow amd64.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +46,8 @@
 		8FD6D0541ECB5F2800D9BA05 = {
 			isa = PBXGroup;
 			children = (
+				8F11A5941EF422690071797C /* GWindow.mm */,
+				8F11A58F1EF421A60071797C /* GWindow_Callback.hpp */,
 				8F4D7BD21ECC99F5008FE314 /* GDefines.h */,
 				8F4D7BB51ECC9609008FE314 /* GWindow.h */,
 				8F4D7BB31ECC95EA008FE314 /* GWindow.cpp */,
@@ -64,6 +71,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F11A5901EF421A60071797C /* GWindow_Callback.hpp in Headers */,
 				8F4D7BD11ECC99DC008FE314 /* GWindow.h in Headers */,
 				8F4D7BD31ECC99F5008FE314 /* GDefines.h in Headers */,
 			);
@@ -157,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F4D7BD01ECC99BB008FE314 /* GWindow.cpp in Sources */,
+				8F11A5951EF422690071797C /* GWindow.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,6 +173,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F11A5961EF422690071797C /* GWindow.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +398,7 @@
 				8F4D7BCF1ECC981D008FE314 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8F4D7BD91ECC9A28008FE314 /* Build configuration list for PBXNativeTarget "GWindow i386" */ = {
 			isa = XCConfigurationList;
@@ -396,6 +407,7 @@
 				8F4D7BDB1ECC9A28008FE314 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8FD6D0581ECB5F2900D9BA05 /* Build configuration list for PBXProject "GWindow" */ = {
 			isa = XCConfigurationList;

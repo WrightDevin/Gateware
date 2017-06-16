@@ -9,7 +9,8 @@
 #include "unistd.h"
 #include <map>
 
-//extern std::map<GListener *, unsigned long long> listeners;
+#elif __APPLE__
+#include <map>
 
 #endif
 
@@ -219,3 +220,10 @@ using namespace SYSTEM;
 		}
     }
 #endif // __linux__
+
+#ifdef __APPLE__
+
+    GWResponder* responder = [GWResponder alloc];
+    GWDelegate*  delegate = [GWDelegate alloc];
+
+#endif
