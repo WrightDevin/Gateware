@@ -26,7 +26,7 @@
 @end
 
 #include "../../../Source/G_System/GWindow_Callback.hpp"
-extern std::map<GListener *, unsigned long long> listeners;
+//extern std::map<GListener *, unsigned long long> listeners;
 
 @implementation GWDelegate
 -(NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
@@ -154,6 +154,7 @@ extern std::map<GListener *, unsigned long long> listeners;
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
 }
+
 @end
 
 @implementation GWResponder
@@ -167,4 +168,7 @@ extern std::map<GListener *, unsigned long long> listeners;
 {
     return YES;
 }
+
+#include "../../../Source/G_System/GWindow.cpp"
+
 @end

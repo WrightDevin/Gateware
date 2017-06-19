@@ -18,6 +18,14 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 
+namespace
+{
+    // GWindow global variables.
+    
+    //! Map of Listeners to send event information to.
+    std::map<GListener *, unsigned long long> listeners;
+    int testInt;
+    
 #ifdef _WIN32
 	//Methods
 	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
@@ -227,3 +235,4 @@ using namespace SYSTEM;
     GWDelegate*  delegate = [GWDelegate alloc];
 
 #endif
+}

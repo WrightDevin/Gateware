@@ -1,13 +1,27 @@
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../../Source/DLL_Export_Symbols.h"
-#include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GWindow.h"
 
-#ifdef __linux__
+#ifdef _WIN32
+#include <Windows.h>
+#elif __linux__
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
 #include "unistd.h"
+#elif __APPLE__
+
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+#endif
 #endif
 
+#include <map>
 #include <thread>
+#include <atomic>
+#include <mutex>
+#include <string.h>
 #include "GUtility.h"
 
 
@@ -15,19 +29,16 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 
-namespace
-{
+//namespace
+//{
 	// GWindow global variables.
 
 	//! Map of Listeners to send event information to.
-	std::map<GListener *, unsigned long long> listeners;
-	int testInt;
-}
+	//std::map<GListener *, unsigned long long> listeners;
+	//int testInt;
+//}
 
 #include "../../Source/G_System/GWindow_Callback.hpp"
-#include <atomic>
-#include <mutex>
-#include <string.h>
 
 class AppWindow : public GWindow
 {
@@ -38,7 +49,7 @@ private:
 #elif __linux__
 	Display * display;
 	Window window;
-
+    
     std::thread* linuxLoop = nullptr;
 	Atom prop_type;
     Atom prop_hidden;
@@ -61,6 +72,8 @@ private:
 
 	Hints hint;
 
+#elif __APPLE__
+    NSWindow * window;
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -127,6 +140,8 @@ AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), sty
 #elif __linux__
 	display = nullptr;
 	window = {0};
+#elif __APPLE__
+    window = {0};
 #endif // __WIN32
 }
 
@@ -271,6 +286,9 @@ GReturn AppWindow::OpenWindow()
 
     else
         return FAILURE;
+    
+#elif __APPLE__
+    return FAILURE;
 #endif
 
 }
@@ -567,8 +585,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
             return SUCCESS;
         }
 
-
-#endif // __linux__
+#endif
 
 	}
 	break;
@@ -603,8 +620,10 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 #elif __linux__
 	if (!display)
 		return REDUNDANT_OPERATION;
-
-#endif // __linux__
+#elif __APPLE__
+    if(!window)
+        return REDUNDANT_OPERATION;
+#endif
 
 	GReturn Gret = InitWindow(_x, _y, width, height, style);
 	if (Gret != SUCCESS)
@@ -622,10 +641,13 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
         XSync(display, 0);
         return SUCCESS;
 	}
-
 	else
 		return FAILURE;
-#endif // __linux__
+
+#elif __APPLE__
+    return FAILURE;
+    
+#endif
 
 }
 
@@ -637,7 +659,10 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 #elif __linux__
 	if (!display)
 		return REDUNDANT_OPERATION;
-#endif // __linux__
+#elif __APPLE__
+    if(!window)
+        return REDUNDANT_OPERATION;
+#endif
 
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
 	if (Gret != SUCCESS)
@@ -657,7 +682,11 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	}
 	else
 		return FAILURE;
-#endif // __linux__
+    
+#elif __APPLE__
+    return FAILURE;
+    
+#endif
 
 }
 
@@ -806,16 +835,20 @@ int AppWindow::GetWidth()
 #elif __linux__
     if (!display)
         return -1;
-
     Window root;
     int x, y;
     unsigned int w, h, bord, depth;
-
+    
     XSync(display, 0);
-
-	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
+    
+    XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
     width = w;
-#endif // __linux__
+
+#elif __APPLE__
+    if(!window)
+        return -1;
+    width = -1;
+#endif
 	return width;
 }
 
@@ -840,7 +873,13 @@ int AppWindow::GetHeight()
 
 	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
     height = h;
-#endif // __linux__
+    
+#elif __APPLE__
+    if(!window)
+        return -1;
+    height = -1;
+    
+#endif
 	return height;
 }
 
@@ -867,7 +906,12 @@ int AppWindow::GetX()
 
 	xPos = x - attrib.x;
 
-#endif // __linux__
+#elif __APPLE__
+    if(!window)
+        return -1;
+    xPos = -1;
+    
+#endif
 	return xPos;
 }
 
@@ -894,7 +938,12 @@ int AppWindow::GetY()
 
 	yPos = y - attrib.y;
 
-#endif // __linux__
+#elif __APPLE__
+    if(!window)
+        return -1;
+    yPos = -1;
+    
+#endif
 	return yPos;
 }
 
@@ -904,6 +953,8 @@ void* AppWindow::GetWindowHandle()
 	return wndHandle;
 #elif __linux__
 	return display;
+#elif __APPLE__
+    return window;
 #endif
 }
 
@@ -945,9 +996,10 @@ bool AppWindow::IsFullscreen()
     else
         return false;
 
-
-#endif // __linux__
-
+#elif __APPLE__
+    
+#endif 
+    
 	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
 		return true;
 	else
