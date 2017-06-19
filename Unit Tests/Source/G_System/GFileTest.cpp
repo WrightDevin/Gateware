@@ -45,7 +45,7 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 #ifdef WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
 #elif __APPLE__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"XCode / Gateware / GTests / TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../Code Blocks/Unit Tests/TestDirectory")));
 #elif __linux__
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
 #endif

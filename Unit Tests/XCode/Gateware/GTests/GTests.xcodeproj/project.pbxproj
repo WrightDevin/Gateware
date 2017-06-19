@@ -23,6 +23,14 @@
 		8F841D311ECCF42100365E91 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2D1ECCF42100365E91 /* GFile.a */; };
 		8F841D321ECCF42100365E91 /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2E1ECCF42100365E91 /* GInput.a */; };
 		8F841D331ECCF42100365E91 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F841D2F1ECCF42100365E91 /* GLog.a */; };
+		8FC2A6C71EF8644B0078D909 /* GWindow .a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC2A6C61EF8644B0078D909 /* GWindow .a */; };
+		8FC2A6C91EF865260078D909 /* GWindow .a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC2A6C81EF865260078D909 /* GWindow .a */; };
+		8FC2A6D81EF866F80078D909 /* GWindow i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC2A6D71EF866F80078D909 /* GWindow i386.a */; };
+		8FC2A6D91EF8670D0078D909 /* GWindow i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC2A6D71EF866F80078D909 /* GWindow i386.a */; };
+		8FCCDBB91EF84B930082B736 /* GBufferedInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCCDBB81EF84B930082B736 /* GBufferedInput.a */; };
+		8FCCDBBB1EF84B990082B736 /* GLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCCDBBA1EF84B990082B736 /* GLog.a */; };
+		8FCCDBBD1EF84B9E0082B736 /* GInput.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCCDBBC1EF84B9E0082B736 /* GInput.a */; };
+		8FCCDBBF1EF84BA20082B736 /* GFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCCDBBE1EF84BA20082B736 /* GFile.a */; };
 		8FE15CE91E3676F7005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEA1E36771E005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEB1E367724005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
@@ -77,6 +85,14 @@
 		35EE81321E042666009FBC24 /* Release i386 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Release i386"; sourceTree = BUILT_PRODUCTS_DIR; };
 		35EE813D1E042692009FBC24 /* Release amd64 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Release amd64"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F17D7201E295E6500F1627A /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Debug/GInput.a; sourceTree = "<group>"; };
+		8F313E5B1EF8577600A5E2EE /* GWindow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GWindow.a; path = "../../../../XCode/Gateware Libraries/GWindow/build/i386/Release/GWindow.a"; sourceTree = "<group>"; };
+		8F313E5D1EF8577C00A5E2EE /* GWindow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GWindow.a; path = "../../../../XCode/Gateware Libraries/GWindow/build/i386/Release/GWindow.a"; sourceTree = "<group>"; };
+		8F313E5F1EF8578400A5E2EE /* GWindow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GWindow.a; path = "../../../../XCode/Gateware Libraries/GWindow/build/i386/Release/GWindow.a"; sourceTree = "<group>"; };
+		8F313E611EF8578900A5E2EE /* GWindow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GWindow.a; path = "../../../../XCode/Gateware Libraries/GWindow/build/i386/Release/GWindow.a"; sourceTree = "<group>"; };
+		8F313E631EF8587A00A5E2EE /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../XCode/Gateware Libraries/GWindow/build/amd64/Release/GWindow .a"; sourceTree = "<group>"; };
+		8F313E651EF8587E00A5E2EE /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../XCode/Gateware Libraries/GWindow/build/amd64/Release/GWindow .a"; sourceTree = "<group>"; };
+		8F313E671EF8588200A5E2EE /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../XCode/Gateware Libraries/GWindow/build/amd64/Release/GWindow .a"; sourceTree = "<group>"; };
+		8F313E691EF8588700A5E2EE /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../XCode/Gateware Libraries/GWindow/build/amd64/Release/GWindow .a"; sourceTree = "<group>"; };
 		8F56712D1E96A918004295FC /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Debug/GFile.a; sourceTree = "<group>"; };
 		8F56712F1E96A92F004295FC /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Debug/GInput.a; sourceTree = "<group>"; };
 		8F5671311E96A942004295FC /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Debug/GLog.a; sourceTree = "<group>"; };
@@ -95,6 +111,9 @@
 		8F841D2D1ECCF42100365E91 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../Libraries/Mac/amd64/Release/GFile.a; sourceTree = "<group>"; };
 		8F841D2E1ECCF42100365E91 /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../Libraries/Mac/amd64/Release/GInput.a; sourceTree = "<group>"; };
 		8F841D2F1ECCF42100365E91 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../Libraries/Mac/amd64/Release/GLog.a; sourceTree = "<group>"; };
+		8FC2A6C61EF8644B0078D909 /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../Libraries/Mac/amd64/Release/GWindow .a"; sourceTree = "<group>"; };
+		8FC2A6C81EF865260078D909 /* GWindow .a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow .a"; path = "../../../../Libraries/Mac/amd64/Debug/GWindow .a"; sourceTree = "<group>"; };
+		8FC2A6D71EF866F80078D909 /* GWindow i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "GWindow i386.a"; path = "../../../../Libraries/Mac/i386/Debug/GWindow i386.a"; sourceTree = "<group>"; };
 		8FC4C91E1E26C68D00066FE6 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Debug/GFile.a; sourceTree = "<group>"; };
 		8FC4C91F1E26C68D00066FE6 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Debug/GLog.a; sourceTree = "<group>"; };
 		8FC4C93D1E26C88D00066FE6 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Release/GBufferedInput.a; sourceTree = "<group>"; };
@@ -102,6 +121,11 @@
 		8FC4C93F1E26C88D00066FE6 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../gateware.git.0/Libraries/Mac/i386/Release/GLog.a; sourceTree = "<group>"; };
 		8FC4C9431E26C89F00066FE6 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Release/GBufferedInput.a; sourceTree = "<group>"; };
 		8FC4C9441E26C89F00066FE6 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../gateware.git.0/Libraries/Mac/amd64/Release/GFile.a; sourceTree = "<group>"; };
+		8FCCDBB81EF84B930082B736 /* GBufferedInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GBufferedInput.a; path = ../../../../Libraries/Mac/amd64/Debug/GBufferedInput.a; sourceTree = "<group>"; };
+		8FCCDBBA1EF84B990082B736 /* GLog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GLog.a; path = ../../../../Libraries/Mac/amd64/Debug/GLog.a; sourceTree = "<group>"; };
+		8FCCDBBC1EF84B9E0082B736 /* GInput.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GInput.a; path = ../../../../Libraries/Mac/amd64/Debug/GInput.a; sourceTree = "<group>"; };
+		8FCCDBBE1EF84BA20082B736 /* GFile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = GFile.a; path = ../../../../Libraries/Mac/amd64/Debug/GFile.a; sourceTree = "<group>"; };
+		8FCCDBC01EF84BA60082B736 /* libGWindow amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libGWindow amd64.a"; path = "../../../../Libraries/Mac/amd64/Debug/libGWindow amd64.a"; sourceTree = "<group>"; };
 		8FE15CD71E36767A005A798C /* Source */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = Source; path = ../../../Source; sourceTree = SOURCE_ROOT; };
 		8FE15CD81E367694005A798C /* Common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Common.cpp; path = ../../../Source/G_System/Common.cpp; sourceTree = SOURCE_ROOT; };
 		8FE15CD91E367694005A798C /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = ../../../Source/G_System/Common.h; sourceTree = SOURCE_ROOT; };
@@ -120,6 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC2A6D91EF8670D0078D909 /* GWindow i386.a in Frameworks */,
 				8F841D281ECCF3CE00365E91 /* GBufferedInput.a in Frameworks */,
 				8F841D291ECCF3CE00365E91 /* GFile.a in Frameworks */,
 				8F841D2A1ECCF3CE00365E91 /* GInput.a in Frameworks */,
@@ -132,6 +157,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC2A6C91EF865260078D909 /* GWindow .a in Frameworks */,
+				8FCCDBBF1EF84BA20082B736 /* GFile.a in Frameworks */,
+				8FCCDBBD1EF84B9E0082B736 /* GInput.a in Frameworks */,
+				8FCCDBBB1EF84B990082B736 /* GLog.a in Frameworks */,
+				8FCCDBB91EF84B930082B736 /* GBufferedInput.a in Frameworks */,
 				35EE81211E0425F6009FBC24 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +170,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC2A6D81EF866F80078D909 /* GWindow i386.a in Frameworks */,
 				8F841D231ECCF37F00365E91 /* GLog.a in Frameworks */,
 				8F841D211ECCF36400365E91 /* GFile.a in Frameworks */,
 				8F841D1F1ECCF35200365E91 /* GBufferedInput.a in Frameworks */,
@@ -152,6 +183,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC2A6C71EF8644B0078D909 /* GWindow .a in Frameworks */,
 				8F841D301ECCF42100365E91 /* GBufferedInput.a in Frameworks */,
 				8F841D311ECCF42100365E91 /* GFile.a in Frameworks */,
 				8F841D321ECCF42100365E91 /* GInput.a in Frameworks */,
@@ -205,6 +237,22 @@
 		35EE81131E033D3A009FBC24 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8FC2A6D71EF866F80078D909 /* GWindow i386.a */,
+				8FC2A6C81EF865260078D909 /* GWindow .a */,
+				8FC2A6C61EF8644B0078D909 /* GWindow .a */,
+				8F313E691EF8588700A5E2EE /* GWindow .a */,
+				8F313E671EF8588200A5E2EE /* GWindow .a */,
+				8F313E651EF8587E00A5E2EE /* GWindow .a */,
+				8F313E631EF8587A00A5E2EE /* GWindow .a */,
+				8F313E611EF8578900A5E2EE /* GWindow.a */,
+				8F313E5F1EF8578400A5E2EE /* GWindow.a */,
+				8F313E5D1EF8577C00A5E2EE /* GWindow.a */,
+				8F313E5B1EF8577600A5E2EE /* GWindow.a */,
+				8FCCDBC01EF84BA60082B736 /* libGWindow amd64.a */,
+				8FCCDBBE1EF84BA20082B736 /* GFile.a */,
+				8FCCDBBC1EF84B9E0082B736 /* GInput.a */,
+				8FCCDBBA1EF84B990082B736 /* GLog.a */,
+				8FCCDBB81EF84B930082B736 /* GBufferedInput.a */,
 				8F841D2C1ECCF42100365E91 /* GBufferedInput.a */,
 				8F841D2D1ECCF42100365E91 /* GFile.a */,
 				8F841D2E1ECCF42100365E91 /* GInput.a */,
@@ -546,6 +594,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				HEADER_SEARCH_PATHS = ../../../../Interface;
+				LIBRARY_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
@@ -559,6 +608,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				HEADER_SEARCH_PATHS = ../../../../Interface;
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = x86_64;
 				asfd = "";
