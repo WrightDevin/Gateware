@@ -17,6 +17,7 @@
 #endif
 #endif
 
+
 #include <map>
 #include <thread>
 #include <atomic>
@@ -74,6 +75,7 @@ private:
 
 #elif __APPLE__
     NSWindow * window;
+    NSAutoreleasePool* pool;
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -141,7 +143,7 @@ AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), sty
 	display = nullptr;
 	window = {0};
 #elif __APPLE__
-    window = {0};
+    window = nil;
 #endif // __WIN32
 }
 
@@ -193,7 +195,7 @@ GReturn AppWindow::OpenWindow()
 	}
 	//Create the window
 	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
-		xPos + width, yPos + height, NULL, NULL, GetModuleHandleW(0), 0);
+                              width, height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
 	{
@@ -288,6 +290,39 @@ GReturn AppWindow::OpenWindow()
         return FAILURE;
     
 #elif __APPLE__
+    window = nil;
+    pool = [[NSAutoreleasePool alloc] init];
+    
+    //[NSApplication sharedApplication];
+    
+    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+    
+    NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
+    
+    window = [[NSWindow alloc] initWithContentRect : windowRect
+                                         styleMask : windowStyleMask
+                                           backing : NSBackingStoreBuffered
+                                             defer : NO];
+    
+    [window setTitle:@"SampleCocoaWindow"];
+    
+    [window autorelease];
+    
+    [window makeKeyAndOrderFront : nil];
+    
+    [window makeMainWindow];
+    
+    [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    
+    [responder setNextResponder:window.nextResponder];
+    [window setNextResponder:responder];
+    [window makeFirstResponder:responder];
+    [window.contentView setNextResponder:responder];
+    
+    [window setDelegate:delegate];
+    
+    [NSApp run];
+
     return FAILURE;
 #endif
 
@@ -954,7 +989,7 @@ void* AppWindow::GetWindowHandle()
 #elif __linux__
 	return display;
 #elif __APPLE__
-    return window;
+    return (__bridge void*)window;
 #endif
 }
 
@@ -1013,7 +1048,6 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _
 
 GReturn GW::SYSTEM::CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
 {
-	int v = 9;
 	if (_outWindow == nullptr)
 		return INVALID_ARGUMENT;
 

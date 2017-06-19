@@ -85,19 +85,8 @@
 		8F01B02D1E240290004F4D72 /* GInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GInput.xcodeproj; path = GInput/GInput.xcodeproj; sourceTree = "<group>"; };
 		8F01B04B1E2402D3004F4D72 /* GBufferedInput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GBufferedInput.xcodeproj; path = GBufferedInput/GBufferedInput.xcodeproj; sourceTree = "<group>"; };
 		8F30464E1ECC9DD8003B6904 /* Gateware.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Gateware.xcodeproj; path = "../../Unit Tests/XCode/Gateware/Gateware.xcodeproj"; sourceTree = "<group>"; };
-		8F52C7961E60E811007845EA /* libGBufferedInput.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGBufferedInput.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FD6D05B1ECB5F2900D9BA05 /* GWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GWindow.xcodeproj; path = GWindow/GWindow.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		8F01B0341E2402A9004F4D72 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		8F01AFC21E2401BC004F4D72 = {
@@ -109,7 +98,6 @@
 				8F01B02D1E240290004F4D72 /* GInput.xcodeproj */,
 				8F01AFFB1E240223004F4D72 /* GLog.xcodeproj */,
 				8F01AFE51E24020B004F4D72 /* GFile.xcodeproj */,
-				8F52C7961E60E811007845EA /* libGBufferedInput.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -167,48 +155,12 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		8F01B0351E2402A9004F4D72 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
-/* Begin PBXNativeTarget section */
-		8F01B0361E2402A9004F4D72 /* GBufferedInput */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8F01B0381E2402A9004F4D72 /* Build configuration list for PBXNativeTarget "GBufferedInput" */;
-			buildPhases = (
-				8F01B0331E2402A9004F4D72 /* Sources */,
-				8F01B0341E2402A9004F4D72 /* Frameworks */,
-				8F01B0351E2402A9004F4D72 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = GBufferedInput;
-			productName = GBufferedInput;
-			productReference = 8F52C7961E60E811007845EA /* libGBufferedInput.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-/* End PBXNativeTarget section */
-
 /* Begin PBXProject section */
 		8F01AFC31E2401BC004F4D72 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "GDBS Tools";
-				TargetAttributes = {
-					8F01B0361E2402A9004F4D72 = {
-						CreatedOnToolsVersion = 8.1;
-						ProvisioningStyle = Automatic;
-					};
-				};
 			};
 			buildConfigurationList = 8F01AFC61E2401BC004F4D72 /* Build configuration list for PBXProject "Gateware Libraries" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -248,7 +200,6 @@
 			);
 			projectRoot = "";
 			targets = (
-				8F01B0361E2402A9004F4D72 /* GBufferedInput */,
 			);
 		};
 /* End PBXProject section */
@@ -285,14 +236,14 @@
 		8F4D7BF11ECC9B36008FE314 /* libGWindow amd64.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGWindow amd64.a";
+			path = "GWindow .a";
 			remoteRef = 8F4D7BF01ECC9B36008FE314 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		8F4D7BF31ECC9B36008FE314 /* libGWindow i386.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libGWindow i386.a";
+			path = GWindow.a;
 			remoteRef = 8F4D7BF21ECC9B36008FE314 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -325,16 +276,6 @@
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
-
-/* Begin PBXSourcesBuildPhase section */
-		8F01B0331E2402A9004F4D72 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		8F01AFD01E2401BC004F4D72 /* Debug */ = {
@@ -424,22 +365,6 @@
 			};
 			name = Release;
 		};
-		8F01B0391E2402A9004F4D72 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		8F01B03A1E2402A9004F4D72 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -448,15 +373,6 @@
 			buildConfigurations = (
 				8F01AFD01E2401BC004F4D72 /* Debug */,
 				8F01AFD11E2401BC004F4D72 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8F01B0381E2402A9004F4D72 /* Build configuration list for PBXNativeTarget "GBufferedInput" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8F01B0391E2402A9004F4D72 /* Debug */,
-				8F01B03A1E2402A9004F4D72 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
