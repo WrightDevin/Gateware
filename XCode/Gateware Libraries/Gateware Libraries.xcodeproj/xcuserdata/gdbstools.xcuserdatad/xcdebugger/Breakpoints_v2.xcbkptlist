@@ -29,8 +29,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "65"
             endingLineNumber = "65"
-            landmarkName = "-windowDidResize:"
-            landmarkType = "7">
+            landmarkName = "@interface GWResponder"
+            landmarkType = "2">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -56,11 +56,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "519595863.135985"
+            timestampString = "519760713.148189"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
+            startingLineNumber = "296"
+            endingLineNumber = "296"
             landmarkName = "AppWindow::OpenWindow()"
             landmarkType = "7">
          </BreakpointContent>

@@ -76,6 +76,7 @@ private:
 #elif __APPLE__
     NSWindow * window;
     NSAutoreleasePool* pool;
+    NSThread* nsMacLoop;
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -121,7 +122,7 @@ public:
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
 
 	GReturn DeregisterListener(GListener* _removeListener);
-
+    
 	int GetWidth();
 
 	int GetHeight();
@@ -290,39 +291,7 @@ GReturn AppWindow::OpenWindow()
         return FAILURE;
     
 #elif __APPLE__
-    window = nil;
-    pool = [[NSAutoreleasePool alloc] init];
     
-    //[NSApplication sharedApplication];
-    
-    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-    
-    NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
-    
-    window = [[NSWindow alloc] initWithContentRect : windowRect
-                                         styleMask : windowStyleMask
-                                           backing : NSBackingStoreBuffered
-                                             defer : NO];
-    
-    [window setTitle:@"SampleCocoaWindow"];
-    
-    [window autorelease];
-    
-    [window makeKeyAndOrderFront : nil];
-    
-    [window makeMainWindow];
-    
-    [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    
-    [responder setNextResponder:window.nextResponder];
-    [window setNextResponder:responder];
-    [window makeFirstResponder:responder];
-    [window.contentView setNextResponder:responder];
-    
-    [window setDelegate:delegate];
-    
-    [NSApp run];
-
     return FAILURE;
 #endif
 
@@ -680,10 +649,16 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		return FAILURE;
 
 #elif __APPLE__
-    return FAILURE;
+    NSRect rect = [window frame];
+    CGPoint newPos;
+    newPos.y = yPos - height;
+    newPos.x = xPos;
     
+    [window setFrame:rect display: YES animate: YES];
+        return SUCCESS;
 #endif
 
+    return FAILURE;
 }
 
 GReturn AppWindow::ResizeWindow(int _width, int _height)
@@ -719,10 +694,15 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return FAILURE;
     
 #elif __APPLE__
-    return FAILURE;
+    NSRect rect = window.frame;
+    CGSize newSize;
+    newSize.height = height;
+    newSize.width = width;
     
+    [window setFrame:rect display:YES animate:YES];
+        return SUCCESS;
 #endif
-
+    return FAILURE;
 }
 
 GReturn AppWindow::Maximize()
@@ -812,6 +792,42 @@ GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputIn
 		return INTERFACE_UNSUPPORTED;
 
 	return SUCCESS;
+}
+
+void InitMacWindow(NSWindow * _window, NSAutoreleasePool * _pool)
+{
+    _window = nil;
+    _pool = [[NSAutoreleasePool alloc] init];
+    
+    [NSApplication sharedApplication];
+    
+    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+    
+    NSRect windowRect = NSMakeRect(0, 0, 500, 500);
+    
+    _window = [[NSWindow alloc] initWithContentRect : windowRect
+                                         styleMask : windowStyleMask
+                                           backing : NSBackingStoreBuffered
+                                             defer : NO];
+    
+    [_window setTitle:@"SampleCocoaWindow"];
+    
+    [_window autorelease];
+    
+    [_window makeKeyAndOrderFront : nil];
+    
+    [_window makeMainWindow];
+    
+    [_window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    
+    [responder setNextResponder:_window.nextResponder];
+    [_window setNextResponder:responder];
+    [_window makeFirstResponder:responder];
+    [_window.contentView setNextResponder:responder];
+    
+    [_window setDelegate:delegate];
+    
+    [NSApp run];
 }
 
 GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long _eventMask)

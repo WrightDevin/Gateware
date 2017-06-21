@@ -34,7 +34,7 @@
 		8FE15CE91E3676F7005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEA1E36771E005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
 		8FE15CEB1E367724005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
-		8FE15CEC1E367729005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; };
+		8FE15CEC1E367729005A798C /* GTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8FE15CE81E3676F7005A798C /* GTests.mm */; settings = {COMPILER_FLAGS = "clang++"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */

@@ -1,6 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+
+@interface MacWindow : NSObject
+-(void) OpenMacWindow:(NSWindow *)_window toPool:(NSAutoreleasePool*)_pool;
+@end
+
 // The GWDelegate will be the delegate of the main window which will receive
 // window events
 @interface GWDelegate : NSObject
@@ -27,6 +32,44 @@
 
 #include "../../../Source/G_System/GWindow_Callback.hpp"
 //extern std::map<GListener *, unsigned long long> listeners;
+
+@implementation MacWindow
+-(void) OpenMacWindow:(NSWindow *)_window toPool:(NSAutoreleasePool *)_pool
+{
+    _window = nil;
+    _pool = [[NSAutoreleasePool alloc] init];
+    
+    [NSApplication sharedApplication];
+    
+    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+    
+    NSRect windowRect = NSMakeRect(0, 0, 500, 500);
+    
+    _window = [[NSWindow alloc] initWithContentRect : windowRect
+                                          styleMask : windowStyleMask
+                                            backing : NSBackingStoreBuffered
+                                              defer : NO];
+    
+    [_window setTitle:@"SampleCocoaWindow"];
+    
+    [_window autorelease];
+    
+    [_window makeKeyAndOrderFront : nil];
+    
+    [_window makeMainWindow];
+    
+    [_window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    
+    [responder setNextResponder:_window.nextResponder];
+    [_window setNextResponder:responder];
+    [_window makeFirstResponder:responder];
+    [_window.contentView setNextResponder:responder];
+    
+    [_window setDelegate:delegate];
+    
+    [NSApp run];
+}
+@end
 
 @implementation GWDelegate
 -(NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
