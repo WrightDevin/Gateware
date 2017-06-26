@@ -19,7 +19,7 @@
 
 
 #include <map>
-#include <thread>
+#include <thread>f
 #include <atomic>
 #include <mutex>
 #include <string.h>
@@ -292,7 +292,67 @@ GReturn AppWindow::OpenWindow()
     
 #elif __APPLE__
     
-    return FAILURE;
+    if(window)
+        return REDUNDANT_OPERATION;
+    
+    dispatch_sync(dispatch_get_main_queue(), ^ {
+        pool = [[NSAutoreleasePool alloc] init];
+        
+        [NSApplication sharedApplication];
+        
+        [NSThread detachNewThreadSelector:@selector(doNothing:) toTarget:[GWDelegate class] withObject:nil];
+        
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+        
+        [NSApp setDelegate:appDel];
+        
+        NSUInteger windowStyleMask = 0;
+        
+        if(style == FULLSCREENBORDERED || style == WINDOWEDBORDERED || style == MINIMIZED)
+            windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+        
+        NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
+        
+        window = [[NSWindow alloc] initWithContentRect : windowRect
+                                             styleMask : windowStyleMask
+                                               backing : NSBackingStoreBuffered
+                                                 defer : NO];
+        
+        [window setTitle:@"SampleCocoaWindow"];
+        
+        [window autorelease];
+        
+        [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+
+        [responder setNextResponder:window.nextResponder];
+        [window setNextResponder:responder];
+        [window makeFirstResponder:window.contentView];
+        [window.contentView setNextResponder:responder];
+        
+        [window setDelegate:delegate];
+        
+        //[window canBecomeMainWindow:YES];
+        
+        //[window makeMainWindow];
+        
+        [window makeKeyAndOrderFront : nil];
+        
+        [window toggleFullScreen:nil];
+        
+        FlushMacEventLoop();
+        } );
+    
+    if(style == FULLSCREENBORDERED || style == FULLSCREENBORDERLESS)
+    {
+        [window toggleFullScreen:nil];
+        FlushMacEventLoop();
+    }
+    
+    if([window isVisible])
+        return SUCCESS;
+    else
+        return FAILURE;
+    
 #endif
 
 }
@@ -605,6 +665,9 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 
 	else
 	{
+#ifdef __APPLE__
+        
+#endif
 		width = _width;
 		height = _height;
 		xPos = _x;
@@ -649,7 +712,7 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		return FAILURE;
 
 #elif __APPLE__
-    NSRect rect = [window frame];
+    NSRect rect = window.frame;
     CGPoint newPos;
     newPos.y = yPos - height;
     newPos.x = xPos;
@@ -794,40 +857,24 @@ GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputIn
 	return SUCCESS;
 }
 
-void InitMacWindow(NSWindow * _window, NSAutoreleasePool * _pool)
+void FlushMacEventLoop()
 {
-    _window = nil;
-    _pool = [[NSAutoreleasePool alloc] init];
-    
-    [NSApplication sharedApplication];
-    
-    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-    
-    NSRect windowRect = NSMakeRect(0, 0, 500, 500);
-    
-    _window = [[NSWindow alloc] initWithContentRect : windowRect
-                                         styleMask : windowStyleMask
-                                           backing : NSBackingStoreBuffered
-                                             defer : NO];
-    
-    [_window setTitle:@"SampleCocoaWindow"];
-    
-    [_window autorelease];
-    
-    [_window makeKeyAndOrderFront : nil];
-    
-    [_window makeMainWindow];
-    
-    [_window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    
-    [responder setNextResponder:_window.nextResponder];
-    [_window setNextResponder:responder];
-    [_window makeFirstResponder:responder];
-    [_window.contentView setNextResponder:responder];
-    
-    [_window setDelegate:delegate];
-    
-    [NSApp run];
+    while(TRUE)
+    {
+        if([NSThread isMainThread])
+        {
+            NSEvent * event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                                 untilDate:[NSDate distantPast]
+                                                    inMode:NSDefaultRunLoopMode
+                                                   dequeue:YES];
+            
+            if(event == nil)
+                break;
+            
+            [NSApp sendEvent:event];
+            [NSApp updateWindows];
+        }
+    }
 }
 
 GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
@@ -898,7 +945,8 @@ int AppWindow::GetWidth()
 #elif __APPLE__
     if(!window)
         return -1;
-    width = -1;
+    NSRect rect = window.frame;
+    width = rect.size.width;
 #endif
 	return width;
 }
@@ -928,7 +976,8 @@ int AppWindow::GetHeight()
 #elif __APPLE__
     if(!window)
         return -1;
-    height = -1;
+    NSRect rect = window.frame;
+    height = rect.size.height;
     
 #endif
 	return height;
@@ -960,7 +1009,8 @@ int AppWindow::GetX()
 #elif __APPLE__
     if(!window)
         return -1;
-    xPos = -1;
+    NSRect rect = window.frame;
+    xPos = rect.origin.x;
     
 #endif
 	return xPos;
@@ -992,7 +1042,8 @@ int AppWindow::GetY()
 #elif __APPLE__
     if(!window)
         return -1;
-    yPos = -1;
+    NSRect rect = window.frame;
+    yPos = rect.origin.y;
     
 #endif
 	return yPos;

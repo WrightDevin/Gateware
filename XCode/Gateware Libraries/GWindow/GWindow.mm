@@ -1,14 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+@interface GWMacWindow : NSObject
 
-@interface MacWindow : NSObject
--(void) OpenMacWindow:(NSWindow *)_window toPool:(NSAutoreleasePool*)_pool;
 @end
-
 // The GWDelegate will be the delegate of the main window which will receive
 // window events
-@interface GWDelegate : NSObject
+@interface GWDelegate : NSObject <NSWindowDelegate>
++(void) doNothing:(id)threadID;
 -(NSSize) windowWillResize:(NSWindow *)sender
                     toSize:(NSSize)frameSize;
 
@@ -30,48 +29,48 @@
 
 @end
 
-#include "../../../Source/G_System/GWindow_Callback.hpp"
-//extern std::map<GListener *, unsigned long long> listeners;
+@interface GWAppDelegate : NSObject <NSApplicationDelegate>
+- (void)applicationDidFinishLaunching:(NSNotification*) notification;
+@end
 
-@implementation MacWindow
--(void) OpenMacWindow:(NSWindow *)_window toPool:(NSAutoreleasePool *)_pool
+@implementation GWAppDelegate
+
+- (void)applicationDidFinishLaunching:(NSNotification*) notification
 {
-    _window = nil;
-    _pool = [[NSAutoreleasePool alloc] init];
+    [NSApp stop:nil];
+    NSPoint p;
+    p.x = 0;
+    p.y = 0;
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    NSEvent * event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                         location:p
+                                    modifierFlags:0
+                                        timestamp:0
+                                     windowNumber:0
+                                          context:nil
+                                          subtype:0
+                                            data1:0
+                                            data2:0];
     
-    [NSApplication sharedApplication];
-    
-    NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-    
-    NSRect windowRect = NSMakeRect(0, 0, 500, 500);
-    
-    _window = [[NSWindow alloc] initWithContentRect : windowRect
-                                          styleMask : windowStyleMask
-                                            backing : NSBackingStoreBuffered
-                                              defer : NO];
-    
-    [_window setTitle:@"SampleCocoaWindow"];
-    
-    [_window autorelease];
-    
-    [_window makeKeyAndOrderFront : nil];
-    
-    [_window makeMainWindow];
-    
-    [_window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    
-    [responder setNextResponder:_window.nextResponder];
-    [_window setNextResponder:responder];
-    [_window makeFirstResponder:responder];
-    [_window.contentView setNextResponder:responder];
-    
-    [_window setDelegate:delegate];
-    
-    [NSApp run];
+    [NSApp postEvent:event atStart:YES];
+    [pool drain];
 }
 @end
 
+#include "../../../Source/G_System/GWindow_Callback.hpp"
+//extern std::map<GListener *, unsigned long long> listeners;
+
 @implementation GWDelegate
++(void) doNothing:(id)threadID
+{
+    int x;
+    for(x = 0; x < 55; x++)
+    {
+        //usleep(1);
+        printf("X is %i\n", x);
+    }
+}
+
 -(NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
 {
     GWINDOW_EVENT_DATA eventData;

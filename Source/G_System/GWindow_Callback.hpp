@@ -233,6 +233,6 @@ namespace
 
     GWResponder* responder = [GWResponder alloc];
     GWDelegate*  delegate = [GWDelegate alloc];
-
+    GWAppDelegate* appDel = [GWAppDelegate alloc];
 #endif
 }
