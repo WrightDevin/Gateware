@@ -19,7 +19,7 @@
 
 
 #include <map>
-#include <thread>f
+#include <thread>
 #include <atomic>
 #include <mutex>
 #include <string.h>
@@ -320,7 +320,7 @@ GReturn AppWindow::OpenWindow()
         
         [window setTitle:@"SampleCocoaWindow"];
         
-        [window autorelease];
+        //[window autorelease];
         
         [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 
@@ -337,16 +337,15 @@ GReturn AppWindow::OpenWindow()
         
         [window makeKeyAndOrderFront : nil];
         
-        [window toggleFullScreen:nil];
-        
         FlushMacEventLoop();
-        } );
+        
     
     if(style == FULLSCREENBORDERED || style == FULLSCREENBORDERLESS)
     {
         [window toggleFullScreen:nil];
         FlushMacEventLoop();
     }
+    } );
     
     if([window isVisible])
         return SUCCESS;
@@ -364,6 +363,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return REDUNDANT_OPERATION;
 #elif __linux__
     if(!display)
+        return REDUNDANT_OPERATION;
+#elif __APPLE__
+    if(!window)
         return REDUNDANT_OPERATION;
 #endif
 
@@ -444,6 +446,27 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         XSync(display, 0);
 
         return SUCCESS;
+#elif __APPLE__
+        if([window isMiniaturized])
+            [window deminiaturize:nil];
+        
+        NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+        
+        [window setStyleMask:styleMask];
+        [window setFrame:rect display:YES];
+        
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+        
+        FlushMacEventLoop();
+        } );
+                      
+        if(window)
+        {
+            return SUCCESS;
+        }
+        
+        return FAILURE;
 #endif // __linux__
 	}
 	break;
@@ -517,6 +540,29 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         XSync(display, 0);
 
         return SUCCESS;
+        
+#elif __APPLE__
+        if([window isMiniaturized])
+            [window deminiaturize:nil];
+        
+        NSUInteger styleMask = NSWindowStyleMaskBorderless;
+        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+        
+        [window setStyleMask:styleMask];
+        [window setFrame:rect display:YES];
+        
+        [window setStyleMask:styleMask];
+
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+        FlushMacEventLoop();
+        } );
+        
+        if(window)
+        {
+            return SUCCESS;
+        }
+        
+        return FAILURE;
 #endif // __linux__
 
 	}
@@ -573,6 +619,29 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
             return SUCCESS;
 
+#elif __APPLE__
+        if([window isMiniaturized])
+            [window deminiaturize:nil];
+        
+        NSUInteger styleMask = NSWindowStyleMaskFullScreen;
+        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+        
+        [window setStyleMask:styleMask];
+        //[window setFrame:rect display:YES];
+        
+        if(!IsFullscreen())
+            [window toggleFullScreen:nil];
+
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+            FlushMacEventLoop();
+        } );
+        
+        if(window)
+        {
+            return SUCCESS;
+        }
+        
+        return FAILURE;
 #endif // __linux__
 	}
 	break;
@@ -625,6 +694,30 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         XSync(display, 0);
         return SUCCESS;
 
+#elif __APPLE__
+        if([window isMiniaturized])
+            [window deminiaturize:nil];
+        
+        NSUInteger styleMask = NSWindowStyleMaskFullScreen;
+        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+        
+        [window setStyleMask:styleMask];
+        [window setFrame:rect display:YES];
+        
+        if(!IsFullscreen())
+            [window toggleFullScreen:nil];
+        
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+        FlushMacEventLoop();
+        } );
+        
+        if(window)
+        {
+            return SUCCESS;
+        }
+        
+        return FAILURE;
+
 #endif // __linux__
 	}
 	break;
@@ -649,6 +742,28 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
             return SUCCESS;
         }
 
+#elif __APPLE__
+        if(IsFullscreen())
+        {
+            ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
+        }
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+            FlushMacEventLoop();
+        } );
+
+        if(![window isMiniaturized])
+            [window miniaturize:nil];
+
+        dispatch_sync(dispatch_get_main_queue(), ^ {
+        FlushMacEventLoop();
+        } );
+        
+        if([window isMiniaturized])
+        {
+            return SUCCESS;
+        }
+        
+        return FAILURE;
 #endif
 
 	}
@@ -717,7 +832,10 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     newPos.y = yPos - height;
     newPos.x = xPos;
     
+    dispatch_sync(dispatch_get_main_queue(), ^ {
     [window setFrame:rect display: YES animate: YES];
+    } );
+    
         return SUCCESS;
 #endif
 
@@ -762,7 +880,10 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
     newSize.height = height;
     newSize.width = width;
     
+    dispatch_sync(dispatch_get_main_queue(), ^ {
     [window setFrame:rect display:YES animate:YES];
+    } );
+    
         return SUCCESS;
 #endif
     return FAILURE;
@@ -1099,7 +1220,10 @@ bool AppWindow::IsFullscreen()
         return false;
 
 #elif __APPLE__
-    
+    if(([window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen)
+        return TRUE;
+    else
+        return FALSE;
 #endif 
     
 	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
