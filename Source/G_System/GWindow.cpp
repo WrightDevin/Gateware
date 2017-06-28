@@ -978,6 +978,7 @@ GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputIn
 	return SUCCESS;
 }
 
+#ifdef __APPLE__
 void FlushMacEventLoop()
 {
     while(TRUE)
@@ -997,6 +998,7 @@ void FlushMacEventLoop()
         }
     }
 }
+#endif
 
 GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
 {

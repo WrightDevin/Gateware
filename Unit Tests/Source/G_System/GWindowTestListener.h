@@ -1,0 +1,31 @@
+#ifndef GBUFFEREDINPUTTESTLISTENER_H
+#define GBUFFEREDINPUTTESTLISTENER_H
+
+#include <G_Core/GListener.h>
+#include <atomic>
+
+extern int windowTestValue;
+
+class GWindowTestListener : public GW::CORE::GListener
+{
+	//Needed for reference counting. ALL GATEWARE LIBRARY OBJECTS ARE REF COUNTED.
+	std::atomic<unsigned int> m_refCount;
+
+public:
+	GWindowTestListener() :m_refCount(1) {};
+	virtual ~GWindowTestListener() {};
+
+	//GListener overrides
+	GW::GReturn OnEvent(const GW::GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _sizeOfData);
+
+	//GInterface overrides
+	GW::GReturn GetCount(unsigned int &_outCount);
+	GW::GReturn IncrementCount();
+	GW::GReturn DecrementCount();
+	GW::GReturn RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface);
+
+	//Helper function for testing
+	int GetWindowTestValue();
+};
+
+#endif // TESTLISTENER_H

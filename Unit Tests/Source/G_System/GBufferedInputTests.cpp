@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "TestListener.h"
+#include "GBufferedInputTestListener.h"
 
 #include <thread>
 
@@ -38,7 +38,7 @@ TEST_CASE("CreateGBufferedInput Tests", "[CreateGBufferedInput]")
 TEST_CASE("GBufferedInput Register Listeners.", "[RegisterListener]")
 {
 	//Create our new test listener
-	listener = new TestListener();
+	listener = new GBufferedInputTestListener();
 
 	//Check that this case fails appropriately
 	CHECK(bufferedInput->RegisterListener(nullptr, 0) == GW::INVALID_ARGUMENT);

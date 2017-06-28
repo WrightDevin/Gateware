@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "TestListener.h"
+#include "GWindowTestListener.h"
 
 ///=============================================================================
 //==============================TEST CASES======================================
@@ -14,7 +14,7 @@ using namespace CORE;
 // Global variables needed for all Test Cases.
 GWindow* appWindow = nullptr; // Our window object.
 GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
-TestListener* windowListener = nullptr; // Our listener object.
+GWindowTestListener* windowListener = nullptr; // Our listener object.
 
 TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 {
@@ -40,7 +40,7 @@ TEST_CASE("Open a Window.", "[OpenWindow]")
 TEST_CASE("GWindow Register Listeners.", "[RegisterListener]")
 {
 	// Create our new test listener
-	windowListener = new TestListener();
+	windowListener = new GWindowTestListener();
 
 	// Fail case
 	CHECK(appWindow->RegisterListener(nullptr, 0) == GW::INVALID_ARGUMENT);

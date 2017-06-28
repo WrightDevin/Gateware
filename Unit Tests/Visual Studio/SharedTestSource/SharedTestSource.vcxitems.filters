@@ -30,22 +30,25 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GLogTest.cpp">
       <Filter>G_System</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\TestListener.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindowTests.cpp" />
+    <ClCompile Include="C:\Users\nicho\Desktop\Gateware\gateware.git.0\Unit Tests\Visual Studio\SharedTestSource\..\..\Source\G_System\GBufferedInputTestListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\GWindowTests.cpp" />
+    <ClCompile Include="C:\Users\nicho\Desktop\Gateware\gateware.git.0\Unit Tests\Visual Studio\SharedTestSource\..\..\Source\G_System\GWindowTestListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Source\CATCH.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\GatewareTestSuite\TestListner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\Source\G_System\TestListener.h">
+    <ClInclude Include="C:\Users\nicho\Desktop\Gateware\gateware.git.0\Unit Tests\Visual Studio\SharedTestSource\..\..\Source\G_System\GBufferedInputTestListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\nicho\Desktop\Gateware\gateware.git.0\Unit Tests\Visual Studio\SharedTestSource\..\..\Source\G_System\GWindowTestListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
