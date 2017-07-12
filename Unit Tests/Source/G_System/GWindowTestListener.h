@@ -1,5 +1,5 @@
-#ifndef GBUFFEREDINPUTTESTLISTENER_H
-#define GBUFFEREDINPUTTESTLISTENER_H
+#ifndef GWINDOWTESTLISTENER_H
+#define GWINDOWTESTLISTENER_H
 
 #include <G_Core/GListener.h>
 #include <atomic>

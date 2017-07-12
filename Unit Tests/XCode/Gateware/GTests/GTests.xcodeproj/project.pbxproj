@@ -133,8 +133,6 @@
 		8FE15CDB1E367694005A798C /* GFileTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GFileTest.cpp; path = ../../../Source/G_System/GFileTest.cpp; sourceTree = SOURCE_ROOT; };
 		8FE15CDC1E367694005A798C /* GInputTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GInputTests.cpp; path = ../../../Source/G_System/GInputTests.cpp; sourceTree = SOURCE_ROOT; };
 		8FE15CDD1E367694005A798C /* GLogTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLogTest.cpp; path = ../../../Source/G_System/GLogTest.cpp; sourceTree = SOURCE_ROOT; };
-		8FE15CDE1E367694005A798C /* TestListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestListener.cpp; path = ../../../Source/G_System/TestListener.cpp; sourceTree = SOURCE_ROOT; };
-		8FE15CDF1E367694005A798C /* TestListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestListener.h; path = ../../../Source/G_System/TestListener.h; sourceTree = SOURCE_ROOT; };
 		8FE15CE61E3676A6005A798C /* G_Core */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = G_Core; path = ../../../Source/G_Core; sourceTree = SOURCE_ROOT; };
 		8FE15CE81E3676F7005A798C /* GTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GTests.mm; path = ../../../Source/G_System/GTests.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -226,8 +224,6 @@
 				8FE15CDB1E367694005A798C /* GFileTest.cpp */,
 				8FE15CDC1E367694005A798C /* GInputTests.cpp */,
 				8FE15CDD1E367694005A798C /* GLogTest.cpp */,
-				8FE15CDE1E367694005A798C /* TestListener.cpp */,
-				8FE15CDF1E367694005A798C /* TestListener.h */,
 				8FE15CD71E36767A005A798C /* Source */,
 			);
 			name = GTests;
