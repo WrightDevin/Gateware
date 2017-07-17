@@ -91,6 +91,17 @@ namespace GW
 			*/
 			virtual GReturn OpenWindow() = 0;
 
+			//! Flushes and processes all messages from the window's event queue.
+			/*!
+			*	This function is meant to be called once a frame in an application's
+			*	main loop. This function will break when all waiting messages have
+			*   been processed and the event queue is empty.
+			*
+			*	\retval SUCCESS The messages were successfully processed and removed.
+			*   \retval REDUNDANT_OPERATION No window exists process.
+			*/
+			virtual GReturn ProcessWindowEvents() = 0;
+
 			//! Gives the currently opened window the specified size, position and style.
 			/*!
 			*	If width and height are equal to or greater than the native resolution, the passed in

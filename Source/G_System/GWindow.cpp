@@ -97,6 +97,8 @@ public:
 
 	GReturn OpenWindow();
 
+	GReturn ProcessWindowEvents();
+
 	GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
 	GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
@@ -356,6 +358,38 @@ GReturn AppWindow::OpenWindow()
 
 }
 
+GReturn AppWindow::ProcessWindowEvents()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+#elif __linux__
+	if (!display)
+		return REDUNDANT_OPERATION;
+#elif
+	__APPLE__
+		if (!window)
+			return REDUNDANT_OPERATION;
+#endif
+
+#ifdef _WIN32
+	MSG msg;
+
+	ZeroMemory(&msg, sizeof(MSG));
+
+	while (msg.message && msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			//translate messages
+			TranslateMessage(&msg);
+			//Send to WindowProc
+			DispatchMessage(&msg);
+		}
+	}
+#endif
+	return SUCCESS;
+}
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
 #ifdef _WIN32
