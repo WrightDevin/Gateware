@@ -131,8 +131,7 @@ namespace
 		}
 		//return CallWindowProcW((WNDPROC)userWinProc, window, msg, wp, lp);
 		}
-
-
+		return DefWindowProcW(window, msg, wp, lp);
 	}
 #endif // __WIN32
 
