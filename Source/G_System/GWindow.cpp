@@ -387,8 +387,10 @@ GReturn AppWindow::ProcessWindowEvents()
 			DispatchMessage(&msg);
 		}
 	}
-#endif
 	return SUCCESS;
+#endif
+
+	return FAILURE;
 }
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
