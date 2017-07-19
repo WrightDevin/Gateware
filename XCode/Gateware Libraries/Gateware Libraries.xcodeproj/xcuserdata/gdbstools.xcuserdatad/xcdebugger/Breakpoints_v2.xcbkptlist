@@ -232,12 +232,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520361069.19524"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "372"
-            endingLineNumber = "372"
-            landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
+            startingLineNumber = "371"
+            endingLineNumber = "371"
+            landmarkName = "AppWindow::ProcessWindowEvents()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -440,12 +440,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520361069.19524"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "378"
-            endingLineNumber = "378"
-            landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
+            startingLineNumber = "377"
+            endingLineNumber = "377"
+            landmarkName = "AppWindow::ProcessWindowEvents()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -456,13 +456,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "987"
-            endingLineNumber = "987"
-            landmarkName = "FlushMacEventLoop()"
-            landmarkType = "9">
+            startingLineNumber = "986"
+            endingLineNumber = "986"
+            landmarkName = "AppWindow::RequestInterface(const GUUIID&amp; _interfaceID, void** _outputInterface)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -472,13 +472,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "995"
-            endingLineNumber = "995"
-            landmarkName = "FlushMacEventLoop()"
-            landmarkType = "9">
+            startingLineNumber = "994"
+            endingLineNumber = "994"
+            landmarkName = "AppWindow::RequestInterface(const GUUIID&amp; _interfaceID, void** _outputInterface)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -488,13 +488,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "992"
-            endingLineNumber = "992"
-            landmarkName = "FlushMacEventLoop()"
-            landmarkType = "9">
+            startingLineNumber = "991"
+            endingLineNumber = "991"
+            landmarkName = "AppWindow::RequestInterface(const GUUIID&amp; _interfaceID, void** _outputInterface)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -504,13 +504,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "985"
-            endingLineNumber = "985"
-            landmarkName = "FlushMacEventLoop()"
-            landmarkType = "9">
+            startingLineNumber = "984"
+            endingLineNumber = "984"
+            landmarkName = "AppWindow::RequestInterface(const GUUIID&amp; _interfaceID, void** _outputInterface)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -584,12 +584,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1242"
-            endingLineNumber = "1242"
-            landmarkName = "GW::SYSTEM::CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)"
+            startingLineNumber = "1241"
+            endingLineNumber = "1241"
+            landmarkName = "AppWindow::IsFullscreen()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -600,13 +600,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1237"
-            endingLineNumber = "1237"
-            landmarkName = "CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)"
-            landmarkType = "9">
+            startingLineNumber = "1236"
+            endingLineNumber = "1236"
+            landmarkName = "AppWindow::IsFullscreen()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -716,9 +716,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "AppWindow::OpenWindow()"
-            landmarkType = "7">
+            endingLineNumber = "157">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -780,9 +778,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "360"
-            endingLineNumber = "360"
-            landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
-            landmarkType = "7">
+            endingLineNumber = "360">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -952,11 +948,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "754"
-            endingLineNumber = "754"
+            startingLineNumber = "753"
+            endingLineNumber = "753"
             landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1016,11 +1012,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "748"
-            endingLineNumber = "748"
+            startingLineNumber = "747"
+            endingLineNumber = "747"
             landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1032,11 +1028,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364779.986655"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "751"
-            endingLineNumber = "751"
+            startingLineNumber = "750"
+            endingLineNumber = "750"
             landmarkName = "AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1096,11 +1092,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../Source/G_System/GWindow.cpp"
-            timestampString = "520364991.55744"
+            timestampString = "522181460.230493"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1223"
-            endingLineNumber = "1223"
+            startingLineNumber = "1222"
+            endingLineNumber = "1222"
             landmarkName = "AppWindow::IsFullscreen()"
             landmarkType = "7">
          </BreakpointContent>

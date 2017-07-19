@@ -366,8 +366,7 @@ GReturn AppWindow::ProcessWindowEvents()
 #elif __linux__
 	if (!display)
 		return REDUNDANT_OPERATION;
-#elif
-	__APPLE__
+#elif __APPLE__
 		if (!window)
 			return REDUNDANT_OPERATION;
 #endif
