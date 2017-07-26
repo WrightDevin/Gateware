@@ -376,7 +376,7 @@ GReturn AppWindow::ProcessWindowEvents()
 
 	ZeroMemory(&msg, sizeof(MSG));
 
-	while (msg.message && msg.message != WM_QUIT)
+	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -385,8 +385,21 @@ GReturn AppWindow::ProcessWindowEvents()
 			//Send to WindowProc
 			DispatchMessage(&msg);
 		}
+		else
+			return SUCCESS;
 	}
 	return SUCCESS;
+
+
+#elif __linux__
+	XFlush(display);
+	XSync(display, 0);
+
+#elif __APPLE__
+		dispatch_sync(dispatch_get_main_queue(), ^{
+
+			FlushMacEventLoop();
+} );
 #endif
 
 	return FAILURE;
