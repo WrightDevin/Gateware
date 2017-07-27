@@ -101,13 +101,15 @@
 		<Unit filename="../../Unit Tests/Source/G_Core/UnitTestMain.cpp" />
 		<Unit filename="../../Unit Tests/Source/G_System/Common.cpp" />
 		<Unit filename="../../Unit Tests/Source/G_System/Common.h" />
+		<Unit filename="../../Unit Tests/Source/G_System/GBufferedInputTestListener.cpp" />
+		<Unit filename="../../Unit Tests/Source/G_System/GBufferedInputTestListener.h" />
 		<Unit filename="../../Unit Tests/Source/G_System/GBufferedInputTests.cpp" />
 		<Unit filename="../../Unit Tests/Source/G_System/GFileTest.cpp" />
 		<Unit filename="../../Unit Tests/Source/G_System/GInputTests.cpp" />
 		<Unit filename="../../Unit Tests/Source/G_System/GLogTest.cpp" />
+		<Unit filename="../../Unit Tests/Source/G_System/GWindowTestListener.cpp" />
+		<Unit filename="../../Unit Tests/Source/G_System/GWindowTestListener.h" />
 		<Unit filename="../../Unit Tests/Source/G_System/GWindowTests.cpp" />
-		<Unit filename="../../Unit Tests/Source/G_System/TestListener.cpp" />
-		<Unit filename="../../Unit Tests/Source/G_System/TestListener.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
