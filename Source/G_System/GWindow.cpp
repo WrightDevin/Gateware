@@ -383,10 +383,13 @@ GReturn AppWindow::ProcessWindowEvents()
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			//translate messages
-			TranslateMessage(&msg);
-			//Send to WindowProc
-			DispatchMessage(&msg);
+			if (msg.message)
+			{
+				//translate messages
+				TranslateMessage(&msg);
+				//Send to WindowProc
+				DispatchMessage(&msg);
+			}
 		}
 		else
 			return SUCCESS;
@@ -404,8 +407,6 @@ GReturn AppWindow::ProcessWindowEvents()
 			FlushMacEventLoop();
 } );
 #endif
-
-	return FAILURE;
 }
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
