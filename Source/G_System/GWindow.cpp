@@ -235,18 +235,13 @@ GReturn AppWindow::OpenWindow()
 	int depth = DefaultDepth(display, screen);
     int x, y;
     unsigned int wid, heig, borderHeight, depthRet;
-    XVisualInfo* vinfo;
-
-    XMatchVisualInfo(display, XDefaultScreen(display), 32, TrueColor, vinfo);
-
-    Colormap cmap = XCreateColormap(display, RootWindow(display, screen), vinfo->visual, AllocNone);
 
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
 	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
-	attributes.colormap = cmap;
+	Colormap cmap = XCreateColormap(display, RootWindow(display, screen), CopyFromParent, AllocNone);
 
-    valueMask |= CWBorderPixel;
+	attributes.colormap = cmap;
 	valueMask |= CWBackPixel;
 	valueMask |= CWEventMask;
 	valueMask |= CWColormap;
@@ -260,7 +255,7 @@ GReturn AppWindow::OpenWindow()
     heig = height;
 
 	window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
-		vinfo->depth, InputOutput, vinfo->visual, valueMask, &attributes);
+		depth, InputOutput, CopyFromParent, valueMask, &attributes);
 
 	if (!window)
 		return FAILURE;
