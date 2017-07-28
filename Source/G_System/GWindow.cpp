@@ -239,12 +239,15 @@ GReturn AppWindow::OpenWindow()
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
 	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
-	Colormap cmap = XCreateColormap(display, RootWindow(display, screen), CopyFromParent, AllocNone);
 
-	attributes.colormap = cmap;
+	//XVisualInfo vinfo;
+	//XMatchVisualInfo(display, screen, depth, InputOutput, &vinfo);
+	//Colormap cmap = XCreateColormap(display, RootWindow(display, screen), CopyFromParent, AllocNone);
+
+	//attributes.colormap = cmap;
 	valueMask |= CWBackPixel;
 	valueMask |= CWEventMask;
-	valueMask |= CWColormap;
+	//valueMask |= CWColormap;
 
 	// set rect hints
 	rect.flags = PSize | PPosition;

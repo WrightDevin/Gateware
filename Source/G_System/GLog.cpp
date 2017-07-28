@@ -96,7 +96,7 @@ LogFile::~LogFile()
 GW::GReturn LogFile::Init(const char* const _fileName)
 {
 	//Create a GFile.
-	GW::GReturn rv = CreateGFile(&logFile);
+	GW::GReturn rv = GW::SYSTEM::CreateGFile(&logFile);
 	if (G_FAIL(rv))
 		return rv;
 
