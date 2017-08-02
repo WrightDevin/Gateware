@@ -146,4 +146,4 @@ ADD_DEFINITIONS(-D_UNICODE)
 #add_custom_target(docs ALL DEPENDS Doxyfile)
 
 add_subdirectory(Source)
-#add_subdirectory("Unit Tests")
+add_subdirectory("Unit Tests")

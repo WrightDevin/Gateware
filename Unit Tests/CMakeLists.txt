@@ -8,8 +8,6 @@ G_System/GFileTest.cpp
 G_System/GInputTests.cpp 
 G_System/GLogTest.cpp 
 G_System/GWindowTests.cpp 
-G_System/TestListener.cpp 
-G_System/TestListener.h)
 G_System/GBufferedInputTestListener.cpp
 G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
