@@ -1,4 +1,0 @@
-[Tue Apr 11 13:32:28 2017] ThreadID[140737324668672]	Something I wanna do.
-Something else I wanna do.
-[MINE]	Something I wanna do more
-[Tue Apr 11 13:32:28 2017] ThreadID[140737324668672]	[MINE]	Something I wanna do more

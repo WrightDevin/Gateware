@@ -50,7 +50,7 @@ private:
 #elif __linux__
 	Display * display;
 	Window window;
-    
+
     std::thread* linuxLoop = nullptr;
 	Atom prop_type;
     Atom prop_hidden;
@@ -124,7 +124,7 @@ public:
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
 
 	GReturn DeregisterListener(GListener* _removeListener);
-    
+
 	int GetWidth();
 
 	int GetHeight();
@@ -238,10 +238,16 @@ GReturn AppWindow::OpenWindow()
 
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
-	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask;
+	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
+
+	//XVisualInfo vinfo;
+	//XMatchVisualInfo(display, screen, depth, InputOutput, &vinfo);
+	//Colormap cmap = XCreateColormap(display, RootWindow(display, screen), CopyFromParent, AllocNone);
+
+	//attributes.colormap = cmap;
 	valueMask |= CWBackPixel;
-	//valueMask |= CWBorderWidth;
 	valueMask |= CWEventMask;
+	//valueMask |= CWColormap;
 
 	// set rect hints
 	rect.flags = PSize | PPosition;
@@ -291,69 +297,69 @@ GReturn AppWindow::OpenWindow()
 
     else
         return FAILURE;
-    
+
 #elif __APPLE__
-    
+
     if(window)
         return REDUNDANT_OPERATION;
-    
+
     dispatch_sync(dispatch_get_main_queue(), ^ {
         pool = [[NSAutoreleasePool alloc] init];
-        
+
         [NSApplication sharedApplication];
-        
+
         [NSThread detachNewThreadSelector:@selector(doNothing:) toTarget:[GWDelegate class] withObject:nil];
-        
+
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-        
+
         [NSApp setDelegate:appDel];
-        
+
         NSUInteger windowStyleMask = 0;
-        
+
         if(style == FULLSCREENBORDERED || style == WINDOWEDBORDERED || style == MINIMIZED)
             windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-        
+
         NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
-        
+
         window = [[NSWindow alloc] initWithContentRect : windowRect
                                              styleMask : windowStyleMask
                                                backing : NSBackingStoreBuffered
                                                  defer : NO];
-        
+
         [window setTitle:@"SampleCocoaWindow"];
-        
+
         //[window autorelease];
-        
+
         [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 
         [responder setNextResponder:window.nextResponder];
         [window setNextResponder:responder];
         [window makeFirstResponder:window.contentView];
         [window.contentView setNextResponder:responder];
-        
+
         [window setDelegate:delegate];
-        
+
         //[window canBecomeMainWindow:YES];
-        
+
         //[window makeMainWindow];
-        
+
         [window makeKeyAndOrderFront : nil];
-        
+
         FlushMacEventLoop();
-        
-    
+
+
     if(style == FULLSCREENBORDERED || style == FULLSCREENBORDERLESS)
     {
         [window toggleFullScreen:nil];
         FlushMacEventLoop();
     }
     } );
-    
+
     if([window isVisible])
         return SUCCESS;
     else
         return FAILURE;
-    
+
 #endif
 
 }
@@ -376,20 +382,34 @@ GReturn AppWindow::ProcessWindowEvents()
 
 	ZeroMemory(&msg, sizeof(MSG));
 
-	while (msg.message && msg.message != WM_QUIT)
+	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			//translate messages
-			TranslateMessage(&msg);
-			//Send to WindowProc
-			DispatchMessage(&msg);
+			if (msg.message)
+			{
+				//translate messages
+				TranslateMessage(&msg);
+				//Send to WindowProc
+				DispatchMessage(&msg);
+			}
 		}
+		else
+			return SUCCESS;
 	}
 	return SUCCESS;
-#endif
 
-	return FAILURE;
+
+#elif __linux__
+	XFlush(display);
+	XSync(display, 0);
+
+#elif __APPLE__
+		dispatch_sync(dispatch_get_main_queue(), ^{
+
+			FlushMacEventLoop();
+} );
+#endif
 }
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
@@ -484,23 +504,23 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 #elif __APPLE__
         if([window isMiniaturized])
             [window deminiaturize:nil];
-        
+
         NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
         NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
         [window setStyleMask:styleMask];
         [window setFrame:rect display:YES];
-        
+
         dispatch_sync(dispatch_get_main_queue(), ^ {
-        
+
         FlushMacEventLoop();
         } );
-                      
+
         if(window)
         {
             return SUCCESS;
         }
-        
+
         return FAILURE;
 #endif // __linux__
 	}
@@ -575,28 +595,28 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         XSync(display, 0);
 
         return SUCCESS;
-        
+
 #elif __APPLE__
         if([window isMiniaturized])
             [window deminiaturize:nil];
-        
+
         NSUInteger styleMask = NSWindowStyleMaskBorderless;
         NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
         [window setStyleMask:styleMask];
         [window setFrame:rect display:YES];
-        
+
         [window setStyleMask:styleMask];
 
         dispatch_sync(dispatch_get_main_queue(), ^ {
         FlushMacEventLoop();
         } );
-        
+
         if(window)
         {
             return SUCCESS;
         }
-        
+
         return FAILURE;
 #endif // __linux__
 
@@ -657,25 +677,25 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 #elif __APPLE__
         if([window isMiniaturized])
             [window deminiaturize:nil];
-        
+
         NSUInteger styleMask = NSWindowStyleMaskFullScreen;
         NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
         [window setStyleMask:styleMask];
         //[window setFrame:rect display:YES];
-        
+
         if(!IsFullscreen())
             [window toggleFullScreen:nil];
 
         dispatch_sync(dispatch_get_main_queue(), ^ {
             FlushMacEventLoop();
         } );
-        
+
         if(window)
         {
             return SUCCESS;
         }
-        
+
         return FAILURE;
 #endif // __linux__
 	}
@@ -732,25 +752,25 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 #elif __APPLE__
         if([window isMiniaturized])
             [window deminiaturize:nil];
-        
+
         NSUInteger styleMask = NSWindowStyleMaskFullScreen;
         NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
         [window setStyleMask:styleMask];
         [window setFrame:rect display:YES];
-        
+
         if(!IsFullscreen())
             [window toggleFullScreen:nil];
-        
+
         dispatch_sync(dispatch_get_main_queue(), ^ {
         FlushMacEventLoop();
         } );
-        
+
         if(window)
         {
             return SUCCESS;
         }
-        
+
         return FAILURE;
 
 #endif // __linux__
@@ -792,12 +812,12 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         dispatch_sync(dispatch_get_main_queue(), ^ {
         FlushMacEventLoop();
         } );
-        
+
         if([window isMiniaturized])
         {
             return SUCCESS;
         }
-        
+
         return FAILURE;
 #endif
 
@@ -816,7 +836,7 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 	else
 	{
 #ifdef __APPLE__
-        
+
 #endif
 		width = _width;
 		height = _height;
@@ -866,11 +886,11 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     CGPoint newPos;
     newPos.y = yPos - height;
     newPos.x = xPos;
-    
+
     dispatch_sync(dispatch_get_main_queue(), ^ {
     [window setFrame:rect display: YES animate: YES];
     } );
-    
+
         return SUCCESS;
 #endif
 
@@ -908,17 +928,17 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	}
 	else
 		return FAILURE;
-    
+
 #elif __APPLE__
     NSRect rect = window.frame;
     CGSize newSize;
     newSize.height = height;
     newSize.width = width;
-    
+
     dispatch_sync(dispatch_get_main_queue(), ^ {
     [window setFrame:rect display:YES animate:YES];
     } );
-    
+
         return SUCCESS;
 #endif
     return FAILURE;
@@ -1024,10 +1044,10 @@ void FlushMacEventLoop()
                                                  untilDate:[NSDate distantPast]
                                                     inMode:NSDefaultRunLoopMode
                                                    dequeue:YES];
-            
+
             if(event == nil)
                 break;
-            
+
             [NSApp sendEvent:event];
             [NSApp updateWindows];
         }
@@ -1094,9 +1114,9 @@ int AppWindow::GetWidth()
     Window root;
     int x, y;
     unsigned int w, h, bord, depth;
-    
+
     XSync(display, 0);
-    
+
     XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
     width = w;
 
@@ -1130,13 +1150,13 @@ int AppWindow::GetHeight()
 
 	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
     height = h;
-    
+
 #elif __APPLE__
     if(!window)
         return -1;
     NSRect rect = window.frame;
     height = rect.size.height;
-    
+
 #endif
 	return height;
 }
@@ -1169,7 +1189,7 @@ int AppWindow::GetX()
         return -1;
     NSRect rect = window.frame;
     xPos = rect.origin.x;
-    
+
 #endif
 	return xPos;
 }
@@ -1202,7 +1222,7 @@ int AppWindow::GetY()
         return -1;
     NSRect rect = window.frame;
     yPos = rect.origin.y;
-    
+
 #endif
 	return yPos;
 }
@@ -1261,8 +1281,8 @@ bool AppWindow::IsFullscreen()
         return TRUE;
     else
         return FALSE;
-#endif 
-    
+#endif
+
 	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
 		return true;
 	else
