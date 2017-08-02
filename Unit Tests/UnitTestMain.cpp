@@ -2,8 +2,8 @@
 //We are doing this so we can run CATCH on a seperate thread
 //whilst having the window on the main thread
 #define CATCH_CONFIG_RUNNER
-#include "../CATCH.hpp"
 
+#include "CATCH.hpp"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
