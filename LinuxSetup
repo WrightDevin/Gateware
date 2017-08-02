@@ -1,6 +1,9 @@
+sudo apt install cmake
 cd ../
+
 mkdir GW_OUTPUT
 cd GW_OUTPUT
+
 mkdir CodeBlocks
 cd CodeBlocks
 
@@ -9,35 +12,42 @@ cd Gateware_amd64
 
 mkdir amd64Debug
 cd amd64Debug
+
 touch amd64Debug
-PATH += "../../../gateware.git.0/CMake/bin"
-cmake ../../../../gateware.git.0-G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug;
+export PATH=$PATH:../../../../gateware.git.0/CMake/bin
+cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug;
 rm amd64Debug
 
 cd ../
 mkdir amd64Release
+
 cd amd64Release
+
 touch amd64Release
-PATH += "../../../gateware.git.0/CMake/bin"
+export PATH=$PATH:../../../../gateware.git.0/CMake/bin
 cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Release;
 rm amd64Release
 
 cd ../../
+
 mkdir Gateware_i386
 cd Gateware_i386
 
 mkdir i386Debug
 cd i386Debug
+
 touch i386Debug
-PATH += "../../../gateware.git.0/CMake/bin"
+export PATH=$PATH:../../../../gateware.git.0/CMake/bin
 cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug;
 rm i386Debug
 
 cd ../
 mkdir i386Release
+
 cd i386Release
+
 touch i386Release
-PATH += "../../../gateware.git.0/CMake/bin"
+export PATH=$PATH:../../../../gateware.git.0/CMake/bin
 cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Release;
 rm i386Release
 
