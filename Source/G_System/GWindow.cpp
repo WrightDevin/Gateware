@@ -129,9 +129,15 @@ public:
 
 	int GetHeight();
 
+	int GetClientWidth();
+
+	int GetClientHeight();
+
 	int GetX();
 
 	int GetY();
+
+	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
 	void* GetWindowHandle();
 
@@ -1117,7 +1123,9 @@ int AppWindow::GetWidth()
 
     XSync(display, 0);
 
-    XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
+    if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return -1;
+
     width = w;
 
 #elif __APPLE__
@@ -1148,8 +1156,10 @@ int AppWindow::GetHeight()
 
     XSync(display, 0);
 
-	XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth);
-    height = h;
+	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return -1;
+
+    height = h + bord;
 
 #elif __APPLE__
     if(!window)
@@ -1159,6 +1169,66 @@ int AppWindow::GetHeight()
 
 #endif
 	return height;
+}
+
+int AppWindow::GetClientWidth()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return -1;
+
+	return GetClientWidth();
+
+#elif __linux__
+	if (!display)
+		return -1;
+
+   Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
+
+    XSync(display, 0);
+
+	if(XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return w;
+    else
+        return -1;
+
+#elif __APPLE__
+	if (!window)
+		return -1;
+#endif
+}
+
+int AppWindow::GetClientHeight()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return -1;
+
+	return GetClientHeight();
+
+#elif __linux__
+	if (!display)
+		return -1;
+
+    Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
+
+    XSync(display, 0);
+
+	if(XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return h;
+    else
+        return -1;
+
+#elif __APPLE__
+	if (!window)
+		return -1;
+
+
+#endif
 }
 
 int AppWindow::GetX()
@@ -1175,14 +1245,16 @@ int AppWindow::GetX()
      if (!display)
         return -1;
 
-	XWindowAttributes attrib;
-	Window child;
-	int x, y;
+	 Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
 
-	XTranslateCoordinates(display, window, XRootWindow(display, DefaultScreen(display)), 0, 0, &x, &y, &child);
-	XGetWindowAttributes(display, window, &attrib);
+    XSync(display, 0);
 
-	xPos = x - attrib.x;
+	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return -1;
+
+	xPos = x;
 
 #elif __APPLE__
     if(!window)
@@ -1208,14 +1280,16 @@ int AppWindow::GetY()
      if (!display)
         return -1;
 
-	XWindowAttributes attrib;
-	Window child;
-	int x, y;
+	 Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
 
-	XTranslateCoordinates(display, window, XRootWindow(display, DefaultScreen(display)), 0, 0, &x, &y, &child);
-	XGetWindowAttributes(display, window, &attrib);
+    XSync(display, 0);
 
-	yPos = y - attrib.y;
+	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return -1;
+
+	yPos = y;
 
 #elif __APPLE__
     if(!window)
@@ -1225,6 +1299,39 @@ int AppWindow::GetY()
 
 #endif
 	return yPos;
+}
+
+GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+
+	if(!GetClientTopLeft(_outX, _outY))
+        return FAILURE;
+
+#elif __linux__
+	if (!display)
+		return REDUNDANT_OPERATION;
+
+     Window root;
+    int x, y;
+    unsigned int w, h, bord, depth;
+
+    XSync(display, 0);
+
+	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return FAILURE;
+
+    _outX = x;
+    _outY = y - bord;
+
+#elif __APPLE__
+	if (!window)
+		return REDUNDANT_OPERATION;
+
+#endif
+	return SUCCESS;
 }
 
 void* AppWindow::GetWindowHandle()
