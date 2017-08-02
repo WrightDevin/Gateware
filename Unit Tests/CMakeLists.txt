@@ -14,6 +14,9 @@ G_System/GWindowTestListener.cpp
 G_System/GWindowTestListener.h)
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
+target_link_libraries(UnitTests 
+GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT})
+
 
 elseif(APPLE)
 
@@ -22,10 +25,9 @@ message(“Unit Test Generation”)
 add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
-
-
-endif()
-
 target_link_libraries(UnitTests 
 GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT} "-framework cocoa")
+endif()
+
+
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})

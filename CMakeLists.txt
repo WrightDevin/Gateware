@@ -87,13 +87,14 @@ if(UNIX AND NOT APPLE)
 	#Set(CMAKE_CXX_COMPILER /usr/bin/g++)
     #Set(CMAKE_LINK_LIBRARY_FLAGS "-i" "[-m64]")
 
-    include_directories(${PROJECT_SOURCE_DIR}/../Interface)
+    include_directories(Interface)
 
     Set(HEADER_FILES ${PROJECT_SOURCE_DIR}/Source/DLL_Export_Symbols.h)
 
-    link_directories(${PROJECT_SOURCE_DIR}/Source)
+    link_directories(Source)
 
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lX11")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -lX11")
 
     	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../../../Binaries/UNIX/${BUILD_TYPE}/Gateware_${Architecture})
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../../../Libraries/UNIX/${BUILD_TYPE}/Gateware_${Architecture})
