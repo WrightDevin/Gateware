@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['linux_5fwindow',['LINUX_WINDOW',['../structGW_1_1SYSTEM_1_1LINUX__WINDOW.html',1,'GW::SYSTEM']]],
-  ['logfile',['LogFile',['../classLogFile.html',1,'']]]
+  ['falsetype',['FalseType',['../structCatch_1_1Detail_1_1FalseType.html',1,'Catch::Detail']]],
+  ['fileio',['FileIO',['../classFileIO.html',1,'']]]
 ];

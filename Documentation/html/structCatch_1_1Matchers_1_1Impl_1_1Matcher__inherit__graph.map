@@ -1,0 +1,12 @@
+<map id="Catch::Matchers::Impl::Matcher&lt; ExpressionT &gt;" name="Catch::Matchers::Impl::Matcher&lt; ExpressionT &gt;">
+<area shape="rect" id="node5" href="$structCatch_1_1Matchers_1_1Impl_1_1MatcherImpl.html" title="Catch::Matchers::Impl\l::MatcherImpl\&lt; ExpressionT \&gt;" alt="" coords="772,5,971,47"/>
+<area shape="rect" id="node6" href="$structCatch_1_1Matchers_1_1Impl_1_1MatcherImpl.html" title="MatcherImpl\&lt; AllOf\l\&lt; ExpressionT \&gt;, ExpressionT \&gt;" alt="" coords="765,71,977,112"/>
+<area shape="rect" id="node8" href="$structCatch_1_1Matchers_1_1Impl_1_1MatcherImpl.html" title="MatcherImpl\&lt; AnyOf\l\&lt; ExpressionT \&gt;, ExpressionT \&gt;" alt="" coords="765,136,977,177"/>
+<area shape="rect" id="node10" href="$structCatch_1_1Matchers_1_1Impl_1_1MatcherImpl.html" title="MatcherImpl\&lt; Not\&lt; Expression\lT \&gt;, ExpressionT \&gt;" alt="" coords="769,201,973,243"/>
+<area shape="rect" id="node2" href="$structCatch_1_1SharedImpl.html" title="Catch::SharedImpl\&lt;\l IShared \&gt;" alt="" coords="356,104,495,145"/>
+<area shape="rect" id="node3" href="$structCatch_1_1IShared.html" title="Catch::IShared" alt="" coords="197,111,308,138"/>
+<area shape="rect" id="node4" href="$classCatch_1_1NonCopyable.html" title="Catch::NonCopyable" alt="" coords="5,111,149,138"/>
+<area shape="rect" id="node7" href="$classCatch_1_1Matchers_1_1Impl_1_1Generic_1_1AllOf.html" title="Catch::Matchers::Impl\l::Generic::AllOf\&lt; ExpressionT \&gt;" alt="" coords="1029,71,1239,112"/>
+<area shape="rect" id="node9" href="$classCatch_1_1Matchers_1_1Impl_1_1Generic_1_1AnyOf.html" title="Catch::Matchers::Impl\l::Generic::AnyOf\&lt; ExpressionT \&gt;" alt="" coords="1025,136,1243,177"/>
+<area shape="rect" id="node11" href="$classCatch_1_1Matchers_1_1Impl_1_1Generic_1_1Not.html" title="Catch::Matchers::Impl\l::Generic::Not\&lt; ExpressionT \&gt;" alt="" coords="1033,201,1235,243"/>
+</map>
