@@ -1,10 +1,10 @@
 #!/bin/bash
 
 cd ../
-mkdir -p GW_OUTPUT
-
+mkdir GW_OUTPUT
 cd GW_OUTPUT
-mkdir -p Xcode
+
+mkdir Xcode
 cd Xcode
 
 export PATH=$PATH:/Applications/CMake.app/Contents/bin

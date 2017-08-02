@@ -11,13 +11,17 @@ The namespace to which all Gateware library interfaces must belong.
 class \hyperlink{classGW_1_1SYSTEM_1_1GBufferedInput}{G\+Buffered\+Input}
 \begin{DoxyCompactList}\small\item\em A Multi-\/threaded buffered input library. \end{DoxyCompactList}\item 
 struct \hyperlink{structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA}{G\+B\+U\+F\+F\+E\+R\+E\+D\+I\+N\+P\+U\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}
-\begin{DoxyCompactList}\small\item\em \hyperlink{structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA}{G\+B\+U\+F\+F\+E\+R\+E\+D\+I\+N\+P\+U\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA} will hold any information you may need about an \hyperlink{classInput}{Input} Event. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Ensure identical binary padding for structures on all platforms. \end{DoxyCompactList}\item 
 class \hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File}
 \begin{DoxyCompactList}\small\item\em Cross platform File\+I\+O/\+Directory handling. \end{DoxyCompactList}\item 
 class \hyperlink{classGW_1_1SYSTEM_1_1GInput}{G\+Input}
 \begin{DoxyCompactList}\small\item\em A single threaded input library. \end{DoxyCompactList}\item 
 class \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log}
 \begin{DoxyCompactList}\small\item\em Cross platform threadsafe logger. \end{DoxyCompactList}\item 
+class \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window}
+\begin{DoxyCompactList}\small\item\em A thread-\/safe window creation and management library. \end{DoxyCompactList}\item 
+struct \hyperlink{structGW_1_1SYSTEM_1_1GWINDOW__EVENT__DATA}{G\+W\+I\+N\+D\+O\+W\+\_\+\+E\+V\+E\+N\+T\+\_\+\+D\+A\+TA}
+\begin{DoxyCompactList}\small\item\em Ensure identical binary padding for structures on all platforms. \end{DoxyCompactList}\item 
 struct \hyperlink{structGW_1_1SYSTEM_1_1LINUX__WINDOW}{L\+I\+N\+U\+X\+\_\+\+W\+I\+N\+D\+OW}
 \begin{DoxyCompactList}\small\item\em The structure used to pass into \hyperlink{classInput}{Input} libraries on Linux. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Enumerations}
@@ -31,6 +35,27 @@ enum \hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcb}{G\+Buff
 \\*
 \hyperlink{namespaceGW_1_1SYSTEM_a309fd3a92512dd2bfa8065d99c0d7fcbae4066728a571d6456cf5def5742a92bf}{M\+O\+U\+S\+E\+S\+C\+R\+O\+LL}
  \}\begin{DoxyCompactList}\small\item\em G\+Buffered\+Input\+Events holds the possible events that can be sent from G\+Buffered\+Input. \end{DoxyCompactList}
+\item 
+enum \hyperlink{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{G\+Window\+Style} \{ \\*
+{\bfseries W\+I\+N\+D\+O\+W\+E\+D\+B\+O\+R\+D\+E\+R\+ED}, 
+{\bfseries W\+I\+N\+D\+O\+W\+E\+D\+B\+O\+R\+D\+E\+R\+L\+E\+SS}, 
+{\bfseries F\+U\+L\+L\+S\+C\+R\+E\+E\+N\+B\+O\+R\+D\+E\+R\+ED}, 
+{\bfseries F\+U\+L\+L\+S\+C\+R\+E\+E\+N\+B\+O\+R\+D\+E\+R\+L\+E\+SS}, 
+\\*
+{\bfseries M\+I\+N\+I\+M\+I\+Z\+ED}
+ \}\hypertarget{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{}\label{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}
+\begin{DoxyCompactList}\small\item\em G\+Window\+Style holds the possible types of window G\+Window can create. \end{DoxyCompactList}
+\item 
+enum \hyperlink{namespaceGW_1_1SYSTEM_a7d3a00c7f94541cb6f446fde944ab309}{G\+Window\+Input\+Events} \{ \\*
+{\bfseries N\+O\+T\+I\+FY}, 
+{\bfseries M\+I\+N\+I\+M\+I\+ZE}, 
+{\bfseries M\+A\+X\+I\+M\+I\+ZE}, 
+{\bfseries R\+E\+S\+I\+ZE}, 
+\\*
+{\bfseries M\+O\+VE}, 
+{\bfseries D\+E\+S\+T\+R\+OY}
+ \}\hypertarget{namespaceGW_1_1SYSTEM_a7d3a00c7f94541cb6f446fde944ab309}{}\label{namespaceGW_1_1SYSTEM_a7d3a00c7f94541cb6f446fde944ab309}
+\begin{DoxyCompactList}\small\item\em G\+Window\+Input\+Events holds the possible events a G\+Window window can broadcast. \end{DoxyCompactList}
 \end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -44,7 +69,9 @@ G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hype
 G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_a11f58ef9ffaf1ffbce25562bd5a10bc3}{Create\+G\+Log} (const char $\ast$const \+\_\+file\+Name, \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
 \begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. \end{DoxyCompactList}\item 
 G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_afe08ea421c9c918ea447ae47b9a631a9}{Create\+G\+Log\+Custom} (\hyperlink{classGW_1_1SYSTEM_1_1GFile}{G\+File} $\ast$\+\_\+file, \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} $\ast$$\ast$\+\_\+out\+Log)
-\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Creates a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object. \end{DoxyCompactList}\item 
+G\+A\+T\+E\+W\+A\+R\+E\+\_\+\+E\+X\+P\+O\+R\+T\+\_\+\+I\+M\+P\+L\+I\+C\+IT \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{namespaceGW_1_1SYSTEM_a06166ffae87a100ff7787daa6373db1c}{Create\+G\+Window} (int \+\_\+x, int \+\_\+y, int \+\_\+width, int \+\_\+height, \hyperlink{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{G\+Window\+Style} \+\_\+style, \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} $\ast$$\ast$\+\_\+out\+Window)
+\begin{DoxyCompactList}\small\item\em Creates and outputs a new \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -235,5 +262,47 @@ This function will create a \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} object
 {\em F\+A\+I\+L\+U\+RE} & \hyperlink{classGW_1_1SYSTEM_1_1GLog}{G\+Log} was not created. \+\_\+out\+Log will be null. \\
 \hline
 {\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or both the arguments are nullptr. \\
+\hline
+\end{DoxyRetVals}
+\index{G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}!Create\+G\+Window@{Create\+G\+Window}}
+\index{Create\+G\+Window@{Create\+G\+Window}!G\+W\+::\+S\+Y\+S\+T\+EM@{G\+W\+::\+S\+Y\+S\+T\+EM}}
+\subsubsection[{\texorpdfstring{Create\+G\+Window(int \+\_\+x, int \+\_\+y, int \+\_\+width, int \+\_\+height, G\+Window\+Style \+\_\+style, G\+Window $\ast$$\ast$\+\_\+out\+Window)}{CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow **_outWindow)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+Create\+G\+Window (
+\begin{DoxyParamCaption}
+\item[{int}]{\+\_\+x, }
+\item[{int}]{\+\_\+y, }
+\item[{int}]{\+\_\+width, }
+\item[{int}]{\+\_\+height, }
+\item[{{\bf G\+Window\+Style}}]{\+\_\+style, }
+\item[{{\bf G\+Window} $\ast$$\ast$}]{\+\_\+out\+Window}
+\end{DoxyParamCaption}
+)}\hypertarget{namespaceGW_1_1SYSTEM_a06166ffae87a100ff7787daa6373db1c}{}\label{namespaceGW_1_1SYSTEM_a06166ffae87a100ff7787daa6373db1c}
+
+
+Creates and outputs a new \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} object. 
+
+Initializes a handle to a \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} object with the parameters specified. Created \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} object will have its reference count initialized to one.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \+\_\+x} & The x position of the window on the screen. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+y} & The y position of the window on the screen. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+width} & The width of the window. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+height} & The height of the window. \\
+\hline
+\mbox{\tt in}  & {\em \+\_\+style} & The style of the window. (see G\+Window\+Style for style options) \\
+\hline
+\mbox{\tt out}  & {\em \+\_\+out\+Window} & Will contain the \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} object if successfully created.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em S\+U\+C\+C\+E\+SS} & \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} was successfully created. \\
+\hline
+{\em F\+A\+I\+L\+U\+RE} & \hyperlink{classGW_1_1SYSTEM_1_1GWindow}{G\+Window} was not created. \+\_\+out\+Window will be null. \\
+\hline
+{\em I\+N\+V\+A\+L\+I\+D\+\_\+\+A\+R\+G\+U\+M\+E\+NT} & Either one or some arguments are nullptrs or invalid integers. \\
 \hline
 \end{DoxyRetVals}

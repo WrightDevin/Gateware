@@ -123,7 +123,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Multi-threaded buffered input library.  <a href="classGW_1_1SYSTEM_1_1GBufferedInput.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html">GBUFFEREDINPUT_EVENT_DATA</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html" title="GBUFFEREDINPUT_EVENT_DATA will hold any information you may need about an Input Event. ">GBUFFEREDINPUT_EVENT_DATA</a> will hold any information you may need about an <a class="el" href="classInput.html">Input</a> Event.  <a href="structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure identical binary padding for structures on all platforms.  <a href="structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GFile.html">GFile</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross platform FileIO/Directory handling.  <a href="classGW_1_1SYSTEM_1_1GFile.html#details">More...</a><br /></td></tr>
@@ -133,6 +133,12 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GLog.html">GLog</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross platform threadsafe logger.  <a href="classGW_1_1SYSTEM_1_1GLog.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html">GWindow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A thread-safe window creation and management library.  <a href="classGW_1_1SYSTEM_1_1GWindow.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGW_1_1SYSTEM_1_1GWINDOW__EVENT__DATA.html">GWINDOW_EVENT_DATA</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure identical binary padding for structures on all platforms.  <a href="structGW_1_1SYSTEM_1_1GWINDOW__EVENT__DATA.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGW_1_1SYSTEM_1_1LINUX__WINDOW.html">LINUX_WINDOW</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The structure used to pass into <a class="el" href="classInput.html">Input</a> libraries on Linux.  <a href="structGW_1_1SYSTEM_1_1LINUX__WINDOW.html#details">More...</a><br /></td></tr>
@@ -151,6 +157,29 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:a309fd3a92512dd2bfa8065d99c0d7fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBufferedInputEvents holds the possible events that can be sent from GBufferedInput.  <a href="namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcb">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:a309fd3a92512dd2bfa8065d99c0d7fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad117891e556631f842625c348d36a071"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad117891e556631f842625c348d36a071"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGW_1_1SYSTEM.html#ad117891e556631f842625c348d36a071">GWindowStyle</a> { <br />
+&#160;&#160;<b>WINDOWEDBORDERED</b>, 
+<b>WINDOWEDBORDERLESS</b>, 
+<b>FULLSCREENBORDERED</b>, 
+<b>FULLSCREENBORDERLESS</b>, 
+<br />
+&#160;&#160;<b>MINIMIZED</b>
+<br />
+ }<tr class="memdesc:ad117891e556631f842625c348d36a071"><td class="mdescLeft">&#160;</td><td class="mdescRight">GWindowStyle holds the possible types of window GWindow can create. <br /></td></tr>
+</td></tr>
+<tr class="separator:ad117891e556631f842625c348d36a071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d3a00c7f94541cb6f446fde944ab309"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d3a00c7f94541cb6f446fde944ab309"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGW_1_1SYSTEM.html#a7d3a00c7f94541cb6f446fde944ab309">GWindowInputEvents</a> { <br />
+&#160;&#160;<b>NOTIFY</b>, 
+<b>MINIMIZE</b>, 
+<b>MAXIMIZE</b>, 
+<b>RESIZE</b>, 
+<br />
+&#160;&#160;<b>MOVE</b>, 
+<b>DESTROY</b>
+<br />
+ }<tr class="memdesc:a7d3a00c7f94541cb6f446fde944ab309"><td class="mdescLeft">&#160;</td><td class="mdescRight">GWindowInputEvents holds the possible events a GWindow window can broadcast. <br /></td></tr>
+</td></tr>
+<tr class="separator:a7d3a00c7f94541cb6f446fde944ab309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -169,6 +198,9 @@ Functions</h2></td></tr>
 <tr class="memitem:afe08ea421c9c918ea447ae47b9a631a9"><td class="memItemLeft" align="right" valign="top">GATEWARE_EXPORT_IMPLICIT <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGW_1_1SYSTEM.html#afe08ea421c9c918ea447ae47b9a631a9">CreateGLogCustom</a> (<a class="el" href="classGW_1_1SYSTEM_1_1GFile.html">GFile</a> *_file, <a class="el" href="classGW_1_1SYSTEM_1_1GLog.html">GLog</a> **_outLog)</td></tr>
 <tr class="memdesc:afe08ea421c9c918ea447ae47b9a631a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classGW_1_1SYSTEM_1_1GLog.html" title="Cross platform threadsafe logger. ">GLog</a> object.  <a href="#afe08ea421c9c918ea447ae47b9a631a9">More...</a><br /></td></tr>
 <tr class="separator:afe08ea421c9c918ea447ae47b9a631a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06166ffae87a100ff7787daa6373db1c"><td class="memItemLeft" align="right" valign="top">GATEWARE_EXPORT_IMPLICIT <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGW_1_1SYSTEM.html#a06166ffae87a100ff7787daa6373db1c">CreateGWindow</a> (int _x, int _y, int _width, int _height, <a class="el" href="namespaceGW_1_1SYSTEM.html#ad117891e556631f842625c348d36a071">GWindowStyle</a> _style, <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html">GWindow</a> **_outWindow)</td></tr>
+<tr class="memdesc:a06166ffae87a100ff7787daa6373db1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and outputs a new <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> object.  <a href="#a06166ffae87a100ff7787daa6373db1c">More...</a><br /></td></tr>
+<tr class="separator:a06166ffae87a100ff7787daa6373db1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The namespace to which all Gateware library interfaces must belong. </p>
@@ -426,6 +458,78 @@ Functions</h2></td></tr>
     <tr><td class="paramname">SUCCESS</td><td><a class="el" href="classGW_1_1SYSTEM_1_1GLog.html" title="Cross platform threadsafe logger. ">GLog</a> was successfully created. </td></tr>
     <tr><td class="paramname">FAILURE</td><td><a class="el" href="classGW_1_1SYSTEM_1_1GLog.html" title="Cross platform threadsafe logger. ">GLog</a> was not created. _outLog will be null. </td></tr>
     <tr><td class="paramname">INVALID_ARGUMENT</td><td>Either one or both the arguments are nullptr. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a06166ffae87a100ff7787daa6373db1c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> GW::SYSTEM::CreateGWindow </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>_y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>_width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>_height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceGW_1_1SYSTEM.html#ad117891e556631f842625c348d36a071">GWindowStyle</a>&#160;</td>
+          <td class="paramname"><em>_style</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html">GWindow</a> **&#160;</td>
+          <td class="paramname"><em>_outWindow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates and outputs a new <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> object. </p>
+<p>Initializes a handle to a <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> object with the parameters specified. Created <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> object will have its reference count initialized to one.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">_x</td><td>The x position of the window on the screen. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">_y</td><td>The y position of the window on the screen. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">_width</td><td>The width of the window. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">_height</td><td>The height of the window. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">_style</td><td>The style of the window. (see GWindowStyle for style options) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">_outWindow</td><td>Will contain the <a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> object if successfully created.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">SUCCESS</td><td><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> was successfully created. </td></tr>
+    <tr><td class="paramname">FAILURE</td><td><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html" title="A thread-safe window creation and management library. ">GWindow</a> was not created. _outWindow will be null. </td></tr>
+    <tr><td class="paramname">INVALID_ARGUMENT</td><td>Either one or some arguments are nullptrs or invalid integers. </td></tr>
   </table>
   </dd>
 </dl>

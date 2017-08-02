@@ -5,6 +5,5 @@ var structGW_1_1GUUIID =
     [ "byte2b", "structGW_1_1GUUIID.html#ab5045e59e0d3aa82a27208a063b9cbb6", null ],
     [ "byte4", "structGW_1_1GUUIID.html#a017e04c2cb5c5bab165bf4ec0fa3ca55", null ],
     [ "byte8", "structGW_1_1GUUIID.html#a631f2e8efb3ddd9794c068e0b9000cce", null ],
-    [ "part1", "structGW_1_1GUUIID.html#ae8cdf2e9bbc39ce5955e3a271bd95777", null ],
-    [ "part2", "structGW_1_1GUUIID.html#a70a72599d592a78fcad365dad424399f", null ]
+    [ "parts", "structGW_1_1GUUIID.html#a35a3b125675160dc5a231ecc949d92cd", null ]
 ];
