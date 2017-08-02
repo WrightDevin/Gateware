@@ -1295,7 +1295,7 @@ int AppWindow::GetY()
     if(!window)
         return -1;
     NSRect rect = window.frame;
-    yPos = rect.origin.y;
+    yPos = rect.origin.y + rect.size.height;
 
 #endif
 	return yPos;
@@ -1324,7 +1324,7 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
         return FAILURE;
 
     _outX = x;
-    _outY = y - bord;
+    _outY = y + bord;
 
 #elif __APPLE__
 	if (!window)
