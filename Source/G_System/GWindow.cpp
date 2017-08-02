@@ -129,10 +129,16 @@ public:
 
 	int GetHeight();
 
+	int GetClientWidth();
+
+	int GetClientHeight();
+
 	int GetX();
 
 	int GetY();
 
+	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
+	
 	void* GetWindowHandle();
 
 	bool IsFullscreen();
@@ -1161,6 +1167,44 @@ int AppWindow::GetHeight()
 	return height;
 }
 
+int AppWindow::GetClientWidth()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return -1;
+	
+	return GetClientWidth();
+
+#elif __linux__
+	if (!display)
+		return -1;
+
+#elif __APPLE__
+	if (!window)
+		return -1;
+#endif
+}
+
+int AppWindow::GetClientHeight()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return -1;
+
+	return GetClientHeight();
+
+#elif __linux__
+	if (!display)
+		return -1;
+
+#elif __APPLE__
+	if (!window)
+		return -1;
+
+
+#endif
+}
+
 int AppWindow::GetX()
 {
 #ifdef _WIN32
@@ -1225,6 +1269,25 @@ int AppWindow::GetY()
 
 #endif
 	return yPos;
+}
+
+GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return REDUNDANT_OPERATION;
+
+	GetClientTopLeft(_outX, _outY);
+
+#elif __linux__
+	if (!display)
+		return REDUNDANT_OPERATION;
+
+#elif __APPLE__
+	if (!window)
+		return REDUNDANT_OPERATION;
+#endif
+	return SUCCESS;
 }
 
 void* AppWindow::GetWindowHandle()
