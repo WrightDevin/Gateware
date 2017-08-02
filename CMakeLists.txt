@@ -85,7 +85,7 @@ if(UNIX AND NOT APPLE)
 
 	#Set(CMAKE_C_COMPILER /usr/bin/gcc)
 	#Set(CMAKE_CXX_COMPILER /usr/bin/g++)
-    #Set(CMAKE_LINK_LIBRARY_FLAGS "-i" "[-m64]")
+    	#Set(CMAKE_LINK_LIBRARY_FLAGS "-i" "[-m64]")
 
     include_directories(${PROJECT_SOURCE_DIR}/../Interface)
 
@@ -109,11 +109,12 @@ if(APPLE)
 	
 	Project(Gateware_Apple)
 	
-	Set(CMAKE_C_COMPILER “/usr/bin/clang”)
+	#Compiler assignment
+	#Set(CMAKE_C_COMPILER “/usr/bin/clang”)
 	
 	Set(CMAKE_C_FLAGS “${CMAKE_C_FLAGS}”)
 	
-	Set(CMAKE_CXX_COMPILER “/usr/bin/clang++”)
+	#Set(CMAKE_CXX_COMPILER “/usr/bin/clang++”)
 	
 	Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	
