@@ -85,7 +85,7 @@ if(UNIX AND NOT APPLE)
 
 	#Set(CMAKE_C_COMPILER /usr/bin/gcc)
 	#Set(CMAKE_CXX_COMPILER /usr/bin/g++)
-    #Set(CMAKE_LINK_LIBRARY_FLAGS "-i" "[-m64]")
+    	#Set(CMAKE_LINK_LIBRARY_FLAGS "-i" "[-m64]")
 
     include_directories(Interface)
 
