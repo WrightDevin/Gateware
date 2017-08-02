@@ -4,12 +4,23 @@
 #include "../CATCH.hpp"
 
 //Include all the headers needed for tests
+
+#ifndef __APPLE__
 #include <G_System/GKeyDefines.h>
 #include <G_System/GBufferedInput.h>
 #include <G_System/GInput.h>
 #include <G_System/GLog.h>
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
+#else
+#include <../../gateware.git.0/Interface/G_System/GKeyDefines.h>
+#include <../../gateware.git.0/Interface/G_System/GBufferedInput.h>
+#include <../../gateware.git.0/Interface/G_System/GInput.h>
+#include <../../gateware.git.0/Interface/G_System/GLog.h>
+#include <../../gateware.git.0/Interface/G_System/GFile.h>
+#include <../../gateware.git.0/Interface/G_System/GWindow.h>
+#endif
+
 //TODO: Add your library headers
 
 

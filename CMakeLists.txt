@@ -1,4 +1,4 @@
-﻿#CMAKE TEXT FILE FOR THE CREATION OF THE PROJECT THAT CREATES STATIC/DYNAMIC LIBRARIES
+#CMAKE TEXT FILE FOR THE CREATION OF THE PROJECT THAT CREATES STATIC/DYNAMIC LIBRARIES
 cmake_minimum_required(VERSION 3.5)
 SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "0")
@@ -110,11 +110,11 @@ if(APPLE)
 	
 	Project(Gateware_Apple)
 	
-	Set(CMAKE_C_COMPILER “/usr/bin/clang”)
+	#Set(CMAKE_C_COMPILER “/usr/bin/clang”)
 	
 	Set(CMAKE_C_FLAGS “${CMAKE_C_FLAGS}”)
 	
-	Set(CMAKE_CXX_COMPILER “/usr/bin/clang++”)
+	#Set(CMAKE_CXX_COMPILER “/usr/bin/clang++”)
 	
 	Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	
@@ -123,9 +123,9 @@ if(APPLE)
 
 	
  	
-	include_directories(${PROJECT_SOURCE_DIR}/../Interface /System/Library/Frameworks)
+	include_directories(Interface /System/Library/Frameworks)
 
-    	Set(HEADER_FILES ${PROJECT_SOURCE_DIR}/../DLL_Export_Symbols.h)
+    	Set(HEADER_FILES ${PROJECT_SOURCE_DIR}/Source/DLL_Export_Symbols.h)
 
     	link_directories(${PROJECT_SOURCE_DIR}/Source)
 
