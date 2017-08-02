@@ -1166,6 +1166,7 @@ int AppWindow::GetHeight()
         return -1;
     NSRect rect = window.frame;
     height = rect.size.height;
+    
 
 #endif
 	return height;
@@ -1197,6 +1198,12 @@ int AppWindow::GetClientWidth()
 #elif __APPLE__
 	if (!window)
 		return -1;
+    
+    NSRect rect = window.frame;
+    NSRect contentRect = [window contentRectForFrameRect:rect];
+    
+    return contentRect.size.width;
+    
 #endif
 }
 
@@ -1227,6 +1234,10 @@ int AppWindow::GetClientHeight()
 	if (!window)
 		return -1;
 
+    NSRect rect = window.frame;
+    NSRect contentRect = [window contentRectForFrameRect:rect];
+    
+    return contentRect.size.height;
 
 #endif
 }
@@ -1329,7 +1340,13 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 #elif __APPLE__
 	if (!window)
 		return REDUNDANT_OPERATION;
-
+    
+    NSRect rect = window.frame;
+    NSRect contentRect = [window contentRectForFrameRect:rect];
+    
+    _outX = contentRect.origin.x;
+    _outY = contentRect.origin.y;
+    
 #endif
 	return SUCCESS;
 }

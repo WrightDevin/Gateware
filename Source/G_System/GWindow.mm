@@ -57,7 +57,8 @@
 }
 @end
 
-#include "../../../Source/G_System/GWindow_Callback.hpp"
+//#include "../../../Source/G_System/GWindow_Callback.hpp"
+#include "GWindow_Callback.hpp"
 //extern std::map<GListener *, unsigned long long> listeners;
 
 @implementation GWDelegate
@@ -195,6 +196,12 @@
     std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
+    
+    NSWindow* wnd;
+    NSRect rect;
+    
+    
+    
 }
 
 @end
@@ -211,6 +218,7 @@
     return YES;
 }
 
-#include "../../../Source/G_System/GWindow.cpp"
+//#include "../../../Source/G_System/GWindow.cpp"
+#include "GWindow.cpp"
 
 @end
