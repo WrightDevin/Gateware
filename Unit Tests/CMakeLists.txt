@@ -14,7 +14,7 @@ G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
 G_System/GWindowTestListener.h)
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT)
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT})
 
 elseif(APPLE)
 Find_library(COCOA_LIB cocoa)
@@ -23,7 +23,7 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT} "-framework ${COCOA_LIB}”)
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT} "-framework ${COCOA_LIB}")
 
 endif()
 
