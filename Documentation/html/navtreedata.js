@@ -38,7 +38,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"DLL__Export__Symbols_8h_source.html"
+".html",
+"classFileIO.html#a1c24bf6f35d30462fd918e5ee1a44033",
+"structCatch_1_1Counts.html#aedf86fefe33938d132a6981171cd83e6",
+"structGW_1_1GUUIID.html#a35a3b125675160dc5a231ecc949d92cd"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

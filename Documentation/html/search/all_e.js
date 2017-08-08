@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['screenx',['screenX',['../structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html#a8c87335f76992eddba30abe7312b5b43',1,'GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA']]],
-  ['screeny',['screenY',['../structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html#a066fa9b2dc654907d13590612238354d',1,'GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA']]],
-  ['setcurrentworkingdirectory',['SetCurrentWorkingDirectory',['../classGW_1_1SYSTEM_1_1GFile.html#ab28d2e7ecf3ac893df88603e5448561a',1,'GW::SYSTEM::GFile::SetCurrentWorkingDirectory()'],['../classFileIO.html#a8332ededccf4034fd83509d9513a2635',1,'FileIO::SetCurrentWorkingDirectory()']]]
+  ['pluralise',['pluralise',['../structCatch_1_1pluralise.html',1,'Catch']]],
+  ['processwindowevents',['ProcessWindowEvents',['../classGW_1_1SYSTEM_1_1GWindow.html#a6c7db60db04436ac21cba3147f287e84',1,'GW::SYSTEM::GWindow']]],
+  ['ptr',['Ptr',['../classCatch_1_1Ptr.html',1,'Catch']]],
+  ['ptr_3c_20catch_3a_3aitestcase_20_3e',['Ptr&lt; Catch::ITestCase &gt;',['../classCatch_1_1Ptr.html',1,'Catch']]],
+  ['ptr_3c_20catch_3a_3amatchers_3a_3aimpl_3a_3amatcher_3c_20expressiont_20_3e_20_3e',['Ptr&lt; Catch::Matchers::Impl::Matcher&lt; ExpressionT &gt; &gt;',['../classCatch_1_1Ptr.html',1,'Catch']]]
 ];

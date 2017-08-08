@@ -1,5 +1,5 @@
 //#import "../../../../Source/G_System/G_Core/UnitTestMain.cpp"
-#import "../G_Core/UnitTestMain.cpp"
+#import "../UnitTestMain.cpp"
 #import "../G_System/GBufferedInputTests.cpp"
 #import "../G_System/GInputTests.cpp"
 #import "../G_System/GFileTest.cpp"
@@ -9,4 +9,3 @@
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
 #import "../G_System/Common.cpp"
-
