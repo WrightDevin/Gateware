@@ -23,7 +23,7 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT} "-framework ${COCOA_LIB}")
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT})
 
 endif()
 

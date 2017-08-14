@@ -1,4 +1,4 @@
-﻿project(LibraryProject)
+project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
 add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h)
 add_library (GLog GLog.cpp ${HEADER_FILES})
@@ -13,7 +13,7 @@ if(APPLE)
 
 #Set(GUI_TYPE MACOSX_BUNDLE)
 
-FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+set(COCOA_LIBRARY Cocoa)
 
 
 message(“Adding .mm files”)
@@ -33,15 +33,15 @@ add_library(GWindow_DLL SHARED GWindow.mm)
 
 
 
-target_link_libraries(GBufferedInput “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GBufferedInput "-framework ${COCOA_LIBRARY}")
 
-target_link_libraries(GInput “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GInput "-framework ${COCOA_LIBRARY}")
 
-target_link_libraries(GWindow “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GWindow "-framework ${COCOA_LIBRARY}")
 
-target_link_libraries(GFile “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GFile "-framework ${COCOA_LIBRARY}")
 
-target_link_libraries(GLog “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GLog "-framework ${COCOA_LIBRARY}")
 
 
 target_link_libraries(GBufferedInput_DLL "-framework cocoa")
