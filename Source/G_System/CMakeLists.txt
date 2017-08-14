@@ -13,6 +13,14 @@ if(APPLE)
 
 #Set(GUI_TYPE MACOSX_BUNDLE)
 
+#[=[
+Unit Test Error notes #1:
+This was previously using “Find_Library” to obtain the path to the cocoa framework, however, 
+the variable is now set to “Cocoa” because the path it was giving was being set on the Unit Test by default
+and was not being recognized as a valid path, this might have been due to a conflict with the Apple environment or
+old vs new CMake versions (See the cmakelists for the unit tests for changes where the error was also occurring.)
+#]=]
+
 set(COCOA_LIBRARY Cocoa)
 
 
