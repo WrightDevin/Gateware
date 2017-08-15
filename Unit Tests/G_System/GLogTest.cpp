@@ -18,7 +18,7 @@ TEST_CASE("Creating a GLog.", "[CreateGLog]")
 
 	//Pass cases
 #ifdef WIN32
-	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./TestDirectory/DONOTDELETE.txt", &m_log)));
+	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./DONOTDELETE.txt", &m_log)));
 #elif __APPLE__
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("../../../Code Blocks/Unit Tests/TestDirectory/DONOTDELETE.txt", &m_log)));
 #elif __linux__
