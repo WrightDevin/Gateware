@@ -6,7 +6,7 @@
 #include <iostream>
 
 //This is the ammount of files that should be in the directory after all test cases run
-#define DIR_SIZE 3
+#define DIR_SIZE 2
 
 //Test case file names will not be larger than 40 characters
 #define FILE_NAME_SIZE 40
@@ -18,7 +18,7 @@
 GW::SYSTEM::GFile* file = nullptr;
 char directoryBuffer[260]; //Same size as MAX_PATH MACRO
 //Used in directory testing continued
-unsigned int dirSize = 0;
+unsigned int dirSize = 2;
 
 
 TEST_CASE("Create GFile object.", "[CreateGFile]")
@@ -43,7 +43,7 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 		//Pass cases
 
 #ifdef WIN32
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #elif __APPLE__
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../Code Blocks/Unit Tests/TestDirectory")));
 #elif __linux__
@@ -211,36 +211,35 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 	{
 
 		//Pass cases
-		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./CMakeFiles")));
 		REQUIRE(dirSize == DIR_SIZE); //2 is the number of files that should be in the directory after all other testing
 
 		//Fail cases
 		//This function should not fail.
-	}
 
-	SECTION("Getting all files in the directory.", "[GetFilesFromDirectory]")
-	{
-		//Create a string buffer to hold our filenames
-		char* files[DIR_SIZE];
+		SECTION("Getting all files in the directory.", "[GetFilesFromDirectory]")
+		{
+			//Create a string buffer to hold our filenames
+			char* files[DIR_SIZE];
 
-		for (unsigned int i = 0; i < dirSize; ++i)
-			files[i] = new char[FILE_NAME_SIZE];
+			for (unsigned int i = 0; i < dirSize; ++i)
+				files[i] = new char[FILE_NAME_SIZE];
 
-		//Pass cases
-		REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
-        std::cout << files[0];
+			//Pass cases
+			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
+			std::cout << files[0];
 
 #ifdef _WIN32
-		REQUIRE(strcmp(files[0], "DONOTDELETE.txt") == 0);
-		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
-		REQUIRE(strcmp(files[2], u8"g_test.gtest") == 0);
+			REQUIRE(strcmp(files[0], u8"generate.stamp") == 0);
+			REQUIRE(strcmp(files[1], u8"generate.stamp.depend") == 0);
 #elif  __linux__
-		REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
-		REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
-		REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
+			REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
+			REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
+			REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
 #endif
-		for (unsigned int i = 0; i < dirSize; ++i)
-			delete[] files[i];
+			for (unsigned int i = 0; i < dirSize; ++i)
+				delete[] files[i];
+		}
 	}
 
 	//Finished with the file so decrement the count and release it
