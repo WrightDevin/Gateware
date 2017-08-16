@@ -101,10 +101,8 @@ namespace GW
 	
 
 		}; // end GAudio class
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGAudio(GAudio** _outAudio)
-		{
-			return FAILURE;
-		}
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGAudio(GAudio** _outAudio);
+
 	
 
 	} // end SYSTEM namespace

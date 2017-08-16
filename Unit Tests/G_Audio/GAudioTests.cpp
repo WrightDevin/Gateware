@@ -18,10 +18,10 @@ const char * testpath = "TestBeep.wav";
 TEST_CASE("Create GAudio.", "[CreateGAudio]")
 {
 	// Fail cases
-CHECK(GW::AUDIO::CreateGAudio(nullptr));
+	CHECK(GW::AUDIO::CreateGAudio(nullptr));
 
 	// Pass cases
-	//REQUIRE(G_SUCCESS(CreateGAudio(&testAudio)));
+	REQUIRE(G_SUCCESS(CreateGAudio(&testAudio)));
 }
 TEST_CASE("Initialize Audio", "[Init]")
 {	
