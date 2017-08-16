@@ -6,7 +6,7 @@
 #include <iostream>
 
 //This is the ammount of files that should be in the directory after all test cases run
-#define DIR_SIZE 2
+#define DIR_SIZE 9
 
 //Test case file names will not be larger than 40 characters
 #define FILE_NAME_SIZE 40
@@ -18,7 +18,7 @@
 GW::SYSTEM::GFile* file = nullptr;
 char directoryBuffer[260]; //Same size as MAX_PATH MACRO
 //Used in directory testing continued
-unsigned int dirSize = 2;
+unsigned int dirSize;
 
 
 TEST_CASE("Create GFile object.", "[CreateGFile]")
@@ -211,8 +211,20 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 	{
 
 		//Pass cases
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./CMakeFiles")));
-		REQUIRE(dirSize == DIR_SIZE); //2 is the number of files that should be in the directory after all other testing
+#ifdef _WIN32
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#elif __APPLE__
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#elif __linux__
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#endif 
+
 
 		//Fail cases
 		//This function should not fail.
@@ -229,14 +241,17 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
 			std::cout << files[0];
 
-#ifdef _WIN32
-			REQUIRE(strcmp(files[0], u8"generate.stamp") == 0);
-			REQUIRE(strcmp(files[1], u8"generate.stamp.depend") == 0);
-#elif  __linux__
-			REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
-			REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
-			REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
-#endif
+
+			REQUIRE(strcmp(files[0], ".DS_Store") == 0);
+			REQUIRE(strcmp(files[1], ".gitignore") == 0);
+			REQUIRE(strcmp(files[2], "CMakeLists.txt") == 0);
+			REQUIRE(strcmp(files[3], "Doxyfile") == 0);
+			REQUIRE(strcmp(files[4], "LICENSE.md") == 0);
+			REQUIRE(strcmp(files[5], "LinuxSetup") == 0);
+			REQUIRE(strcmp(files[6], "MacSetup") == 0);
+			REQUIRE(strcmp(files[7], "README.md") == 0);
+			REQUIRE(strcmp(files[8], "WinSetup.bat") == 0);
+
 			for (unsigned int i = 0; i < dirSize; ++i)
 				delete[] files[i];
 		}
