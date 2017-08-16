@@ -45,9 +45,9 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 #ifdef WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #elif __APPLE__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../Code Blocks/Unit Tests/TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests/CMakeFiles")));
 #elif __linux__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #endif
 		//REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../gateware-test-suite.git.0/XCode/Gateware/GTests/TestDirectory")));
 	}
@@ -209,7 +209,6 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 {
 	SECTION("Getting directory size.", "[GetDirectorySize]")
 	{
-
 		//Pass cases
 #ifdef _WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));

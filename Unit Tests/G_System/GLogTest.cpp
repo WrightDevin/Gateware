@@ -20,7 +20,7 @@ TEST_CASE("Creating a GLog.", "[CreateGLog]")
 #ifdef WIN32
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./DONOTDELETE.txt", &m_log)));
 #elif __APPLE__
-	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("../../../../Xcode/Unit Tests/CMakeFiles/DONOTDELETE.txt", &m_log)));
+	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("../../../../Xcode/Unit Tests/DONOTDELETE.txt", &m_log)));
 #elif __linux__
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./DONOTDELETE.txt", &m_log)));
 #endif
@@ -32,7 +32,7 @@ TEST_CASE("Creating a GLog.", "[CreateGLog]")
 #ifdef WIN32
 	m_testFile->SetCurrentWorkingDirectory(u8"./");
 #elif __APPLE__
-	m_testFile->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests/CMakeFiles");
+	m_testFile->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests");
 #elif __linux__
 	m_testFile->SetCurrentWorkingDirectory(u8"./");
 #endif
