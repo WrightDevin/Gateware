@@ -45,7 +45,7 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 #ifdef WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #elif __APPLE__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests/CMakeFiles")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests")));
 #elif __linux__
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #endif
@@ -219,7 +219,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
 #elif __linux__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../../gateware.git.0")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
 #endif 
@@ -231,25 +231,40 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		SECTION("Getting all files in the directory.", "[GetFilesFromDirectory]")
 		{
 			//Create a string buffer to hold our filenames
+			int MatchNum = 0;
 			char* files[DIR_SIZE];
+			char* Checklist[DIR_SIZE];
 
 			for (unsigned int i = 0; i < dirSize; ++i)
 				files[i] = new char[FILE_NAME_SIZE];
 
 			//Pass cases
 			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
-			std::cout << files[0];
+			
+			Checklist[0] = ".DS_Store";
+			Checklist[1] = ".gitignore";
+			Checklist[2] = "CMakeLists.txt";
+			Checklist[3] = "Doxyfile";
+			Checklist[4] = "LICENSE.md";
+			Checklist[5] = "LinuxSetup";
+			Checklist[6] = "MacSetup";
+			Checklist[7] = "README.md";
+			Checklist[8] = "WinSetup.bat";
 
-
-			REQUIRE(strcmp(files[0], ".DS_Store") == 0);
-			REQUIRE(strcmp(files[1], ".gitignore") == 0);
-			REQUIRE(strcmp(files[2], "CMakeLists.txt") == 0);
-			REQUIRE(strcmp(files[3], "Doxyfile") == 0);
-			REQUIRE(strcmp(files[4], "LICENSE.md") == 0);
-			REQUIRE(strcmp(files[5], "LinuxSetup") == 0);
-			REQUIRE(strcmp(files[6], "MacSetup") == 0);
-			REQUIRE(strcmp(files[7], "README.md") == 0);
-			REQUIRE(strcmp(files[8], "WinSetup.bat") == 0);
+			for (int i = 0; i < DIR_SIZE; i++)
+			{
+				for (int j = 0; j < DIR_SIZE; j++)
+				{
+					if (strcmp(files[i], Checklist[j]) == 0)
+					{
+						MatchNum++;
+						break;
+					}
+					else
+						continue;
+				}
+			}
+			REQUIRE(MatchNum == 9);
 
 			for (unsigned int i = 0; i < dirSize; ++i)
 				delete[] files[i];
