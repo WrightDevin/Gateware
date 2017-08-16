@@ -1,4 +1,5 @@
 #add_subdirectory(G_System)
+#add_subdirectory(G_Audio)
 message(“Unit Test Generation”)
 
 if(NOT APPLE)
@@ -12,7 +13,9 @@ G_System/GWindowTests.cpp
 G_System/GBufferedInputTestListener.cpp
 G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
-G_System/GWindowTestListener.h)
+G_System/GWindowTestListener.h
+G_Audio/GAudioCommon.h 
+G_Audio/GAudioTests.cpp )
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT})
 
