@@ -2,8 +2,8 @@
 #include"GAudioWin.hpp"
 #elif __linux__
 #include"GAudioLinux.hpp"
-//#elif __APPLE__
-//#import "GAudioMac.hpp"
+#elif __APPLE__
+#import "GAudioMac.hpp"
 #endif
 
 using namespace GW;
@@ -243,7 +243,7 @@ AppAudio::~AppAudio()
 }
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGAudio(GAudio** _outAudio) 
 {
-	return FAILURE; 
+	return GW::AUDIO::CreateGAudio(_outAudio); 
 }
 GReturn GW::AUDIO::CreateGAudio(GAudio** _outAudio)
 {
