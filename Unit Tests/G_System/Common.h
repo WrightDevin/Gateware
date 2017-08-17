@@ -12,6 +12,7 @@
 #include <G_System/GLog.h>
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
+
 #else
 #include <../../gateware.git.0/Interface/G_System/GKeyDefines.h>
 #include <../../gateware.git.0/Interface/G_System/GBufferedInput.h>
