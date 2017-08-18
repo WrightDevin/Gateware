@@ -1,5 +1,6 @@
+#import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#include "GAudio.h"
+
 @interface GMacSound : NSObject
 -(bool) SetPCMShader:(const char *) _data;
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;

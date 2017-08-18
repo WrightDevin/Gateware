@@ -1,3 +1,4 @@
+#pragma once
 #ifndef GSound_H
 #define GSound_H
 #endif

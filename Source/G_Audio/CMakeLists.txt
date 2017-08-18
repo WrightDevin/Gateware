@@ -1,15 +1,15 @@
-﻿project(LibraryProject)
+project(LibraryProject)
 
 if(APPLE)
 #Set(GUI_TYPE MACOSX_BUNDLE)
-FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+set(COCOA_LIBRARY Cocoa)
 
 message(“Adding .mm files”)
 add_library(GAudio GAudio.mm)
 
 add_library(GAudio_DLL SHARED GAudio.mm)
 
-target_link_libraries(GAudio “-framework ${COCOA_LIBRARY}”)
+target_link_libraries(GAudio "-framework ${COCOA_LIBRARY}")
 
 target_link_libraries(GAudio_DLL "-framework cocoa")
 
