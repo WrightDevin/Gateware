@@ -176,8 +176,6 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 TEST_CASE("Editing test music PCM", "[EditPCM]")
 {
 	const char* testdata = nullptr;
-	// Fail cases
-	//CHECK(testmusic->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->SetPCMShader(testdata)));
 }
@@ -187,16 +185,12 @@ TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 {
 	testMusic->StreamStart();
 	testSound->PlaySound();
-	// Fail cases
-	//CHECK(testAudio->PauseAll() == INVALID_ARGUMENT);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(testAudio->PauseAll()));
 }
 TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 {
-	// Fail cases
-	//CHECK(testAudio->PauseAll() == INVALID_ARGUMENT);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(testAudio->ResumeAll()));
