@@ -1,8 +1,5 @@
 //#import "../../../../Source/G_System/G_Core/UnitTestMain.cpp"
 #import "../UnitTestMain.cpp"
-#import "../G_Audio/GAudioTest.cpp"
-#import "../G_Audio/GSoundTest.cpp"
-#import "../G_Audio/GMusicTest.cpp"
 #import "../G_System/GBufferedInputTests.cpp"
 #import "../G_System/GInputTests.cpp"
 #import "../G_System/GFileTest.cpp"

@@ -20,9 +20,6 @@
 #include <../../gateware.git.0/Interface/G_System/GLog.h>
 #include <../../gateware.git.0/Interface/G_System/GFile.h>
 #include <../../gateware.git.0/Interface/G_System/GWindow.h>
-#include <../../gateware.git.0/Interface/G_Audio/GAudio.h>
-#include <../../gateware.git.0/Interface/G_Audio/GSound.h>
-#include <../../gateware.git.0/Interface/G_Audio/GMusic.h>
 #endif
 
 //TODO: Add your library headers

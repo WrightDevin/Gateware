@@ -6,7 +6,7 @@
 #include <iostream>
 
 //This is the ammount of files that should be in the directory after all test cases run
-#define DIR_SIZE 2
+#define DIR_SIZE 9
 
 //Test case file names will not be larger than 40 characters
 #define FILE_NAME_SIZE 40
@@ -18,7 +18,7 @@
 GW::SYSTEM::GFile* file = nullptr;
 char directoryBuffer[260]; //Same size as MAX_PATH MACRO
 //Used in directory testing continued
-unsigned int dirSize = 2;
+unsigned int dirSize;
 
 
 TEST_CASE("Create GFile object.", "[CreateGFile]")
@@ -45,9 +45,9 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 #ifdef WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #elif __APPLE__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../Code Blocks/Unit Tests/TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../Xcode/Unit Tests")));
 #elif __linux__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./TestDirectory")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./")));
 #endif
 		//REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../gateware-test-suite.git.0/XCode/Gateware/GTests/TestDirectory")));
 	}
@@ -209,10 +209,21 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 {
 	SECTION("Getting directory size.", "[GetDirectorySize]")
 	{
-
 		//Pass cases
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"./CMakeFiles")));
-		REQUIRE(dirSize == DIR_SIZE); //2 is the number of files that should be in the directory after all other testing
+#ifdef _WIN32
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#elif __APPLE__
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#elif __linux__
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
+		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+#endif 
+
 
 		//Fail cases
 		//This function should not fail.
@@ -220,23 +231,41 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		SECTION("Getting all files in the directory.", "[GetFilesFromDirectory]")
 		{
 			//Create a string buffer to hold our filenames
+			int MatchNum = 0;
 			char* files[DIR_SIZE];
+			char* Checklist[DIR_SIZE];
 
 			for (unsigned int i = 0; i < dirSize; ++i)
 				files[i] = new char[FILE_NAME_SIZE];
 
 			//Pass cases
 			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
-			std::cout << files[0];
+			
+			Checklist[0] = ".DS_Store";
+			Checklist[1] = ".gitignore";
+			Checklist[2] = "CMakeLists.txt";
+			Checklist[3] = "Doxyfile";
+			Checklist[4] = "LICENSE.md";
+			Checklist[5] = "LinuxSetup";
+			Checklist[6] = "MacSetup";
+			Checklist[7] = "README.md";
+			Checklist[8] = "WinSetup.bat";
 
-#ifdef _WIN32
-			REQUIRE(strcmp(files[0], u8"generate.stamp") == 0);
-			REQUIRE(strcmp(files[1], u8"generate.stamp.depend") == 0);
-#elif  __linux__
-			REQUIRE(strcmp(files[0], u8"g_test.gtest") == 0);
-			REQUIRE(strcmp(files[1], "g_binary_test.gtest") == 0);
-			REQUIRE(strcmp(files[2], "DONOTDELETE.txt") == 0);
-#endif
+			for (int i = 0; i < DIR_SIZE; i++)
+			{
+				for (int j = 0; j < DIR_SIZE; j++)
+				{
+					if (strcmp(files[i], Checklist[j]) == 0)
+					{
+						MatchNum++;
+						break;
+					}
+					else
+						continue;
+				}
+			}
+			REQUIRE(MatchNum == 9);
+
 			for (unsigned int i = 0; i < dirSize; ++i)
 				delete[] files[i];
 		}
