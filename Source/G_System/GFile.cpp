@@ -17,6 +17,7 @@
 //Apple and Linux includes.
 #include <dirent.h>  //Directory handling.
 #include <sys/stat.h>  //File stats.
+#include <TargetConditionals.h>  //iOS preprocessor definitions
 
 #define DIR_SEPERATOR '/'
 
@@ -142,9 +143,17 @@ FileIO::~FileIO()
 GW::GReturn FileIO::Init()
 {
 	//Set the current working directory to the directory the program was ran from.
-	GW::GReturn rv = SetCurrentWorkingDirectory("./");
-	if (G_FAIL(rv))
-		return rv;
+#if TARGET_OS_IOS || TARGET_OS_SIMULATOR
+    string tempDir = getenv("HOME");
+    tempDir += "/Library";
+    GW::GReturn rv = SetCurrentWorkingDirectory(tempDir.c_str());
+    if (G_FAIL(rv))
+        return rv;
+#else
+    GW::GReturn rv = SetCurrentWorkingDirectory("./");
+    if (G_FAIL(rv))
+        return rv;
+#endif
 
 	//Imbue the file with utf8 if on Windows.
 #if defined(_WIN32)
@@ -425,9 +434,13 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	//Just read in data normally.
 	getline(file, outString, _delimiter);
 #endif
-
-	//Copy the data over to the out parameter.
-	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+    
+#if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+    strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
+#else
+    //Copy the data over to the out parameter.
+    strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+#endif
 
 	lock.unlock();
 
@@ -470,9 +483,13 @@ GW::GReturn FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize
 	//Check that a directory is open.
 	if (currDirStream == nullptr)
 		return GW::FAILURE;
-
-	//Copy the current directory to the out parameter.
-	strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
+    
+#if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+    strlcpy(_dir, G_TO_UTF8(currDir).c_str(), _dirSize);
+#else
+    //Copy the current directory to the out parameter.
+    strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
+#endif
 
 	return GW::SUCCESS;
 }
@@ -567,8 +584,14 @@ GW::GReturn FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFi
 		if (file->d_type == DT_REG)
 		{
             string fileName(file->d_name);
-			strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
-			++fileNumber;
+			
+            #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+                strlcpy(_outFiles[fileNumber], G_TO_UTF8(fileName).c_str(), _fileNameSize);
+            #else
+                strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
+            #endif
+            
+            ++fileNumber;
 		}
 	}
 
