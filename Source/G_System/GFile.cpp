@@ -195,7 +195,7 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 
 	//If file failed to open we fail.
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }
@@ -215,7 +215,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 
 	//If file failed to open we fail.
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }
@@ -268,7 +268,7 @@ GW::GReturn FileIO::OpenTextWrite(const char* const _file)
 	file.open(currDir + G_TO_UTF16(_file), ios::out);
 
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	//Need to write the BOM if we are _WIN32.
 #if defined(_WIN32)
@@ -302,7 +302,7 @@ GW::GReturn FileIO::AppendTextWrite(const char* const _file)
 	file.open(currDir + G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
 
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }

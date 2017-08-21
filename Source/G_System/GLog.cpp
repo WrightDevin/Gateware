@@ -63,9 +63,9 @@ public:
 
 	GW::GReturn LogCatergorized(const char* const _category, const char* const _log) override;
 
-	void EnableVerboseLogging(bool _value) override;
+	GW::GReturn EnableVerboseLogging(bool& _value) override;
 
-	void EnableConsoleLogging(bool _value) override;
+	GW::GReturn EnableConsoleLogging(bool& _value) override;
 
 	GW::GReturn Flush() override;
 
@@ -259,16 +259,18 @@ GW::GReturn LogFile::LogCatergorized(const char* const _category, const char* co
 	return GW::SUCCESS;
 }
 
-void LogFile::EnableVerboseLogging(bool _value)
+GW::GReturn LogFile::EnableVerboseLogging(bool& _value)
 {
 	//Set the verbose boolean.
 	isVerbose = _value;
+	return GW::SUCCESS;
 }
 
-void LogFile::EnableConsoleLogging(bool _value)
+GW::GReturn LogFile::EnableConsoleLogging(bool& _value)
 {
 	//Set the console logging boolean.
 	isConsoleLogged = _value;
+	return GW::SUCCESS;
 }
 
 GW::GReturn LogFile::Flush()

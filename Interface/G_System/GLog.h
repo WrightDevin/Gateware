@@ -21,12 +21,11 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {79AC4197-1A78-4A86-A4A4-E84773A2F6DF}
+		//! Unique Identifier for this interface. {A9C4A831-B0B7-408D-AAE3-7FB0D337267D}
 		static const GUUIID GLogUUIID =
 		{
-			0x79ac4197, 0x1a78, 0x4a86,{ 0xa4, 0xa4, 0xe8, 0x47, 0x73, 0xa2, 0xf6, 0xdf }
+			0xa9c4a831, 0xb0b7, 0x408d,{ 0xaa, 0xe3, 0x7f, 0xb0, 0xd3, 0x37, 0x26, 0x7d }
 		};
-
 		// Forward declaration so we can use GFile* in a function.
 		class GFile;
 
@@ -79,7 +78,7 @@ namespace GW
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*/
-			virtual void EnableVerboseLogging(bool _value) = 0;
+			virtual GReturn EnableVerboseLogging(bool& _value) = 0;
 			
 			//! Turns console logging on or off.
 			/*!
@@ -87,7 +86,7 @@ namespace GW
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*/
-			virtual void EnableConsoleLogging(bool _value) = 0;
+			virtual GReturn EnableConsoleLogging(bool& _value) = 0;
 			
 			//! Forces a log dump to file.
 			/*!

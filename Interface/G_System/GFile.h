@@ -21,12 +21,12 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {3BE0F240-C3E7-424B-888E-F2994B6D1E48}
+		//! Unique Identifier for this interface. {C32D0ABA-2C60-4A93-8498-2E1E7E0A1AFC}
 		static const GUUIID GFileUUIID =
 		{
-			0x3be0f240, 0xc3e7, 0x424b,{ 0x88, 0x8e, 0xf2, 0x99, 0x4b, 0x6d, 0x1e, 0x48 }
+			0xc32d0aba, 0x2c60, 0x4a93,{ 0x84, 0x98, 0x2e, 0x1e, 0x7e, 0xa, 0x1a, 0xfc } 
 		};
-
+	
 		//! Cross platform FileIO/Directory handling.
 		/*!
 		*	Handles file input/output operations, as well as directory information and file information.

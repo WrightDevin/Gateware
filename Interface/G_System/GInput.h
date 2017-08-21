@@ -22,12 +22,11 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
+		//! Unique Identifier for this interface. {C669B79D-FFE7-4A22-B382-CBC23CE012C2}
 		static const GUUIID GInputUUIID =
 		{
-			0xd68b715f, 0xe73b, 0x44c6,{ 0x8a, 0x7f, 0x97, 0xec, 0xc8, 0xeb, 0x99, 0x5 } 
+			0xc669b79d, 0xffe7, 0x4a22,{ 0xb3, 0x82, 0xcb, 0xc2, 0x3c, 0xe0, 0x12, 0xc2 }
 		};
-
 		//! A single threaded input library.
 		/*!
 		*	The single thread input library is used for high speed game input.
@@ -49,7 +48,7 @@ namespace GW
 			*	\retval 0 The Key is not pressed.
 			*	\retval 1 The Key is pressed.
 			*/
-			virtual float GetState(int _keyCode, GReturn* _errorCode) = 0;
+			virtual GReturn GetState(int _keyCode, float _outState) = 0;
 
 			//! Get the change in mouse position.
 			/*!
@@ -79,7 +78,7 @@ namespace GW
 			*
 			*	\retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
 			*/
-			virtual unsigned int GetKeyMask() = 0;
+			virtual GReturn GetKeyMask(unsigned int& _outKeyMask) = 0;
 		};
 
 		//! Creates a GInput Object.
