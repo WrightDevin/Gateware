@@ -247,7 +247,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 			Checklist[3] = "Doxyfile";
 			Checklist[4] = "LICENSE.md";
 			Checklist[5] = "LinuxSetup";
-			Checklist[6] = "MacSetup";
+			Checklist[6] = "MacSetup.command";
 			Checklist[7] = "README.md";
 			Checklist[8] = "WinSetup.bat";
 
