@@ -129,18 +129,18 @@ public:
 	
 	GReturn	GetHeight(unsigned int& _outHeight);
 
-	GReturn	GetClientWidth(unsigned int _outClientWidth);
+	GReturn	GetClientWidth(unsigned int& _outClientWidth);
 
-	GReturn	GetClientHeight(unsigned int _outClientHeight);
+	GReturn	GetClientHeight(unsigned int& _outClientHeight);
 
-	GReturn	GetX(unsigned int _outX);
+	GReturn	GetX(unsigned int& _outX);
 
-	GReturn	GetY(unsigned int _outY);
+	GReturn	GetY(unsigned int& _outY);
 
 
 	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
-	GReturn GetWindowHandle(void* _outWindowHandle);
+	GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize);
 
 	GReturn IsFullscreen(bool& _outIsFullscreen);
 };
@@ -375,13 +375,13 @@ GReturn AppWindow::ProcessWindowEvents()
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 #elif __APPLE__
 		if (!window)
-			return INVALID_ARGUMENT;
+			return FAILURE;
 #endif
 
 #ifdef _WIN32
@@ -422,13 +422,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 #elif __linux__
     if(!display)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GWindowStyle previousStyle = style;
@@ -860,13 +860,13 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(_x, _y, width, height, style);
@@ -908,13 +908,13 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
@@ -1109,7 +1109,7 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
@@ -1146,7 +1146,7 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
@@ -1177,13 +1177,15 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetClientWidth(unsigned int _outClientWidth)
+GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
-	
-	return GetClientWidth(_outClientWidth);
+		return FAILURE;
+	RECT width;
+	GetClientRect(wndHandle, &width);
+	_outClientWidth = width.right - width.left;
+	return SUCCESS; 
 
 #elif __linux__
 	if (!display)
@@ -1215,13 +1217,16 @@ GReturn AppWindow::GetClientWidth(unsigned int _outClientWidth)
 #endif
 }
 
-GReturn AppWindow::GetClientHeight(unsigned int _outClientHeight)
+GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
+	RECT height;
+	GetClientRect(wndHandle, &height);
+	_outClientHeight = height.bottom - height.top;
 
-	return GetClientHeight(_outClientHeight);
+	return SUCCESS;
 
 #elif __linux__
 	if (!display)
@@ -1253,11 +1258,11 @@ GReturn AppWindow::GetClientHeight(unsigned int _outClientHeight)
 #endif
 }
 
-GReturn AppWindow::GetX(unsigned int _outX)
+GReturn AppWindow::GetX(unsigned int& _outX)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
@@ -1288,11 +1293,11 @@ GReturn AppWindow::GetX(unsigned int _outX)
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetY(unsigned int _outY)
+GReturn AppWindow::GetY(unsigned int& _outY)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
@@ -1329,14 +1334,16 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return INVALID_ARGUMENT;
+		return FAILURE;
 
-	if(!GetClientTopLeft(_outX, _outY))
-        return FAILURE;
+	RECT topLeft;
+	GetClientRect(wndHandle, &topLeft);
+	_outX = topLeft.left;
+	_outY = topLeft.top;
 
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 
      Window root;
     int x, y;
@@ -1352,7 +1359,7 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 
 #elif __APPLE__
 	if (!window)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
     
     NSRect rect = window.frame;
     NSRect contentRect = [window contentRectForFrameRect:rect];
@@ -1364,28 +1371,47 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetWindowHandle(void * _outWindowHandle)
+GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize)
 {
 #ifdef _WIN32
 	if (!wndHandle)
 	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(HWND))
+	{
 		return INVALID_ARGUMENT;
 	}
-	_outWindowHandle = wndHandle;
+	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
+
 	return SUCCESS;
 #elif __linux__
 	if (!display)
 	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(display))
+	{
 		return INVALID_ARGUMENT;
 	}
-	_outWindowHandle = display;
+	LINUX_WINDOW linuxWnd;
+	linuxWnd.window = (void*)&window;
+	linuxWnd.display = (void*)display;
+
+	memcpy_s(_outWindowHandle, _handleSize, &linuxWnd , _handleSize );
 	return SUCCESS;
 #elif __APPLE__
 	if (!(__bridge void*)window)
 	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(NSWindow*))
+	{
 		return INVALID_ARGUMENT;
 	}
-	_outWindowHandle = (__bridge void*)window;
+
+	_outWindowHandle = (__bridge void*)window; // should test this
+	
 	return SUCCESS;
 #endif
 }

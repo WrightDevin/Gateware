@@ -5,8 +5,8 @@
 	File: GWindow.h
 	Purpose: A Gateware interface that creates a window and handles its properties.
 	Author: Nic Russell
-	Contributors: N/A
-	Last Modified: 5/8/2017
+	Contributors: ShuoYi Chang
+	Last Modified: 8/21/2017
 	Interface Status: Early Stage Development
 	Copyright: 7thGate Software LLC.
 	License: MIT
@@ -60,10 +60,10 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identifier for this interface. {2515FFF7-3731-42BE-9377-FCF6A6CF083D}
+		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
 		static const GUUIID GWindowUUIID =
 		{
-			0x2515fff7, 0x3731, 0x42be,{ 0x93, 0x77, 0xfc, 0xf6, 0xa6, 0xcf, 0x8, 0x3d }
+			0xe53c2594, 0xe47c, 0x49a5,{ 0xbd, 0x1b, 0x53, 0x41, 0xf2, 0x60, 0x3f, 0x95 }
 		};
 
 		//! A thread-safe window creation and management library.
@@ -210,7 +210,7 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Width was successfully queried and returned.
 			*/
-			virtual GReturn	GetClientWidth(unsigned int _outClientWidth) = 0;
+			virtual GReturn	GetClientWidth(unsigned int& _outClientWidth) = 0;
 
 			//! Returns the client height in pixels of the currently opened window.
 			/*!
@@ -218,21 +218,21 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Height was successfully queried and returned.
 			*/
-			virtual GReturn	GetClientHeight(unsigned int _outClientHeight) = 0;
+			virtual GReturn	GetClientHeight(unsigned int& _outClientHeight) = 0;
 
 			//! Returns the X position in pixels of the currently opened window.
 			/*!
 			*   \retval -1 No window exists to query position from.
 			*	\retval else X position was successfully queried and returned.
 			*/
-			virtual GReturn	GetX(unsigned int _outX) = 0;
+			virtual GReturn	GetX(unsigned int& _outX) = 0;
 
 			//! Returns the Y position in pixels of the currently opened window.
 			/*!
 			*   \retval -1 No window exists to query position from.
 			*	\retval else Y position was successfully queried and returned.
 			*/
-			virtual GReturn	GetY(unsigned int _outY) = 0;
+			virtual GReturn	GetY(unsigned int& _outY) = 0;
 
 			//! Gets the location of the top-left pixel of the opened window's client area.
 			/*!
@@ -251,7 +251,7 @@ namespace GW
 			*
 			*   \retval void* The void* data to the window handle.
 			*/
-			virtual GReturn GetWindowHandle(void* _outWindowHandle) = 0;
+			virtual GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize) = 0;
 
 			//! Returns a bool specifying whether or not the currently opened window is fullscreen.
 			/*!

@@ -48,7 +48,7 @@ public:
 
 	/* GInput */
 
-	GReturn GetState(int _keyCode, float _outState);
+	GReturn GetState(int _keyCode, float& _outState);
 	GReturn GetMouseDelta(float& _x, float& _y);
 	GReturn GetMousePosition(float& _x, float& _y);
 	GReturn GetKeyMask(unsigned int& _outKeyMask);
@@ -310,7 +310,7 @@ GReturn Input::InitializeMac(void* _data) {
 	return SUCCESS;
 }
 
-GReturn Input::GetState(int _keyCode, float _outState){
+GReturn Input::GetState(int _keyCode, float& _outState){
 	if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
 		return FEATURE_UNSUPPORTED;
 	}	

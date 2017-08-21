@@ -6,7 +6,7 @@
 	Purpose: A Gateware interface that handles high-speed keyboard and mouse input.
 	Author: Peter Farber
 	Contributors: N/A
-	Last Modified: 2/1/2017
+	Last Modified: 8/21/2017
 	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
@@ -22,11 +22,12 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {C669B79D-FFE7-4A22-B382-CBC23CE012C2}
+		//! Unique Identifier for this interface. {5A546D89-7C6F-46B5-B62B-FF5B27CE06F5}
 		static const GUUIID GInputUUIID =
 		{
-			0xc669b79d, 0xffe7, 0x4a22,{ 0xb3, 0x82, 0xcb, 0xc2, 0x3c, 0xe0, 0x12, 0xc2 }
+			0x5a546d89, 0x7c6f, 0x46b5,{ 0xb6, 0x2b, 0xff, 0x5b, 0x27, 0xce, 0x6, 0xf5 }
 		};
+
 		//! A single threaded input library.
 		/*!
 		*	The single thread input library is used for high speed game input.
@@ -48,7 +49,7 @@ namespace GW
 			*	\retval 0 The Key is not pressed.
 			*	\retval 1 The Key is pressed.
 			*/
-			virtual GReturn GetState(int _keyCode, float _outState) = 0;
+			virtual GReturn GetState(int _keyCode, float& _outState) = 0;
 
 			//! Get the change in mouse position.
 			/*!
