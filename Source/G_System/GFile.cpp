@@ -8,6 +8,13 @@
 #include <mutex>  //mutex locks
 #include "GUtility.h"  //Internal utility functions
 
+//iOS include, Apple Only.
+#if defined(__APPLE__)
+
+#include <TargetConditionals.h>  //iOS preprocessor definitions
+
+#endif
+
 //dirent.h is not native to Windows and is added to the project
 //The " " are used for include so the compiler knows to look in the
 //project folder first.
@@ -17,7 +24,6 @@
 //Apple and Linux includes.
 #include <dirent.h>  //Directory handling.
 #include <sys/stat.h>  //File stats.
-#include <TargetConditionals.h>  //iOS preprocessor definitions
 
 #define DIR_SEPERATOR '/'
 
@@ -434,7 +440,7 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	//Just read in data normally.
 	getline(file, outString, _delimiter);
 #endif
-    
+
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
     strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
 #else
@@ -483,7 +489,7 @@ GW::GReturn FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize
 	//Check that a directory is open.
 	if (currDirStream == nullptr)
 		return GW::FAILURE;
-    
+
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
     strlcpy(_dir, G_TO_UTF8(currDir).c_str(), _dirSize);
 #else
@@ -584,13 +590,13 @@ GW::GReturn FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFi
 		if (file->d_type == DT_REG)
 		{
             string fileName(file->d_name);
-			
+
             #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
                 strlcpy(_outFiles[fileNumber], G_TO_UTF8(fileName).c_str(), _fileNameSize);
             #else
                 strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
             #endif
-            
+
             ++fileNumber;
 		}
 	}
