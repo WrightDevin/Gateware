@@ -2,18 +2,18 @@
 #add_subdirectory(G_Audio)
 message(“Unit Test Generation”)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
 
 # https://stackoverflow.com/questions/39863835/cmake-link-xlib-directories-c
 
 find_package(X11 REQUIRED)
-#find_package(Threads)
+find_package(Threads REQUIRED)
 
-if(CMAKE_THREAD_LIBS_INIT)
+if(NOT CMAKE_THREAD_LIBS_INIT)
 
 message(ERROR "Could not find thread libraries")
 
-endif()
+endif(NOT CMAKE_THREAD_LIBS_INIT)
 
 if(X11_FOUND)
 message("X11 was found, attempting to link.")
@@ -23,7 +23,7 @@ include_directories(${X11_INCLUDE_DIR})
 
 endif(X11_FOUND)
 
-endif(UNIX)
+endif(UNIX AND NOT APPLE)
 
 if(NOT APPLE)
 set(UnitTestDependecies
