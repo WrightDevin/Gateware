@@ -7,6 +7,13 @@ if(UNIX)
 # https://stackoverflow.com/questions/39863835/cmake-link-xlib-directories-c
 
 find_package(X11 REQUIRED)
+#find_package(Threads)
+
+if(CMAKE_THREAD_LIBS_INIT)
+
+message(ERROR "Could not find thread libraries")
+
+endif()
 
 if(X11_FOUND)
 message("X11 was found, attempting to link.")
