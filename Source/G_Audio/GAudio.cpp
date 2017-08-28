@@ -3,7 +3,7 @@
 #elif __linux__
 #include"GAudioLinux.hpp"
 #elif __APPLE__
-#import "GAudioMac.hpp"
+#include "GAudioMac.hpp"
 #endif
 
 using namespace GW;
@@ -12,6 +12,7 @@ using namespace AUDIO;
 class AppSound : public GSound
 {
 public:
+    GReturn Init(const char* _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
@@ -19,11 +20,23 @@ public:
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
-
 	~AppSound();
 
+#if __APPLE__
+    GMacSound * mac_snd = nullptr;
+#endif
+    
 };
-
+GReturn AppSound::Init(const char * _path)
+{
+    
+    GReturn result = FAILURE;
+#if __APPLE__
+    
+    result = PlatformLoadSoundData(_path,  mac_snd);
+#endif
+    return result;
+}
 //Start of GSound implementation 
 GReturn AppSound::SetPCMShader(const char* _data)
 {
@@ -39,43 +52,83 @@ GReturn AppSound::SetChannelVolumes(float * _values, int _numChannels)
 }
 GReturn AppSound::SetVolume(float _newVolume)
 {
-	GReturn result = PlatformSetSoundVolume(_newVolume);
+    GReturn result = FAILURE;
+#if __APPLE__
+    	result = PlatformSetSoundVolume(_newVolume, mac_snd);
+#elif Win32
+     result = PlatformSetSoundVolume(_newVolume);
+#endif
 
 	return result;
 }
 GReturn AppSound::PlaySound()
 {
-	GReturn result = PlatformPlaySound();
 
-	return result;
+    GReturn result = FAILURE;
+
+#if __APPLE__
+    result = PlatformPlaySound(mac_snd);
+#elif Win32
+    result = PlatformPlaySound();
+#endif
+  
+    return result;
 }
 GReturn AppSound::Pause()
 {
-	GReturn result = PlatformPauseSound();
+        GReturn result = FAILURE;
 
+#if __APPLE__
+    result = PlatformPauseSound(mac_snd);
+#elif Win32
+    result = PlatformPauseSound();
+#endif
 	return result;
 }
 GReturn AppSound::Resume()
 {
-	GReturn result = PlatformResumeSound();
-
+        GReturn result = FAILURE;
+	
+#if __APPLE__
+    result = PlatformResumeSound(mac_snd);
+#elif Win32
+    result = PlatformResumeSound();
+#endif
 	return result;
 }
 GReturn AppSound::StopSound()
 {
-	GReturn result = PlatformStopSound();
+        GReturn result = FAILURE;
 
+#if __APPLE__
+    result = PlatformStopSound(mac_snd);
+#elif Win32
+    result = PlatformStopSound();
+#endif
 	return result;
 }
 AppSound::~AppSound()
 {
-	PlatformUnloadGSound();
+if(mac_snd == nullptr)
+{
+    return;
 }
-//End of GSound implementation 
+#if __APPLE__
+     PlatformUnloadGSound(mac_snd);
+  //  delete mac_snd;
+    mac_snd = nullptr;
+#else
+    result = PlatformUnloadGSound();
+#endif
+
+}
+//End of GSound implementation
 
 class AppMusic : public GMusic
 {
+
 public:
+    GReturn Init(const char* _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
@@ -83,11 +136,24 @@ public:
 	GReturn PauseStream();
 	GReturn ResumeStream();
 	GReturn StopStream();
-
 	~AppMusic();
+    
+#if __APPLE__
+    GMacMusic * mac_msc = nullptr;
+#endif
+    
 
 };
-//Start of GMusic implementation 
+GReturn AppMusic::Init(const char* _path)
+{
+    GReturn result = FAILURE;
+#if __APPLE__
+    void * dataPtr = &mac_msc;
+    result = PlatformLoadMusicStreamData(_path,  dataPtr);
+#endif
+        return result;
+}
+//Start of GMusic implementation
 GReturn AppMusic::SetPCMShader(const char* _data)
 {
 	GReturn result = PlatformSetMusicPCMShader(_data);
@@ -139,22 +205,18 @@ AppMusic::~AppMusic()
 class AppAudio : public GAudio
 {
 public:
-
 	GReturn Init();
-
 	GReturn CreateSound(const char* _path, GSound** _outSound);
-
 	GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
-
 	GReturn SetMasterVolume(float _value);
-
 	GReturn SetMasterChannelVolumes(const float * _values, int _numChannels);
-
 	GReturn PauseAll();
-
 	GReturn ResumeAll();
-
 	~AppAudio();
+    
+#if __APPLE__
+    GMacAudio * mac_audio = nullptr;
+#endif
 
 };
 //Start of GAudio implementation
@@ -167,6 +229,7 @@ GReturn AppAudio::Init()
 }
 GReturn AppAudio::CreateSound(const char* _path, GSound** _outSound)
 {
+  
 		GReturn result = FAILURE;
 	if (_outSound == nullptr)
 	{
@@ -177,15 +240,17 @@ GReturn AppAudio::CreateSound(const char* _path, GSound** _outSound)
 
 	if (snd == nullptr)
 	{
+        
 		result = FAILURE;
 		return result;
 	}
-
-	result = PlatformLoadSound(_path, (GSound **)&snd);
-
+   result = snd->Init(_path);
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
+    {
+ 
 		return result;
+    }
 
 	return result;
 }
@@ -204,9 +269,7 @@ GReturn AppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 		result = FAILURE;
 		return result;
 	}
-
-	result = PlatformLoadMusicStream(_path, (GMusic **)&msc);
-
+    msc->Init(_path);
 	*_outMusic = msc;
 	if (result == INVALID_ARGUMENT)
 		return result;

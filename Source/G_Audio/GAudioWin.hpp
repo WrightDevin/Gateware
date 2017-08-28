@@ -13,13 +13,13 @@ GReturn PlatformInit()
 
 	return result;
 }
-GReturn PlatformLoadSound(const char* _path, GSound** _outSound)
+GReturn PlatformLoadSoundData(const char* _path, void * _outSoundData)
 {
 	GReturn result = GReturn::FAILURE;
 
 	return result;
 }
-GReturn PlatformLoadMusicStream(const char* _path, GMusic** _outMusic)
+GReturn PlatformLoadMusicStreamData(const char* _path, void * _outMusicData)
 {
 	GReturn result = GReturn::FAILURE;
 
