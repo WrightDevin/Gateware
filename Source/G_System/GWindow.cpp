@@ -1378,12 +1378,11 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	{
 		return FAILURE;
 	}
-	if (_outWindowHandle == nullptr || _handleSize != sizeof(HWND))
+	if (_handleSize != sizeof(HWND))
 	{
 		return INVALID_ARGUMENT;
 	}
-	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
-
+	memcpy_s(&_outWindowHandle, _handleSize, &wndHandle, sizeof(wndHandle));
 	return SUCCESS;
 #elif __linux__
 	if (!display)
