@@ -1,16 +1,14 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #import <CoreAudio/CoreAudio.h>
-#import <AudioUnit/AudioUnit.h>
-#import <CoreAudio/AudioHardware.h>
-#import <AudioToolbox/AudioFileStream.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AVFoundation/AVFAudio.h>
 
 @interface GMacSound : NSObject
 {
     @public
-    NSSound * mySound;
-    
-  //  float maxVolume;
+    AVAudioPlayerNode * mySound;
+
 }
 -(id) initWithPath:(NSString*) _path;
 -(bool) SetPCMShader:(const char *) _data;
@@ -31,7 +29,7 @@
     if(self)
     {
         
-        self->mySound = [[NSSound alloc] initWithContentsOfFile:_path byReference:YES];
+        self->mySound = [[AVAudioPlayerNode alloc] init];
     }
     return self;
 }
@@ -44,8 +42,8 @@
 {
        NSLog(@"Hi my names becky");
 
-    NSArray * temp = nil;
-    [mySound setChannelMapping:temp];
+    //NSArray * temp = nil;
+   // [mySound setChannelMapping:temp];
     return false;
 }
 -(bool) SetVolume:(float) _newVolume
@@ -71,23 +69,27 @@
 -(bool) PlaySound
 {
 
-    return [mySound play];
+     [mySound play];
+    return [mySound isPlaying];
     
 }
 -(bool) PauseSound
 {
     
-    return [mySound pause];
+     [mySound pause];
+    return ![mySound isPlaying];
 }
 -(bool) ResumeSound
 {
     
-    return [mySound resume];
+     [mySound playAtTime:nil];
+      return [mySound isPlaying];
 }
 -(bool) StopSound
 {
    
-    return [mySound stop];
+     [mySound stop];
+        return ![mySound isPlaying];
 }
 -(bool) Unload
 {
@@ -109,20 +111,13 @@
 @end
 
 @interface GMacMusic : NSObject
-{
-    @public
-    AudioFileStreamID *myStream;
-    uint8_t * myData;
-    AudioFileStream_PropertyListenerProc myListener;
-    AudioFileStream_PacketsProc myPackProc;
-    AudioFileTypeID myHint;
-    
-}
+
 -(id) initWithPath:(CFURLRef*) _path;
 -(bool) SetPCMShader:(const char *) _data;
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
 -(bool) SetVolume:(float) _newVolume;
 -(bool) StreamStart;
+-(bool) Parse;
 -(bool) PauseStream;
 -(bool) ResumeStream;
 -(bool) StopStream;
@@ -136,7 +131,7 @@
     self = [super init];
     if(self)
     {
-        AudioFileStreamOpen(myData, myListener, myPackProc, myHint, myStream);
+     //   AudioFileStreamOpen(myData, myListener, myPackProc, myHint, myStream);
     }
     return self;
 }
@@ -156,16 +151,27 @@
 {
     return false;
 }
+-(bool) Parse
+{
+    //AudioFileStreamParseBytes(myStream, , , )
+    return false;
+}
 -(bool) PauseStream
 {
     return false;
 }
 -(bool) ResumeStream
 {
+ 
     return false;
 }
 -(bool) StopStream
 {
+    //OSStatus result = AudioFileStreamClose(*(myStream));
+    //if(result == noErr)
+    //{
+      //  return true;
+    //}
     return false;
 }
 -(bool) Unload
@@ -177,6 +183,11 @@
 
 
 @interface GMacAudio : NSObject
+{
+    @public
+    AVAudioEngine * myAudio;
+}
+
 -(bool) Init;
 -(bool) CreateSound:(const char *) _path soundPtrPtr:(GMacSound ** )_outSound;
 -(bool) CreateMusicStream:(const char *) _path soundPtrPtr:(GMacMusic ** )_outMusic;
@@ -190,45 +201,25 @@
 @implementation GMacAudio
 -(bool) Init
 {
-    NSLog(@"Hi");
-    //setup
-    AudioComponent myComp;
-    AudioComponentDescription mydesc;
-    AudioComponentInstance myHAL;
-    mydesc.componentType = kAudioUnitType_Output;
-    mydesc.componentSubType = kAudioUnitSubType_HALOutput;
-    mydesc.componentManufacturer = kAudioUnitManufacturer_Apple;
-    mydesc.componentFlags = 0;
-    mydesc.componentFlagsMask = 0;
+
+    bool result;
+    NSError *err;
+   myAudio = [[AVAudioEngine alloc]init];
     
-    myComp = AudioComponentFindNext(NULL, &mydesc);
-    if(myComp == NULL)
+    [myAudio prepare];
+    result = [myAudio startAndReturnError:&err];
+    
+    if(myAudio.isRunning)
     {
-       return false;
+        return true;
+   
     }
-    AudioComponentInstanceNew(myComp, &myHAL);
-    
-    //Enabling IO
-    UInt32 enableIO = 0;
-    UInt32 size = 0;
-    enableIO = 0;
-    AudioUnit myUnit = nullptr;
-    AudioUnitSetProperty(myUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &enableIO, sizeof(enableIO));
-    //SettingCurrDevic
-    size = sizeof(AudioDeviceID);
-    AudioDeviceID myDevice;
-    AudioObjectPropertyAddress myAddress = {kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster};
-    OSStatus err = noErr;
-    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &myAddress, 0, NULL, &size, &myDevice);
-    if(err)
+    else
     {
         return false;
     }
-    
-    err = AudioUnitSetProperty(myUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &myDevice, sizeof(myDevice));
-    
-    return false;
 }
+
 -(bool) CreateSound:(const char *) _path soundPtrPtr:(GMacSound ** )_outSound
 {
        NSLog(@"oh i did tht");
