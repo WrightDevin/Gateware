@@ -105,8 +105,9 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	unsigned int unopenedWindowWidth = 0;
 	unsigned int unopenedWindowPosX = 0;
 	unsigned int unopenedWindowPosY = 0;
-	std::atomic<HWND> appWindowHandle;
-	std::atomic<HWND> unopenedWindowHandle;
+	std::atomic<HWND>* appWindowHandle = new std::atomic<HWND>();
+	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
+
 	unsigned int windowHandleSize = sizeof(HWND);
 
 	appWindow->IsFullscreen(appWindowIsFullscreen);
@@ -117,7 +118,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(unopenedWindow->GetWidth(unopenedWindowWidth)));
 	CHECK(G_FAIL(unopenedWindow->GetX(unopenedWindowPosX)));
 	CHECK(G_FAIL(unopenedWindow->GetY(unopenedWindowPosY)));
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(&unopenedWindowHandle, windowHandleSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
 	
 	// Resize windows for pass tests
@@ -130,7 +131,11 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	REQUIRE(G_SUCCESS(appWindow->GetX(appWindowPosX)));	
 	REQUIRE(G_SUCCESS(appWindow->GetY(appWindowPosY)));	
 	REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
+
+	delete appWindowHandle;
+	delete unopenedWindowHandle;
+
 }
 
 TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], [GetClientTopLeft]")
