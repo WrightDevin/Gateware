@@ -1,4 +1,5 @@
-#include "GOpenGLESSurface.h"
+#include "../DLL_Export_Symbols.h"
+#include "../../Interface/G_Graphics/GOpenGLESSurface.h"
 
 #include <atomic>
 #include <mutex>

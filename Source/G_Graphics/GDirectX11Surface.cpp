@@ -1,5 +1,5 @@
-
-#include "GDirectX11Surface.h"
+#include "../DLL_Export_Symbols.h"
+#include "../../Interface/G_Graphics/GDirectX11Surface.h"
 
 #ifdef _WIN32
 #pragma comment (lib, "D3D11.lib")

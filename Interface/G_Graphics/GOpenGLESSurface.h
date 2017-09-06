@@ -1,8 +1,8 @@
 #ifndef GOPENGLESSURFACE_H
 #define GOPENGLESSURFACE_H
 
-#include "./Dependencies/include/Interface/G_Core/GListener.h"
-#include "./Dependencies/include/Interface/G_System/GWindow.h"
+#include "../../Interface/G_Core/GListener.h"
+#include "../../Interface/G_System/GWindow.h"
 
 namespace GW
 {
