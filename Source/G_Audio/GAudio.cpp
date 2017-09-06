@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #include"GAudioWin.hpp"
+
 #elif __linux__
 #include"GAudioLinux.hpp"
 #elif __APPLE__
@@ -16,7 +17,7 @@ public:
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
-	GReturn PlaySound();
+	GReturn Play();
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
@@ -24,6 +25,8 @@ public:
 
 #if __APPLE__
     GMacSound * mac_snd = nullptr;
+#elif _WIN32
+	 WindowAppSound * wind_snd = nullptr;
 #endif
     
 };
@@ -61,7 +64,7 @@ GReturn AppSound::SetVolume(float _newVolume)
 
 	return result;
 }
-GReturn AppSound::PlaySound()
+GReturn AppSound::Play()
 {
 
     GReturn result = FAILURE;
@@ -109,15 +112,17 @@ GReturn AppSound::StopSound()
 }
 AppSound::~AppSound()
 {
-if(mac_snd == nullptr)
-{
-    return;
-}
+	GReturn result = FAILURE;
 #if __APPLE__
+	if (mac_snd == nullptr)
+	{
+		return;
+	}
      PlatformUnloadGSound(mac_snd);
   //  delete mac_snd;
     mac_snd = nullptr;
 #else
+
     result = PlatformUnloadGSound();
 #endif
 
@@ -223,7 +228,7 @@ public:
 GReturn AppAudio::Init()
 {
 
-	GReturn result = PlatformInit();
+	GReturn result = FAILURE;
 
 	return result;
 }
@@ -316,19 +321,8 @@ GReturn GW::AUDIO::CreateGAudio(GAudio** _outAudio)
 		result = INVALID_ARGUMENT;
 		return result;
 	}
-	AppAudio* audio = new AppAudio();
 
-	if (audio == nullptr)
-	{
-		result = FAILURE;
-		return result;
-	}
-	 result = audio->Init();
-
-	if (result == INVALID_ARGUMENT)
-		return result;
-
-	*_outAudio = audio;
+	 result = PlatformGetAudio(_outAudio);
 
 	return result;
 }

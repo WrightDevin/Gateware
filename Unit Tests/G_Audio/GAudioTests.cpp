@@ -13,6 +13,8 @@ using namespace AUDIO;
 GAudio * testAudio = nullptr;
 GSound * testSound = nullptr;
 GMusic * testMusic = nullptr;
+GReturn checkReturned = FAILURE;
+ 
 const char * testpath = "TestBeep.wav";
 //Starting Audio Tests, some can't be tested until sound/music starts playing
 TEST_CASE("Create GAudio.", "[CreateGAudio]")
@@ -21,7 +23,8 @@ TEST_CASE("Create GAudio.", "[CreateGAudio]")
 	CHECK(GW::AUDIO::CreateGAudio(nullptr));
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(CreateGAudio(&testAudio)));
+	REQUIRE(G_SUCCESS(checkReturned = CreateGAudio(&testAudio)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Initialize Audio", "[Init]")
 {	
@@ -30,7 +33,8 @@ TEST_CASE("Initialize Audio", "[Init]")
 	//CHECK(testAudio->Init() == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testAudio->Init()));
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->Init()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Creating Sound.", "[CreateSound]")
 {
@@ -38,7 +42,8 @@ TEST_CASE("Creating Sound.", "[CreateSound]")
 	CHECK(testAudio->CreateSound(testpath,nullptr) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testAudio->CreateSound(testpath, &testSound)));
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &testSound)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Creating music.", "[CreateMusic]")
 {
@@ -46,17 +51,19 @@ TEST_CASE("Creating music.", "[CreateMusic]")
 	CHECK(testAudio->CreateMusicStream(testpath, nullptr) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testAudio->CreateMusicStream(testpath, &testMusic)));
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &testMusic)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Setting master channel volumes", "[SetMasterChannelVolumes]")
 {
 	float atestVolume = 0.5f;
 	const float * testvolumes = &atestVolume;
 	// Fail cases
-	CHECK(testAudio->SetMasterChannelVolumes(nullptr,1) == INVALID_ARGUMENT);
+	CHECK(testAudio->SetMasterChannelVolumes(nullptr,0) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testAudio->SetMasterChannelVolumes(testvolumes, 1)));
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->SetMasterChannelVolumes(testvolumes, 1)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Setting master volume", "[SetMasterVolume]")
 {
@@ -65,7 +72,8 @@ TEST_CASE("Setting master volume", "[SetMasterVolume]")
 	CHECK(testAudio->SetMasterVolume(-1) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testAudio->SetMasterVolume(1)));
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->SetMasterVolume(1)));
+	checkReturned = FAILURE;
 }
 
 //Starting Sound Tests
@@ -74,7 +82,8 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 	// Fail cases
 	// CHECK(testSound->PlaySound() == INVALID_ARGUMENT);
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->PlaySound()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Pausing test sound", "[Pause]")
 {
@@ -83,38 +92,43 @@ TEST_CASE("Pausing test sound", "[Pause]")
 	//CHECK(testSound->Pause() == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->Pause()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Resuming test sound", "[Resume]")
 {
 	// Fail cases
 	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->Resume()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 {
 	float atestVolume = 0.5f;
 	float * testvolumes = &atestVolume;
 	// Fail cases
-	CHECK(testSound->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
+	CHECK(testSound->SetChannelVolumes(nullptr, 0) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->SetChannelVolumes(testvolumes, 1)));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 1)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Setting test sound volume", "[SetVolume]")
 {
 	// Fail cases
 	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->SetVolume(1)));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->SetVolume(1)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Stop test sound", "[StopSound]")
 {
 	// Fail cases
 	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
 	// Pass cases
-	REQUIRE(G_SUCCESS(testSound->StopSound()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
+	checkReturned = FAILURE;
 }
 //TEST_CASE("Editing test sound PCM", "[EditPCM]")
 //{
@@ -132,6 +146,7 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	// CHECK(testmusic->Playmusic() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->StreamStart()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Pausing test music", "[Pause]")
 {
@@ -141,6 +156,7 @@ TEST_CASE("Pausing test music", "[Pause]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->PauseStream()));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Resuming test music", "[Resume]")
 {
@@ -158,6 +174,7 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->SetChannelVolumes(testvolumes, 1)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Setting test music volume", "[SetVolume]")
 {
@@ -165,6 +182,7 @@ TEST_CASE("Setting test music volume", "[SetVolume]")
 	//CHECK(testmusic->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->SetVolume(1)));
+	checkReturned = FAILURE;
 }
 TEST_CASE("Stop test music", "[Stopmusic]")
 {
@@ -172,6 +190,7 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 	//CHECK(testmusic->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(testMusic->StopStream()));
+	checkReturned = FAILURE;
 }
 //TEST_CASE("Editing test music PCM", "[EditPCM]")
 //{
@@ -184,7 +203,7 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 {
 	testMusic->StreamStart();
-	testSound->PlaySound();
+	testSound->Play();
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(testAudio->PauseAll()));

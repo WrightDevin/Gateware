@@ -16,9 +16,11 @@ target_link_libraries(GAudio_DLL "-framework avfoundation")
 else(APPLE)
 
 message(“Adding .cpp files”)
-add_library (GAudio GAudio.cpp ${HEADER_FILES})
 
-add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES})
+add_library (GAudio GAudio.cpp ${HEADER_FILES})
+add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES} )
+target_link_libraries(GAudio xaudio2)
+target_link_libraries(GAudio_DLL xaudio2)
 
 endif()
 

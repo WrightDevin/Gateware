@@ -46,7 +46,7 @@ namespace GW
 			virtual GReturn SetPCMShader(const char* _data) = 0;
 			virtual GReturn SetChannelVolumes(float *_values, int _numChannels) = 0;
 			virtual GReturn SetVolume(float _newVolume) = 0;
-			virtual GReturn PlaySound() = 0;
+			virtual GReturn Play() = 0;
 			virtual GReturn Pause() = 0;
 			virtual GReturn Resume() = 0;
 			virtual GReturn StopSound() = 0;

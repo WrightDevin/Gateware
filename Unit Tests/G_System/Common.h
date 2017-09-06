@@ -38,7 +38,8 @@
 	extern LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	//TODO: Add other necessary resources needed for Windows testing
-
+#include <xaudio2.h>
+#include <xaudio2fx.h>
 #elif __linux__
 	#include <X11/Xlib.h>
 
