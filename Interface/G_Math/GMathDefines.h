@@ -18,7 +18,7 @@ License: MIT
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The namespace to which all Gateware library interfaces must belong.
+	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
 		//! Unique Identifier for this interface. {21108DB6-BE6C-4AA6-955C-F673B9EE3EDA}
@@ -27,34 +27,67 @@ namespace GW
 			0x21108db6, 0xbe6c, 0x4aa6,{ 0x95, 0x5c, 0xf6, 0x73, 0xb9, 0xee, 0x3e, 0xda }
 		};
 
-		class GMathDefines : public CORE::GMultiThreaded
+		//! To hold all math structs and variables.
+		/*! 
+		*   For letting classes can use each others variables and structs, here collect all
+		*	strcuts and variables.
+		*/
+		class GMathDefines
 		{
 		public:
+
+			//! Vector with 4 float elements
 			struct GVECTORF
 			{
-				float x, y, z, w;
+				float x;
+				float y;
+				float z;
+				float w;
 			};
+			
+			//! Vector with 4 double elements
 			struct GVECTORD
 			{
-				double x, y, z, w;
+				double x;
+				double y;
+				double z;
+				double w;
 			};
 
+			//! Matrix with 4 float vectors which represent for each row.
 			struct GMATRIXF
 			{
-				GVECTORF row1, row2, row3, row4;
-			};
-			struct GMATRIXD
-			{
-				GVECTORD row1, row2, row3, row4;
+				GVECTORF row1;
+				GVECTORF row2;
+				GVECTORF row3;
+				GVECTORF row4;
 			};
 
+			//! Matrix with 4 double vectors which represent for each row.
+			struct GMATRIXD
+			{
+				GVECTORD row1;
+				GVECTORD row2;
+				GVECTORD row3;
+				GVECTORD row4;
+			};
+
+			//! Quaternion with 4 float elements
 			struct GQUATERNIONF
 			{
-				float x, y, z, w;
+				float x;
+				float y;
+				float z;
+				float w;
 			};
+
+			//! Quaternion with 4 double elements
 			struct GQUATERNIOND
 			{
-				double x, y, z, w;
+				double x;
+				double y;
+				double z;
+				double w;
 			};
 
 		};// end GMathDefines class
