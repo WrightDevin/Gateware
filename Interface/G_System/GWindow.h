@@ -194,11 +194,31 @@ namespace GW
 
 			//! Returns the height in pixels of the currently opened window.
 			/*!
+			*	Client width is the width of the window's drawable area.
+			*
 			*	\retval 0 The window is minimized.
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Height was successfully queried and returned.
 			*/
 			virtual int GetHeight() = 0;
+
+			//! Returns the client width in pixels of the currently opened window.
+			/*!
+			*	Client height is the height of the window's drawable area.
+			*
+			*	\retval 0 The window is minimized.
+			*   \retval -1 No window exists to query size from.
+			*	\retval else Width was successfully queried and returned.
+			*/
+			virtual int GetClientWidth() = 0;
+
+			//! Returns the client height in pixels of the currently opened window.
+			/*!
+			*	\retval 0 The window is minimized.
+			*   \retval -1 No window exists to query size from.
+			*	\retval else Height was successfully queried and returned.
+			*/
+			virtual int GetClientHeight() = 0;
 
 			//! Returns the X position in pixels of the currently opened window.
 			/*!
@@ -213,6 +233,16 @@ namespace GW
 			*	\retval else Y position was successfully queried and returned.
 			*/
 			virtual int GetY() = 0;
+
+			//! Gets the location of the top-left pixel of the opened window's client area.
+			/*!
+			*	\param [out] _outX Will contain the X location of the top-left pixel.
+			*	\param [out] _outY Will contain the Y location of the top-left pixel.
+			*
+			*   \retval -1 No window exists to query position from.
+			*	\retval else Position was successfully queried and returned.
+			*/
+			virtual GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY) = 0;
 
 			//! Returns the platform specific window handle to the currently opened window.
 			/*!
