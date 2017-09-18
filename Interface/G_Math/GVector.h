@@ -12,7 +12,7 @@ License: MIT
 */
 
 //! GMathDefines inherits directly from GMultiThreaded.
-#include "../G_Core/GMultiThreaded.h"
+#include "../G_Core/GSingleThreaded.h"
 #include "GMathDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -31,7 +31,7 @@ namespace GW
 		/*!
 		*	Include float vector and double vector's functions
 		*/
-		class GVector : public GMathDefines
+		class GVector : public CORE::GSingleThreaded
 		{
 		public:
 			//float vector
@@ -48,7 +48,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn AddVector(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
+			virtual GReturn AddVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
 			//! Subtract two vector
 			/*!
@@ -62,7 +62,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn SubtractVector(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
+			virtual GReturn SubtractVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
 			//! Scale the vector
 			/*!
@@ -77,7 +77,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Scale(GVECTORF _vector, float _scalar, GVECTORF& _outVector) = 0;
+			virtual GReturn ScaleF(GVECTORF _vector, float _scalar, GVECTORF& _outVector) = 0;
 		
 			//! Calculates the dot product of the two vectors
 			/*!
@@ -91,7 +91,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Dot(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) = 0;
+			virtual GReturn DotF(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) = 0;
 
 			//! Calculates the Cross product of the two vectors which are treated as 2 elements vector 
 			/*!
@@ -106,7 +106,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn CrossVector2(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
+			virtual GReturn CrossVector2F(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) = 0;
 
 			//! Calculates the cross product of the two vectors which are treated as 3 elements vectors. 
 			/*!
@@ -121,7 +121,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn CrossVector3(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
+			virtual GReturn CrossVector3F(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
 			//! multiply the specified vector by the specified matrix.
 			/*!
@@ -136,7 +136,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn VectorXMatrix(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
+			virtual GReturn VectorXMatrixF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
 
 			//! Transform specified specified vector by specified matrix.
 			/*!
@@ -151,7 +151,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn TransformMatrix(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
+			virtual GReturn TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
 			
 			//! Computes the magnitude of the specified vector.
 			/*!
@@ -164,7 +164,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Magnitude(GVECTORF _vector, float& _outMagnitude) = 0;
+			virtual GReturn MagnitudeF(GVECTORF _vector, float& _outMagnitude) = 0;
 
 			//! Normalizes the specified vector.
 			/*!
@@ -177,7 +177,39 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Normalize(GVECTORF _vector, GVECTORF& _outVector) = 0;
+			virtual GReturn NormalizeF(GVECTORF _vector, GVECTORF& _outVector) = 0;
+
+			//! Linear interpolates between two specified vectors
+			/*!
+			*	Linear interpolates between two specified vectors
+			*	and stores the result in the output quaternion.
+			*
+			*	\param [in]  _vector1			The start vector
+			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _ratio				The interpolation coefficient
+			*	\param [out] _outVector			The result of the lerp
+			*
+			*	\retval SUCCESS					The calculation succeed
+			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval FAILURE					The calculation failed
+			*/
+			virtual GReturn LerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) = 0;
+
+			//! Spherical linear interpolates between two specified vectors
+			/*!
+			*	Spherical linear interpolates between two specified vectors
+			*	and stores the result in the output quaternion.
+			*
+			*	\param [in]  _vector1			The start vector
+			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _ratio				The interpolation coefficient
+			*	\param [out] _outVector			The result of the slerp
+			*
+			*	\retval SUCCESS					The calculation succeed
+			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval FAILURE					The calculation failed
+			*/
+			virtual GReturn SlerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) = 0;
 
 			//double vector
 
@@ -193,7 +225,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn AddVector(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
+			virtual GReturn AddVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
 			//! Subtract two vector
 			/*!
@@ -207,7 +239,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn SubtractVector(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
+			virtual GReturn SubtractVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
 			//! Scale the vector
 			/*!
@@ -222,7 +254,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Scale(GVECTORD _vector, double _scalar, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn ScaleD(GVECTORD _vector, double _scalar, GVECTORD& _outVector) = 0;
 
 			//! Calculates the dot product of the two vectors
 			/*!
@@ -236,7 +268,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Dot(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
+			virtual GReturn DotD(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
 
 			//! Calculates the Cross product of the two vectors which are treated as 2 elements vector 
 			/*!
@@ -251,7 +283,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn CrossVec2(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
+			virtual GReturn CrossVector2D(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
 
 			//! multiply the specified vector by the specified matrix.
 			/*!
@@ -266,7 +298,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn CrossVec3(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
+			virtual GReturn CrossVector3D(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
 			//! multiply the specified vector by the specified matrix.
 			/*!
@@ -281,7 +313,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn VectorXMatrix(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
+			virtual GReturn VectorXMatrixD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
 
 			//! Transform specified specified vector by specified matrix.
 			/*!
@@ -296,7 +328,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn TransformMatrix(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
+			virtual GReturn TransformD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
 
 			//! Computes the magnitude of the specified vector.
 			/*!
@@ -309,7 +341,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Magnitude(GVECTORD _vector, float& _outMagnitude) = 0;
+			virtual GReturn MagnitudeD(GVECTORD _vector, double& _outMagnitude) = 0;
 
 			//! Normalizes the specified vector.
 			/*!
@@ -322,9 +354,44 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn Normalize(GVECTORD _vector, GVECTORD& _outVector) = 0;
+			virtual GReturn NormalizeD(GVECTORD _vector, GVECTORD& _outVector) = 0;
+			
+			//! Spherical linear interpolates between two specified quaternions
+			/*!
+			*	Spherical linear interpolates between two specified quaternions
+			*	and stores the result in the output quaternion.
+			*
+			*	\param [in]  _vector1			The start vector
+			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _ratio				The interpolation coefficient
+			*	\param [out] _outVector			The result of the lerp
+			*
+			*	\retval SUCCESS					The calculation succeed
+			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval FAILURE					The calculation failed
+			*/
+			virtual GReturn LerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) = 0;
+
+			//! Spherical linear interpolates between two specified quaternions
+			/*!
+			*	Spherical linear interpolates between two specified quaternions
+			*	and stores the result in the output quaternion.
+			*
+			*	\param [in]  _vector1			The start vector
+			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _ratio				The interpolation coefficient
+			*	\param [out] _outVector			The result of the slerp
+			*
+			*	\retval SUCCESS					The calculation succeed
+			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval FAILURE					The calculation failed
+			*/
+			virtual GReturn SlerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) = 0;
+
 
 		}; //! end GVector class
+
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGVector(GVector** _outVector);
 
 	};//! end SYSTEM namespace
 } //! end GW namespace

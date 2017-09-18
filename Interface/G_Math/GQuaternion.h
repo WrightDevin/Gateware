@@ -12,7 +12,7 @@ License: MIT
 */
 
 //! GMathDefines inherits directly from GMultiThreaded.
-#include "../G_Core/GMultiThreaded.h"
+#include "../G_Core/GSingleThreaded.h"
 #include "GMathDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -31,7 +31,7 @@ namespace GW
 		/*!
 		*	Include float vector and double quaternion's functions
 		*/
-		class GQuaternion : public GMathDefines
+		class GQuaternion : public CORE::GSingleThreaded 
 		{
 			// All Gateware API interfaces contain no variables & are pure virtual.
 		public:
@@ -49,7 +49,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn AddQuaternion(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn AddQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Subtract two quaternions
 			/*!
@@ -63,7 +63,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SubtractQuaternion(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn SubtractQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Multiply two quaternions
 			/*!
@@ -77,7 +77,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn MultiplyQuaternion(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn MultiplyQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Scale the quaternion
 			/*!
@@ -91,35 +91,34 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Scale(GQUATERNIONF _quaternion, float _scalar, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn ScaleF(GQUATERNIONF _quaternion, float _scalar, GQUATERNIONF& _outQuaternion) = 0;
 			
 			//! Set the quaternion by the specified vector and the specified angle
 			/*!
 			*	Sets the quaternion with a number and stores the result in the output quaternion.
 			*
 			*	\param [in]  _vector			The specified vector
-			*	\param [in]  _angle				The specified value of angle
+			*	\param [in]  _radian			The specified value of angle
 			*	\param [out] _outQuaternion		The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SetbyVectorAngle(GVECTORF _vector, float _angle, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn SetByVectorAngleF(GVECTORF _vector, float _radian, GQUATERNIONF& _outQuaternion) = 0;
 			
 			//! Set the quaternion by the specified matrix
 			/*!
 			*	Sets the quaternion with a number and stores the result in the output quaternion.
 			*
-			*	\param [in]  _vector			The specified vector
-			*	\param [in]  _angle				The specified value of angle
-			*	\param [out] _outQuaternion		The result of the rotation
+			*	\param [in]  _matrix			The specified matrix
+			*	\param [out] _outQuaternion		The result of the rotation of matrix
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SetbyMatrix(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Calculates the dot product of the two specified quaternions
 			/*!
@@ -133,7 +132,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Dot(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float& _outValue) = 0;
+			virtual GReturn DotF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float& _outValue) = 0;
 			
 			//! Calculates the cross product of the two specified quaternions
 			/*!
@@ -147,7 +146,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Cross(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GVECTORF& _outVector) = 0;
+			virtual GReturn CrossF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GVECTORF& _outVector) = 0;
 			
 			//! Conjugate the specified quaternion
 			/*!
@@ -160,7 +159,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Conjugate(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn ConjugateF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Inverse the specified quaternion
 			/*!
@@ -173,7 +172,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Inverse(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn InverseF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Calculate the magnitude of quaternion
 			/*!
@@ -186,7 +185,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Magnitude(GQUATERNIONF _quaternion, float& _outMagnitude) = 0;
+			virtual GReturn MagnitudeF(GQUATERNIONF _quaternion, float& _outMagnitude) = 0;
 
 			//! Normalize the specified quaternion
 			/*!
@@ -199,24 +198,23 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Normalize(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn NormalizeF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Identity the specified quaternion
 			/*!
-			*	Identities the specified quaternion and stores the result in the output quaternion.
+			*	Set the output quaternion as an identity quaternion
 			*
-			*	\param [in]  _quaternion		The quaternion
 			*	\param [out] _outQuaternion		The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Identity(GQUATERNIONF _quaternion, GQUATERNIONF _outQuaternion) = 0;
+			virtual GReturn IdentityF(GQUATERNIONF& _outQuaternion) = 0;
 
-			//! Interpolate the two specified quaternions
+			//! Linear interpolate between two specified quaternions
 			/*!
-			*	Interpolates the specified quaternions using linear interpolation
+			*	Linear interpolates between two specified quaternions
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _quaternion1		The first quaternion
@@ -228,7 +226,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Lerp(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn LerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
 			
 
 			//! Convert the specified matrix to a quaternion
@@ -242,12 +240,12 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn ConvertMatrix(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn ConvertMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
 
 
-			//! Interpolate the two specified quaternions
+			//! Spherical linear interpolates between two specified quaternions
 			/*!
-			*	Interpolates the specified quaternions using spherical linear interpolation
+			*	Spherical linear interpolates between two specified quaternions 
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _quaternion1		The first quaternion
@@ -259,7 +257,9 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Slerp(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn SlerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
+
+
 
 			//double quaternion
 
@@ -275,7 +275,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn AddQuaternion(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn AddQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Subtract two quaternions
 			/*!
@@ -289,7 +289,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SubtractQuaternion(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn SubtractQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Multiply two quaternions
 			/*!
@@ -303,7 +303,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn MultiplyQuaternion(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn MultiplyQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Scale the quaternion
 			/*!
@@ -317,35 +317,34 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Scale(GQUATERNIOND _quaternion, GQUATERNIOND _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
+			virtual GReturn ScaleD(GQUATERNIOND _quaternion, double _scalar, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Set the quaternion by the specified vector and the specified angle
 			/*!
 			*	Sets the quaternion with a number and stores the result in the output quaternion.
 			*
 			*	\param [in]  _vector			The specified vector
-			*	\param [in]  _angle				The specified value of angle
+			*	\param [in]  _radain			The specified value of angle
 			*	\param [out] _outQuaternion		The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SetByVectorAngle(GQUATERNIOND _quaternion, GVECTORD _vector, double _angle, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn SetByVectorAngleD(GVECTORD _vector, double _radain, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Set the quaternion by the specified matrix
 			/*!
 			*	Sets the quaternion with a number and stores the result in the output quaternion.
 			*
-			*	\param [in]  _vector			The specified vector
-			*	\param [in]  _angle				The specified value of angle
-			*	\param [out] _outQuaternion		The result of the rotation
+			*	\param [in]  _vector			The specified matrix
+			*	\param [out] _outQuaternion		The result of the rotation of matrix
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SetByMatrix(GQUATERNIOND _quaternion, GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn SetByMatrixD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
 		
 			//! Calculates the dot product of the two specified quaternions
 			/*!
@@ -359,7 +358,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Dot(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn DotD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, double& _outQuaternion) = 0;
 
 			//! Calculates the cross product of the two specified quaternions
 			/*!
@@ -373,7 +372,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Cross(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn CrossD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GVECTORD& _outVector) = 0;
 
 			//! Conjugate the specified quaternion
 			/*!
@@ -386,7 +385,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Conjugate(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn ConjugateD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Inverse the specified quaternion
 			/*!
@@ -399,7 +398,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Inverse(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn InverseD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Calculate the magnitude of quaternion
 			/*!
@@ -412,7 +411,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Magnitude(GQUATERNIOND _quaternion, double& _outMagnitude) = 0;
+			virtual GReturn MagnitudeD(GQUATERNIOND _quaternion, double& _outMagnitude) = 0;
 
 			//! Normalize the specified quaternion
 			/*!
@@ -425,24 +424,23 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Normalize(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn NormalizeD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Identity the specified quaternion
 			/*!
-			*	Identities the specified quaternion and stores the result in the output quaternion.
+			*	Set the output quaternion as an identity quaternion
 			*
-			*	\param [in]  _quaternion		The quaternion
 			*	\param [out] _outQuaternion		The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Identity(GQUATERNIOND _quaternion, GQUATERNIOND _outQuaternion) = 0;
+			virtual GReturn IdentityD(GQUATERNIOND& _outQuaternion) = 0;
 
-			//! Interpolate the two specified quaternions
+			//! Linear interpolate between two specified quaternions
 			/*!
-			*	Interpolates the specified quaternions using linear interpolation
+			*	Linear interpolates between two specified quaternions
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _quaternion1		The first quaternion
@@ -454,7 +452,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Lerp(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, float _ratio, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn LerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, float _ratio, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Convert the specified matrix to a quaternion
 			/*!
@@ -467,11 +465,11 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn ConvertMatrix(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn ConvertMatrixD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
 
-			//! Interpolate the two specified quaternions
+			//! Spherical linear interpolates between two specified quaternions
 			/*!
-			*	Interpolates the specified quaternions using spherical linear interpolation
+			*	Spherical linear interpolates between two specified quaternions
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _quaternion1		The first quaternion
@@ -483,10 +481,13 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn Slerp(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
+			virtual GReturn SlerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, double _ratio, GQUATERNIOND& _outQuaternion) = 0;
+
+
 
 
 		}; //! end GQuaternion class
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGQuaternion(GQuaternion** _outQuaternion);
 
 	};//! end SYSTEM namespace
 } //! end GW namespace

@@ -13,6 +13,10 @@
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
 
+#include <G_Math/GMatrix.h>
+#include <G_Math/GQuaternion.h>
+#include <G_Math/GVector.h>
+
 #else
 #include <../../gateware.git.0/Interface/G_System/GKeyDefines.h>
 #include <../../gateware.git.0/Interface/G_System/GBufferedInput.h>
@@ -20,6 +24,10 @@
 #include <../../gateware.git.0/Interface/G_System/GLog.h>
 #include <../../gateware.git.0/Interface/G_System/GFile.h>
 #include <../../gateware.git.0/Interface/G_System/GWindow.h>
+
+#include <../../gateware.git.0/Interface/G_Math/GMatrix.h>
+#include <../../gateware.git.0/Interface/G_Math/GQuaternion.h>
+#include <../../gateware.git.0/Interface/G_Math/GVector.h>
 #endif
 
 //TODO: Add your library headers
