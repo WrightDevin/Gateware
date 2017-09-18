@@ -1,5 +1,5 @@
 //Needed for Catch
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES

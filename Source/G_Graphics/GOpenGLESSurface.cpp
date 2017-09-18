@@ -109,12 +109,12 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 	return FAILURE;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(GOpenGLESSurface * _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* gWin, GOpenGLESSurface* _outSurface)
 {
-	return GW::GRAPHICS::CreateGOpenGLESSurface(_outSurface);
+	return GW::GRAPHICS::CreateGOpenGLESSurface(gWin, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLESSurface(GOpenGLESSurface* _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLESSurface(const SYSTEM::GWindow* gWin, GOpenGLESSurface* _outSurface)
 {
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;

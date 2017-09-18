@@ -1,5 +1,5 @@
 
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 
 //Includes needed for this test suite
 #include <cstring>

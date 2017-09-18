@@ -20,13 +20,13 @@ namespace GW
 		public:
 			virtual GReturn Initialize() = 0;
 
-			virtual GReturn GetContext(void** outContext) = 0;
+			virtual GReturn GetContext(void** _outContext) = 0;
 
 			virtual float GetAspectRatio() = 0;
 
 		};
 	
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(GOpenGLESSurface* _outSurface);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* _gWin, GOpenGLESSurface* _outSurface);
 	
 	}
 }

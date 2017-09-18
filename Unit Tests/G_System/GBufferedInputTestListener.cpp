@@ -1,5 +1,5 @@
 #include "GBufferedInputTestListener.h"
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 #include <cstring>
 
 //GListener Overrides

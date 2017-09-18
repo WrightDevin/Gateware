@@ -142,12 +142,12 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 	return FAILURE;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(const SYSTEM::GWindow* gWin, GDirectX11Surface* _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(const SYSTEM::GWindow* _gWin, GDirectX11Surface* _outSurface)
 {
-	return GW::GRAPHICS::CreateGDirectX11Surface(gWin, _outSurface);
+	return GW::GRAPHICS::CreateGDirectX11Surface(_gWin, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGDirectX11Surface(const SYSTEM::GWindow* gWin, GDirectX11Surface* _outSurface)
+GReturn GW::GRAPHICS::CreateGDirectX11Surface(const SYSTEM::GWindow* _gWin, GDirectX11Surface* _outSurface)
 {
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;

@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 //#include "GWindowTestListener.h"
 #include "GWindowTestListener.h"
 ///=============================================================================
