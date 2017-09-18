@@ -217,6 +217,7 @@ public:
 	GReturn SetMasterChannelVolumes(const float * _values, int _numChannels);
 	GReturn PauseAll();
 	GReturn ResumeAll();
+	GReturn StopAll();
 	~AppAudio();
     
 #if __APPLE__
@@ -302,6 +303,12 @@ GReturn AppAudio::PauseAll()
 GReturn AppAudio::ResumeAll()
 {
 	GReturn result = PlatformResumeAll();
+
+	return result;
+}
+GReturn AppAudio::StopAll()
+{
+	GReturn result = PlatformStopAll();
 
 	return result;
 }

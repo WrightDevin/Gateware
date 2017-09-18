@@ -84,21 +84,22 @@ namespace GW
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
 			virtual GReturn PauseAll() = 0;
-			//! Sets Resumes all paused/stoped sounds and music.
+			//!  Resumes all paused/stoped sounds and music.
 			/*!
 			*	Stoped Sounds/Music will play from the start
 			*	\retval SUCCESS tbd
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
 			virtual GReturn ResumeAll() = 0;
-			//!Destructor for GAudio. Destroys all sounds and music it created.
+			//! Stops all paused/stoped sounds and music.
 			/*!
-			*	tbd
+			*	Stoped Sounds/Music will play from the start
 			*	\retval SUCCESS tbd
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
-			//virtual ~GAudio();
-	
+			virtual GReturn StopAll() = 0;
+
+			
 
 		}; // end GAudio class
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGAudio(GAudio** _outAudio);
