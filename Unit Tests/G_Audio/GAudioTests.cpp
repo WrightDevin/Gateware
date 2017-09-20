@@ -134,14 +134,14 @@ TEST_CASE("Stop test sound", "[StopSound]")
 //}
 TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
-	float atestVolume[2] = { 0.0f ,1.0f };
+	float atestVolume[2] = { 0.3f ,1.0f };
 	float * testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 2)));
-	float atestVolume2[2] = { 1.0f ,0.0f };
+	float atestVolume2[2] = { 1.0f ,1.0f };
 	float * testvolumes2 = atestVolume;
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes2, 2)));
 	checkReturned = FAILURE;

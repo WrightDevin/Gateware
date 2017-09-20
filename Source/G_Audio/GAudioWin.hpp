@@ -470,6 +470,7 @@ public:
 	GReturn ResumeAll();
 	GReturn StopAll();
 	~WindowAppAudio();
+
 };
 //Start of GSound implementation 
 GReturn WindowAppSound::Init()
