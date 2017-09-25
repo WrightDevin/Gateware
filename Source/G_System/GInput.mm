@@ -1,4 +1,11 @@
 #import <Foundation/Foundation.h>
+
+#ifdef __APPLE__
+#import "TargetConditionals.h"
+#endif
+
+#if defined(__APPLE__) && !(defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR))
+
 #import <Cocoa/Cocoa.h>
 
 
@@ -143,4 +150,6 @@
 #include "../../Source/G_System/GInput.cpp"
 
 @end
+
+#endif
 

@@ -1,5 +1,15 @@
 #import <Foundation/Foundation.h>
-#import <Cocoa/Cocoa.h>
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
+#if defined(__APPLE__) && !(defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR))
+    #import <Cocoa/Cocoa.h>
+#endif
+
+// Preprocessor while GWindow is not expanded to iOS
+#if defined(__APPLE__) && !(defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR))
 
 @interface GWMacWindow : NSObject
 
@@ -222,3 +232,5 @@
 #include "GWindow.cpp"
 
 @end
+
+#endif
