@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "../CATCH.hpp"
+#include "CATCH.hpp"
 
 //Include all the headers needed for tests
 
@@ -12,6 +12,8 @@
 #include <G_System/GLog.h>
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
+#include <G_Graphics/GDirectX11Surface.h>
+#include <G_Graphics/GOpenGLESSurface.h>
 
 #else
 #include <../../gateware.git.0/Interface/G_System/GKeyDefines.h>
@@ -20,6 +22,8 @@
 #include <../../gateware.git.0/Interface/G_System/GLog.h>
 #include <../../gateware.git.0/Interface/G_System/GFile.h>
 #include <../../gateware.git.0/Interface/G_System/GWindow.h>
+#include <../../gateware.git.0/Interface/G_Graphics/GDirectX11Surface.h>
+#include <../../gateware.git.0/Interface/G_Graphics/GOpenGLESSurface.h>
 #endif
 
 //TODO: Add your library headers
