@@ -21,15 +21,19 @@ class GDirectX11 : public GDirectX11Surface
 {
 private:
 	// declare all necessary members (platform specific)
-	GWindow*				gWnd;
-	ID3D11Device*			device;
-	ID3D11DeviceContext*	context;
-	IDXGISwapChain*			swapChain;
-	float					width;
-	float					height;
-	float					aspectRatio;
+	GWindow*					gWnd;
+	ID3D11Device*				device;
+	ID3D11DeviceContext*		context;
+	IDXGISwapChain*				swapChain;
+	ID3D11RenderTargetView*		rtv;
+	float						width;
+	float						height;
+	float						aspectRatio;
 
 #ifdef _WIN32
+
+	HWND surfaceWindow;
+
 #elif __linux__
 #elif __APPLE__
 #endif
@@ -42,6 +46,7 @@ public:
 	GReturn GetDevice(void** _outDevice);
 	GReturn GetContext(void** _outContext);
 	GReturn GetSwapchain(void** _outSwapchain);
+	GReturn GetRenderTarget(void** _outRenderTarget);
 	float	GetAspectRatio();
 
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
@@ -71,7 +76,7 @@ GReturn GDirectX11::Initialize()
 #ifdef _WIN32
 
 	gWnd->OpenWindow();
-	HWND surfaceWindow = (HWND)gWnd->GetWindowHandle();
+	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
 	width = windowRect.right - windowRect.left;
@@ -125,10 +130,9 @@ GReturn GDirectX11::Initialize()
 		&context
 	);	
 
-	if (hr == S_OK)
-		return SUCCESS;
-	else
-		return FAILURE;
+	ID3D11Resource* buffer;
+	swapChain->GetBuffer(0, __uuidof(buffer), reinterpret_cast<void**>(&buffer));
+	device->CreateRenderTargetView(buffer, NULL, &rtv);
 
 #elif __linux__
 #elif __APPLE__
@@ -167,7 +171,7 @@ GReturn GDirectX11::GetDevice(void** _outDevice)
 #elif __APPLE__
 #endif
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GDirectX11::GetContext(void ** _outContext)
@@ -180,7 +184,7 @@ GReturn GDirectX11::GetContext(void ** _outContext)
 #elif __APPLE__
 #endif
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
@@ -192,6 +196,14 @@ GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 #elif __linux__
 #elif __APPLE__
 #endif
+
+	return SUCCESS;
+}
+
+GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
+{
+
+	*_outRenderTarget = rtv;
 
 	return SUCCESS;
 }
