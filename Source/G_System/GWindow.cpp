@@ -125,23 +125,24 @@ public:
 
 	GReturn DeregisterListener(GListener* _removeListener);
 
-	int GetWidth();
+	GReturn	GetWidth(unsigned int& _outWidth);
+	
+	GReturn	GetHeight(unsigned int& _outHeight);
 
-	int GetHeight();
+	GReturn	GetClientWidth(unsigned int& _outClientWidth);
 
-	int GetClientWidth();
+	GReturn	GetClientHeight(unsigned int& _outClientHeight);
 
-	int GetClientHeight();
+	GReturn	GetX(unsigned int& _outX);
 
-	int GetX();
+	GReturn	GetY(unsigned int& _outY);
 
-	int GetY();
 
 	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
-	void* GetWindowHandle();
+	GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize);
 
-	bool IsFullscreen();
+	GReturn IsFullscreen(bool& _outIsFullscreen);
 };
 
 AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), style(FULLSCREENBORDERED)
@@ -374,13 +375,13 @@ GReturn AppWindow::ProcessWindowEvents()
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __APPLE__
 		if (!window)
-			return REDUNDANT_OPERATION;
+			return FAILURE;
 #endif
 
 #ifdef _WIN32
@@ -421,13 +422,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __linux__
     if(!display)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GWindowStyle previousStyle = style;
@@ -859,13 +860,13 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(_x, _y, width, height, style);
@@ -907,13 +908,13 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 #elif __APPLE__
     if(!window)
-        return REDUNDANT_OPERATION;
+        return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
@@ -1104,226 +1105,245 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 	return SUCCESS;
 }
 
-int AppWindow::GetWidth()
+GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return -1;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
 
-	width = windowRect.right - windowRect.left;
+	_outWidth = windowRect.right - windowRect.left;
+	if (_outWidth == 0)
+	{
+		return INVALID_ARGUMENT;
+	}
 #elif __linux__
-    if (!display)
-        return -1;
-    Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	if (!display)
+		return FAILURE;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-    if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return -1;
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+		return FAILURE;
 
-    width = w;
+	_outWidth = w;
 
 #elif __APPLE__
-    if(!window)
-        return -1;
-    NSRect rect = window.frame;
-    width = rect.size.width;
+	if (!window)
+		return FAILURE;
+	NSRect rect = window.frame;
+	_outWidth = rect.size.width;
 #endif
-	return width;
+	return SUCCESS;
 }
 
-int AppWindow::GetHeight()
+GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return -1;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
 
-	height = windowRect.bottom - windowRect.top;
+	_outHeight = windowRect.bottom - windowRect.top;
 #elif __linux__
-    if (!display)
-        return -1;
-    Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	if (!display)
+		return FAILURE;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return -1;
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+		return FAILURE;
 
-    height = h + bord;
+	_outHeight = h + bord;
 
 #elif __APPLE__
-    if(!window)
-        return -1;
-    NSRect rect = window.frame;
-    height = rect.size.height;
-    
+	if (!window)
+		return FAILURE;
+	NSRect rect = window.frame;
+	_outHeight = rect.size.height;
+
 
 #endif
-	return height;
+	return SUCCESS;
 }
 
-int AppWindow::GetClientWidth()
+GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return -1;
+		return FAILURE;
+	RECT width;
+	GetClientRect(wndHandle, &width);
+	_outClientWidth = width.right - width.left;
+	return SUCCESS; 
 
-	return GetClientWidth();
+#elif __linux__
+	if (!display)
+		return FAILURE;
+
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
+
+	XSync(display, 0);
+
+	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+	{
+		_outClientWidth = w;
+		return SUCCESS;
+	}
+	else
+		return FAILURE;
+
+#elif __APPLE__
+	if (!window)
+		return FAILURE;
+
+	NSRect rect = window.frame;
+	NSRect contentRect = [window contentRectForFrameRect : rect];
+	_outClientWidth = contentRect.size.width;
+	return SUCCESS;
+
+#endif
+}
+
+GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return FAILURE;
+	RECT height;
+	GetClientRect(wndHandle, &height);
+	_outClientHeight = height.bottom - height.top;
+
+	return SUCCESS;
 
 #elif __linux__
 	if (!display)
 		return -1;
 
-   Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-	if(XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return w;
-    else
-        return -1;
+	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+	{
+		_outClientHeight = h;
+		return SUCCESS;
+	}
+	else
+		return FAILURE;
 
 #elif __APPLE__
 	if (!window)
-		return -1;
-    
-    NSRect rect = window.frame;
-    NSRect contentRect = [window contentRectForFrameRect:rect];
-    
-    return contentRect.size.width;
-    
+		return FAILURE;
+
+	NSRect rect = window.frame;
+	NSRect contentRect = [window contentRectForFrameRect : rect];
+	_outClientHeight = contentRect.size.height;
+	return SUCCESS;
+
 #endif
 }
 
-int AppWindow::GetClientHeight()
+GReturn AppWindow::GetX(unsigned int& _outX)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return -1;
+		return FAILURE;
 
-	return GetClientHeight();
+	RECT windowRect;
+	GetWindowRect(wndHandle, &windowRect);
 
+	_outX = windowRect.left;
 #elif __linux__
 	if (!display)
-		return -1;
+		return FAILURE;
 
-    Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-	if(XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return h;
-    else
-        return -1;
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+		return FAILURE;
+
+	_outX = x;
 
 #elif __APPLE__
 	if (!window)
-		return -1;
-
-    NSRect rect = window.frame;
-    NSRect contentRect = [window contentRectForFrameRect:rect];
-    
-    return contentRect.size.height;
+		return FAILURE;
+	NSRect rect = window.frame;
+	_outX = rect.origin.x;
 
 #endif
+	return SUCCESS;
 }
 
-int AppWindow::GetX()
+GReturn AppWindow::GetY(unsigned int& _outY)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return -1;
+		return FAILURE;
 
 	RECT windowRect;
 	GetWindowRect(wndHandle, &windowRect);
 
-	xPos = windowRect.left;
+	_outY = windowRect.top;
 #elif __linux__
-     if (!display)
-        return -1;
+	if (!display)
+		return FAILURE;
 
-	 Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return -1;
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+		return FAILURE;
 
-	xPos = x;
+	_outY = y;
 
 #elif __APPLE__
-    if(!window)
-        return -1;
-    NSRect rect = window.frame;
-    xPos = rect.origin.x;
+	if (!window)
+		return FAILURE;
+	NSRect rect = window.frame;
+	_outY = rect.origin.y + rect.size.height;
 
 #endif
-	return xPos;
+	return SUCCESS;
 }
 
-int AppWindow::GetY()
-{
-#ifdef _WIN32
-	if (!wndHandle)
-		return -1;
 
-	RECT windowRect;
-	GetWindowRect(wndHandle, &windowRect);
-
-	yPos = windowRect.top;
-#elif __linux__
-     if (!display)
-        return -1;
-
-	 Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
-
-    XSync(display, 0);
-
-	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return -1;
-
-	yPos = y;
-
-#elif __APPLE__
-    if(!window)
-        return -1;
-    NSRect rect = window.frame;
-    yPos = rect.origin.y + rect.size.height;
-
-#endif
-	return yPos;
-}
 
 GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 
-	if(!GetClientTopLeft(_outX, _outY))
-        return FAILURE;
+	RECT topLeft;
+	GetClientRect(wndHandle, &topLeft);
+	_outX = topLeft.left;
+	_outY = topLeft.top;
 
 #elif __linux__
 	if (!display)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
 
      Window root;
     int x, y;
@@ -1339,7 +1359,7 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 
 #elif __APPLE__
 	if (!window)
-		return REDUNDANT_OPERATION;
+		return FAILURE;
     
     NSRect rect = window.frame;
     NSRect contentRect = [window contentRectForFrameRect:rect];
@@ -1351,21 +1371,57 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	return SUCCESS;
 }
 
-void* AppWindow::GetWindowHandle()
+GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize)
 {
 #ifdef _WIN32
-	return wndHandle;
+	if (!wndHandle)
+	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(HWND))
+	{
+		return INVALID_ARGUMENT;
+	}
+	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
+
+	return SUCCESS;
 #elif __linux__
-	return display;
+	if (!display)
+	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(display))
+	{
+		return INVALID_ARGUMENT;
+	}
+	LINUX_WINDOW linuxWnd;
+	linuxWnd.window = (void*)&window;
+	linuxWnd.display = (void*)display;
+
+	memcpy(_outWindowHandle, &linuxWnd , _handleSize );
+	return SUCCESS;
 #elif __APPLE__
-    return (__bridge void*)window;
+	if (!(__bridge void*)window)
+	{
+		return FAILURE;
+	}
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(NSWindow*))
+	{
+		return INVALID_ARGUMENT;
+	}
+
+	_outWindowHandle = (__bridge void*)window; // should test this
+	
+	return SUCCESS;
 #endif
 }
 
-bool AppWindow::IsFullscreen()
+GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 {
-	int xMax = 0;
-	int yMax = 0;
+	unsigned int height = 0;
+	unsigned int width = 0;
+	unsigned int xMax = 0;
+	unsigned int yMax = 0;
 	int borderHeight = 0;
 	int resizeBarHeight = 0;
 #ifdef _WIN32
@@ -1373,45 +1429,55 @@ bool AppWindow::IsFullscreen()
 	yMax = GetSystemMetrics(SM_CYSCREEN);
 	borderHeight = GetSystemMetrics(SM_CYCAPTION);
 	resizeBarHeight = GetSystemMetrics(SM_CYBORDER);
+	GetWidth(width);
+	GetHeight(height);
 #elif __linux__
-    Screen* scr = DefaultScreenOfDisplay(display);
-    xMax = scr->width;
-    yMax = scr->height;
-    //borderHeight = scr->mheight;
-    Atom actual_type_return, actual_type_return2;
-    int actual_format_return;
-    unsigned long nitems_return;
-    unsigned long   bytes_after_return;
-    unsigned char * prop_return = NULL;
+	Screen* scr = DefaultScreenOfDisplay(display);
+	xMax = scr->width;
+	yMax = scr->height;
+	//borderHeight = scr->mheight;
+	Atom actual_type_return, actual_type_return2;
+	int actual_format_return;
+	unsigned long nitems_return;
+	unsigned long   bytes_after_return;
+	unsigned char * prop_return = NULL;
 
-    int result = XGetWindowProperty(display, window, prop_type, 0L,
-                    sizeof(Atom),
-				    False,
-				    AnyPropertyType,
-				    &actual_type_return,
-				    &actual_format_return,
-				    &nitems_return, &bytes_after_return, &prop_return);
+	int result = XGetWindowProperty(display, window, prop_type, 0L,
+		sizeof(Atom),
+		False,
+		AnyPropertyType,
+		&actual_type_return,
+		&actual_format_return,
+		&nitems_return, &bytes_after_return, &prop_return);
 
-    Atom vProp = ((Atom *)prop_return)[0];
-    Atom hProp = ((Atom *)prop_return)[1];
+	Atom vProp = ((Atom *)prop_return)[0];
+	Atom hProp = ((Atom *)prop_return)[1];
 
-    if(hProp == prop_hMax && vProp == prop_vMax)
-        return true;
-    else
-        return false;
+	if (hProp == prop_hMax && vProp == prop_vMax)
+		_outIsFullscreen = true;
+	else
+		_outIsFullscreen = false;
+
+	return SUCCESS;
 
 #elif __APPLE__
-    if(([window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen)
-        return TRUE;
-    else
-        return FALSE;
+	if (([window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen)
+		_outIsFullscreen = TRUE;
+	else
+		_outIsFullscreen = FALSE;
+	
+	return SUCCESS;
+
 #endif
 
-	if (GetWidth() >= xMax && (GetHeight() + borderHeight + resizeBarHeight) >= yMax)
-		return true;
+	if (width >= xMax && (height + borderHeight + resizeBarHeight) >= yMax)
+		_outIsFullscreen = true;
 	else
-		return false;
+		_outIsFullscreen = false;
+
+	return SUCCESS;
 }
+
 
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGWindow(int _x, int _y, int _width, int _height, GWindowStyle _style, GWindow** _outWindow)
 {

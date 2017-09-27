@@ -5,8 +5,8 @@
 	File: GWindow.h
 	Purpose: A Gateware interface that creates a window and handles its properties.
 	Author: Nic Russell
-	Contributors: N/A
-	Last Modified: 5/8/2017
+	Contributors: ShuoYi Chang
+	Last Modified: 8/21/2017
 	Interface Status: Early Stage Development
 	Copyright: 7thGate Software LLC.
 	License: MIT
@@ -60,10 +60,10 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identifier for this interface. {A5D7746F-FAAE-42BF-AC16-5C25551CA7B6}.
+		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
 		static const GUUIID GWindowUUIID =
 		{
-			0xa5d7746f, 0xfaae, 0x42bf,{ 0xac, 0x16, 0x5c, 0x25, 0x55, 0x1c, 0xa7, 0xb6 } 
+			0xe53c2594, 0xe47c, 0x49a5,{ 0xbd, 0x1b, 0x53, 0x41, 0xf2, 0x60, 0x3f, 0x95 }
 		};
 
 		//! A thread-safe window creation and management library.
@@ -190,7 +190,7 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Width was successfully queried and returned.
 			*/
-			virtual int GetWidth() = 0;
+			virtual GReturn	GetWidth(unsigned int& _outWidth) = 0;
 
 			//! Returns the height in pixels of the currently opened window.
 			/*!
@@ -200,7 +200,7 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Height was successfully queried and returned.
 			*/
-			virtual int GetHeight() = 0;
+			virtual GReturn	GetHeight(unsigned int& _outHeight) = 0;
 
 			//! Returns the client width in pixels of the currently opened window.
 			/*!
@@ -210,7 +210,7 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Width was successfully queried and returned.
 			*/
-			virtual int GetClientWidth() = 0;
+			virtual GReturn	GetClientWidth(unsigned int& _outClientWidth) = 0;
 
 			//! Returns the client height in pixels of the currently opened window.
 			/*!
@@ -218,21 +218,21 @@ namespace GW
 			*   \retval -1 No window exists to query size from.
 			*	\retval else Height was successfully queried and returned.
 			*/
-			virtual int GetClientHeight() = 0;
+			virtual GReturn	GetClientHeight(unsigned int& _outClientHeight) = 0;
 
 			//! Returns the X position in pixels of the currently opened window.
 			/*!
 			*   \retval -1 No window exists to query position from.
 			*	\retval else X position was successfully queried and returned.
 			*/
-			virtual int GetX() = 0;
+			virtual GReturn	GetX(unsigned int& _outX) = 0;
 
 			//! Returns the Y position in pixels of the currently opened window.
 			/*!
 			*   \retval -1 No window exists to query position from.
 			*	\retval else Y position was successfully queried and returned.
 			*/
-			virtual int GetY() = 0;
+			virtual GReturn	GetY(unsigned int& _outY) = 0;
 
 			//! Gets the location of the top-left pixel of the opened window's client area.
 			/*!
@@ -251,14 +251,14 @@ namespace GW
 			*
 			*   \retval void* The void* data to the window handle.
 			*/
-			virtual void* GetWindowHandle() = 0;
+			virtual GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize) = 0;
 
 			//! Returns a bool specifying whether or not the currently opened window is fullscreen.
 			/*!
 			*   \retval true The window is fullscreen.
 			*	\retval false The window is not fullscreen.
 			*/
-			virtual bool IsFullscreen() = 0;
+			virtual GReturn IsFullscreen(bool& _outIsFullscreen) = 0;
 
 		}; // end GWindow class
 

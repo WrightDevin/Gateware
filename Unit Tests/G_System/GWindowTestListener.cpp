@@ -70,7 +70,8 @@ GW::GReturn GWindowTestListener::RequestInterface(const GW::GUUIID& _interfaceID
 	return GW::SUCCESS;
 }
 
-int GWindowTestListener::GetWindowTestValue()
+GW::GReturn GWindowTestListener::GetWindowTestValue(int& _outWindowTestValue)
 {
-	return windowTestValue;
+	_outWindowTestValue = windowTestValue;
+	return GW::SUCCESS;
 }
