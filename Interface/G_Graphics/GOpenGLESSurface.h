@@ -26,7 +26,7 @@ namespace GW
 
 		};
 	
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* _gWin, GOpenGLESSurface* _outSurface);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface);
 	
 	}
 }
