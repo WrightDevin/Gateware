@@ -4,6 +4,7 @@ if(APPLE)
 #Set(GUI_TYPE MACOSX_BUNDLE)
 set(COCOA_LIBRARY Cocoa)
 set(AVFOUNDATION_LIBRARY AVFoundation)
+set(AUDIOTOOLBOX_LIBRARY AVFoundation)
 message(“Adding .mm files”)
 add_library(GAudio GAudio.mm)
 
@@ -11,8 +12,10 @@ add_library(GAudio_DLL SHARED GAudio.mm)
 
 target_link_libraries(GAudio "-framework ${COCOA_LIBRARY}")
 target_link_libraries(GAudio "-framework ${AVFOUNDATION_LIBRARY}")
+target_link_libraries(GAudio "-framework ${AUDIOTOOLBOX_LIBRARY}")
 target_link_libraries(GAudio_DLL "-framework cocoa")
 target_link_libraries(GAudio_DLL "-framework avfoundation")
+target_link_libraries(GAudio_DLL "-framework audiotoolbox")
 else(APPLE)
 
 message(“Adding .cpp files”)

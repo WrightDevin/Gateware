@@ -14,14 +14,10 @@ public:
 	int index = -1;
 	MacAppAudio * audio;
 
-	bool loops = false;
-	bool isPlaying = false;
-	bool isPaused = false;
-	float volume = 1.0f;
-	GReturn Init();
+	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
-	GReturn CheckChannelVolumes(const float *_values, int _numChannels);
+	
 	GReturn SetVolume(float _newVolume);
 	GReturn GetChannels(unsigned int & returnedChannelNum);
 	GReturn Play();
@@ -37,7 +33,7 @@ public:
 class MacAppMusic : public GMusic
 {
 private:
-	char buffers[3][65543];
+	//char buffers[3][65543];
 	//OVERLAPPED overlap = { 0 };
 public:
 	char * myFile;
@@ -47,16 +43,10 @@ public:
 	
 	//std::thread* streamThread = nullptr;
 
-
-	bool loops = false;
-	bool isPlaying = false;
-	bool isPaused = false;
-	bool stopFlag = false;
-	float volume = 1.0f;
-	GReturn Init();
+	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
-	GReturn CheckChannelVolumes(const float *_values, int _numChannels);
+
 	GReturn GetChannels(unsigned int & returnedChannelNum);
 	GReturn SetVolume(float _newVolume);
 	GReturn StreamStart();
@@ -98,10 +88,23 @@ public:
 #endif
 };
 //Start of GSound implementation 
-GReturn MacAppSound::Init()
+GReturn MacAppSound::Init(const char * _path)
 {
 	GReturn result = GReturn::FAILURE;
-
+#if __APPLE__
+    
+    NSString * nsPath = [[[NSString alloc] initWithUTF8String:_path] autorelease];
+    mac_snd = [[GMacSound alloc]initWithPath:nsPath];
+    
+    if (mac_snd != nullptr)
+    {
+        result = SUCCESS;
+    }
+    else
+    {
+        result = FAILURE;
+    }
+#endif
 	return result;
 }
 GReturn MacAppSound::SetPCMShader(const char* _data)
@@ -117,21 +120,23 @@ GReturn MacAppSound::SetChannelVolumes(float * _values, int _numChannels)
 	GReturn result = GReturn::INVALID_ARGUMENT;
 	if (_numChannels <= 0)
 		return result;
-	if (audio == nullptr)
-		return result;
 
+    if (_values == nullptr)
+        return result;
+    result = FAILURE;
+    if (audio == nullptr)
+        return result;
+
+#if __APPLE__
+    bool bresult = [mac_snd SetChannelVolumes:_values theNumberOfChannels:_numChannels];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+#endif
 	return result;
 }
-GReturn MacAppSound::CheckChannelVolumes(const float * _values, int _numChannels)
-{
-	GReturn result = GReturn::FAILURE;
-	if (_numChannels <= 0)
-		return result;
-	if (audio == nullptr)
-		return result;
 
-	return result;
-}
 GReturn MacAppSound::GetChannels(unsigned int & returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -139,7 +144,13 @@ GReturn MacAppSound::GetChannels(unsigned int & returnedChannelNum)
 	{
 		return result;
 	}
-
+#if __APPLE__
+    returnedChannelNum = [mac_snd GetChannels];
+    if (returnedChannelNum > 0)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+#endif
 	return result;
 }
 GReturn MacAppSound::SetVolume(float _newVolume)
@@ -165,7 +176,8 @@ GReturn MacAppSound::Play()
 	if (audio == nullptr)
 		return result;
 #if __APPLE__
-	bool bresult = [mac_snd PlaySound];
+    bool bresult = false;
+    bresult = [mac_snd PlaySound];
 	if (bresult == true)
 		result = SUCCESS;
 	else
@@ -228,15 +240,15 @@ MacAppSound::~MacAppSound()
 //End of GSound implementation
 
 //Start of GMusic implementation
-GReturn MacAppMusic::Init()
+GReturn MacAppMusic::Init(const char * _path)
 {
 	GReturn result = GReturn::FAILURE;
 #if __APPLE__
 
 	NSString * nsPath = [[[NSString alloc] initWithUTF8String:_path] autorelease];
-	mac_snd = [[GMacSound alloc]initWithPath:nsPath];
+	mac_msc = [[GMacMusic alloc]initWithPath:nsPath];
 	
-	if (_outSoundData != nullptr)
+	if (mac_msc != nullptr)
 	{
 		result = SUCCESS;
 	}
@@ -255,24 +267,26 @@ GReturn MacAppMusic::SetPCMShader(const char* _data)
 }
 GReturn MacAppMusic::SetChannelVolumes(float * _values, int _numChannels)
 {
-	GReturn result = INVALID_ARGUMENT;
-	if (_numChannels <= 0)
-		return result;
-	if (audio == nullptr)
-		return result;
+    GReturn result = GReturn::INVALID_ARGUMENT;
+    if (_numChannels <= 0)
+        return result;
+    
+    if (_values == nullptr)
+        return result;
+    result = FAILURE;
+    if (audio == nullptr)
+        return result;
+    
+#if __APPLE__
+    bool bresult = [mac_msc SetChannelVolumes:_values theNumberOfChannels:_numChannels];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+#endif
+    return result;
+}
 
-	return result;
-}
-GReturn MacAppMusic::CheckChannelVolumes(const float * _values, int _numChannels)
-{
-	GReturn result = GReturn::INVALID_ARGUMENT;
-	if (_numChannels <= 0)
-		return result;
-	if (audio == nullptr)
-		return result;
-	
-	return result;
-}
 GReturn MacAppMusic::GetChannels(unsigned int & returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -280,33 +294,73 @@ GReturn MacAppMusic::GetChannels(unsigned int & returnedChannelNum)
 	{
 		return result;
 	}
-	
+#if __APPLE__
+    returnedChannelNum = [mac_msc GetChannels];
+    if (returnedChannelNum > 0)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+#endif
 	return result;
 }
 GReturn MacAppMusic::SetVolume(float _newVolume)
 {
-	GReturn result = FAILURE;
+	GReturn result = INVALID_ARGUMENT;
+    if(_newVolume < 0)
+        return result;
+    result = FAILURE;
 	if (audio == nullptr)
 		return result;
-
+    
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_msc SetVolume:_newVolume];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppMusic::Stream()
 {
+    GReturn result = FAILURE;
 
+    return result;
 }
+
 GReturn MacAppMusic::StreamStart()
 {
-	GReturn result = GReturn::FAILURE;
-	
+	GReturn result = FAILURE;
+    if (audio == nullptr)
+        return result;
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_msc StreamStart];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
+
 GReturn MacAppMusic::PauseStream()
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == nullptr)
 		return result;
-	
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_msc PauseStream];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppMusic::ResumeStream()
@@ -314,7 +368,15 @@ GReturn MacAppMusic::ResumeStream()
 	GReturn result = GReturn::FAILURE;
 	if (audio == nullptr)
 		return result;
-
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_msc ResumeStream];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppMusic::StopStream()
@@ -322,7 +384,15 @@ GReturn MacAppMusic::StopStream()
 	GReturn result = GReturn::FAILURE;
 	if (audio == nullptr)
 		return result;
-
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_msc StopStream];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 MacAppMusic::~MacAppMusic()
@@ -335,7 +405,10 @@ GReturn MacAppAudio::Init()
 	GReturn result = FAILURE;
 
 	result = SUCCESS;
-
+#if __APPLE__
+    mac_audio = [GMacAudio alloc];
+    [mac_audio Init];
+#endif
 	return result;
 }
 GReturn MacAppAudio::CreateSound(const char* _path, GSound** _outSound)
@@ -355,8 +428,14 @@ GReturn MacAppAudio::CreateSound(const char* _path, GSound** _outSound)
 		return result;
 	}
 	
-	result = snd->Init();
-//	activeSounds.push_back(snd);
+	result = snd->Init(_path);
+#if __APPLE__
+    snd->mac_snd->myAudio = mac_audio->myAudio;
+    [mac_audio->myAudio attachNode:snd->mac_snd->mySound];
+    [mac_audio->myAudio connect:snd->mac_snd->mySound to:mac_audio->myAudio.mainMixerNode format:snd->mac_snd->myBuffer.format];
+    [mac_audio->ActiveSounds addObject:snd->mac_snd];
+#endif
+    //	activeSounds.push_back(snd);
 	snd->audio = this;
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
@@ -384,14 +463,20 @@ GReturn MacAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	}
 
 
-	result = msc->Init();
+	result = msc->Init(_path);
 	if (result != SUCCESS)
 	{
 		return result;
 	}
+#if __APPLE__
+    msc->mac_msc->myAudio = mac_audio->myAudio;
+    [mac_audio->myAudio attachNode:msc->mac_msc->mySound];
+    [mac_audio->myAudio connect:msc->mac_msc->mySound to:mac_audio->myAudio.mainMixerNode format:msc->mac_msc->myBuffer.format];
+    [mac_audio->ActiveMusic addObject:msc->mac_msc];
+#endif
 	msc->audio = this;
 
-	//activeMusic.push_back(msc);
+	
 	*_outMusic = msc;
 	if (result == INVALID_ARGUMENT)
 		return result;
@@ -405,16 +490,20 @@ GReturn MacAppAudio::SetMasterVolume(float _value)
 	{
 		return result;
 	}
-	result = SUCCESS;
+	
 	if (_value > 1.0)
 	{
 		maxVolume = 1.0;
 	}
-	else
-	{
-		maxVolume = _value;
-
-	}
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_audio SetMasterVolume:_value];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppAudio::SetMasterChannelVolumes(const float * _values, int _numChannels)
@@ -423,28 +512,60 @@ GReturn MacAppAudio::SetMasterChannelVolumes(const float * _values, int _numChan
 	GReturn result = INVALID_ARGUMENT;
 	if (_values == nullptr)
 		return result;
-	if (_numChannels < 0)
+	if (_numChannels < 1)
 		return result;
 	result = FAILURE;
-
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_audio SetMasterVolumeChannels:_values theNumberOfChannels:_numChannels];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppAudio::PauseAll()
 {
 	GReturn result = FAILURE;
-	
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_audio PauseAll];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppAudio::StopAll()
 {
 	GReturn result = FAILURE;
-	
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_audio StopAll];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 GReturn MacAppAudio::ResumeAll()
 {
 	GReturn result = FAILURE;
-
+#if __APPLE__
+    bool bresult = false;
+    bresult = [mac_audio ResumeAll];
+    if (bresult == true)
+        result = SUCCESS;
+    else
+        result = FAILURE;
+    
+#endif
 	return result;
 }
 MacAppAudio::~MacAppAudio()
