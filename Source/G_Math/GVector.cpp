@@ -8,6 +8,7 @@
 //The using statements for specifically what we are using.
 using namespace GW;
 using namespace MATH;
+using namespace std;
 
 class GVectorCpp :public::GW::MATH::GVector
 {
@@ -29,7 +30,7 @@ public:
 	GReturn DotF(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) override;
 
 	GReturn CrossVector2F(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) override;
-																					 
+
 	GReturn CrossVector3F(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) override;
 
 	GReturn VectorXMatrixF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) override;
@@ -37,12 +38,12 @@ public:
 	GReturn TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) override;
 
 	GReturn MagnitudeF(GVECTORF _vector, float& _outMagnitude) override;
-															  
+
 	GReturn NormalizeF(GVECTORF _vector, GVECTORF& _outVector) override;
 
 	GReturn LerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) override;
 
-	GReturn SlerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) override;
+	GReturn SplineF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF _vector3, GVECTORF _vector4, float _ratio, GVECTORF& _outVector) override;
 
 	//double vector
 
@@ -68,7 +69,7 @@ public:
 
 	GReturn LerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) override;
 
-	GReturn SlerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) override;
+	GReturn SplineD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD _vector3, GVECTORD _vector4, double _ratio, GVECTORD& _outVector) override;
 
 	GReturn GetCount(unsigned int& _outCount) override;
 
@@ -92,133 +93,291 @@ GVectorCpp::~GVectorCpp()
 
 GReturn GVectorCpp::AddVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector)
 {
-	//GVECTORD f;
-	//
-	//_outVector.x = f.x + _vector2.x;
-	//_outVector.y = f.y + _vector2.y;
-	//_outVector.z = f.z + _vector2.z;
-	//_outVector.w = f.w + _vector2.w;
-	//return SUCCESS;
+	_outVector.x = _vector1.x + _vector2.x;
+	_outVector.y = _vector1.y + _vector2.y;
+	_outVector.z = _vector1.z + _vector2.z;
+	_outVector.w = _vector1.w + _vector2.w;
 
-
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::SubtractVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector)
 {
-	return FAILURE;
+	_outVector.x = _vector1.x - _vector2.x;
+	_outVector.y = _vector1.y - _vector2.y;
+	_outVector.z = _vector1.z - _vector2.z;
+	_outVector.w = _vector1.w - _vector2.w;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::ScaleF(GVECTORF _vector, float _scalar, GVECTORF& _outVector)
 {
-	return FAILURE;
+	_outVector.x = _scalar * _vector.x;
+	_outVector.y = _scalar * _vector.y;
+	_outVector.z = _scalar * _vector.z;
+	_outVector.w = _scalar * _vector.w;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::DotF(GVECTORF _vector1, GVECTORF _vector2, float& _outValue)
 {
-	return FAILURE;
+	_outValue = (_vector1.x * _vector2.x) + (_vector1.y * _vector2.y) + (_vector1.z * _vector2.z) + (_vector1.w * _vector2.w);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::CrossVector2F(GVECTORF _vector1, GVECTORF _vector2, float& _outValue)
 {
-	return FAILURE;
+	_outValue = (_vector1.x * _vector2.y) - (_vector2.y * _vector1.x);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::CrossVector3F(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector1.y * _vector2.z) - (_vector1.z * _vector2.y);
+	_outVector.y = (_vector1.z * _vector2.x) - (_vector1.x * _vector2.z);
+	_outVector.z = (_vector1.x * _vector2.y) - (_vector1.y * _vector2.x);
+	_outVector.w = 0.0f;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::VectorXMatrixF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * _matrix.row4.x);
+	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * _matrix.row4.y);
+	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * _matrix.row4.z);
+	_outVector.w = (_vector.x * _matrix.row1.w) + (_vector.y * _matrix.row2.w) + (_vector.z * _matrix.row3.w) + (_vector.w * _matrix.row4.w);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * 0.0f);
+	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * 0.0f);
+	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * 0.0f);
+	_outVector.w = 1.0f;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::MagnitudeF(GVECTORF _vector, float& _outMagnitude)
 {
-	return FAILURE;
+	_outMagnitude = sqrtf((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
+	if (G_COMPARISON_F(_outMagnitude, 0))
+		return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::NormalizeF(GVECTORF _vector, GVECTORF& _outVector)
 {
-	return FAILURE;
+	float magnitude = 0.0f;
+	if (MagnitudeF(_vector, magnitude) != SUCCESS)
+		return FAILURE;
+
+	_outVector.x = _vector.x / magnitude;
+	_outVector.y = _vector.y / magnitude;
+	_outVector.z = _vector.z / magnitude;
+	_outVector.w = _vector.w / magnitude;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::LerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF & _outVector)
 {
-	return FAILURE;
+	_outVector.x = G_LERP(_vector1.x, _vector2.x, _ratio);
+	_outVector.y = G_LERP(_vector1.y, _vector2.y, _ratio);
+	_outVector.z = G_LERP(_vector1.z, _vector2.z, _ratio);
+	_outVector.w = G_LERP(_vector1.w, _vector2.w, _ratio);
+
+	return SUCCESS;
 }
 
-GReturn GVectorCpp::SlerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF & _outVector)
+GReturn GVectorCpp::SplineF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF _vector3, GVECTORF _vector4, float _ratio, GVECTORF & _outVector)
 {
-	return FAILURE;
+	GVECTORF p0 = _vector1;
+	GVECTORF p1 = _vector2;
+	GVECTORF p2 = _vector3;
+	GVECTORF p3 = _vector4;
+
+	float t0 = 0.0f;
+	float t1 = powf(sqrtf(powf((p1.x - p0.x), 2) + powf((p1.y - p0.y), 2) + powf((p1.z - p0.z), 2)), 0.5f) + t0;
+	float t2 = powf(sqrtf(powf((p2.x - p1.x), 2) + powf((p2.y - p1.y), 2) + powf((p2.z - p1.z), 2)), 0.5f) + t1;
+	float t3 = powf(sqrtf(powf((p3.x - p2.x), 2) + powf((p3.y - p2.y), 2) + powf((p3.z - p2.z), 2)), 0.5f) + t2;
+
+	GVECTORF A1;
+	GVECTORF A2;
+	GVECTORF A3;
+	GVECTORF B1;
+	GVECTORF B2;
+
+	float t = t1 + (t2 - t1) * _ratio;
+
+	for (int i = 0; i < 3; i++)
+	{
+		A1.data[i] = (t1 - t) / (t1 - t0)*p0.data[i] + (t - t0) / (t1 - t0)*p1.data[i];
+		A2.data[i] = (t2 - t) / (t2 - t1)*p1.data[i] + (t - t1) / (t2 - t1)*p2.data[i];
+		A3.data[i] = (t3 - t) / (t3 - t2)*p2.data[i] + (t - t2) / (t3 - t2)*p3.data[i];
+
+		B1.data[i] = (t2 - t) / (t2 - t0)*A1.data[i] + (t - t0) / (t2 - t0)*A2.data[i];
+		B2.data[i] = (t3 - t) / (t3 - t1)*A2.data[i] + (t - t1) / (t3 - t1)*A3.data[i];
+
+		_outVector.data[i] = (t2 - t) / (t2 - t1)*B1.data[i] + (t - t1) / (t2 - t1)*B2.data[i];
+	}
+	_outVector.w = 0;
+
+	return SUCCESS;
 }
+
+
 
 //double vector
 
 GReturn GVectorCpp::AddVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = _vector1.x + _vector2.x;
+	_outVector.y = _vector1.y + _vector2.y;
+	_outVector.z = _vector1.z + _vector2.z;
+	_outVector.w = _vector1.w + _vector2.w;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::SubtractVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = _vector1.x - _vector2.x;
+	_outVector.y = _vector1.y - _vector2.y;
+	_outVector.z = _vector1.z - _vector2.z;
+	_outVector.w = _vector1.w - _vector2.w;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::ScaleD(GVECTORD _vector, double _scalar, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = _scalar * _vector.x;
+	_outVector.y = _scalar * _vector.y;
+	_outVector.z = _scalar * _vector.z;
+	_outVector.w = _scalar * _vector.w;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::DotD(GVECTORD _vector1, GVECTORD _vector2, double& _outValue)
 {
-	return FAILURE;
+	_outValue = (_vector1.x * _vector2.x) + (_vector1.y * _vector2.y) + (_vector1.z * _vector2.z) + (_vector1.w * _vector2.w);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::CrossVector2D(GVECTORD _vector1, GVECTORD _vector2, double& _outValue)
 {
-	return FAILURE;
+	_outValue = (_vector1.x * _vector2.y) - (_vector2.y * _vector1.x);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::CrossVector3D(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector1.y * _vector2.z) - (_vector1.z * _vector2.y);
+	_outVector.y = (_vector1.z * _vector2.x) - (_vector1.x * _vector2.z);
+	_outVector.z = (_vector1.x * _vector2.y) - (_vector1.y * _vector2.x);
+	_outVector.w = 0.0f;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::VectorXMatrixD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * _matrix.row4.x);
+	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * _matrix.row4.y);
+	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * _matrix.row4.z);
+	_outVector.w = (_vector.x * _matrix.row1.w) + (_vector.y * _matrix.row2.w) + (_vector.z * _matrix.row3.w) + (_vector.w * _matrix.row4.w);
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::TransformD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector)
 {
-	return FAILURE;
+	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * 0.0f);
+	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * 0.0f);
+	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * 0.0f);
+	_outVector.w = 1.0;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::MagnitudeD(GVECTORD _vector, double& _outMagnitude)
 {
-	return FAILURE;
+	_outMagnitude = sqrt((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
+	if (G_COMPARISON_D(_outMagnitude, 0))
+		return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::NormalizeD(GVECTORD _vector, GVECTORD& _outVector)
 {
-	return FAILURE;
+	double magnitude = 0.0;
+	if (MagnitudeD(_vector, magnitude) != SUCCESS)
+	{
+		return FAILURE;
+	}
+
+	_outVector.x = _vector.x / magnitude;
+	_outVector.y = _vector.y / magnitude;
+	_outVector.z = _vector.z / magnitude;
+	_outVector.w = _vector.w / magnitude;
+
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::LerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD & _outVector)
 {
-	return FAILURE;
+	_outVector.x = G_LERP(_vector1.x, _vector2.x, _ratio);
+	_outVector.y = G_LERP(_vector1.y, _vector2.y, _ratio);
+	_outVector.z = G_LERP(_vector1.z, _vector2.z, _ratio);
+	_outVector.w = G_LERP(_vector1.w, _vector2.w, _ratio);
+
+	return SUCCESS;
 }
 
-GReturn GVectorCpp::SlerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD & _outVector)
+GReturn GVectorCpp::SplineD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD _vector3, GVECTORD _vector4, double _ratio, GVECTORD & _outVector)
 {
-	return FAILURE;
+	GVECTORD p0 = _vector1;
+	GVECTORD p1 = _vector2;
+	GVECTORD p2 = _vector3;
+	GVECTORD p3 = _vector4;
+
+	double t0 = 0.0;
+	double t1 = t1 = pow(sqrt(pow((p1.x - p0.x), 2.0) + pow((p1.y - p0.y), 2.0) + pow((p1.z - p0.z), 2.0)), 0.5) + t0;
+	double t2 = t2 = pow(sqrt(pow((p2.x - p1.x), 2.0) + pow((p2.y - p1.y), 2.0) + pow((p2.z - p1.z), 2.0)), 0.5) + t1;
+	double t3 = t3 = pow(sqrt(pow((p3.x - p2.x), 2.0) + pow((p3.y - p2.y), 2.0) + pow((p3.z - p2.z), 2.0)), 0.5) + t2;
+
+	GVECTORD A1;
+	GVECTORD A2;
+	GVECTORD A3;
+	GVECTORD B1;
+	GVECTORD B2;
+
+	double t = t1 + (t2 - t1) * _ratio;
+
+	for (int i = 0; i < 3; i++)
+	{
+		A1.data[i] = (t1 - t) / (t1 - t0)*p0.data[i] + (t - t0) / (t1 - t0)*p1.data[i];
+		A2.data[i] = (t2 - t) / (t2 - t1)*p1.data[i] + (t - t1) / (t2 - t1)*p2.data[i];
+		A3.data[i] = (t3 - t) / (t3 - t2)*p2.data[i] + (t - t2) / (t3 - t2)*p3.data[i];
+
+		B1.data[i] = (t2 - t) / (t2 - t0)*A1.data[i] + (t - t0) / (t2 - t0)*A2.data[i];
+		B2.data[i] = (t3 - t) / (t3 - t1)*A2.data[i] + (t - t1) / (t3 - t1)*A3.data[i];
+
+		_outVector.data[i] = (t2 - t) / (t2 - t1) * B1.data[i] + (t - t1) / (t2 - t1) * B2.data[i];
+	}
+	_outVector.w = 0;
+	return SUCCESS;
 }
 
 GReturn GVectorCpp::GetCount(unsigned int& _outCount)

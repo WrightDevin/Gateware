@@ -109,7 +109,8 @@ namespace GW
 			
 			//! Set the quaternion by the specified matrix
 			/*!
-			*	Sets the quaternion with a number and stores the result in the output quaternion.
+			*	Sets the quaternion by the rotation part of the specifed matrix 
+			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [out] _outQuaternion		The result of the rotation of matrix
@@ -228,21 +229,6 @@ namespace GW
 			*/
 			virtual GReturn LerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
 			
-
-			//! Convert the specified matrix to a quaternion
-			/*!
-			*	Converts the specified matrix to a quaternion and stores the result in the output quaternion.
-			*
-			*	\param [in]  _matrix			The specified matrix
-			*	\param [out] _outQuaternion		The result of the convert
-			*
-			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
-			*/
-			virtual GReturn ConvertMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
-
-
 			//! Spherical linear interpolates between two specified quaternions
 			/*!
 			*	Spherical linear interpolates between two specified quaternions 
@@ -335,9 +321,10 @@ namespace GW
 
 			//! Set the quaternion by the specified matrix
 			/*!
-			*	Sets the quaternion with a number and stores the result in the output quaternion.
+			*	Sets the quaternion by the rotation part of the specifed matrix 
+			*	and stores the result in the output quaternion.
 			*
-			*	\param [in]  _vector			The specified matrix
+			*	\param [in]  _matrix			The specified matrix
 			*	\param [out] _outQuaternion		The result of the rotation of matrix
 			*
 			*	\retval SUCCESS					The calculation succeed
@@ -453,19 +440,6 @@ namespace GW
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, float _ratio, GQUATERNIOND& _outQuaternion) = 0;
-
-			//! Convert the specified matrix to a quaternion
-			/*!
-			*	Converts the specified matrix to a quaternion and stores the result in the output quaternion.
-			*
-			*	\param [in]  _matrix			The specified matrix
-			*	\param [out] _outQuaternion		The result of the convert
-			*
-			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
-			*/
-			virtual GReturn ConvertMatrixD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Spherical linear interpolates between two specified quaternions
 			/*!

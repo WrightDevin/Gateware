@@ -5,7 +5,7 @@ File: GVector.h
 Purpose: A Gateware interface that handles all vector functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 8/30/2016
+Last Modified: 9/20/2016
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {1C92F468-4121-46E8-B2D6-2E843BADD205}
+		//! Unique Identifier for this interface. {7A4F0977-2B93-45C4-9FF5-EEDB1D0A3717}
 		static const GUUIID GVectorUUIID =
 		{
-			0x1c92f468, 0x4121, 0x46e8,{ 0xb2, 0xd6, 0x2e, 0x84, 0x3b, 0xad, 0xd2, 0x5 }
+			0x7a4f0977, 0x2b93, 0x45c4,{ 0x9f, 0xf5, 0xee, 0xdb, 0x1d, 0xa, 0x37, 0x17 }
 		};
 
 		//! Vector functions
@@ -140,8 +140,8 @@ namespace GW
 
 			//! Transform specified specified vector by specified matrix.
 			/*!
-			*	Transforms the specified vector by the specified matrix by treating the fourth row as (0, 0, 0, 1).
-			*	and stores the result in the output vector.
+			*	Transforms the specified vector by the specified matrix by treating the fourth row as (0, 0, 0, 1),
+			*	and the w component of result vector will return 1.The result will store in the output vector.
 			*
 			*	\param [in]  _vector		The specified vector
 			*	\param [in]  _matrix		The transform matrix
@@ -195,21 +195,25 @@ namespace GW
 			*/
 			virtual GReturn LerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) = 0;
 
-			//! Spherical linear interpolates between two specified vectors
+			//! Calculate the interpolation on a cuvre which connects two specified 3D vectors
 			/*!
-			*	Spherical linear interpolates between two specified vectors
-			*	and stores the result in the output quaternion.
+			*	Calculate the interpolation on a cuvre which connects two specified 3D vectors
+			*	and stores the result in the output quaternion. The component of w 
+			*	will return 0. The interpolation will happen between the second point
+			*	and thrid point.
 			*
-			*	\param [in]  _vector1			The start vector
-			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _vector1			The first control point
+			*	\param [in]  _vector1			The second control point
+			*	\param [in]  _vector1			The thrid control point
+			*	\param [in]  _vector2			The fourth control point
 			*	\param [in]  _ratio				The interpolation coefficient
-			*	\param [out] _outVector			The result of the slerp
+			*	\param [out] _outVector			The result of the spline
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SlerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) = 0;
+			virtual GReturn SplineF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF _vector3, GVECTORF _vector4, float _ratio, GVECTORF& _outVector) = 0;
 
 			//double vector
 
@@ -317,8 +321,8 @@ namespace GW
 
 			//! Transform specified specified vector by specified matrix.
 			/*!
-			*	Transforms the specified vector by the specified matrix by treating the fourth row as (0, 0, 0, 1).
-			*	and stores the result in the output vector.
+			*	Transforms the specified vector by the specified matrix by treating the fourth row as (0, 0, 0, 1),
+			*	and the w component of result vector will return 1.The result will store in the output vector.
 			*
 			*	\param [in]  _vector		The specified vector
 			*	\param [in]  _matrix		The transform matrix
@@ -356,9 +360,9 @@ namespace GW
 			*/
 			virtual GReturn NormalizeD(GVECTORD _vector, GVECTORD& _outVector) = 0;
 			
-			//! Spherical linear interpolates between two specified quaternions
+			//! Spherical linear interpolates between two specified vectors
 			/*!
-			*	Spherical linear interpolates between two specified quaternions
+			*	Spherical linear interpolates between two specified vectors
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _vector1			The start vector
@@ -367,26 +371,30 @@ namespace GW
 			*	\param [out] _outVector			The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval INVALID_ARGUMENT		An invalid vecotr was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) = 0;
 
-			//! Spherical linear interpolates between two specified quaternions
+			//! Calculate the interpolation between two specified 3D vectors
 			/*!
-			*	Spherical linear interpolates between two specified quaternions
-			*	and stores the result in the output quaternion.
+			*	Calculate the interpolation between two specified 3D vectors
+			*	and stores the result in the output quaternion. The component of w 
+			*	will return 0. The interpolation will happen between the second point
+			*	and thrid point.
 			*
-			*	\param [in]  _vector1			The start vector
-			*	\param [in]  _vector2			The end vector
+			*	\param [in]  _vector1			The first control point
+			*	\param [in]  _vector1			The second control point
+			*	\param [in]  _vector1			The thrid control point
+			*	\param [in]  _vector2			The fourth control point
 			*	\param [in]  _ratio				The interpolation coefficient
-			*	\param [out] _outVector			The result of the slerp
+			*	\param [out] _outVector			The result of the spline
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
+			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn SlerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) = 0;
+			virtual GReturn SplineD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD _vector3, GVECTORD _vector4, double _ratio, GVECTORD& _outVector) = 0;
 
 
 		}; //! end GVector class

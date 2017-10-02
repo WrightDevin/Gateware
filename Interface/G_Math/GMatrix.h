@@ -5,7 +5,7 @@ File: GMatrix.h
 Purpose: A Gateware interface that handles Martix functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 8/30/2016
+Last Modified: 9/30/2016
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {7FD30A77-340C-485B-9B32-F1EFA3717331}
+		//! Unique Identifier for this interface. {2DEF34B3-E6C1-40C3-815B-86E2ED1D9CAA}
 		static const GUUIID GMatrixUUIID =
 		{
-			0x7fd30a77, 0x340c, 0x485b,{ 0x9b, 0x32, 0xf1, 0xef, 0xa3, 0x71, 0x73, 0x31 }
+			0x2def34b3, 0xe6c1, 0x40c3,{ 0x81, 0x5b, 0x86, 0xe2, 0xed, 0x1d, 0x9c, 0xaa }
 		};
 
 		//! Matrix functions
@@ -92,7 +92,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid matrix or vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn MatrixXVectorF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF& _outVector) = 0;
+			virtual GReturn VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF& _outVector) = 0;
 			
 			//! Convert the specified quaternion to a matrix
 			/*!
@@ -123,16 +123,16 @@ namespace GW
 
 			//! Calculate the determinant of the specified matirx
 			/*!
-			*	Calculates the determinant of the specified matirx and stores the result in the output matrix.
+			*	Calculates the determinant of the specified matirx and stores the result in the output value.
 			*
 			*	\param [in]  _matrix			The specified matirx
-			*	\param [out] _outMatrix			The result of the determinant
+			*	\param [out] _outValue			The result of the determinant
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn DeterminantF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
+			virtual GReturn DeterminantF(GMATRIXF _matrix, float& _outValue) = 0;
 
 			//! Transpose the specified matirx
 			/*!
@@ -172,19 +172,19 @@ namespace GW
 			*/
 			virtual GReturn IdentityF(GMATRIXF& _outMatrix) = 0;
 
-			//! Get the rotation matrix from the specified matrix
+			//! Get the quaternion which represents the roataion of the specified matrix
 			/*!
-			*	Gets the rotation matrix from the specified matrix
-			*	and stores the result in the output matrix.
+			*	Get the quaternion which represents the roataion of the specified matrix
+			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _matrix			The specified matrix
-			*	\param [out] _outMatrix			The rotation matirx of the specified matirx
+			*	\param [out] _quaternion		The quaternion of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetRotationF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
+			virtual GReturn GetRotationF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
 
 			//! Get the translation matrix from the specified matrix
 			/*!
@@ -198,7 +198,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetTranslationF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
+			virtual GReturn GetTranslationF(GMATRIXF _matrix, GVECTORF& _outMatrix) = 0;
 
 			//! Get the scaling matrix from the specified matrix
 			/*!
@@ -212,7 +212,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetScaleF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
+			virtual GReturn GetScaleF(GMATRIXF _matrix, GVECTORF& _outMatrix) = 0;
 
 			//! Roatate the specified matrix around the x-axis by multiplying a rotation matrix
 			/*!
@@ -366,7 +366,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT	An invalid matrix or vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
-			virtual GReturn MatrixXVectorD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD& _outVector) = 0;
+			virtual GReturn VectorXMatrixD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD& _outVector) = 0;
 
 			//! Convert the specified quaternion to a matrix
 			/*!
@@ -400,13 +400,13 @@ namespace GW
 			*	Calculates the determinant of the specified matirx and stores the result in the output matrix.
 			*
 			*	\param [in]  _matrix			The specified matirx
-			*	\param [out] _outMatrix			The result of the determinant
+			*	\param [out] _outValue			The result of the determinant
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn DeterminantD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn DeterminantD(GMATRIXD _matrix, double& _outValue) = 0;
 
 			//! Transpose the specified matirx
 			/*!
@@ -446,19 +446,19 @@ namespace GW
 			*/
 			virtual GReturn IdentityD(GMATRIXD& _outMatrix) = 0;
 
-			//! Get the rotation matrix from the specified matrix
+			//! Get the quaternion which represents the roataion of the specified matrix
 			/*!
-			*	Gets the rotation matrix from the specified matrix
-			*	and stores the result in the output matrix.
+			*	Get the quaternion which represents the roataion of the specified matrix
+			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _matrix			The specified matrix
-			*	\param [out] _outMatrix			The rotation matirx of the specified matirx
+			*	\param [out] _quaternion		The quaternion of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetRotationD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
 
 			//! Get the translation matrix from the specified matrix
 			/*!
@@ -472,7 +472,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetTranslationD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn GetTranslationD(GMATRIXD _matrix, GVECTORD& _outMatrix) = 0;
 
 			//! Get the scaling matrix from the specified matrix
 			/*!
@@ -486,7 +486,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
-			virtual GReturn GetScaleD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn GetScaleD(GMATRIXD _matrix, GVECTORD& _outMatrix) = 0;
 
 			//! Roatate the specified matrix around the x-axis by multiplying a rotation matrix
 			/*!
