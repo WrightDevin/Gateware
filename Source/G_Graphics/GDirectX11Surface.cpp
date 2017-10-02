@@ -2,12 +2,13 @@
 #include "../../Interface/G_Graphics/GDirectX11Surface.h"
 
 #ifdef _WIN32
+
 #pragma comment (lib, "D3D11.lib")
 #include <d3d11.h>
-
 #include <atomic>
 #include <mutex>
 #include <thread>
+
 #elif __linux__
 #elif __APPLE__
 #endif
@@ -60,6 +61,7 @@ public:
 
 GDirectX11::GDirectX11()
 {
+	ZeroMemory(&surfaceWindow, sizeof(HWND));
 }
 
 GDirectX11::~GDirectX11()
@@ -81,6 +83,7 @@ GReturn GDirectX11::Initialize()
 	GetWindowRect(surfaceWindow, &windowRect);
 	width = windowRect.right - windowRect.left;
 	height = windowRect.bottom - windowRect.top;
+	aspectRatio = width / height;
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -202,7 +205,6 @@ GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 
 GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
 {
-
 	*_outRenderTarget = rtv;
 
 	return SUCCESS;
