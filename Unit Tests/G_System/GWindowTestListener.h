@@ -25,7 +25,7 @@ public:
 	GW::GReturn RequestInterface(const GW::GUUIID &_interfaceID, void** _outputInterface);
 
 	//Helper function for testing
-	int GetWindowTestValue();
+	GW::GReturn GetWindowTestValue(int& _outWindowTestValue);
 };
 
 #endif // TESTLISTENER_H

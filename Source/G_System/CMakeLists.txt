@@ -1,4 +1,4 @@
-project(LibraryProject)
+﻿project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
 add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog GLog.cpp ${HEADER_FILES})

@@ -48,11 +48,10 @@ public:
 
 	/* GInput */
 
-	float GetState(int _keyCode, GReturn* _errorCode);
+	GReturn GetState(int _keyCode, float& _outState);
 	GReturn GetMouseDelta(float& _x, float& _y);
 	GReturn GetMousePosition(float& _x, float& _y);
-	unsigned int GetKeyMask();
-
+	GReturn GetKeyMask(unsigned int& _outKeyMask);
 	/* GInterface */
 
 	GReturn GetCount(unsigned int& _outCount);
@@ -311,17 +310,12 @@ GReturn Input::InitializeMac(void* _data) {
 	return SUCCESS;
 }
 
-float Input::GetState(int _keyCode, GReturn* _errorCode) {
-
-	if (_errorCode != nullptr) {
-		*_errorCode = GReturn::SUCCESS;
-		if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
-			*_errorCode = GReturn::FEATURE_UNSUPPORTED;
-		}
-	}
-
-	return (float)n_Keys[_keyCode];
-
+GReturn Input::GetState(int _keyCode, float& _outState){
+	if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
+		return FEATURE_UNSUPPORTED;
+	}	
+	_outState = (float)n_Keys[_keyCode];
+	return SUCCESS;
 }
 
 GReturn Input::GetMouseDelta(float& _x, float& _y) {
@@ -340,8 +334,9 @@ GReturn Input::GetMousePosition(float& _x, float& _y) {
 	return SUCCESS;
 }
 
-unsigned int Input::GetKeyMask() {
-	return keyMask;
+GReturn Input::GetKeyMask(unsigned int& _outKeyMask) {
+	_outKeyMask = keyMask;
+	return SUCCESS;
 }
 
 void Input::InputThread()

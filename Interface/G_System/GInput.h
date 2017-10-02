@@ -6,7 +6,7 @@
 	Purpose: A Gateware interface that handles high-speed keyboard and mouse input.
 	Author: Peter Farber
 	Contributors: N/A
-	Last Modified: 2/1/2017
+	Last Modified: 8/21/2017
 	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
@@ -22,10 +22,10 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {D68B715F-E73B-44C6-8A7F-97ECC8EB9905}
+		//! Unique Identifier for this interface. {5A546D89-7C6F-46B5-B62B-FF5B27CE06F5}
 		static const GUUIID GInputUUIID =
 		{
-			0xd68b715f, 0xe73b, 0x44c6,{ 0x8a, 0x7f, 0x97, 0xec, 0xc8, 0xeb, 0x99, 0x5 } 
+			0x5a546d89, 0x7c6f, 0x46b5,{ 0xb6, 0x2b, 0xff, 0x5b, 0x27, 0xce, 0x6, 0xf5 }
 		};
 
 		//! A single threaded input library.
@@ -49,7 +49,7 @@ namespace GW
 			*	\retval 0 The Key is not pressed.
 			*	\retval 1 The Key is pressed.
 			*/
-			virtual float GetState(int _keyCode, GReturn* _errorCode) = 0;
+			virtual GReturn GetState(int _keyCode, float& _outState) = 0;
 
 			//! Get the change in mouse position.
 			/*!
@@ -79,7 +79,7 @@ namespace GW
 			*
 			*	\retval G_MASK (_SHIFT, _CONTROL, _CAPS_LOCK, _NUM_LOCK, _SCROLL_LOCK).
 			*/
-			virtual unsigned int GetKeyMask() = 0;
+			virtual GReturn GetKeyMask(unsigned int& _outKeyMask) = 0;
 		};
 
 		//! Creates a GInput Object.

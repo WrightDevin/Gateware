@@ -8,6 +8,13 @@
 #include <mutex>  //mutex locks
 #include "GUtility.h"  //Internal utility functions
 
+//iOS include, Apple Only.
+#if defined(__APPLE__)
+
+#include <TargetConditionals.h>  //iOS preprocessor definitions
+
+#endif
+
 //dirent.h is not native to Windows and is added to the project
 //The " " are used for include so the compiler knows to look in the
 //project folder first.
@@ -142,9 +149,17 @@ FileIO::~FileIO()
 GW::GReturn FileIO::Init()
 {
 	//Set the current working directory to the directory the program was ran from.
-	GW::GReturn rv = SetCurrentWorkingDirectory("./");
-	if (G_FAIL(rv))
-		return rv;
+#if TARGET_OS_IOS || TARGET_OS_SIMULATOR
+    string tempDir = getenv("HOME");
+    tempDir += "/Library";
+    GW::GReturn rv = SetCurrentWorkingDirectory(tempDir.c_str());
+    if (G_FAIL(rv))
+        return rv;
+#else
+    GW::GReturn rv = SetCurrentWorkingDirectory("./");
+    if (G_FAIL(rv))
+        return rv;
+#endif
 
 	//Imbue the file with utf8 if on Windows.
 #if defined(_WIN32)
@@ -195,7 +210,7 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 
 	//If file failed to open we fail.
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }
@@ -215,7 +230,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 
 	//If file failed to open we fail.
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }
@@ -268,7 +283,7 @@ GW::GReturn FileIO::OpenTextWrite(const char* const _file)
 	file.open(currDir + G_TO_UTF16(_file), ios::out);
 
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	//Need to write the BOM if we are _WIN32.
 #if defined(_WIN32)
@@ -302,7 +317,7 @@ GW::GReturn FileIO::AppendTextWrite(const char* const _file)
 	file.open(currDir + G_TO_UTF16(_file), ios::out | ios::app | ios::ate);
 
 	if (!file.is_open())
-		return GW::FAILURE;
+		return GW::FILE_NOT_FOUND;
 
 	return GW::SUCCESS;
 }
@@ -426,8 +441,12 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	getline(file, outString, _delimiter);
 #endif
 
-	//Copy the data over to the out parameter.
-	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+#if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+    strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
+#else
+    //Copy the data over to the out parameter.
+    strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+#endif
 
 	lock.unlock();
 
@@ -471,8 +490,12 @@ GW::GReturn FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize
 	if (currDirStream == nullptr)
 		return GW::FAILURE;
 
-	//Copy the current directory to the out parameter.
-	strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
+#if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+    strlcpy(_dir, G_TO_UTF8(currDir).c_str(), _dirSize);
+#else
+    //Copy the current directory to the out parameter.
+    strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
+#endif
 
 	return GW::SUCCESS;
 }
@@ -567,8 +590,14 @@ GW::GReturn FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFi
 		if (file->d_type == DT_REG)
 		{
             string fileName(file->d_name);
-			strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
-			++fileNumber;
+
+            #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+                strlcpy(_outFiles[fileNumber], G_TO_UTF8(fileName).c_str(), _fileNameSize);
+            #else
+                strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
+            #endif
+
+            ++fileNumber;
 		}
 	}
 

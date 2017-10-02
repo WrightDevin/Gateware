@@ -6,7 +6,7 @@
 	Purpose: A Gateware interface that handles logging in a thread safe manner.
 	Author: Justin W. Parks
 	Contributors: N/A
-	Last Modified: 12/14/2016
+	Last Modified: 8/21/2017
 	Interface Status: Beta
 	Copyright: 7thGate Software LLC.
 	License: MIT
@@ -21,12 +21,12 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {79AC4197-1A78-4A86-A4A4-E84773A2F6DF}
+		//! Unique Identifier for this interface. {305FDF22-A4AD-40B9-92B0-E0F9DDC97D1E}
 		static const GUUIID GLogUUIID =
 		{
-			0x79ac4197, 0x1a78, 0x4a86,{ 0xa4, 0xa4, 0xe8, 0x47, 0x73, 0xa2, 0xf6, 0xdf }
+			0x305fdf22, 0xa4ad, 0x40b9,{ 0x92, 0xb0, 0xe0, 0xf9, 0xdd, 0xc9, 0x7d, 0x1e }
 		};
-
+	
 		// Forward declaration so we can use GFile* in a function.
 		class GFile;
 
@@ -79,7 +79,7 @@ namespace GW
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*/
-			virtual void EnableVerboseLogging(bool _value) = 0;
+			virtual GReturn EnableVerboseLogging(bool _value) = 0;
 			
 			//! Turns console logging on or off.
 			/*!
@@ -87,7 +87,7 @@ namespace GW
 			*
 			*	\param [in] _value true to turn on or false to turn off.
 			*/
-			virtual void EnableConsoleLogging(bool _value) = 0;
+			virtual GReturn EnableConsoleLogging(bool _value) = 0;
 			
 			//! Forces a log dump to file.
 			/*!
