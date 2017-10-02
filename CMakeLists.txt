@@ -153,7 +153,9 @@ endif(APPLE AND NOT IOS)
 if(IOS)
 
 Project(Gateware_iOS)
+
 set_property(TARGET ${Gateware_iOS} PROPERTY XCODE_ATTRIBUTE_WRAPPER_EXTENSION "bundle")
+
 message("The target OS is iOS")
 
 #message("Before the Call: ${Architecture}")
@@ -183,4 +185,7 @@ ADD_DEFINITIONS(-D_UNICODE)
 #add_custom_target(docs ALL DEPENDS Doxyfile)
 
 add_subdirectory(Source)
+
+#if(NOT IOS)
 add_subdirectory("Unit Tests")
+#endif()

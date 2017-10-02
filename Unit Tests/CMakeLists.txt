@@ -61,6 +61,22 @@ target_sources(UnitTests INTERFACE UnitTests.cpp)
 
 target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow ${CMAKE_THREAD_LIBS_INIT})
 
+if(IOS)
+
+set_property(TARGET UnitTests PROPERTY XCODE_ATTRIBUTE_WRAPPER_EXTENSION xctest)
+
+#[=[
+
+set_property(
+TARGET
+UnitTests
+PROPERTY
+XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.apple.product-type.bundle.unit-test")
+
+#]=]
+
+endif(IOS)
+
 endif()
 
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})
