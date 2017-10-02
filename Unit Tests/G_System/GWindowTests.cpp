@@ -111,13 +111,13 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
 	unsigned int windowHandleSize = sizeof(HWND);
 #elif __linux__
-	Display* appDisplay;
-	Display* unopenedDisplay*;
-	unsigned int displaySize = sizeof(Display);
+	LINUX_WINDOW* l_appWindow;
+	LINUX_WINDOW* l_unopenedWindow*;
+	unsigned int l_windowSize = sizeof(LINUX_WINDOW);
 #elif __APPLE__
-	Window m_appWindow;
-	Window m_unopenedWindow;
-	unsigned int m_windowSize = sizeof(Window);
+	NSWindow* m_appWindow;
+	NSWindow* m_unopenedWindow;
+	unsigned int m_windowSize = sizeof(NSWindow*);
 #endif
 
 	appWindow->IsFullscreen(appWindowIsFullscreen);
@@ -132,7 +132,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 #ifdef _WIN32
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
 #elif __linux__
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedDisplay, displaySize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_unopenedWindow, l_windowSize)));
 #elif __APPLE__
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(m_unopenedWindow, m_windowSize)));
 #endif
@@ -155,9 +155,9 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	delete appWindowHandle;
 	delete unopenedWindowHandle;
 #elif __linux__
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appDisplay, displaySize)));
-	delete appDisplay;
-	delete unopenedDisplay;
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(l_appWindow, l_windowSize)));
+	delete l_appWindow;
+	delete l_unopenedWindow;
 #elif __APPLE__
 	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(m_appWindow, m_windowSize)));
 	delete m_appWindow;
@@ -198,11 +198,11 @@ TEST_CASE("Sending events to listeners.", "")
 	std::atomic<HWND> appWindowHandle;
 	unsigned int windowHandleSize = sizeof(HWND);
 #elif __linux__
-	Display appDisplay;
-	unsigned int displaySize = sizeof(Display);
-#elif __APPLE__
-	Window m_appWindow;
-	unsigned int m_windwowSize = sizeof(Window);
+	LINUX_WINDOW l_appWindow;
+	unsigned int l_windowSize = sizeof(LINUX_WINDOW);
+#elif __APPLE__ 
+	NSWindow* m_appWindow;
+	unsigned int m_windowSize = sizeof(NSWindow*);
 #endif
 
 	// Fail case
@@ -214,10 +214,10 @@ TEST_CASE("Sending events to listeners.", "")
 	(HWND)appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
 #elif __linux__
-	(Display)appWindow->GetWindowHandle(&appDisplay, displaySize);
-	ShowWindowAsync(appDisplay, SW_SHOWMAXIMIZED);
+	(LINUX_WINDOW)appWindow->GetWindowHandle(&l_appWindow, l_windowSize);
+	ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 #elif __APPLE__
-	(Window)appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
+	(NSWindow)appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
 	ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
