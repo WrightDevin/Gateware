@@ -1,5 +1,18 @@
 project(LibraryProject)
+if(WIN32)
+message(“Adding .cpp files”)
 
+add_library (GAudio GAudio.cpp ${HEADER_FILES})
+add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES} )
+target_link_libraries(GAudio xaudio2)
+target_link_libraries(GAudio_DLL xaudio2)
+
+endif(WIN32)
+if(UNIX AND NOT APPLE)
+message(“Adding .cpp files”)
+add_library (GAudio GAudio.cpp ${HEADER_FILES})
+add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES} )
+endif(UNIX AND NOT APPLE)
 if(APPLE)
 #Set(GUI_TYPE MACOSX_BUNDLE)
 set(COCOA_LIBRARY Cocoa)
@@ -16,16 +29,7 @@ target_link_libraries(GAudio "-framework ${AUDIOTOOLBOX_LIBRARY}")
 target_link_libraries(GAudio_DLL "-framework cocoa")
 target_link_libraries(GAudio_DLL "-framework avfoundation")
 target_link_libraries(GAudio_DLL "-framework audiotoolbox")
-else(APPLE)
-
-message(“Adding .cpp files”)
-
-add_library (GAudio GAudio.cpp ${HEADER_FILES})
-add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES} )
-target_link_libraries(GAudio xaudio2)
-target_link_libraries(GAudio_DLL xaudio2)
-
-endif()
+endif(APPLE)
 
 set_property(TARGET 
 GAudio
