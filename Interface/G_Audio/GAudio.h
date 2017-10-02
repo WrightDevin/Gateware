@@ -44,8 +44,14 @@ namespace GW
 		public:
 			//! Initializes all neccassary data for GAudio based on platform.
 			/*!
-			*	On Windows, initilaizes XAudio2 pointers IXAudio2 and IXAudio2MasteringVoice.
-			*	\retval SUCCESS tbd
+			*	On Windows, initilaizes XAudio2 pointers IXAudio2 and IXAudio2MasteringVoice.\
+			*	\retval SUCCESS on Windows if xAudio2 is able to setup correctly.
+			*	\retval FAILURE on Windows if it cannot coinitilaize.
+			*	\retval FAILURE on Windows if it xAudio2Create fails.
+			*	\retval FAILURE on Windows if it xAudio fails to create mastering voice.
+			*	On Mac, initilaizes AVAudioEngine and starts the engine.
+			*	\retval SUCCESS on Mac if AVAudioEngine is able to setup correctly.
+			*	\retval FAILURE on Mac if AVAudioEngine is able to setup correctly.
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
 			virtual GReturn Init() = 0;
