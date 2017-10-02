@@ -105,10 +105,20 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	unsigned int unopenedWindowWidth = 0;
 	unsigned int unopenedWindowPosX = 0;
 	unsigned int unopenedWindowPosY = 0;
+
+#ifdef _WIN32
 	std::atomic<HWND>* appWindowHandle = new std::atomic<HWND>();
 	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
-
 	unsigned int windowHandleSize = sizeof(HWND);
+#elif __linux__
+	Display* appDisplay;
+	Display* unopenedDisplay*;
+	unsigned int displaySize = sizeof(Display);
+#elif __APPLE__
+	Window m_appWindow;
+	Window m_unopenedWindow;
+	unsigned int m_windowSize = sizeof(Window);
+#endif
 
 	appWindow->IsFullscreen(appWindowIsFullscreen);
 
@@ -118,7 +128,15 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(unopenedWindow->GetWidth(unopenedWindowWidth)));
 	CHECK(G_FAIL(unopenedWindow->GetX(unopenedWindowPosX)));
 	CHECK(G_FAIL(unopenedWindow->GetY(unopenedWindowPosY)));
+
+#ifdef _WIN32
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
+#elif __linux__
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedDisplay, displaySize)));
+#elif __APPLE__
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(m_unopenedWindow, m_windowSize)));
+#endif
+
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
 	
 	// Resize windows for pass tests
@@ -131,10 +149,21 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	REQUIRE(G_SUCCESS(appWindow->GetX(appWindowPosX)));	
 	REQUIRE(G_SUCCESS(appWindow->GetY(appWindowPosY)));	
 	REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
 
+#ifdef _WIN32
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
 	delete appWindowHandle;
 	delete unopenedWindowHandle;
+#elif __linux__
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appDisplay, displaySize)));
+	delete appDisplay;
+	delete unopenedDisplay;
+#elif __APPLE__
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(m_appWindow, m_windowSize)));
+	delete m_appWindow;
+	delete m_unopenedWindow;
+#endif
+
 
 }
 
@@ -164,8 +193,17 @@ TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], 
 TEST_CASE("Sending events to listeners.", "")
 {
 	int windowTestValue = 0;
+
+#ifdef _WIN32
 	std::atomic<HWND> appWindowHandle;
 	unsigned int windowHandleSize = sizeof(HWND);
+#elif __linux__
+	Display appDisplay;
+	unsigned int displaySize = sizeof(Display);
+#elif __APPLE__
+	Window m_appWindow;
+	unsigned int m_windwowSize = sizeof(Window);
+#endif
 
 	// Fail case
 	windowListener->GetWindowTestValue(windowTestValue);
@@ -175,6 +213,12 @@ TEST_CASE("Sending events to listeners.", "")
 	// Tell window to maximize
 	(HWND)appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
+#elif __linux__
+	(Display)appWindow->GetWindowHandle(&appDisplay, displaySize);
+	ShowWindowAsync(appDisplay, SW_SHOWMAXIMIZED);
+#elif __APPLE__
+	(Window)appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
+	ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
 	// Pass case
