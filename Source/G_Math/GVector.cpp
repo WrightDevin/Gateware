@@ -168,7 +168,7 @@ GReturn GVectorCpp::TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _ou
 GReturn GVectorCpp::MagnitudeF(GVECTORF _vector, float& _outMagnitude)
 {
 	_outMagnitude = sqrtf((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
-	if (G_COMPARISON_F(_outMagnitude, 0))
+	if (G_COMPARISON_STANDARD_F(_outMagnitude, 0))
 		return FAILURE;
 	return SUCCESS;
 }
@@ -314,7 +314,7 @@ GReturn GVectorCpp::TransformD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _ou
 GReturn GVectorCpp::MagnitudeD(GVECTORD _vector, double& _outMagnitude)
 {
 	_outMagnitude = sqrt((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
-	if (G_COMPARISON_D(_outMagnitude, 0))
+	if (G_COMPARISON_STANDARD_D(_outMagnitude, 0))
 		return FAILURE;
 	return SUCCESS;
 }

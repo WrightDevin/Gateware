@@ -160,7 +160,7 @@ GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQua
 	float sx = sqrtf(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
 	float sy = sqrtf(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
 	float sz = sqrtf(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
-	if (G_COMPARISON_F(sx, 0.0f) || G_COMPARISON_F(sy, 0.0f) || G_COMPARISON_F(sz, 0.0f))
+	if (G_COMPARISON_STANDARD_F(sx, 0.0f) || G_COMPARISON_STANDARD_F(sy, 0.0f) || G_COMPARISON_STANDARD_F(sz, 0.0f))
 	{
 		//scale too close to zero, can not decompose rotation
 		return FAILURE;
@@ -280,7 +280,7 @@ GReturn GQuaternionCpp::InverseF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQua
 GReturn GQuaternionCpp::MagnitudeF(GQUATERNIONF _quaternion, float& _outMagnitude)
 {
 	_outMagnitude = sqrtf(_quaternion.x * _quaternion.x + _quaternion.y * _quaternion.y + _quaternion.z * _quaternion.z + _quaternion.w * _quaternion.w);
-	if (G_COMPARISON_F(_outMagnitude, G_EPSILON_F))
+	if (G_COMPARISON_STANDARD_F(_outMagnitude, G_EPSILON_F))
 		return FAILURE;
 
 	return SUCCESS;
@@ -290,12 +290,12 @@ GReturn GQuaternionCpp::NormalizeF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQ
 {
 	float magnitude;
 	MagnitudeF(_quaternion, magnitude);
-	if (G_COMPARISON_F(magnitude , 1.0f ))
+	if (G_COMPARISON_STANDARD_F(magnitude , 1.0f ))
 	{
 		_outQuaternion = _quaternion;
 		return SUCCESS;
 	}
-	if (G_COMPARISON_F(magnitude, G_EPSILON_F))
+	if (G_COMPARISON_STANDARD_F(magnitude, G_EPSILON_F))
 	{
 		return FAILURE;
 	}
@@ -397,7 +397,7 @@ GReturn GQuaternionCpp::SetByMatrixD(GMATRIXD _matrix, GQUATERNIOND& _outQuatern
 	double sx = sqrt(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
 	double sy = sqrt(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
 	double sz = sqrt(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
-	if (G_COMPARISON_D(sx, 0) || G_COMPARISON_D(sy, 0) || G_COMPARISON_D(sz, 0))
+	if (G_COMPARISON_STANDARD_D(sx, 0) || G_COMPARISON_STANDARD_D(sy, 0) || G_COMPARISON_STANDARD_D(sz, 0))
 	{
 		//scale too close to zero, can not decompose rotation
 		return FAILURE;
@@ -518,7 +518,7 @@ GReturn GQuaternionCpp::InverseD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQua
 GReturn GQuaternionCpp::MagnitudeD(GQUATERNIOND _quaternion, double& _outMagnitude)
 {
 	_outMagnitude = sqrt(_quaternion.x * _quaternion.x + _quaternion.y * _quaternion.y + _quaternion.z * _quaternion.z + _quaternion.w * _quaternion.w);
-	if (G_COMPARISON_D(_outMagnitude, 0))
+	if (G_COMPARISON_STANDARD_D(_outMagnitude, 0))
 		return FAILURE;
 	return SUCCESS;
 }
@@ -527,12 +527,12 @@ GReturn GQuaternionCpp::NormalizeD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQ
 {
 	double magnitude;
 	MagnitudeD(_quaternion, magnitude);
-	if (G_COMPARISON_D(magnitude, 1))
+	if (G_COMPARISON_STANDARD_D(magnitude, 1))
 	{
 		_outQuaternion = _quaternion;
 		return SUCCESS;
 	}
-	if (G_COMPARISON_D(magnitude, G_EPSILON_D))
+	if (G_COMPARISON_STANDARD_D(magnitude, G_EPSILON_D))
 	{
 		return FAILURE;
 	}
@@ -557,12 +557,12 @@ GReturn GQuaternionCpp::LerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternio
 	if (_ratio < 0)
 		_ratio = 0;
 
-	if (G_COMPARISON_D(_ratio,0))
+	if (G_COMPARISON_STANDARD_D(_ratio,0))
 	{
 		_outQuaternion = _quaternion1;
 		return SUCCESS;
 	}
-	else if (G_COMPARISON_D(_ratio, 1))
+	else if (G_COMPARISON_STANDARD_D(_ratio, 1))
 	{
 		_outQuaternion = _quaternion2;
 		return SUCCESS;
@@ -587,12 +587,12 @@ GReturn GQuaternionCpp::SlerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaterni
 	NormalizeD(_quaternion1, q1);
 	NormalizeD(_quaternion2, q2);
 
-	if (G_COMPARISON_D(_ratio, 0))
+	if (G_COMPARISON_STANDARD_D(_ratio, 0))
 	{
 		_outQuaternion = _quaternion1;
 		return SUCCESS;
 	}
-	else if (G_COMPARISON_D(_ratio, 1))
+	else if (G_COMPARISON_STANDARD_D(_ratio, 1))
 	{
 		_outQuaternion = _quaternion2;
 		return SUCCESS;

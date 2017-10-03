@@ -29,30 +29,28 @@ License: MIT
 #define G_ABS_LARGER_F(A, B)		( ( G_ABS_F(A) > G_ABS_F(B) ) ?  G_ABS_F(A) : G_ABS_F(B) )	
 #define G_ABS_LARGER_D(A, B)		( ( G_ABS_D(A) > G_ABS_D(B) ) ?  G_ABS_D(A) : G_ABS_D(B) )
 
-#define G_FIRST_COMPARISON_F(num1 , num2)   ( G_ABS_F( (num1) - (num2) ) <= ( G_EPSILON_F ) ) //FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON 
-#define G_SECOND_COMPARISON_F(num1 , num2)   ( G_ABS_F( (num1) - (num2) ) <= ( G_EPSILON_F * ( G_ABS_LARGER_F( (num1), (num2) ) ) ) ) 	//SECOND CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON MULTIPLY THE LARGER INPUT FLOAT
-#define G_COMPARISON_F(num1 , num2)   ( G_FIRST_COMPARISON_F( (num1), (num2) ) ? true : G_SECOND_COMPARISON_F( (num1) , (num2) ) )
+#define G_DEVIATION_EXACT 0
+#define G_DEVIATION_PRECISE_F G_EPSILON_F
+#define G_DEVIATION_STANDARD_F G_EPSILON_F * 10
+#define G_DEVIATION_LOOSE_F G_EPSILON_F * 100
 
+#define G_DEVIATION_PRECISE_D G_EPSILON_D
+#define G_DEVIATION_STANDARD_D G_EPSILON_D * 10
+#define G_DEVIATION_LOOSE_D G_EPSILON_D * 100
 
+#define G_FIRST_COMPARISON_F(num1 , num2)   ( G_ABS_F( (num1) - (num2) ) <= ( G_EPSILON_F ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON 
+#define G_SECOND_COMPARISON_F(num1 , num2)   ( G_ABS_F( (num1) - (num2) ) <= ( G_DEVIATION_STANDARD_F * G_ABS_LARGER_F(num1, num2)) ) 	//SECOND CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON MULTIPLY THE LARGER INPUT FLOAT
+#define G_COMPARISON_STANDARD_F(num1 , num2)   ( G_FIRST_COMPARISON_F( (num1), (num2) ) ? true : G_SECOND_COMPARISON_F( (num1) , (num2) ) )
+#define G_COMPARISON_F(num1, num2, deviation) ( G_FIRST_COMPARISON_F( (num1), (num2) )	? true :  ( G_ABS_F( (num1) - (num2) ) <=  ( deviation * G_ABS_LARGER_F(num1, num2)) )  ) 
 
-#define G_FIRST_COMPARISON_D(num1 , num2)   ( G_ABS_D( (num1) - (num2) ) <= ( G_EPSILON_D ) )
-#define G_SECOND_COMPARISON_D(num1 , num2)   ( G_ABS_D( (num1) - (num2) ) <= ( G_EPSILON_D * ( G_ABS_LARGER_D( (num1), (num2) ) ) ) ) 	//CHECK IF TWO INPUT FLOATS ARE EQUAL 
-#define G_COMPARISON_D(num1 , num2)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true : G_SECOND_COMPARISON_D( (num1) , (num2) ) )	//CHECK IF TWO INPUT DOUBLES ARE EQUAL 
-
-#define G_LESSONESECOND_COMPARISON_F(num1 , num2)   ( G_ABS_F( (num1) - (num2) ) <= ( G_EPSILON_F * ( 2.5f ) ) ) 	//CHECK IF TWO INPUT FLOATS ARE EQUAL 
-#define G_LESSONECOMPARISON_F(num1 , num2)   ( G_FIRST_COMPARISON_F( (num1), (num2) ) ? true : G_LESSONESECOND_COMPARISON_F( (num1) , (num2) ) )
-
-#define G_LESSONESECOND_COMPARISON_D(num1 , num2)   ( G_ABS_D( (num1) - (num2) ) <= ( G_EPSILON_D * ( 2.5 ) ) ) 	//CHECK IF TWO INPUT FLOATS ARE EQUAL 
-#define G_LESSONECOMPARISON_D(num1 , num2)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true : G_LESSONESECOND_COMPARISON_D( (num1) , (num2) ) )	//CHECK IF TWO INPUT DOUBLES ARE EQUAL 
-
+#define G_FIRST_COMPARISON_D(num1 , num2)   ( G_ABS_D( (num1) - (num2) ) <= ( G_EPSILON_D ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON 
+#define G_SECOND_COMPARISON_D(num1 , num2)   ( G_ABS_D( (num1) - (num2) ) <= ( G_DEVIATION_STANDARD_D * G_ABS_LARGER_F(num1, num2)) ) //SECOND CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON MULTIPLY THE LARGER INPUT FLOAT
+#define G_COMPARISON_STANDARD_D(num1 , num2)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true : G_SECOND_COMPARISON_D( (num1) , (num2) ) )	
+#define G_COMPARISON_D(num1 , num2, deviation)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true :( G_ABS_D( (num1) - (num2) ) <= ( deviation * (G_ABS_LARGER_F(num1, num2))) )  )	
 
 #define G_LERP(start , end, ratio)  ( start + ratio * (end - start) )		//LINEAR INTERPOLATE TWO POINT WITH THE RATIO
 #define G_CLAMP(num , top, bottom)  ((((num) > (top)) ? (top) : (num)) < (bottom)) ? (bottom) : (num)		//CLAMP THE NUMBER BETWEEN THE TOP NUMBER AND THE BOTTOM NUMBER
 
-#define G_COMPARISON_EXACT 0
-#define G_COMPARISON_PRECISE G_EPSILON_F
-#define G_COMPARISON_STANDARD G_EPSILON_F * 10
-#define G_COMPARISON_LOOSE G_EPSILON_F * 100
 
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
@@ -63,10 +61,10 @@ namespace GW
 	namespace MATH
 	{
 
-		//! Unique Identifier for this interface. {F43B9BF1-243A-4EDB-AFE3-89E9D733802C}
+		//! Unique Identifier for this interface. {733D6B86-7DE3-4190-86AB-36348A958652}
 		static const GUUIID GMathDefinesUUIID =
 		{
-			0xf43b9bf1, 0x243a, 0x4edb,{ 0xaf, 0xe3, 0x89, 0xe9, 0xd7, 0x33, 0x80, 0x2c }
+			0x733d6b86, 0x7de3, 0x4190,{ 0x86, 0xab, 0x36, 0x34, 0x8a, 0x95, 0x86, 0x52 }
 		};
 
 		// Ensure identical binary padding for structures on all platforms.

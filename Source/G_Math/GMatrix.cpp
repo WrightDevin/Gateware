@@ -127,7 +127,7 @@ GReturn GMatirxCpp::AddMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & 
 	{
 		_outMatrix.data[i] = _matrix1.data[i] + _matrix2.data[i];
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & _outMatrix)
@@ -136,7 +136,7 @@ GReturn GMatirxCpp::SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 	{
 		_outMatrix.data[i] = _matrix1.data[i] - _matrix2.data[i];
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & _outMatrix)
@@ -161,7 +161,7 @@ GReturn GMatirxCpp::MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 	_outMatrix.data[14] = _matrix1.data[12] * _matrix2.data[2] + _matrix1.data[13] * _matrix2.data[6] + _matrix1.data[14] * _matrix2.data[10] + _matrix1.data[15] * _matrix2.data[14];
 	_outMatrix.data[15] = _matrix1.data[12] * _matrix2.data[3] + _matrix1.data[13] * _matrix2.data[7] + _matrix1.data[14] * _matrix2.data[11] + _matrix1.data[15] * _matrix2.data[15];
 
-	return FAILURE;
+	return SUCCESS;
 }
  
 GReturn GMatirxCpp::VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF & _outVector)
@@ -171,7 +171,7 @@ GReturn GMatirxCpp::VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF 
 	_outVector.z = _vector.data[0] * _matrix.data[2] + _vector.data[1] * _matrix.data[6] + _vector.data[2] * _matrix.data[10] + _vector.data[3] * _matrix.data[14];
 	_outVector.w = _vector.data[0] * _matrix.data[3] + _vector.data[1] * _matrix.data[7] + _vector.data[2] * _matrix.data[11] + _vector.data[3] * _matrix.data[15];
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::ConvertQuaternionF(GQUATERNIONF _quaternion, GMATRIXF & _outMatrix)
@@ -205,7 +205,7 @@ GReturn GMatirxCpp::ConvertQuaternionF(GQUATERNIONF _quaternion, GMATRIXF & _out
 	_outMatrix.data[14] = 0.0f;
 	_outMatrix.data[15] = 1.0f;
 
-	return FAILURE;
+	return SUCCESS;
 } 
 
 GReturn GMatirxCpp::MultiplyNumF(GMATRIXF _matrix, float _scalar, GMATRIXF & _outMatrix)
@@ -214,7 +214,7 @@ GReturn GMatirxCpp::MultiplyNumF(GMATRIXF _matrix, float _scalar, GMATRIXF & _ou
 	{
 		_outMatrix.data[i] = _matrix.data[i] * _scalar;
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::DeterminantF(GMATRIXF _matrix, float & _outValue)
@@ -255,7 +255,7 @@ GReturn GMatirxCpp::TransposeF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 	_outMatrix.data[13] = _matrix.data[7];
 	_outMatrix.data[14] = _matrix.data[11];
 	_outMatrix.data[15] = _matrix.data[15];
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
@@ -298,13 +298,13 @@ GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 
 	MultiplyNumF(_outMatrix, 1.0f / det, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::IdentityF(GMATRIXF & _outMatrix) 
 {
 	_outMatrix = GIdentityMatrixF;
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion)
@@ -314,19 +314,24 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 	float sy = sqrtf(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
 	float sz = sqrtf(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
 	DeterminantF(_matrix, det);
+
+	if (G_COMPARISON_STANDARD_F(det, 0.0f))
+		return FAILURE;
+
 	if (det < 0)
 	{
-		sz = -sz;
+		sx = -sx;
 	}
+
 	GMATRIXF Rotation = _matrix;
 	Rotation.data[0] /= sx;
-	Rotation.data[1] /= sy;
-	Rotation.data[2] /= sz;
 	Rotation.data[4] /= sx;
-	Rotation.data[5] /= sy;
-	Rotation.data[6] /= sz;
 	Rotation.data[8] /= sx;
+	Rotation.data[1] /= sy;
+	Rotation.data[5] /= sy;
 	Rotation.data[9] /= sy;
+	Rotation.data[2] /= sz;
+	Rotation.data[6] /= sz;
 	Rotation.data[10] /= sz;
 
 
@@ -368,7 +373,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 		}
 	}
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetTranslationF(GMATRIXF _matrix, GVECTORF& _outVector)
@@ -377,7 +382,7 @@ GReturn GMatirxCpp::GetTranslationF(GMATRIXF _matrix, GVECTORF& _outVector)
 	_outVector.y = _matrix.data[7];
 	_outVector.z = _matrix.data[11];
 	_outVector.w = 0;
-	return FAILURE;
+	return SUCCESS;
 }
  
 GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
@@ -392,10 +397,10 @@ GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
 	DeterminantF(_matrix, det);
 	if (det < 0)
 	{
-		_outVector.z = -_outVector.z;
+		_outVector.x = -_outVector.x;
 	}
 
-	return FAILURE;
+	return SUCCESS;
 }
  
 GReturn GMatirxCpp::RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
@@ -410,7 +415,7 @@ GReturn GMatirxCpp::RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 
 	MultiplyMatrixF(_matrix, Rotation, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
@@ -424,7 +429,7 @@ GReturn GMatirxCpp::RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 	Rotation.data[10] = c;
 
 	MultiplyMatrixF(_matrix, Rotation, _outMatrix);
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
@@ -438,7 +443,7 @@ GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 	Rotation.data[5] = c;
 
 	MultiplyMatrixF(_matrix, Rotation, _outMatrix);
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _outMatrix)
@@ -450,7 +455,7 @@ GReturn GMatirxCpp::TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF
 
 	MultiplyMatrixF(_matrix, Translation, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _outMatrix)
@@ -462,16 +467,17 @@ GReturn GMatirxCpp::ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _out
 
 	MultiplyMatrixF(_matrix, Scale, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GMATRIXF & _outMatrix)
 {
+
 	for (int i = 0; i < 16; i++)
 	{
 		_outMatrix.data[i] = G_LERP(_matrix1.data[i], _matrix2.data[i], _ratio);
 	}
-	return FAILURE;
+	return SUCCESS;
 }
  
 
@@ -483,7 +489,7 @@ GReturn GMatirxCpp::AddMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & 
 	{
 		_outMatrix.data[i] = _matrix1.data[i] + _matrix2.data[i];
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::SubtractMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & _outMatrix)
@@ -492,7 +498,7 @@ GReturn GMatirxCpp::SubtractMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRI
 	{
 		_outMatrix.data[i] = _matrix1.data[i] - _matrix2.data[i];
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::MultiplyMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & _outMatrix)
@@ -517,7 +523,7 @@ GReturn GMatirxCpp::MultiplyMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRI
 	_outMatrix.data[14] = _matrix1.data[12] * _matrix2.data[2] + _matrix1.data[13] * _matrix2.data[6] + _matrix1.data[14] * _matrix2.data[10] + _matrix1.data[15] * _matrix2.data[14];
 	_outMatrix.data[15] = _matrix1.data[12] * _matrix2.data[3] + _matrix1.data[13] * _matrix2.data[7] + _matrix1.data[14] * _matrix2.data[11] + _matrix1.data[15] * _matrix2.data[15];
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::VectorXMatrixD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD & _outVector)
@@ -527,7 +533,7 @@ GReturn GMatirxCpp::VectorXMatrixD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD 
 	_outVector.z = _vector.data[0] * _matrix.data[2] + _vector.data[1] * _matrix.data[6] + _vector.data[2] * _matrix.data[10] + _vector.data[3] * _matrix.data[14];
 	_outVector.w = _vector.data[0] * _matrix.data[3] + _vector.data[1] * _matrix.data[7] + _vector.data[2] * _matrix.data[11] + _vector.data[3] * _matrix.data[15];
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::ConvertQuaternionD(GQUATERNIOND _quaternion, GMATRIXD & _outMatrix)
@@ -561,7 +567,7 @@ GReturn GMatirxCpp::ConvertQuaternionD(GQUATERNIOND _quaternion, GMATRIXD & _out
 	_outMatrix.data[14] = 0.0f;
 	_outMatrix.data[15] = 1.0f;
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::MultiplyNumD(GMATRIXD _matrix, double _scalar, GMATRIXD & _outMatrix)
@@ -570,7 +576,7 @@ GReturn GMatirxCpp::MultiplyNumD(GMATRIXD _matrix, double _scalar, GMATRIXD & _o
 	{
 		_outMatrix.data[i] = _matrix.data[i] * _scalar;
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::DeterminantD(GMATRIXD _matrix, double & _outValue)
@@ -611,7 +617,7 @@ GReturn GMatirxCpp::TransposeD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 	_outMatrix.data[13] = _matrix.data[7];
 	_outMatrix.data[14] = _matrix.data[11];
 	_outMatrix.data[15] = _matrix.data[15];
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
@@ -631,7 +637,10 @@ GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 	double b5 = _matrix.data[10] * _matrix.data[15] - _matrix.data[11] * _matrix.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-
+	if (G_COMPARISON_STANDARD_F(det,0))
+	{
+		return FAILURE;
+	}
 	_outMatrix.data[0] = _matrix.data[5] * b5 - _matrix.data[6] * b4 + _matrix.data[7] * b3;
 	_outMatrix.data[1] = -_matrix.data[1] * b5 + _matrix.data[2] * b4 - _matrix.data[3] * b3;
 	_outMatrix.data[2] = _matrix.data[13] * a5 - _matrix.data[14] * a4 + _matrix.data[15] * a3;
@@ -654,13 +663,13 @@ GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 
 	MultiplyNumD(_outMatrix, 1.0f / det, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::IdentityD(GMATRIXD & _outMatrix)
 {
 	_outMatrix = GIdentityMatrixD;
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion)
@@ -670,9 +679,13 @@ GReturn GMatirxCpp::GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion)
 	double sy = sqrt(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
 	double sz = sqrt(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
 	DeterminantD(_matrix, det);
+	if (G_COMPARISON_STANDARD_D(det,0))
+	{
+		return FAILURE;
+	}
 	if (det < 0)
 	{
-		sz = -sz;
+		sx = -sx;
 	}
 	GMATRIXD Rotation = _matrix;
 	Rotation.data[0] /= sx;
@@ -723,7 +736,7 @@ GReturn GMatirxCpp::GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion)
 		}
 	}
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetTranslationD(GMATRIXD _matrix, GVECTORD& _outVector)
@@ -732,7 +745,7 @@ GReturn GMatirxCpp::GetTranslationD(GMATRIXD _matrix, GVECTORD& _outVector)
 	_outVector.y = _matrix.data[7];
 	_outVector.z = _matrix.data[11];
 	_outVector.w = 0 ;
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetScaleD(GMATRIXD _matrix, GVECTORD& _outVector)
@@ -747,10 +760,10 @@ GReturn GMatirxCpp::GetScaleD(GMATRIXD _matrix, GVECTORD& _outVector)
 	DeterminantD(_matrix, det);
 	if (det < 0)
 	{
-		_outVector.z = -_outVector.z;
+		_outVector.x = -_outVector.x;
 	}
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::RotationXD(GMATRIXD _matrix, double _radian, GMATRIXD & _outMatrix)
@@ -765,7 +778,7 @@ GReturn GMatirxCpp::RotationXD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 
 	MultiplyMatrixD(_matrix, Rotation, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::RotationYD(GMATRIXD _matrix, double _radian, GMATRIXD & _outMatrix)
@@ -779,7 +792,7 @@ GReturn GMatirxCpp::RotationYD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 	Rotation.data[10] = c;
 
 	MultiplyMatrixD(_matrix, Rotation, _outMatrix);
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD & _outMatrix)
@@ -793,7 +806,7 @@ GReturn GMatirxCpp::RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 	Rotation.data[5] = c;
 
 	MultiplyMatrixD(_matrix, Rotation, _outMatrix);
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _outMatrix)
@@ -805,7 +818,7 @@ GReturn GMatirxCpp::TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD
 
 	MultiplyMatrixD(_matrix, Translation, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::ScalingD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _outMatrix)
@@ -817,7 +830,7 @@ GReturn GMatirxCpp::ScalingD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _out
 
 	MultiplyMatrixD(_matrix, Scale, _outMatrix);
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, GMATRIXD & _outMatrix)
@@ -826,7 +839,7 @@ GReturn GMatirxCpp::LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, G
 	{
 		_outMatrix.data[i] = G_LERP(_matrix1.data[i], _matrix2.data[i], _ratio);
 	}
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GMatirxCpp::GetCount(unsigned int & _outCount)
