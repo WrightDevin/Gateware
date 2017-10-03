@@ -47,9 +47,9 @@ TEST_CASE("Creating Sound.", "[CreateSound]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &testSound)));
-    
+
     REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &testSound2)));
-    
+
 	checkReturned = FAILURE;
 }
 TEST_CASE("Creating music.", "[CreateMusic]")
@@ -89,9 +89,9 @@ TEST_CASE("Playing test sound", "[PlaySound]")
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
 #ifdef __APPLE__
     sleep(2);
-#else ifdef WIN32
+#elseif WIN32
 	Sleep(2000);
-#endif	
+#endif
 
     checkReturned = FAILURE;
 }
@@ -203,7 +203,7 @@ TEST_CASE("Pausing test music", "[Pause]")
 	checkReturned = FAILURE;
 #ifdef __APPLE__
     sleep(5);
-#else ifdef WIN32
+#elseif WIN32
 	Sleep(5000);
 #endif
 }
@@ -220,7 +220,7 @@ TEST_CASE("Resuming test music", "[Resume]")
 	checkReturned = FAILURE;
 #ifdef __APPLE__
         sleep(10);
-#else ifdef WIN32
+#elseif WIN32
 	Sleep(10000);
 #endif
 }
@@ -237,7 +237,7 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 	checkReturned = FAILURE;
 #ifdef __APPLE__
         sleep(5);
-#else ifdef WIN32
+#elseif WIN32
 	Sleep(5000);
 #endif
 }
@@ -263,7 +263,7 @@ TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->PauseAll()));
 	checkReturned = FAILURE;
- 
+
 }
 TEST_CASE("Setting master channel volumes", "[SetMasterChannelVolumes]")
 {

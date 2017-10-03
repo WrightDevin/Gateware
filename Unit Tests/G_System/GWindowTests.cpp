@@ -21,7 +21,7 @@ TEST_CASE("Create GWindow object.", "[CreateGWindow]")
 	// Fail cases
 	CHECK(CreateGWindow(100, 100, 500, 500, WINDOWEDBORDERED, nullptr) == INVALID_ARGUMENT);
 
-	
+
 	// Pass cases
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 800, 500, WINDOWEDBORDERED, &appWindow)));
 	REQUIRE(G_SUCCESS(CreateGWindow(1100, 1100, 200, 200, WINDOWEDBORDERED, &unopenedWindow)));
@@ -105,10 +105,10 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	unsigned int unopenedWindowWidth = 0;
 	unsigned int unopenedWindowPosX = 0;
 	unsigned int unopenedWindowPosY = 0;
-	std::atomic<HWND>* appWindowHandle = new std::atomic<HWND>();
-	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
+//	std::atomic<HWND>* appWindowHandle = new std::atomic<HWND>();
+//	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
 
-	unsigned int windowHandleSize = sizeof(HWND);
+//	unsigned int windowHandleSize = sizeof(HWND);
 
 	appWindow->IsFullscreen(appWindowIsFullscreen);
 
@@ -118,23 +118,23 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(unopenedWindow->GetWidth(unopenedWindowWidth)));
 	CHECK(G_FAIL(unopenedWindow->GetX(unopenedWindowPosX)));
 	CHECK(G_FAIL(unopenedWindow->GetY(unopenedWindowPosY)));
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
+	//CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
-	
+
 	// Resize windows for pass tests
 	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
 	appWindow->IsFullscreen(appWindowIsFullscreen);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->GetHeight(appWindowHeight)));
-	REQUIRE(G_SUCCESS(appWindow->GetWidth(appWindowWidth)));  
-	REQUIRE(G_SUCCESS(appWindow->GetX(appWindowPosX)));	
-	REQUIRE(G_SUCCESS(appWindow->GetY(appWindowPosY)));	
+	REQUIRE(G_SUCCESS(appWindow->GetWidth(appWindowWidth)));
+	REQUIRE(G_SUCCESS(appWindow->GetX(appWindowPosX)));
+	REQUIRE(G_SUCCESS(appWindow->GetY(appWindowPosY)));
 	REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
+//	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
 
-	delete appWindowHandle;
-	delete unopenedWindowHandle;
+	//delete appWindowHandle;
+	//delete unopenedWindowHandle;
 
 }
 
@@ -160,7 +160,7 @@ TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], 
 	REQUIRE(G_SUCCESS(appWindow->GetClientHeight(appWindowClientHeight)));
 	REQUIRE(G_SUCCESS(appWindow->GetClientTopLeft(appWindowClientPosX, appWindowClientPosY)));
 }
-
+#ifdef _WIN32
 TEST_CASE("Sending events to listeners.", "")
 {
 	int windowTestValue = 0;
@@ -171,17 +171,17 @@ TEST_CASE("Sending events to listeners.", "")
 	windowListener->GetWindowTestValue(windowTestValue);
 	CHECK(windowTestValue == 1);
 
-#ifdef _WIN32
+
 	// Tell window to maximize
 	(HWND)appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
-#endif
+
 
 	// Pass case
 	windowListener->GetWindowTestValue(windowTestValue);
 	REQUIRE(windowTestValue == 1);
 }
-
+#endif
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 {
 	unsigned int refCount = 0;

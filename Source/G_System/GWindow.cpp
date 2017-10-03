@@ -126,7 +126,7 @@ public:
 	GReturn DeregisterListener(GListener* _removeListener);
 
 	GReturn	GetWidth(unsigned int& _outWidth);
-	
+
 	GReturn	GetHeight(unsigned int& _outHeight);
 
 	GReturn	GetClientWidth(unsigned int& _outClientWidth);
@@ -1185,7 +1185,7 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 	RECT width;
 	GetClientRect(wndHandle, &width);
 	_outClientWidth = width.right - width.left;
-	return SUCCESS; 
+	return SUCCESS;
 
 #elif __linux__
 	if (!display)
@@ -1230,7 +1230,7 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 
 #elif __linux__
 	if (!display)
-		return -1;
+		return FAILURE;
 
 	Window root;
 	int x, y;
@@ -1360,13 +1360,13 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 #elif __APPLE__
 	if (!window)
 		return FAILURE;
-    
+
     NSRect rect = window.frame;
     NSRect contentRect = [window contentRectForFrameRect:rect];
-    
+
     _outX = contentRect.origin.x;
     _outY = contentRect.origin.y;
-    
+
 #endif
 	return SUCCESS;
 }
@@ -1411,7 +1411,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	}
 
 	_outWindowHandle = (__bridge void*)window; // should test this
-	
+
 	return SUCCESS;
 #endif
 }
@@ -1465,7 +1465,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 		_outIsFullscreen = TRUE;
 	else
 		_outIsFullscreen = FALSE;
-	
+
 	return SUCCESS;
 
 #endif
