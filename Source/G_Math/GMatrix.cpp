@@ -8,12 +8,11 @@
 //The using statements for specifically what we are using.
 using namespace GW;
 using namespace MATH;
-using namespace std;
 
 class GMatirxCpp :public GMatrix
 {
 	//Reference counter.
-	atomic<unsigned int> refCount;
+	std::atomic<unsigned int> refCount;
 
 public:
 	GMatirxCpp();

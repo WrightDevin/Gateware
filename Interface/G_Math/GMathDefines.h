@@ -6,7 +6,7 @@ File: GMathDefine.h
 Purpose: A Gateware interface that handles math sturcts, such as vector, quaternion and matrix.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 9/29/2016
+Last Modified: 10/3/2016
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
@@ -14,6 +14,7 @@ License: MIT
 
 //! GMathDefines inherits directly from GMultiThreaded.
 #include "../G_Core/GMultiThreaded.h"
+#include <cmath>
 
 #define G_PI						3.14159265358979323846
 #define G_PI_R						0.318309886183790671538
@@ -21,8 +22,8 @@ License: MIT
 #define G_EPSILON_F					1.192092896e-07F 
 #define G_EPSILON_D					2.2204460492503131e-016
 
-#define G_ABS_F(num)					( ( (num) > 0 ) ?  (num) : std::fabs(num) )		//RETURN THE ABSOLUTE VALUE OF THE INPUT NUMBER
-#define G_ABS_D(num)					( ( (num) > 0 ) ?  (num) : std::abs(num) )		//RETURN THE ABSOLUTE VALUE OF THE INPUT NUMBER
+#define G_ABS_F(num)					( ( (num) > 0 ) ?  (num) : fabs(num) )		//RETURN THE ABSOLUTE VALUE OF THE INPUT NUMBER
+#define G_ABS_D(num)					( ( (num) > 0 ) ?  (num) : abs(num) )		//RETURN THE ABSOLUTE VALUE OF THE INPUT NUMBER
 #define G_LARGER(A, B)				( ( (A) > (B) ) ?  (A) : (B) )			//RETURN THE LARGER INPUT NUMBER
 #define G_SMALLER(A, B)				( ( (A) < (B) ) ?  (A) : (B) )			//RETURN THE SMALLER INPUT NUMBER
 
@@ -61,12 +62,12 @@ namespace GW
 	namespace MATH
 	{
 
-		//! Unique Identifier for this interface. {733D6B86-7DE3-4190-86AB-36348A958652}
+		//! Unique Identifier for this interface. {1574EAFF-293F-4DE0-A85D-2769FC0A2BEC}
 		static const GUUIID GMathDefinesUUIID =
 		{
-			0x733d6b86, 0x7de3, 0x4190,{ 0x86, 0xab, 0x36, 0x34, 0x8a, 0x95, 0x86, 0x52 }
+			0x1574eaff, 0x293f, 0x4de0,{ 0xa8, 0x5d, 0x27, 0x69, 0xfc, 0xa, 0x2b, 0xec }
 		};
-
+		
 		// Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
 
