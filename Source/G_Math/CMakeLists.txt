@@ -1,12 +1,12 @@
 ﻿project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
-add_library (GMatrix GMatrix.cpp ${HEADER_FILES} )
-add_library (GQuaternion GQuaternion.cpp ${HEADER_FILES} )
+add_library (GMatrix GMatrix.cpp ${HEADER_FILES})
+add_library (GQuaternion GQuaternion.cpp ${HEADER_FILES})
 add_library (GVector GVector.cpp ${HEADER_FILES} )
 
 
 add_library (GMatrix_DLL SHARED GMatrix.cpp ${HEADER_FILES} )
-add_library (GQuaternion_DLL SHARED GQuaternion.cpp ${HEADER_FILES})
+add_library (GQuaternion_DLL SHARED GQuaternion.cpp ${HEADER_FILES} ) 
 add_library (GVector_DLL SHARED GVector.cpp ${HEADER_FILES} )
 
 #################################################################################APPLE ONLY
@@ -57,7 +57,10 @@ target_link_libraries(GQuaternion_DLL "-framework cocoa")
 
 
 #################################################################################EVERYTHING ELSE
+else(APPLE)
 
+message(“Adding .cpp files”)
+
 endif()
 #################################################################################REMEBER TO ADD YOUR FILE NAMES INTO THE TWO FILE BLOCKS BELOW
 
