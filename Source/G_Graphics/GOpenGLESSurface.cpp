@@ -24,13 +24,13 @@ class GOpenGLES : public GOpenGLESSurface
 private:
 	// declare all necessary members (platform specific)
 	GWindow*	gWnd;
-	HDC			hdc;
-	HGLRC		OGLcontext;
 	float		width;
 	float		height;
 	float		aspectRatio;
 
 #ifdef _WIN32
+	HDC			hdc;
+	HGLRC		OGLcontext;
 #elif __linux__
 #elif __APPLE__
 #endif

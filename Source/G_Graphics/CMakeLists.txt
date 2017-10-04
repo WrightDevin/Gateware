@@ -1,11 +1,14 @@
 ﻿project(LibraryProject)
+
+if(WIN32)
+
 add_library (GDirectX11Surface GDirectX11Surface.cpp ${HEADER_FILES})
-add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
-
 add_library (GDirectX11Surface_DLL SHARED GDirectX11Surface.cpp ${HEADER_FILES})
+
+endif(WIN32)
+
+add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
 add_library (GOpenGLESSurface_DLL SHARED GOpenGLESSurface.cpp ${HEADER_FILES})
-
-
 
 if(APPLE)
 
