@@ -1397,7 +1397,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	linuxWnd.window = (void*)&window;
 	linuxWnd.display = (void*)display;
 
-	memcpy_s(_outWindowHandle, _handleSize, &linuxWnd , _handleSize );
+	memcpy(_outWindowHandle, &linuxWnd , _handleSize );
 	return SUCCESS;
 #elif __APPLE__
 	if (!(__bridge void*)window)
