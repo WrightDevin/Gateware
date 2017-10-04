@@ -691,7 +691,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         [window setStyleMask:styleMask];
         //[window setFrame:rect display:YES];
 
-        if(!IsFullscreen())
+		bool fullscreen;
+		IsFullscreen(fullscreen);
+        if(fullscreen == false)
             [window toggleFullScreen:nil];
 
         dispatch_sync(dispatch_get_main_queue(), ^ {
@@ -766,7 +768,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         [window setStyleMask:styleMask];
         [window setFrame:rect display:YES];
 
-        if(!IsFullscreen())
+		bool fullscreen;
+		isFullscreen(fullscreen);
+		if (fullscreen == false)
             [window toggleFullScreen:nil];
 
         dispatch_sync(dispatch_get_main_queue(), ^ {
@@ -805,7 +809,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         }
 
 #elif __APPLE__
-        if(IsFullscreen())
+		bool fullscreen;
+		IsFullscreen(fullscreen);
+		if (fullscreen == false)
         {
             ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
         }
