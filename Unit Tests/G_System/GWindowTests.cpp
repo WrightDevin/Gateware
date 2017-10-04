@@ -112,7 +112,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	unsigned int windowHandleSize = sizeof(HWND);
 #elif __linux__
 	LINUX_WINDOW* l_appWindow;
-	LINUX_WINDOW* l_unopenedWindow*;
+	LINUX_WINDOW* l_unopenedWindow;
 	unsigned int l_windowSize = sizeof(LINUX_WINDOW);
 #elif __APPLE__
 	NSWindow* m_appWindow;
@@ -215,11 +215,11 @@ TEST_CASE("Sending events to listeners.", "")
 	(HWND)appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
 #elif __linux__
-	(LINUX_WINDOW)appWindow->GetWindowHandle(&l_appWindow, l_windowSize);
-	ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
+	appWindow->GetWindowHandle(&l_appWindow, l_windowSize);
+	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 #elif __APPLE__
-	(NSWindow)appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
-	ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
+	appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
+	//ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
 	// Pass case
