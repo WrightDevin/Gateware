@@ -27,20 +27,6 @@ set(COCOA_LIBRARY Cocoa)
 
 message(“Adding .mm files”)
 
-add_library(GMatrix GMatrix.mm)
-
-add_library(GVector GVector.mm)
-
-add_library(GQuaternion GQuaternion.mm) 
-
-
-add_library(GMatrix_DLL SHARED GMatrix.mm)
-
-add_library(GVector_DLL SHARED GVector.mm)
-
-add_library(GQuaternion_DLL SHARED GQuaternion.mm)
-
-
 
 target_link_libraries(GMatrix "-framework ${COCOA_LIBRARY}")
 
