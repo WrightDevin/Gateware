@@ -692,7 +692,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         //[window setFrame:rect display:YES];
 
 		bool fullscreen;
-		IsFullscreen(fullscreen);
+		IsFullscreen(&fullscreen);
         if(fullscreen == false)
             [window toggleFullScreen:nil];
 
@@ -769,7 +769,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         [window setFrame:rect display:YES];
 
 		bool fullscreen;
-		isFullscreen(fullscreen);
+		isFullscreen(&fullscreen);
 		if (fullscreen == false)
             [window toggleFullScreen:nil];
 
@@ -810,7 +810,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 #elif __APPLE__
 		bool fullscreen;
-		IsFullscreen(fullscreen);
+		IsFullscreen(&fullscreen);
 		if (fullscreen == false)
         {
             ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
