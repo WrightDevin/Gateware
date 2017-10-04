@@ -1,5 +1,5 @@
 #include "GWindowTestListener.h"
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 #include <cstring>
 
 //Used to test the broadcasting of GWindow
