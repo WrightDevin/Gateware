@@ -19,6 +19,6 @@ cd Xcode
 #cmake -DCMAKE_TOOLCHAIN_FILE="../../gateware.git.0/iOS-CMake/toolchain/iOS.cmake"
 IOS="True"
 export PATH=$PATH:/Applications/CMake.app/Contents/bin
-cmake ./../../gateware.git.0 -DCMAKE_TOOLCHAIN_FILE=iOS-CMake/toolchain/iOS.cmake -DIOS=True -G "Xcode"
+cmake ./../../gateware.git.0 -DCMAKE_TOOLCHAIN_FILE=iOS-toolchain/toolchain/iOS.cmake -DIOS=True -G "Xcode"
 #cmake ./../../gateware.git.0 -DIOS=True -G "Xcode"
 #-DIOS_PLATFORM=OS -G "Xcode"
