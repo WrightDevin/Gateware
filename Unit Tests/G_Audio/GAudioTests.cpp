@@ -1,4 +1,9 @@
 #include "../G_System/Common.h"
+#ifdef __APPLE__
+    sleep(2);
+#else
+#include <unistd.h>
+#endif
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -81,16 +86,19 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 	// CHECK(testSound->PlaySound() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
-#ifdef __APPLE__
-    sleep(2);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(20);
 #endif
+
     REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
     REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
-#ifdef __APPLE__
-    sleep(2);
-#elseif WIN32
-	Sleep(2000);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
 
     checkReturned = FAILURE;
@@ -186,9 +194,12 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StreamStart()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StreamStart()));
 	checkReturned = FAILURE;
-#ifdef __APPLE__
-      sleep(20);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 }
 TEST_CASE("Pausing test music", "[Pause]")
 {
@@ -201,11 +212,12 @@ TEST_CASE("Pausing test music", "[Pause]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
 	checkReturned = FAILURE;
-#ifdef __APPLE__
-    sleep(5);
-#elseif WIN32
-	Sleep(5000);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 }
 TEST_CASE("Resuming test music", "[Resume]")
 {
@@ -218,11 +230,12 @@ TEST_CASE("Resuming test music", "[Resume]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
 	checkReturned = FAILURE;
-#ifdef __APPLE__
-        sleep(10);
-#elseif WIN32
-	Sleep(10000);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 }
 
 TEST_CASE("Stop test music", "[Stopmusic]")
@@ -235,11 +248,12 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
 	checkReturned = FAILURE;
-#ifdef __APPLE__
-        sleep(5);
-#elseif WIN32
-	Sleep(5000);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 }
 //TEST_CASE("Editing test music PCM", "[EditPCM]")
 //{
@@ -257,9 +271,12 @@ TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 	testMusic->StreamStart();
     testMusic2->StreamStart();
 	testSound->Play();
-#ifdef __APPLE__
-       sleep(5);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->PauseAll()));
 	checkReturned = FAILURE;
@@ -282,9 +299,12 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->ResumeAll()));
 	checkReturned = FAILURE;
-#ifdef __APPLE
-    sleep(100);
+#ifdef WIN32
+  	Sleep(2000);
+#else
+ sleep(2);
 #endif
+
 }
 //TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 //{
