@@ -1,4 +1,4 @@
-﻿#add_subdirectory(G_System)
+#add_subdirectory(G_System)
 #add_subdirectory(G_Audio)
 #add_subdirectory(G_Graphics)
 message(“Unit Test Generation”)
@@ -26,6 +26,7 @@ endif(X11_FOUND)
 
 endif(UNIX AND NOT APPLE)
 
+
 if(NOT APPLE)
 set(UnitTestDependecies
 Common.cpp Common.h
@@ -38,7 +39,6 @@ G_System/GBufferedInputTestListener.cpp
 G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
 G_System/GWindowTestListener.h
-G_Graphics/GDirectX11SurfaceTest.cpp
 G_Graphics/GOpenGLESSurfaceTest.cpp
  )
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
@@ -62,8 +62,12 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
 
 endif()
+
+if(WIN32)
+set(UnitTestDependecies G_Graphics/GDirectX11SurfaceTest.cpp)
+endif(WIN32)
 
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})

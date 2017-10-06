@@ -769,7 +769,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		[window setFrame : rect display : YES];
 
 		bool fullscreen;
-		isFullscreen(fullscreen);
+		IsFullscreen(fullscreen);
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
 

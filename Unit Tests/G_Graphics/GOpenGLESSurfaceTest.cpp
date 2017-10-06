@@ -14,8 +14,12 @@ using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
 GOpenGLESSurface*	oglSurface = nullptr;
+#ifdef _WIN32
 HDC					hdc;
 HGLRC*				context;
+#elif __linux__
+#elif __APPLE__
+#endif
 
 //TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 //{
