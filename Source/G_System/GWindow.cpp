@@ -1236,7 +1236,7 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 
 #elif __linux__
 	if (!display)
-		return -1;
+		return FAILURE;
 
 	Window root;
 	int x, y;

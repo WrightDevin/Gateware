@@ -42,7 +42,7 @@ G_System/GWindowTestListener.h
 G_Graphics/GOpenGLESSurfaceTest.cpp
  )
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
 
 elseif(APPLE)
 #Find_library(COCOA_LIB cocoa)
@@ -68,6 +68,7 @@ endif()
 
 if(WIN32)
 set(UnitTestDependecies G_Graphics/GDirectX11SurfaceTest.cpp)
+target_link_libraries(UnitTests GDirectX11Surface ${CMAKE_THREAD_LIBS_INIT})
 endif(WIN32)
 
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})
