@@ -1396,7 +1396,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	{
 		return FAILURE;
 	}
-	if (_outWindowHandle == nullptr || _handleSize != sizeof(display))
+	if (_outWindowHandle == nullptr || _handleSize != sizeof(LINUX_WINDOW))
 	{
 		return INVALID_ARGUMENT;
 	}
@@ -1459,6 +1459,12 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	Atom vProp = ((Atom *)prop_return)[0];
 	Atom hProp = ((Atom *)prop_return)[1];
 
+    if(result != Success)
+    {
+        char temp[1024];
+        XGetErrorText(display, result, temp, 1024);
+        return FAILURE;
+    }
 	if (hProp == prop_hMax && vProp == prop_vMax)
 		_outIsFullscreen = true;
 	else
