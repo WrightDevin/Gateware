@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 #include "GBufferedInputTestListener.h"
 
 #include <thread>
@@ -14,7 +14,7 @@
 GW::SYSTEM::GBufferedInput* bufferedInput = nullptr; //Our buffered input object
 GW::CORE::GListener* listener = nullptr; //Our listener object
 
-/*
+#ifndef __linux__ 
 TEST_CASE("CreateGBufferedInput Tests", "[CreateGBufferedInput]")
 {
 	//Check that these cases fail appropriately
@@ -134,4 +134,4 @@ TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")
 	listener->DecrementCount();
 	bufferedInput->DecrementCount();
 }
-*/
+#endif

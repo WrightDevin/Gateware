@@ -1,5 +1,5 @@
 
-#include "Common.h"
+#include "../Unit Tests/Common.h"
 
 //Includes needed for this test suite
 #include <cstring>
@@ -219,10 +219,10 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
 #elif __linux__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
-#endif 
+#endif
 
 
 		//Fail cases
@@ -240,7 +240,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 
 			//Pass cases
 			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
-			
+
 			Checklist[0] = ".DS_Store";
 			Checklist[1] = ".gitignore";
 			Checklist[2] = "CMakeLists.txt";
