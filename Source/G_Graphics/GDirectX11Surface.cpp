@@ -1,5 +1,8 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GDirectX11Surface.h"
+#include "../../Source/G_System/GUtility.h"
+
+
 
 #ifdef _WIN32
 
@@ -22,6 +25,8 @@ class GDirectX11 : public GDirectX11Surface
 {
 private:
 	// declare all necessary members (platform specific)
+	unsigned int refCount;
+
 	GWindow*					gWnd;
 	ID3D11Device*				device;
 	ID3D11DeviceContext*		context;
@@ -50,8 +55,6 @@ public:
 	GReturn GetRenderTarget(void** _outRenderTarget);
 	float	GetAspectRatio();
 
-	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
-	GReturn DeregisterListener(GListener* _removeListener);
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
@@ -144,26 +147,6 @@ GReturn GDirectX11::Initialize()
 	return SUCCESS;
 }
 
-GReturn GDirectX11::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
-{
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
-
-	return FAILURE;
-}
-
-GReturn GDirectX11::DeregisterListener(GListener* _removeListener)
-{
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
-
-	return FAILURE;
-}
-
 GReturn GDirectX11::GetDevice(void** _outDevice)
 {
 #ifdef _WIN32
@@ -217,32 +200,32 @@ float GDirectX11::GetAspectRatio()
 
 GReturn GDirectX11::GetCount(unsigned int & _outCount)
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	_outCount = refCount;
 
 	return FAILURE;
 }
 
 GReturn GDirectX11::IncrementCount()
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	if (refCount == G_UINT_MAX)
+		return FAILURE;
 
-	return FAILURE;
+	++refCount;
+
+	return SUCCESS;
 }
 
 GReturn GDirectX11::DecrementCount()
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	if (refCount == 0)
+	{
+		delete this;
+		return FAILURE;
+	}
 
-	return FAILURE;
+	--refCount;
+
+	return SUCCESS;
 }
 
 GReturn GDirectX11::RequestInterface(const GUUIID & _interfaceID, void ** _outInterface)
