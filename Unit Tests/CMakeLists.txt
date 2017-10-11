@@ -1,5 +1,5 @@
 ﻿#add_subdirectory(G_System)
-
+#add_subdirectory(G_Math)
 message(“Unit Test Generation”)
 
 if(UNIX AND NOT APPLE)
