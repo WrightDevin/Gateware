@@ -1,4 +1,4 @@
-#include "../G_System/Common.h"
+#include "../Common.h"
 
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE

@@ -1,4 +1,4 @@
-#include "../G_System/Common.h"
+#include "../Common.h"
 
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
@@ -599,7 +599,7 @@ TEST_CASE("Rotate a specified matrix around the x-axis.", "[RotationXF], [Rotati
 
 	SECTION("Float matrix rotation.", "[RotationXF]")
 	{
-		CHECK(G_SUCCESS(MatrixC->RotationXF(mF, G_PI/2.0f, resultF)));
+		CHECK(G_SUCCESS(MatrixC->RotationXF(mF, (float)G_PI/2.0f, resultF)));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 1.0f));
@@ -650,7 +650,7 @@ TEST_CASE("Rotate a specified matrix around the y-axis.", "[RotationYF], [Rotati
 
 	SECTION("Float matrix rotation.", "[RotationYF]")
 	{
-		CHECK(G_SUCCESS(MatrixC->RotationYF(mF, G_PI / 2.0f, resultF)));
+		CHECK(G_SUCCESS(MatrixC->RotationYF(mF, (float)G_PI / 2.0f, resultF)));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], -2.0f));
@@ -701,7 +701,7 @@ TEST_CASE("Rotate a specified matrix around the z-axis.", "[RotationZF], [Rotati
 
 	SECTION("Float matrix rotation.", "[RotationZF]")
 	{
-		CHECK(G_SUCCESS(MatrixC->RotationZF(mF, G_PI / 2.0f, resultF)));
+		CHECK(G_SUCCESS(MatrixC->RotationZF(mF, (float)G_PI / 2.0f, resultF)));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 0.0f));
