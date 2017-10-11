@@ -46,8 +46,7 @@ G_Math/GVectorTest.cpp
 G_Math/GQuaternionTest.cpp
 )
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface GMatrix GVector GQuaternion${CMAKE_THREAD_LIBS_INIT})
 
 elseif(APPLE)
 #Find_library(COCOA_LIB cocoa)
@@ -67,8 +66,7 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif()
 
