@@ -811,7 +811,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 #elif __APPLE__
 		bool fullscreen;
 		IsFullscreen(fullscreen);
-		if (fullscreen == false)
+		if (fullscreen == true)
 		{
 			ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
 		}
