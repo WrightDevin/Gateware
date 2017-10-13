@@ -1,7 +1,7 @@
 #include "../G_System/Common.h"
 #ifdef __APPLE__
     sleep(2);
-#else
+#elif __linux__
 #include <unistd.h>
 #endif
 ///=============================================================================
@@ -176,16 +176,16 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 
     REQUIRE(testMusic != nullptr);
      REQUIRE(testMusic2 != nullptr);
-	float atestVolume[2] = { 1.0f ,0.0f };
+	float atestVolume[4] = { 1.0f ,0.0f, 1.0f, 0.0f };
 	float * testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 2)));
-	float atestVolume2[2] = { 0.0f ,1.0f };
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 4)));
+	float atestVolume2[4] = { 0.0f ,1.0f, 0.0f, 1.0f };
 	float * testvolumes2 = atestVolume2;
-	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes2, 2)));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes2, 4)));
 	checkReturned = FAILURE;
 }
 TEST_CASE("Playing test music", "[Playmusic]")
@@ -197,7 +197,7 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	// Pass cases
   REQUIRE(G_SUCCESS(checkReturned = testMusic2->StreamStart()));
 
-	sleep(2);
+	//sleep(2);
   	REQUIRE(G_SUCCESS(checkReturned = testMusic->StreamStart()));
 #ifdef WIN32
   	Sleep(2000);
