@@ -30,7 +30,7 @@
 #include <../../gateware.git.0/Interface/G_Math/GVector.h>
 #include <../../gateware.git.0/Interface/G_Math/GMatrix.h>
 #include <../../gateware.git.0/Interface/G_Math/GQuaternion.h>
-#include <../../gateware.git.0/Interface/G_Math/GMathDefines.h>
+
 #endif
 
 //TODO: Add your library headers
