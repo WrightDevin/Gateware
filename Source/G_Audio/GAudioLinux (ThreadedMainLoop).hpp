@@ -2,25 +2,7 @@
 #include "../DLL_Export_Symbols.h"
 
 #include "../../Interface/G_Audio/GAudio.h"
-/*
-PA_CHANNEL_POSITION_MONO
-PA_CHANNEL_POSITION_FRONT_LEFT
 
-Apple, Dolby call this 'Left'.
-PA_CHANNEL_POSITION_FRONT_RIGHT
-
-Apple, Dolby call this 'Right'.
-PA_CHANNEL_POSITION_FRONT_CENTER
-
-Apple, Dolby call this 'Center'.
-PA_CHANNEL_POSITION_REAR_CENTER
-
-Microsoft calls this 'Back Center', Apple calls this 'Center Surround', Dolby calls this 'Surround Rear Center'.
-PA_CHANNEL_POSITION_REAR_LEFT
-
-Microsoft calls this 'Back Left', Apple calls this 'Left Surround' (!), Dolby calls this 'Surround Rear Left'.
-PA_CHANNEL_POSITION_REAR_RIGHT
-*/
 using namespace GW;
 using namespace AUDIO;
 #include <iostream>
@@ -28,15 +10,11 @@ using namespace AUDIO;
 #include <vector>
 #include <thread>
 #include <mutex>
-#include <atomic>
-#include <unistd.h>
-#include <functional>
+
 #include <string.h>
 #include <pulse/mainloop.h>
-#include <pulse/mainloop-api.h>
-#include <pulse/channelmap.h>
+#include <pulse/thread-mainloop.h>
 #include <pulse/context.h>
-#include <pulse/volume.h>
 #include <pulse/stream.h>
 #include <pulse/error.h>
 #include <pulse/scache.h>
@@ -71,19 +49,15 @@ struct WAVE_FILE
     PCM_BUFFER myBuffer;
     bool isSigned = false;
 };
-enum TJState
-{
-    Wait = 0,
-     Prepare,
-     Poll,
-    Dispatch
-};
+
 struct TJCALLBACK
 {
-int didFinish = -1;
+volatile int didFinish = -1;
+pa_threaded_mainloop * myMainLoop = nullptr;
 void(*streamOperationSucceed)(pa_stream*,int,void*);
 void(*contextOperationSucceed)(pa_context*,int,void*);
 pa_stream_success_cb_t cbSucceed;
+pa_stream_request_cb_t streamReaquestSucceed;
 pa_context_success_cb_t cbContextSucceed;
 pa_operation * myOperation = nullptr;
 };
@@ -98,6 +72,15 @@ void FinishedDrain(pa_stream *s, int success, void *userdata)
 TJCALLBACK * theCallback = reinterpret_cast<TJCALLBACK*>(userdata);
 theCallback->didFinish =1;
 
+}
+void FinishedWrite(pa_stream *s, int success, void *userdata)
+{
+
+TJCALLBACK * theCallback = reinterpret_cast<TJCALLBACK*>(userdata);
+pa_threaded_mainloop_lock(theCallback->myMainLoop);
+theCallback->didFinish =1;
+ pa_threaded_mainloop_signal(theCallback->myMainLoop,0);
+ pa_threaded_mainloop_unlock(theCallback->myMainLoop);
 }
 int LoadWavFormatOnly(const char * path, PCM_FORMAT_INFO & returnedInfo, unsigned long & _fileSize)
 {
@@ -322,7 +305,7 @@ return result;
 
 }
 
-using std::atomic;
+
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
 
@@ -334,21 +317,14 @@ public:
     LinuxAppAudio * audio = nullptr;
     pa_channel_map * myMap = nullptr;
     pa_stream * myStream = nullptr;
- int quitVal = 0;
-
-    pa_mainloop * myMainLoop;
-     pa_context * myContext = nullptr;
-
-       std::thread* loopThread = nullptr;
     std::thread* streamThread = nullptr;
-     atomic<TJState> myState;
     char * streamName = "Sound";
     pa_cvolume vol;
     pa_sample_format myPulseFormat;
     WAVE_FILE myFile;
     bool loops = false;
-    atomic<bool> isPlaying;
-    atomic<bool> isPaused;
+    bool isPlaying = false;
+    bool isPaused = false;
     float volume = -1.0f;
     bool stopFlag = false;
     GReturn Init();
@@ -370,26 +346,20 @@ class LinuxAppMusic : public GMusic
 {
 public:
     int index = -1;
-     atomic<TJState> myState;
     char * myFilePath;
     LinuxAppAudio * audio = nullptr;
     pa_channel_map * myMap = nullptr;
     pa_stream * myStream = nullptr;
-    std::thread* loopThread = nullptr;
     std::thread* streamThread = nullptr;
     char * streamName = "Sound";
     unsigned long fileSize = 0;
     pa_sample_format myPulseFormat;
 
-    pa_mainloop * myMainLoop;
-     pa_context * myContext = nullptr;
-    int quitVal = 0;
-
     PCM_FORMAT_INFO myPCMFormat;
     PCM_BUFFER myBuffers[MAX_BUFFER_COUNT];
     bool loops = false;
-    atomic<bool> isPlaying;
-    atomic<bool> isPaused;
+    bool isPlaying = false;
+    bool isPaused = false;
     float volume = -1.0f;
     bool stopFlag = false;
     GReturn Init();
@@ -418,10 +388,10 @@ public:
     std::vector<LinuxAppMusic *> activeMusic;
     std::thread* streamThread = nullptr;
    // pa_mainloop * myMainLoop = nullptr;
-    //pa_context * myContext = nullptr;
-    atomic<TJState> myState; //= TJState.Wait;
-   // atomic<int> request;
-    atomic<bool> isIterating;
+   pa_threaded_mainloop * myThreadedMainLoop = nullptr;
+    pa_context * myContext = nullptr;
+    int request = 0;
+    bool isIterating = false;
     float maxVolume = 1;
     int maxChannels = 0;
     int quitVal = 0;
@@ -433,87 +403,18 @@ public:
     GReturn PauseAll();
     GReturn ResumeAll();
     GReturn StopAll();
-   // void Iterate();
+    void Iterate();
     ~LinuxAppAudio();
 
 };
-void RunMainLoop(pa_mainloop * myMainLoop)
-{
-    if(myMainLoop == nullptr)
-        return;
 
-    TJState myState = TJState::Wait;
-
-    int result = 0;
-    while(myMainLoop != nullptr)
-    {
-        //if(stopVal == 0)
-        {
-            switch(myState)
-            {
-        case TJState::Wait:
-
-            myState = TJState::Prepare;
-             usleep(100);
-                break;
-
-            case TJState::Prepare:
-                if(result >=0)
-                {
-                  result = pa_mainloop_prepare(myMainLoop, 0);
-                    if(result >=0)
-                    {
-                         myState = TJState::Poll;
-                            usleep(100);
-
-                    }
-
-                }
-
-                break;
-
-            case TJState::Poll:
-                if(result >= 0)
-                {
-            result = pa_mainloop_poll(myMainLoop);
-              if(result >=0)
-              {
-               myState = TJState::Dispatch;
-                  usleep(100);
-              }
-
-                }
-
-                break;
-
-            case TJState::Dispatch:
-            if(result >= 0)
-            {
-            result =  pa_mainloop_dispatch(myMainLoop);
-               if(result >=0)
-               {
-
-
-             myState = TJState::Wait;
-                usleep(100);
-               }
-
-            }
-
-                break;
-            }
-
-        }
-    }
-
-}
-static bool WaitForConnectionEstablished(pa_mainloop * mainLoop, pa_context * aContext, time_t timeOut)
+static bool WaitForConnectionEstablished(pa_threaded_mainloop * mainLoop, pa_context * aContext, time_t timeOut)
 {
 time_t timeLimit = time(NULL) + timeOut;
     while(timeLimit >= time (NULL))
     {
 
-   // int yo = pa_mainloop_iterate(mainLoop,0,NULL);
+    //int yo = pa_mainloop_iterate(mainLoop,0,NULL);
         if(PA_CONTEXT_READY == pa_context_get_state(aContext))
         {
         return true;
@@ -522,29 +423,6 @@ time_t timeLimit = time(NULL) + timeOut;
 
     return false;
 }
-GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myContext)
-{
-    GReturn result = FAILURE;
-    pa_mainloop * newLoop = pa_mainloop_new();
-
-    if(NULL == newLoop)
-    {
-        return result;
-    }
-    pa_context * newContext = pa_context_new(pa_mainloop_get_api(newLoop),"StartAudio");
-
-    if(NULL == newContext)
-    {
-        return result;
-    }
-    result = SUCCESS;
-        *myMainLoop = newLoop;
-        *myContext = newContext;
-
-  // streamThread = new std::thread(&LinuxAppAudio::Iterate, this);
-  return result;
-}
-
 
 //Start of GSound implementation
 GReturn LinuxAppSound::Init()
@@ -557,29 +435,7 @@ GReturn LinuxAppSound::Init()
         return result;
     if(myMap != nullptr)
         return result;
-    result = createMainLoopAndContext(&myMainLoop,&myContext);
-    if(result != SUCCESS)
-        return result;
     result = FAILURE;
-    if(myMainLoop == nullptr)
-        return result;
-    if(myContext == nullptr)
-        return result;
-
-//RunMainLoop(myMainLoop, quitVal);
-    loopThread = new std::thread(RunMainLoop, myMainLoop);
-   // pa_mainloop_run(myMainLoop,&quitVal);
-  pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
-    bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 5);
-    if(connected)
-    {
-        result = SUCCESS;
-    }
-    else
-    {
-        return result;
-    }
-     result = FAILURE;
     switch(myFile.myFormat.mBitsPerSample)
     {
     case 8:
@@ -604,12 +460,12 @@ GReturn LinuxAppSound::Init()
         return result;
 
 
-    myStream = pa_stream_new(myContext,"Sound",&mySampleSpec,nullptr);
+    myStream = pa_stream_new(audio->myContext,"Sound",&mySampleSpec,nullptr);
     if(myStream == nullptr)
         return result;
     int pcheck = pa_stream_connect_playback(myStream,NULL,NULL,(pa_stream_flags_t)0,NULL,NULL);
 
-    if(pa_stream_get_context(myStream) != myContext)
+    if(pa_stream_get_context(myStream) != audio->myContext)
     {
         return result;
     }
@@ -627,7 +483,7 @@ GReturn LinuxAppSound::SetPCMShader(const char* _data)
 GReturn LinuxAppSound::SetChannelVolumes(float * _values, int _numChannels)
 {
      GReturn result = INVALID_ARGUMENT;
-  if (_numChannels <= 0)
+    if (_numChannels <= 0)
         return result;
     if (audio == nullptr)
         return result;
@@ -635,33 +491,24 @@ GReturn LinuxAppSound::SetChannelVolumes(float * _values, int _numChannels)
     if (_values == nullptr)
         return result;
         pa_volume_t * newValues = new pa_volume_t[_numChannels];
-          for (int i = 0; i < _numChannels; i++)
-    {
-         newValues[i] = 0;
-    }
-    pa_cvolume theVolume;
+        pa_cvolume theVolume;
     theVolume.channels = _numChannels;
 
     result = FAILURE;
-
     for (int i = 0; i < _numChannels; i++)
     {
             if (_values[i] > audio->maxVolume)
             {
                 _values[i] = audio->maxVolume;
             }
-            newValues[i] =   pa_sw_volume_from_linear(_values[i]);
+            newValues[i] = _values[i];
             theVolume.values[i] = newValues[i];
     }
-
     TJCALLBACK theCallback;
     theCallback.contextOperationSucceed = FinishedContextGeneral;
     theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
-
-     uint32_t index2 = pa_stream_get_index(myStream);
-     pa_context_set_sink_input_volume(myContext,index2,&theVolume, theCallback.cbContextSucceed, &theCallback);
-
-    delete newValues;
+    uint32_t index = pa_stream_get_device_index(myStream);
+    pa_context_set_sink_input_volume(audio->myContext,index,&theVolume, theCallback.cbContextSucceed, &theCallback);
 
     result = SUCCESS;
     return result;
@@ -682,7 +529,7 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
     if (result != SUCCESS)
         return result;
     float * currentValues = new float[currentChannels];
-//    vol.values
+
 //    mySourceVoice->GetChannelVolumes(_numChannels, currentValues);
     if (currentValues == nullptr)
         return result;
@@ -704,15 +551,9 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
 
     if (didChange == true)
     {
-    float * newVals = new float[currentChannels];
-    for (int i = 0; i < _numChannels; i++)
-    {
-        newVals[i] = _values[i];
+
     }
-    SetChannelVolumes(newVals,currentChannels);
-    delete newVals;
-    }
-result = SUCCESS;
+
     return result;
 }
 GReturn LinuxAppSound::GetChannels(unsigned int & returnedChannelNum)
@@ -722,8 +563,8 @@ GReturn LinuxAppSound::GetChannels(unsigned int & returnedChannelNum)
     {
         return result;
     }
-    returnedChannelNum = myFile.myFormat.mNumChannels;
-    result = SUCCESS;
+//    returnedChannelNum = myWFM.nChannels;
+//    result = SUCCESS;
     return result;
 }
 GReturn LinuxAppSound::SetVolume(float _newVolume)
@@ -734,22 +575,13 @@ GReturn LinuxAppSound::SetVolume(float _newVolume)
     result = SUCCESS;
     if (audio == nullptr)
         return result;
-   TJCALLBACK theCallback;
-    theCallback.contextOperationSucceed = FinishedContextGeneral;
-    theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
+
+
+
     if (_newVolume > audio->maxVolume)
     {
         _newVolume = audio->maxVolume;
     }
-    unsigned int channelNum = 0;
-     pa_cvolume theVolume;
-     result = GetChannels(channelNum);
-     if(result!= SUCCESS)
-        return result;
-     theVolume.channels = channelNum;
-
-    uint32_t index2 = pa_stream_get_index(myStream);
-    pa_context_set_sink_volume_by_index(myContext,index2,&theVolume,theCallback.cbContextSucceed, &theCallback);
 
 
     return result;
@@ -757,15 +589,20 @@ GReturn LinuxAppSound::SetVolume(float _newVolume)
 GReturn LinuxAppSound::StreamSound()
 {
     GReturn theResult = SUCCESS;
-
+std::mutex myMutex;
 TJCALLBACK myCallback;
 myCallback.streamOperationSucceed = FinishedDrain;
 myCallback.cbSucceed = myCallback.streamOperationSucceed;
+
+TJCALLBACK writeCallback;
+writeCallback.streamOperationSucceed = FinishedWrite;
+writeCallback.cbSucceed = writeCallback.streamOperationSucceed;
+writeCallback.myMainLoop = audio->myThreadedMainLoop;
 const time_t t0 = time(nullptr);
 unsigned int playBackPt = 0;
  pa_stream_state_t state;
 time_t prevT = time(nullptr) -1;
-
+pa_stream_set_write_callback(myStream,writeCallback.streamReaquestSucceed,&writeCallback);
         isPlaying = true;
         isPaused = false;
         bool writeSizeWasZero = false;
@@ -773,11 +610,7 @@ time_t prevT = time(nullptr) -1;
 
         while(true)
         {
-//myMutex.lock();
-//if(audio->request >0)
-//{
-  //  continue;
-//}myMutex.unlock();
+
             if(stopFlag == true)
             {
                 pa_stream_cancel_write((myStream));
@@ -792,12 +625,13 @@ time_t prevT = time(nullptr) -1;
             {
                 prevT = time(nullptr);
             }
-
+                    pa_threaded_mainloop_lock(audio->myThreadedMainLoop);
              state =  pa_stream_get_state(myStream);
-
+                            pa_threaded_mainloop_unlock(audio->myThreadedMainLoop);
          if(PA_STREAM_READY == state)
             {
 
+                      pa_threaded_mainloop_lock(audio->myThreadedMainLoop);
                 const size_t writeableSize = pa_stream_writable_size(myStream);
                 const size_t sizeRemain = myFile.myBuffer.byteSize - playBackPt;
                 const size_t writeSize = (sizeRemain < writeableSize ? sizeRemain : writeableSize);
@@ -807,24 +641,23 @@ time_t prevT = time(nullptr) -1;
 
                     pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
                     playBackPt +=writeSize;
+                    pa_threaded_mainloop_wait(audio->myThreadedMainLoop);
 
                 }
                 else if (writeableSize > 0 &&myCallback.didFinish != 1)
                 {
                       myCallback.myOperation = pa_stream_drain(myStream,myCallback.cbSucceed,&myCallback);
-
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
+                       pa_threaded_mainloop_unlock(audio->myThreadedMainLoop);
                        break;
                 }
 
-
+          pa_threaded_mainloop_unlock(audio->myThreadedMainLoop);
             }
 
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
+if(writeCallback.didFinish == 1)
+{
+     pa_threaded_mainloop_accept(audio->myThreadedMainLoop);
+}
 
         }
         }
@@ -840,9 +673,6 @@ time_t prevT = time(nullptr) -1;
             isPaused = true;
             break;
             }
-
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
 
         }
     }
@@ -877,17 +707,13 @@ GReturn LinuxAppSound::Pause()
     TJCALLBACK myCallback;
     if(isPlaying)
     {
-        int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
-
-
-        if(value == 0)
+        pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
+        int value = pa_stream_is_corked(myStream);
+        if(value == 1)
         {
-             pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
-
-        }
             isPaused = true;
             isPlaying = false;
-
+        }
     }
     if (!isPaused)
     {
@@ -907,16 +733,13 @@ GReturn LinuxAppSound::Resume()
     TJCALLBACK myCallback;
     if(!isPlaying)
     {
+        pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
         int value = pa_stream_is_corked(myStream);
-
-
         if(value == 1)
         {
-             pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
-
-        }
-           isPaused = false;
+            isPaused = false;
             isPlaying = true;
+        }
     }
     if (isPaused)
     {
@@ -951,11 +774,8 @@ GReturn LinuxAppSound::StopSound()
 }
 LinuxAppSound::~LinuxAppSound()
 {
-pa_stream_disconnect(myStream);
-pa_stream_unref(myStream);
-pa_context_disconnect(myContext);
-pa_context_unref(myContext);
-pa_mainloop_free(myMainLoop);
+
+
 }
 //End of GSound implementation
 
@@ -970,27 +790,7 @@ GReturn result = GReturn::INVALID_ARGUMENT;
         return result;
     if(myMap != nullptr)
         return result;
-
-        result = createMainLoopAndContext(&myMainLoop,&myContext);
-    if(result != SUCCESS)
-        return result;
     result = FAILURE;
-    if(myMainLoop == nullptr)
-        return result;
-    if(myContext == nullptr)
-        return result;
-   loopThread = new std::thread(RunMainLoop, myMainLoop);
-  pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
-    bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 45);
-    if(connected)
-    {
-        result = SUCCESS;
-    }
-    else
-    {
-        return result;
-    }
-     result = FAILURE;
     switch(myPCMFormat.mBitsPerSample)
     {
     case 8:
@@ -1021,12 +821,12 @@ GReturn result = GReturn::INVALID_ARGUMENT;
  myBuffers[0].byteSize = fileSize;
  myBuffers[1].byteSize = fileSize;
  myBuffers[2].byteSize = fileSize;
-    myStream = pa_stream_new(myContext,"Music",&mySampleSpec,nullptr);
+    myStream = pa_stream_new(audio->myContext,"Music",&mySampleSpec,nullptr);
     if(myStream == nullptr)
         return result;
     int pcheck = pa_stream_connect_playback(myStream,NULL,NULL,(pa_stream_flags_t)0,NULL,NULL);
      pa_stream_state_t state =  pa_stream_get_state(myStream);
-    if(pa_stream_get_context(myStream) != myContext)
+    if(pa_stream_get_context(myStream) != audio->myContext)
     {
         return result;
     }
@@ -1051,33 +851,24 @@ GReturn LinuxAppMusic::SetChannelVolumes(float * _values, int _numChannels)
     if (_values == nullptr)
         return result;
         pa_volume_t * newValues = new pa_volume_t[_numChannels];
-          for (int i = 0; i < _numChannels; i++)
-    {
-         newValues[i] = 0;
-    }
         pa_cvolume theVolume;
     theVolume.channels = _numChannels;
 
     result = FAILURE;
-
     for (int i = 0; i < _numChannels; i++)
     {
             if (_values[i] > audio->maxVolume)
             {
                 _values[i] = audio->maxVolume;
             }
-            newValues[i] =   pa_sw_volume_from_linear(_values[i]);
+            newValues[i] = _values[i];
             theVolume.values[i] = newValues[i];
     }
-
     TJCALLBACK theCallback;
     theCallback.contextOperationSucceed = FinishedContextGeneral;
     theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
     uint32_t index = pa_stream_get_device_index(myStream);
-     uint32_t index2 = pa_stream_get_index(myStream);
-     pa_context_set_sink_input_volume(myContext,index2,&theVolume, theCallback.cbContextSucceed, &theCallback);
-
-    delete newValues;
+    pa_context_set_sink_input_volume(audio->myContext,index,&theVolume, theCallback.cbContextSucceed, &theCallback);
 
     result = SUCCESS;
     return result;
@@ -1119,17 +910,11 @@ GReturn LinuxAppMusic::CheckChannelVolumes(const float * _values, int _numChanne
 
     }
 
-   if (didChange == true)
+    if (didChange == true)
     {
-    float * newVals = new float[currentChannels];
-    for (int i = 0; i < _numChannels; i++)
-    {
-        newVals[i] = _values[i];
+
     }
-    SetChannelVolumes(newVals,currentChannels);
-    delete newVals;
-    }
-result = SUCCESS;
+
     return result;
 }
 GReturn LinuxAppMusic::GetChannels(unsigned int & returnedChannelNum)
@@ -1143,6 +928,9 @@ GReturn LinuxAppMusic::GetChannels(unsigned int & returnedChannelNum)
     {
         return result;
     }
+    result = INVALID_ARGUMENT;
+    if (returnedChannelNum <= 0)
+        return result;
 
     returnedChannelNum = myPCMFormat.mNumChannels;
     result = SUCCESS;
@@ -1158,24 +946,13 @@ GReturn LinuxAppMusic::SetVolume(float _newVolume)
     if (_newVolume < 0.0f)
         return result;
     result = FAILURE;
- TJCALLBACK theCallback;
-    theCallback.contextOperationSucceed = FinishedContextGeneral;
-    theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
     if (_newVolume > audio->maxVolume)
     {
         _newVolume = audio->maxVolume;
     }
-    unsigned int channelNum = 0;
-     pa_cvolume theVolume;
-     result = GetChannels(channelNum);
-     if(result!= SUCCESS)
-        return result;
-     theVolume.channels = channelNum;
-
-    uint32_t index2 = pa_stream_get_index(myStream);
-    pa_context_set_sink_volume_by_index(myContext,index2,&theVolume,theCallback.cbContextSucceed, &theCallback);
 
     result = SUCCESS;
+
     return result;
 }
 GReturn LinuxAppMusic::StreamMusic()
@@ -1206,7 +983,7 @@ unsigned long throwAway = 0;
    unsigned long dwRead = 0;
    unsigned int breakOut = -1;
 PCM_FORMAT_INFO throwAwayInfo;
-
+std::mutex MyMutex;
 
     // read the first 12 bytes for the file for RIFF data
    if(someWaveFile != NULL)
@@ -1299,9 +1076,9 @@ bool ready = false;
             {
                 prevT = time(nullptr);
             }
-
+            MyMutex.lock();
          state  =  pa_stream_get_state(myStream);
-
+            MyMutex.unlock();
          if(PA_STREAM_READY == state)
             {
 
@@ -1326,9 +1103,9 @@ bool ready = false;
                 {
                       myCallback.myOperation = pa_stream_drain(myStream,myCallback.cbSucceed,&myCallback);
                       //  pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
-
+                     MyMutex.lock();
+  audio->request++;
+    MyMutex.unlock();
                        break;
                 }
 
@@ -1337,7 +1114,7 @@ bool ready = false;
 
             if(PA_STREAM_FAILED == state)
             {
-                const char * err = pa_strerror(pa_context_errno(myContext));
+                const char * err = pa_strerror(pa_context_errno(audio->myContext));
                 int  i = 0;
 
 
@@ -1361,9 +1138,9 @@ bool ready = false;
     }
 
    // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
-
+  MyMutex.lock();
+  audio->request++;
+    MyMutex.unlock();
         }
 
 
@@ -1380,9 +1157,9 @@ bool ready = false;
             isPaused = true;
             break;
             }
-
-
-
+       MyMutex.lock();
+  audio->request++;
+    MyMutex.unlock();
         }
     }
     fclose(someWaveFile);
@@ -1419,23 +1196,20 @@ GReturn LinuxAppMusic::PauseStream()
     TJCALLBACK myCallback;
     if(isPlaying)
     {
-       // int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
-        //if(value == 0)
-        //{
-          //   pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
-
-//        }
+        pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
+        int value = pa_stream_is_corked(myStream);
+        if(value == 1)
+        {
             isPaused = true;
             isPlaying = false;
-                result = SUCCESS;
+        }
     }
-    else
+    if (!isPaused)
     {
-
-        result = REDUNDANT_OPERATION;
+        isPlaying = false;
+        isPaused = true;
     }
-
-
+    result = SUCCESS;
     return result;
 }
 GReturn LinuxAppMusic::ResumeStream()
@@ -1443,21 +1217,14 @@ GReturn LinuxAppMusic::ResumeStream()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-    TJCALLBACK myCallback;
+
 
     if (!isPlaying)
     {
 
-       // int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
-       // if(value == 1)
-        //{
-          //   pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
-
-        //}
-
-            isPaused = false;
-            isPlaying = true;
-               result = SUCCESS;
+        isPlaying = true;
+        isPaused = false;
+        result = SUCCESS;
     }
     else
     {
@@ -1478,8 +1245,7 @@ GReturn LinuxAppMusic::StopStream()
         return result;
     stopFlag = true;
     streamThread->join();
-    delete streamThread;
-    streamThread = nullptr;
+
     isPlaying = false;
     isPaused = true;
 
@@ -1488,16 +1254,31 @@ GReturn LinuxAppMusic::StopStream()
 }
 LinuxAppMusic::~LinuxAppMusic()
 {
-pa_stream_disconnect(myStream);
-pa_stream_unref(myStream);
-pa_context_disconnect(myContext);
-pa_context_unref(myContext);
-pa_mainloop_free(myMainLoop);
+
 }
 //End of GMusic implementation
 GReturn LinuxAppAudio::Init()
 {
-    GReturn result = SUCCESS;
+    GReturn result = FAILURE;
+   // myMainLoop = pa_mainloop_new();
+   myThreadedMainLoop = pa_threaded_mainloop_new();
+    if(NULL == myThreadedMainLoop)
+    {
+        return result;
+    }
+    myContext = pa_context_new(pa_threaded_mainloop_get_api(myThreadedMainLoop),"StartAudio");
+    if(NULL == myContext)
+    {
+        return result;
+    }
+    pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
+    pa_threaded_mainloop_start(myThreadedMainLoop);
+    bool connected = WaitForConnectionEstablished(myThreadedMainLoop, myContext, 45);
+    if(connected)
+    {
+        result = SUCCESS;
+    }
+//   streamThread = new std::thread(&LinuxAppAudio::Iterate, this);
 
    // pa_mainloop_run(myMainLoop,NULL);
     return result;
@@ -1623,11 +1404,6 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
         result = activeSounds[i]->GetChannels(theirChannels);
         if (result != SUCCESS)
         {
-          return result;
-        }
-
-        for (int k = 0; k < theirChannels; k++)
-        {
             result = activeSounds[i]->CheckChannelVolumes(_values, theirChannels);
         }
 
@@ -1649,7 +1425,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
                 result = activeMusic[i]->CheckChannelVolumes(_values, _numChannels);
         }
     }
-
+    result = FAILURE;
     return result;
 }
 GReturn LinuxAppAudio::PauseAll()
@@ -1660,71 +1436,125 @@ GReturn LinuxAppAudio::PauseAll()
         result = activeSounds[i]->Pause();
         if (result != SUCCESS)
         {
-            return result;
+
+        result = activeMusic[i]->PauseStream();
         }
     }
     for (int i = 0; i < activeMusic.size(); i++)
     {
-             result = activeMusic[i]->PauseStream();
         if (result != SUCCESS)
         {
-           return result;
+
+        result = activeMusic[i]->PauseStream();
         }
     }
-
+    result = FAILURE;
     return result;
 }
 GReturn LinuxAppAudio::StopAll()
 {
     GReturn result = FAILURE;
-    for (int i = 0; i < activeSounds.size(); i++)
+//    for (int i = 0; i < activeSounds.size(); i++)
     {
-        result = activeSounds[i]->StopSound();
+        //result = activeSounds[i]->StopSound();
         if (result != SUCCESS)
         {
             return result;
         }
     }
-    for (int i = 0; i < activeMusic.size(); i++)
+//    for (int i = 0; i < activeMusic.size(); i++)
     {
-        result = activeMusic[i]->StopStream();
+        //result = activeMusic[i]->StopStream();
         if (result != SUCCESS)
         {
             return result;
         }
     }
-
+    result = FAILURE;
     return result;
 }
 GReturn LinuxAppAudio::ResumeAll()
 {
     GReturn result = FAILURE;
-    for (int i = 0; i < activeSounds.size(); i++)
+    //for (int i = 0; i < activeSounds.size(); i++)
     {
-        result = activeSounds[i]->Resume();
+        //result = activeSounds[i]->Resume();
         if (result != SUCCESS)
         {
             return result;
         }
     }
-    for (int i = 0; i < activeMusic.size(); i++)
+    //for (int i = 0; i < activeMusic.size(); i++)
     {
-        result = activeMusic[i]->ResumeStream();
+        //result = activeMusic[i]->ResumeStream();
         if (result != SUCCESS)
         {
             return result;
         }
     }
-
+    result = FAILURE;
     return result;
 }
+void LinuxAppAudio::Iterate()
+{
+    std::mutex MyMutex;
+    int result = 0;
+    while(true)
+    {
 
+        if(request > 0)
+        {
+
+            if(!isIterating)
+            {
+                if(isIterating == true)
+                {
+                continue;
+                }
+                      if(request <= 0)
+                      {
+                          continue;
+                      }
+                      MyMutex.lock();
+//                result = pa_mainloop_prepare(myMainLoop, 0);
+                MyMutex.unlock();
+                if(result >=0)
+                {
+
+
+                isIterating = true;
+                    if(request<=0)
+                    {
+                    continue;
+                    }
+MyMutex.lock();
+//               result = pa_mainloop_poll(myMainLoop);
+               MyMutex.unlock();
+               if(result >= 0)
+               {
+                   MyMutex.lock();
+//               pa_mainloop_dispatch(myMainLoop);
+               MyMutex.unlock();
+                request--;
+                isIterating = false;
+               }
+
+                }
+        }
+
+   // MyMutex.lock();
+
+     // pa_mainloop_iterate(myMainLoop, 0, &quitVal);
+     // request--;
+       // MyMutex.unlock();
+        }
+
+    }
+
+}
 LinuxAppAudio::~LinuxAppAudio()
 {
-   // for(int i = 0; i< activeSounds.size(); i++)
-    //{
 
-    //}
 }
 
 

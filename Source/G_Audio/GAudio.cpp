@@ -12,9 +12,9 @@ using namespace GW;
 using namespace AUDIO;
 
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGAudio(GAudio** _outAudio) 
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGAudio(GAudio** _outAudio)
 {
-	return GW::AUDIO::CreateGAudio(_outAudio); 
+	return GW::AUDIO::CreateGAudio(_outAudio);
 }
 GReturn GW::AUDIO::CreateGAudio(GAudio** _outAudio)
 {
@@ -29,5 +29,5 @@ GReturn GW::AUDIO::CreateGAudio(GAudio** _outAudio)
 
 	return result;
 }
-//End of GAudio implementation 
+//End of GAudio implementation
 
