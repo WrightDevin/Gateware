@@ -9,4 +9,7 @@
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
 #import "../G_Graphics/GOpenGLESSurfaceTest.cpp"
+#import "../G_Math/GMatrixTest.cpp"
+#import "../G_Math/GQuaternionTest.cpp"
+#import "../G_Math/GVectorTest.cpp"
 #import "../Common.cpp"

@@ -17,7 +17,7 @@
 #include <G_Math/GVector.h>
 #include <G_Math/GMatrix.h>
 #include <G_Math/GQuaternion.h>
-#include <G_Math/GMathDefines.h>
+
 #else
 #include <../../gateware.git.0/Interface/G_System/GKeyDefines.h>
 #include <../../gateware.git.0/Interface/G_System/GBufferedInput.h>
