@@ -1388,7 +1388,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	{
 		return INVALID_ARGUMENT;
 	}
-	memcpy_s(&_outWindowHandle, _handleSize, &wndHandle, sizeof(wndHandle));
+	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, sizeof(wndHandle));
 	return SUCCESS;
 #elif __linux__
 	if (!display)
