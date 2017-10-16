@@ -107,8 +107,8 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	unsigned int unopenedWindowPosY = 0;
 
 #ifdef _WIN32
-	std::atomic<HWND>* appWindowHandle = new std::atomic<HWND>();
-	std::atomic<HWND>* unopenedWindowHandle = new std::atomic<HWND>();
+	HWND appWindowHandle;// = new std::atomic<HWND>();
+	HWND unopenedWindowHandle;// = new std::atomic<HWND>();
 	unsigned int windowHandleSize = sizeof(HWND);
 #elif __linux__
 	LINUX_WINDOW* l_appWindow = new LINUX_WINDOW();
@@ -130,7 +130,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(unopenedWindow->GetY(unopenedWindowPosY)));
 
 #ifdef _WIN32
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(&unopenedWindowHandle, windowHandleSize)));
 #elif __linux__
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_unopenedWindow, l_windowSize)));
 #elif __APPLE__
@@ -153,9 +153,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 
 #ifdef _WIN32
     REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
-	delete appWindowHandle;
-	delete unopenedWindowHandle;
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize)));
 #elif __linux__
     //REQUIRE(appWindowIsFullscreen == true);
     //Because ubuntu has a side bar and the auto-fullscreen cannot cover it.
