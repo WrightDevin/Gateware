@@ -54,7 +54,7 @@ namespace GW
 			*	\retval FAILURE on Mac if AVAudioEngine is able to setup correctly.
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
-			virtual GReturn Init() = 0;
+			virtual GReturn Init(int _numOfOutputs = 2) = 0;
 			//! Fills out a GSound with data from provided .wav file.
 			/*!
 			*	tbd

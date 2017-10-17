@@ -425,7 +425,7 @@ public:
     float maxVolume = 1;
     int maxChannels = 0;
     int quitVal = 0;
-    GReturn Init();
+    GReturn Init(int _numOfOutputs = 2);
     GReturn CreateSound(const char* _path, GSound** _outSound);
     GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
     GReturn SetMasterVolume(float _value);
@@ -1495,11 +1495,11 @@ pa_context_unref(myContext);
 pa_mainloop_free(myMainLoop);
 }
 //End of GMusic implementation
-GReturn LinuxAppAudio::Init()
+GReturn LinuxAppAudio::Init(int _numOfOutputs)
 {
     GReturn result = SUCCESS;
+	//number of outputs currently only working and tested on Windows and is not used on Linux yet
 
-   // pa_mainloop_run(myMainLoop,NULL);
     return result;
 }
 GReturn LinuxAppAudio::CreateSound(const char* _path, GSound** _outSound)

@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+
 using namespace GW;
 using namespace AUDIO;
 
@@ -394,6 +395,7 @@ public:
 	int index = -1;
 	WindowAppAudio * audio;
 	IXAudio2SourceVoice * mySourceVoice = nullptr;
+	IXAudio2SubmixVoice * mySubmixVoice = nullptr;
 	WAVEFORMATEX myWFM = {0};
 	XAUDIO2_BUFFER myAudioBuffer = { 0 };
 	bool loops = false;
@@ -424,6 +426,7 @@ public:
 	DWORD dataSize;
 	WindowAppAudio * audio;
 	IXAudio2SourceVoice * mySourceVoice = nullptr;
+	IXAudio2SubmixVoice * mySubmixVoice = nullptr;
 	WAVEFORMATEX myWFM = {0};
 	std::thread* streamThread = nullptr;
 	XAUDIO2_BUFFER myAudioBuffer = { 0 };
@@ -460,8 +463,9 @@ public:
 	IXAudio2 * myAudio = nullptr;
 	float maxVolume;
 	int maxChannels;
+	int numberOfOutputs = 2;
 	IXAudio2MasteringVoice * theMasterVoice = nullptr;
-	GReturn Init();
+	GReturn Init(int _numOfOutputs = 2);
 	GReturn CreateSound(const char* _path, GSound** _outSound);
 	GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
 	GReturn SetMasterVolume(float _value);
@@ -496,7 +500,7 @@ GReturn WindowAppSound::SetPCMShader(const char* _data)
 }
 GReturn WindowAppSound::SetChannelVolumes(float * _values, int _numChannels)
 {
-	GReturn result = GReturn::INVALID_ARGUMENT;
+	GReturn result = INVALID_ARGUMENT;
 	if (_numChannels <= 0)
 		return result;
 	if (audio == NULL)
@@ -505,7 +509,7 @@ GReturn WindowAppSound::SetChannelVolumes(float * _values, int _numChannels)
 		return result;
 	if (_values == nullptr)
 		return result;
-	result = GReturn::FAILURE;
+	result = FAILURE;
 	for (int i = 0; i < _numChannels; i++)
 	{
 		try
@@ -521,12 +525,34 @@ GReturn WindowAppSound::SetChannelVolumes(float * _values, int _numChannels)
 		}
 
 	}
+	unsigned int sourceChannels = 0;
+	GetChannels(sourceChannels);
 	HRESULT theResult = S_OK;
-	if (FAILED(theResult = mySourceVoice->SetChannelVolumes(_numChannels, _values)))
+
+
+	// can only support up to 6 outputs
+	int matrixSize = sourceChannels * audio->numberOfOutputs;
+	float * matrix = new float[matrixSize];
+
+	for (size_t i = 0; i < matrixSize; i++)
+	{
+		if (i < _numChannels)
+		{
+			matrix[i] = _values[i];
+		}
+		else
+		{
+			matrix[i] = 0;
+		}
+	}
+	if (FAILED(theResult = mySourceVoice->SetOutputMatrix(mySubmixVoice, sourceChannels, audio->numberOfOutputs, matrix)))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
+		delete matrix;
 		return result;
 	}
+	delete matrix;
+
 	result = SUCCESS;
 	return result;
 }
@@ -626,6 +652,12 @@ GReturn WindowAppSound::Play()
 	if (mySourceVoice == NULL)
 		return result;
 	HRESULT theResult = S_OK;
+	if (isPlaying)
+	{
+		result = StopSound();
+		if (result != SUCCESS)
+			return result;
+	}
 	if (!isPlaying)
 	{
 		if (FAILED(theResult = mySourceVoice->Start()))
@@ -758,12 +790,34 @@ GReturn WindowAppMusic::SetChannelVolumes(float * _values, int _numChannels)
 		}
 
 	}
+	unsigned int sourceChannels = 0;
+	GetChannels(sourceChannels);
 	HRESULT theResult = S_OK;
-	if (FAILED(theResult = mySourceVoice->SetChannelVolumes(_numChannels, _values)))
+
+
+	// can only support up to 6 outputs
+	int matrixSize = sourceChannels * audio->numberOfOutputs;
+	float * matrix = new float[matrixSize];
+	
+	for (size_t i = 0; i < matrixSize; i++)
+	{
+		if (i < _numChannels)
+		{
+			matrix[i] = _values[i];
+		}
+		else
+		{
+			matrix[i] = 0;
+		}
+	}
+	if (FAILED(theResult = mySourceVoice->SetOutputMatrix(mySubmixVoice, sourceChannels, audio->numberOfOutputs, matrix)))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
+		delete matrix;
 		return result;
 	}
+	delete matrix;
+
 	result = SUCCESS;
 	return result;
 }
@@ -828,8 +882,7 @@ GReturn WindowAppMusic::GetChannels(uint32_t & returnedChannelNum)
 		return result;
 	}
 	result = INVALID_ARGUMENT;
-	if (returnedChannelNum <= 0)
-		return result;
+	
 	returnedChannelNum = myWFM.nChannels;
 	result = SUCCESS;
 	return result;
@@ -1055,7 +1108,9 @@ GReturn WindowAppMusic::StopStream()
 	if (streamThread == nullptr)
 		return result;
 	HRESULT theResult = S_OK;
+	
 	stopFlag = true;
+
 	streamThread->join();
 	
 	isPlaying = false;
@@ -1069,7 +1124,7 @@ WindowAppMusic::~WindowAppMusic()
 
 }
 //End of GMusic implementation 
-GReturn WindowAppAudio::Init()
+GReturn WindowAppAudio::Init(int _numOfOutputs)
 {
 	GReturn result = FAILURE;
 	HRESULT theResult = CoInitialize(NULL);
@@ -1083,14 +1138,17 @@ GReturn WindowAppAudio::Init()
 	{
 		return result;
 	}
+	numberOfOutputs = _numOfOutputs;
 	result = SUCCESS;
 
 	return result;
 }
+
 GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 {
 
 	GReturn result = FAILURE;
+	HRESULT theResult = S_OK;
 	if (_outSound == nullptr)
 	{
 		result = INVALID_ARGUMENT;
@@ -1106,16 +1164,24 @@ GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 	WAVEFORMATEXTENSIBLE wfmx;
 	if (LoadWaveData(_path, wfmx, snd->myAudioBuffer) != S_OK)
 	{
-		HRESULT err = HRESULT_FROM_WIN32(GetLastError());
+		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
 		return result;
 	}
 	if (wfmx.Format.nChannels > maxChannels)
 		maxChannels = wfmx.Format.nChannels;
 	snd->myWFM = wfmx.Format;
-	if (myAudio->CreateSourceVoice(&snd->mySourceVoice, &snd->myWFM) != S_OK)
+	if (myAudio->CreateSubmixVoice(&snd->mySubmixVoice, numberOfOutputs, wfmx.Format.nSamplesPerSec) != S_OK)
 	{
-		HRESULT err = HRESULT_FROM_WIN32(GetLastError());
+		theResult = HRESULT_FROM_WIN32(GetLastError());
+		result = FAILURE;
+		return result;
+	}
+	XAUDIO2_SEND_DESCRIPTOR sndSendDcsp = { 0, snd->mySubmixVoice };
+	XAUDIO2_VOICE_SENDS sndSendList = { 1, &sndSendDcsp };
+	if (myAudio->CreateSourceVoice(&snd->mySourceVoice, &snd->myWFM, 0, XAUDIO2_DEFAULT_FREQ_RATIO, NULL, &sndSendList) != S_OK)
+	{
+		theResult= HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
 		return result;
 	}
@@ -1149,14 +1215,23 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	WAVEFORMATEXTENSIBLE wfmx;
 	if (LoadOnlyWaveHeaderData(_path, msc->myFile, wfmx, msc->myAudioBuffer, msc->dataSize) != S_OK)
 	{
-		HRESULT err = HRESULT_FROM_WIN32(GetLastError());
+		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
 		return result;
 	}
 	if (wfmx.Format.nChannels > maxChannels)
 		maxChannels = wfmx.Format.nChannels;
 	msc->myWFM = wfmx.Format;
-	if (theResult = myAudio->CreateSourceVoice(&msc->mySourceVoice, &msc->myWFM, 0, 2.0f, &msc->myContext) != S_OK)
+	
+	if (myAudio->CreateSubmixVoice(&msc->mySubmixVoice, numberOfOutputs ,wfmx.Format.nSamplesPerSec ) != S_OK)
+	{
+		theResult = HRESULT_FROM_WIN32(GetLastError());
+		result = FAILURE;
+		return result;
+	}
+	XAUDIO2_SEND_DESCRIPTOR mscSendDcsp = { 0, msc->mySubmixVoice };
+	XAUDIO2_VOICE_SENDS mscSendList= { 1, &mscSendDcsp };
+	if (theResult = myAudio->CreateSourceVoice(&msc->mySourceVoice, &msc->myWFM,0, XAUDIO2_DEFAULT_FREQ_RATIO, &msc->myContext, &mscSendList) != S_OK)
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;

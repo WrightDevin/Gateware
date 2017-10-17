@@ -73,7 +73,7 @@ public:
 	float maxVolume;
 	int maxChannels;
 	
-	GReturn Init();
+	GReturn Init(int _numOfOutputs = 2);
 	GReturn CreateSound(const char* _path, GSound** _outSound);
 	GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
 	GReturn SetMasterVolume(float _value);
@@ -400,10 +400,10 @@ MacAppMusic::~MacAppMusic()
 
 }
 //End of GMusic implementation 
-GReturn MacAppAudio::Init()
+GReturn MacAppAudio::Init(int _numOfOutputs)
 {
 	GReturn result = FAILURE;
-
+	//number of outputs currently only working and tested on Windows and is not used on Mac
 	result = SUCCESS;
 #if __APPLE__
     mac_audio = [GMacAudio alloc];
