@@ -101,7 +101,7 @@ theCallback->didFinish =1;
 }
 int LoadWavFormatOnly(const char * path, PCM_FORMAT_INFO & returnedInfo, unsigned long & _fileSize)
 {
-    int result = 0; //zero is good
+int result = 0; //zero is good
 unsigned long dwChunktype = 0;
 unsigned long dwChunkDataSize = 0;
 unsigned long dwRiffDataSize = 0;
@@ -1721,10 +1721,14 @@ GReturn LinuxAppAudio::ResumeAll()
 
 LinuxAppAudio::~LinuxAppAudio()
 {
-   // for(int i = 0; i< activeSounds.size(); i++)
-    //{
-
-    //}
+	while (activeSounds.size() > 0)
+	{
+		activeSounds.erase(activeSounds.begin());
+	}
+	while (activeMusic.size() > 0)
+	{
+		activeMusic.erase(activeMusic.begin());
+	}
 }
 
 

@@ -262,6 +262,281 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, HANDLE & returnedHandle, WAVEF
 
 	return theResult;
 }
+
+HRESULT LoadWaveData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
+{
+	//WAVEFORMATEXTENSIBLE myWFX = { 0 };
+	//XAUDIO2_BUFFER myAudioBuffer = { 0 };
+	HRESULT theResult = S_OK;
+
+	//wchar_t* tpath = new wchar_t[4096];
+	//MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
+	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
+	//HANDLE theFile = CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+
+	//if (INVALID_HANDLE_VALUE == theFile)
+		//return HRESULT_FROM_WIN32(GetLastError());
+
+	//if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+		//return HRESULT_FROM_WIN32(GetLastError());
+
+
+	int result = 0; //zero is good
+	unsigned long dwChunktype = 0;
+	unsigned long dwChunkDataSize = 0;
+	unsigned long dwRiffDataSize = 0;
+	unsigned long dwFileType = 0;
+	unsigned long bytesRead = 0;
+
+	unsigned long dwIsWave = 0;
+	unsigned long throwAwayValue = 0;
+	bool foundAudioData = false;
+	FILE * someWaveFile = NULL;
+	someWaveFile = fopen(path, "r");
+	if (someWaveFile == NULL)
+	{
+		return 1;
+	}
+	if (someWaveFile != NULL)
+	{
+		while (result == 0)
+		{
+			unsigned long dwRead;
+			//ReadFile(theFile, &dwChunktype, 4, &dwRead, NULL);
+			dwRead = fread(&dwChunktype, 1, 4, someWaveFile);
+			if (dwRead != 4)
+			{
+				result = -1;
+				break;
+			}
+			bytesRead += dwRead;
+			//ReadFile(theFile, &dwChunkDataSize, 4, &dwRead, NULL);
+			dwRead = fread(&dwChunkDataSize, 1, 4, someWaveFile);
+			if (dwRead != 4)
+			{
+				result = -2;
+				break;
+			}
+			bytesRead += dwRead;
+
+			switch (dwChunktype)
+			{
+			case fourRIFFcc:
+			{
+				dwRiffDataSize = dwChunkDataSize;
+				dwChunkDataSize = 4;
+				//ReadFile(theFile, &dwFileType, 4, &dwRead, NULL);
+				dwRead = fread(&dwFileType, 1, 4, someWaveFile);
+				if (dwRead != 4)
+				{
+					result = -3;
+					break;
+				}
+				if (dwFileType != fourWAVEcc)
+				{
+					result = -3;
+					break;
+				}
+				bytesRead += dwRead;
+				break;
+			}
+			case fourWAVEcc:
+			{
+				//ReadFile(theFile, &dwIsWave, 4, &dwRead, NULL);
+				dwRead = fread(&dwIsWave, 1, 4, someWaveFile);
+				if (dwRead != 4)
+				{
+					result = -4;
+					break;
+				}
+				bytesRead += dwRead;
+
+				break;
+			}
+			case fourFMTcc:
+			{
+				//ReadFile(theFile, &myWFX, dwChunkDataSize, &dwRead, NULL);
+				dwRead = fread(&myWFX, 1, dwChunkDataSize, someWaveFile);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -5;
+					break;
+				}
+				bytesRead += dwRead;
+
+				break;
+			}
+			case fourDATAcc:
+			{
+				BYTE * pDataBuffer = new BYTE[dwChunkDataSize];
+				//ReadFile(theFile, pDataBuffer, dwChunkDataSize, &dwRead, NULL);
+				dwRead = fread(pDataBuffer, 1, dwChunkDataSize, someWaveFile);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -6;
+					break;
+				}
+				myAudioBuffer.AudioBytes = dwChunkDataSize;  //contains size of the audio buffer in bytes
+				myAudioBuffer.pAudioData = pDataBuffer;  // this buffer contains all audio data
+				myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;// tells source this is EOF and should stop
+				bytesRead += dwRead;
+				foundAudioData = true;
+				break;
+			}
+			default:
+			{
+				//ReadFile(theFile, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
+				dwRead = fread(&throwAwayValue, 1, dwChunkDataSize, someWaveFile);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -7;
+				}
+				bytesRead += dwRead;
+				break;
+			}
+
+			}
+
+
+
+			if (bytesRead - 8 >= dwRiffDataSize)//excludes the first 8 byte header information
+			{
+
+				break;
+			}
+		}
+		if (result < 0)
+		{
+			theResult = S_FALSE;
+			return theResult;
+		}
+	}
+
+	return theResult;
+}
+HRESULT LoadOnlyWaveHeaderData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer, DWORD & dataSize)
+{
+
+	HRESULT theResult = S_OK;
+
+	//wchar_t* tpath = new wchar_t[4096];
+	//MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
+	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
+
+	//returnedHandle = CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+
+	//if (INVALID_HANDLE_VALUE == returnedHandle)
+		//return HRESULT_FROM_WIN32(GetLastError());
+
+	//if (INVALID_SET_FILE_POINTER == SetFilePointer(returnedHandle, 0, NULL, FILE_BEGIN))
+		//return HRESULT_FROM_WIN32(GetLastError());
+
+
+	int result = 0; //zero is good
+	unsigned long dwChunktype = 0;
+	unsigned long dwChunkDataSize = 0;
+	unsigned long dwRiffDataSize = 0;
+	unsigned long dwFileType = 0;
+	unsigned long bytesRead = 0;
+
+	unsigned long dwIsWave = 0;
+	unsigned long throwAwayValue = 0;
+	bool foundAudioData = false;
+	FILE * someWaveFile = NULL;
+	someWaveFile = fopen(path, "r");
+	if (someWaveFile == NULL)
+	{
+		return 1;
+	}
+	if (someWaveFile != NULL)
+	{
+		while (result == 0)
+		{
+			unsigned long dwRead;
+			//ReadFile(theFile, &dwChunktype, 4, &dwRead, NULL);
+			dwRead = fread(&dwChunktype, 1, 4, someWaveFile);
+			if (dwRead != 4)
+			{
+				result = -1;
+				break;
+			}
+			bytesRead += dwRead;
+			//ReadFile(theFile, &dwChunkDataSize, 4, &dwRead, NULL);
+			dwRead = fread(&dwChunkDataSize, 1, 4, someWaveFile);
+			if (dwRead != 4)
+			{
+				result = -2;
+				break;
+			}
+			bytesRead += dwRead;
+
+			switch (dwChunktype)
+			{
+			case fourRIFFcc:
+			{
+				dwRiffDataSize = dwChunkDataSize;
+				dwChunkDataSize = 4;
+				//ReadFile(theFile, &dwFileType, 4, &dwRead, NULL);
+				dwRead = fread(&dwFileType, 1, 4, someWaveFile);
+				if (dwRead != 4)
+				{
+					result = -3;
+					break;
+				}
+				if (dwFileType != fourWAVEcc)
+				{
+					result = -3;
+					break;
+				}
+				bytesRead += dwRead;
+				break;
+			}
+			case fourWAVEcc:
+			{
+				//ReadFile(theFile, &dwIsWave, 4, &dwRead, NULL);
+				dwRead = fread(&dwIsWave, 1, 4, someWaveFile);
+				if (dwRead != 4)
+				{
+					result = -4;
+					break;
+				}
+				bytesRead += dwRead;
+
+				break;
+			}
+			case fourFMTcc:
+			{
+				//ReadFile(theFile, &myWFX, dwChunkDataSize, &dwRead, NULL);
+				dwRead = fread(&myWFX, 1, dwChunkDataSize, someWaveFile);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -5;
+					break;
+				}
+				bytesRead += dwRead;
+				result = 1; //break us out of loop
+				break;
+			}
+
+			}
+			if (result < 0)
+			{
+				theResult = S_FALSE;
+				return theResult;
+			}
+		}
+
+
+		if (result < 0)
+		{
+			theResult = S_FALSE;
+		}
+	}
+
+	return theResult;
+}
+
+
 HRESULT FindChunk(HANDLE & theFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition, DWORD & dwRiffSize)
 {
 	//by default code assumes its reading PCM file with 'RIFF', 'fmt ', and 'data' chunks
@@ -368,20 +643,20 @@ HRESULT ReadChunkData(HANDLE & theFile, void * someBuffer, DWORD buffersize, DWO
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
 {
 	HANDLE hBufferEndEvent;
+	HANDLE hStreamEndEvent;
 	//StreamingVoiceContext() : hBufferEndEvent(CreateEvent(NULL, FALSE, FALSE, NULL)) {}
 	StreamingVoiceContext() :
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-		hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE))
+	hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)), hStreamEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)){}
 #else
-		hBufferEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr))
-#endif
-	{}
-	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); }
+		hBufferEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)), hStreamEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)) {}
+#endif	
+	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); CloseHandle(hStreamEndEvent); }
 	void OnBufferEnd(void*) { SetEvent(hBufferEndEvent); }
 	void OnVoiceProcessingPassStart(UINT32) {  }
 	void OnVoiceProcessingPassEnd() {  }
 	void OnVoiceError(void*, HRESULT) {  }
-	void OnStreamEnd() {  }
+	void OnStreamEnd() { SetEvent(hStreamEndEvent); }
 	void OnBufferStart(void*) {  }
 	void OnLoopEnd(void*) {  }
 	void OnLoopEnd(void*, HRESULT) {  }
@@ -421,7 +696,7 @@ private:
 	BYTE buffers[MAX_BUFFER_COUNT][STREAMING_BUFFER_SIZE];
 	OVERLAPPED overlap = { 0 };
 public:
-	HANDLE myFile;
+	char *  myFile;
 	int index = -1;
 	DWORD dataSize;
 	WindowAppAudio * audio;
@@ -457,7 +732,6 @@ public:
 class WindowAppAudio : public GAudio
 {
 public:
-	const char * myFile;
 	std::vector<WindowAppSound *> activeSounds;
 	std::vector<WindowAppMusic *> activeMusic;
 	IXAudio2 * myAudio = nullptr;
@@ -921,9 +1195,16 @@ GReturn WindowAppMusic::Stream()
 	if (INVALID_HANDLE_VALUE == theFile)
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 
-	if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+	DWORD ptrLocation = 0;
+	if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
 		theResult = HRESULT_FROM_WIN32(GetLastError());
-
+	myAudioBuffer.Flags = 0;
+	XAUDIO2_VOICE_STATE state;
+	mySourceVoice->GetState(&state);
+	XAUDIO2_SEND_DESCRIPTOR send = { 0, mySourceVoice };
+	XAUDIO2_VOICE_SENDS sendlist = { 1, &send };
+	send.pOutputVoice = mySubmixVoice;
+	mySubmixVoice->SetOutputVoices(&sendlist);
 
 	DWORD dwChunkSize = 0;
 	DWORD dwChunkPosition = 0;
@@ -943,18 +1224,7 @@ GReturn WindowAppMusic::Stream()
 	int dwDataSize = dataSize;
 	while (CurrentPosition < cbWaveSize && stopFlag == false)
 	{
-		//test code to verify pausing/resuming works
-		if (GetAsyncKeyState(VK_ESCAPE))
-		{
-			if (!isPaused)
-			{
-				PauseStream();
-			}
-			else
-			{
-				ResumeStream();
-			}
-		}
+	
 		if (!isPaused)
 		{
 			DWORD dwRead;
@@ -971,37 +1241,72 @@ GReturn WindowAppMusic::Stream()
 
 			DWORD NumberBytesTransfered;
 			GetOverlappedResult(theFile, &overlap, &NumberBytesTransfered, true);
-			XAUDIO2_VOICE_STATE state;
+		
 
-			while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
-			{
-
-				WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
-			}
+			
 			XAUDIO2_BUFFER buf = { 0 };
-			buf.AudioBytes = cbValid;
-			buf.pAudioData = buffers[CurrentDiskReadBuffer];
-			if (CurrentPosition >= cbWaveSize)
+			if (myAudioBuffer.pAudioData == nullptr)
 			{
-				buf.Flags = XAUDIO2_END_OF_STREAM;
+				myAudioBuffer.AudioBytes = cbValid;
+				myAudioBuffer.pAudioData = buffers[CurrentDiskReadBuffer];
+				if (CurrentPosition >= cbWaveSize)
+				{
+					myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
+				}
+				while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
+				{
+					WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
+
+				}
+				mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
 			}
-			mySourceVoice->SubmitSourceBuffer(&buf);
+			else
+			{
+				buf.AudioBytes = cbValid;
+				buf.pAudioData = buffers[CurrentDiskReadBuffer];
+				if (CurrentPosition >= cbWaveSize)
+				{
+					buf.Flags = XAUDIO2_END_OF_STREAM;
+				}
+				while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
+				{
+					WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
+
+				}
+				mySourceVoice->SubmitSourceBuffer(&buf);
+			}
+			
+			
 			CurrentDiskReadBuffer++;
 			CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
 		}
 	}
-	XAUDIO2_VOICE_STATE state;
-	mySourceVoice->GetState(&state);
+	
+	myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
+	mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
 	while (state.BuffersQueued > 0)
 	{
 		mySourceVoice->GetState(&state);
 		WaitForSingleObjectEx(myContext.hBufferEndEvent, INFINITE, TRUE);
 	}
-	if (FAILED(theResult = mySourceVoice->Stop()))
+	if (FAILED(theResult = mySourceVoice->Stop(0, 0)))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		return FAILURE;
 	}
+
+	DWORD dwRead;
+	for (int i = 0; i < MAX_BUFFER_COUNT; i++)
+	{
+		if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
+			theResult = HRESULT_FROM_WIN32(GetLastError());
+		if (0 == ReadFile(theFile, buffers[i], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
+			theResult = HRESULT_FROM_WIN32(GetLastError());
+	}
+	
+	XAUDIO2_SEND_DESCRIPTOR send2 = { 0, mySourceVoice };
+	XAUDIO2_VOICE_SENDS sendlist2 = { 1, &send2 };
+	mySubmixVoice->SetOutputVoices(&sendlist2);
 	isPlaying = false;
 	isPaused = true;
 }
@@ -1105,17 +1410,31 @@ GReturn WindowAppMusic::StopStream()
 		return result;
 	if (mySourceVoice == NULL)
 		return result;
+	result = REDUNDANT_OPERATION;
 	if (streamThread == nullptr)
 		return result;
 	HRESULT theResult = S_OK;
 	
 	stopFlag = true;
+	WaitForSingleObjectEx(myContext.hStreamEndEvent, INFINITE, TRUE);
+	XAUDIO2_VOICE_STATE state;
+	state.SamplesPlayed = 0;
+
+	mySourceVoice->GetState(&state);
+
 
 	streamThread->join();
-	
+theResult =	mySourceVoice->FlushSourceBuffers();
 	isPlaying = false;
 	isPaused = true;
-	mySourceVoice->FlushSourceBuffers();
+	result = FAILURE;
+	delete streamThread;
+	streamThread = nullptr;
+
+
+
+
+
 	result = SUCCESS;
 	return result;
 }
@@ -1374,7 +1693,15 @@ GReturn WindowAppAudio::ResumeAll()
 }
 WindowAppAudio::~WindowAppAudio()
 {
-
+	while(activeSounds.size() > 0)
+	{
+		activeSounds.erase(activeSounds.begin());
+	}
+	while (activeMusic.size() > 0)
+	{
+		activeMusic.erase(activeMusic.begin());
+	}
+	
 }
 
 
