@@ -26,10 +26,10 @@ private:
 
 	GWindow*					gWnd;
 	HWND surfaceWindow;
-	ID3D11Device*				device;
-	ID3D11DeviceContext*		context;
-	IDXGISwapChain*				swapChain;
-	ID3D11RenderTargetView*		rtv;
+	ID3D11Device*				device = nullptr;
+	ID3D11DeviceContext*		context = nullptr;
+	IDXGISwapChain*				swapChain = nullptr;
+	ID3D11RenderTargetView*		rtv = nullptr;
 	float						width;
 	float						height;
 	float						aspectRatio;
@@ -60,8 +60,12 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
-	gWnd->DeregisterListener(this);
-	DecrementCount();
+	//gWnd->DeregisterListener(this);
+	//DecrementCount();
+	if (device) device->Release();
+	if (context) context->Release();
+	if (rtv) rtv->Release();
+	if (swapChain) swapChain->Release();
 }
 
 void GDirectX11::SetGWindow(GWindow* _window)
@@ -205,12 +209,16 @@ GReturn GDirectX11::IncrementCount()
 GReturn GDirectX11::DecrementCount()
 {
 	if (refCount == 0)
-	{
-		delete this;
 		return FAILURE;
-	}
 
 	--refCount;
+
+	if (refCount == 0)
+	{
+		gWnd->DeregisterListener(this);
+		delete this;
+	}
+
 
 	return SUCCESS;
 }

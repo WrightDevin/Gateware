@@ -21,9 +21,9 @@ GWindow*			gWnd_OGL;
 GOpenGLESSurface*	oglSurface = nullptr;
 HDC*				hdc;
 HGLRC*				context;
-#elif __linux__
-#elif __APPLE__
-#endif
+//#elif __linux__
+//#elif __APPLE__
+//#endif
 
 TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 {
