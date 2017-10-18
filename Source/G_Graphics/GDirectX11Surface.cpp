@@ -39,16 +39,17 @@ public:
 	virtual ~GDirectX11();
 	void	SetGWindow(GWindow* _window);
 	GReturn Initialize();
+	GReturn	GetAspectRatio(float& _outRatio);
+
 	GReturn GetDevice(void** _outDevice);
 	GReturn GetContext(void** _outContext);
 	GReturn GetSwapchain(void** _outSwapchain);
 	GReturn GetRenderTarget(void** _outRenderTarget);
-	float	GetAspectRatio();
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
-	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outInterface);
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	GReturn OnEvent(const GUUIID& _senderInerface, unsigned int _eventID, void* _eventData, unsigned int _dataSize);
 };
 
@@ -59,6 +60,8 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
+	gWnd->DeregisterListener(this);
+	DecrementCount();
 }
 
 void GDirectX11::SetGWindow(GWindow* _window)
@@ -129,6 +132,21 @@ GReturn GDirectX11::Initialize()
 	swapChain->GetBuffer(0, __uuidof(buffer), reinterpret_cast<void**>(&buffer));
 	device->CreateRenderTargetView(buffer, NULL, &rtv);
 
+	buffer->Release();
+
+	D3D11_VIEWPORT viewport;
+	viewport.Width = width;
+	viewport.Height = height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+
+	context->RSSetViewports(1, &viewport);
+	
+#elif __linux__
+#elif __APPLE__
+#endif
+
 	return SUCCESS;
 }
 
@@ -160,16 +178,18 @@ GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
 	return SUCCESS;
 }
 
-float GDirectX11::GetAspectRatio()
+GReturn GDirectX11::GetAspectRatio(float& _outRatio)
 {
-	return aspectRatio;
+	_outRatio = aspectRatio;
+
+	return SUCCESS;
 }
 
 GReturn GDirectX11::GetCount(unsigned int & _outCount)
 {
 	_outCount = refCount;
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GDirectX11::IncrementCount()
@@ -195,14 +215,129 @@ GReturn GDirectX11::DecrementCount()
 	return SUCCESS;
 }
 
-GReturn GDirectX11::RequestInterface(const GUUIID & _interfaceID, void ** _outInterface)
+GReturn GDirectX11::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
 {
-	return FAILURE;
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (_interfaceID == GWindowUUIID)
+	{
+		GWindow* convert = reinterpret_cast<GWindow*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GBroadcastingUUIID)
+	{
+		GBroadcasting* convert = reinterpret_cast<GBroadcasting*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GMultiThreadedUUIID)
+	{
+		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GDirectX11SurfaceUUIID)
+	{
+		GDirectX11Surface* convert = reinterpret_cast<GDirectX11Surface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
+	return SUCCESS;
 }
 
 GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
 {
-	return FAILURE;
+
+	if (_senderInerface == GWindowUUIID)
+	{
+
+		GWINDOW_EVENT_DATA* eventStruct = (GWINDOW_EVENT_DATA*)_eventData;
+
+		switch (_eventID)
+		{
+		case GW::SYSTEM::NOTIFY:
+			break;
+		case GW::SYSTEM::MINIMIZE:
+			break;
+		case GW::SYSTEM::MAXIMIZE:
+		case GW::SYSTEM::RESIZE:
+		{
+
+			unsigned int newWidth;
+			unsigned int newHeight;
+
+			gWnd->GetWidth(newWidth);
+			gWnd->GetHeight(newHeight);
+
+			aspectRatio = newWidth / newHeight;
+
+			if (swapChain)
+			{
+				rtv->Release();
+
+				HRESULT result = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+				if (result != S_OK)
+					return FAILURE;
+
+				ID3D11Texture2D* newRTVBuffer;
+				result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&newRTVBuffer));
+
+				if (result != S_OK)
+					return FAILURE;
+
+				result = device->CreateRenderTargetView(newRTVBuffer, NULL, &rtv);
+
+				if (result != S_OK)
+					return FAILURE;
+
+				newRTVBuffer->Release();
+
+				D3D11_VIEWPORT viewport;
+				viewport.Width = newWidth;
+				viewport.Height = newHeight;
+				viewport.MinDepth = 0.0f;
+				viewport.MaxDepth = 1.0f;				
+				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+
+				context->RSSetViewports(1, &viewport);
+			}
+
+		}
+			break;
+		case GW::SYSTEM::MOVE:
+		{
+			D3D11_VIEWPORT viewport;
+			gWnd->GetWidth((unsigned int&)viewport.Width);
+			gWnd->GetHeight((unsigned int&)viewport.Height);
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
+			gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+
+			context->RSSetViewports(1, &viewport);
+		}
+			break;
+		case GW::SYSTEM::DESTROY:
+		{
+			this->~GDirectX11();
+		}
+			break;
+		}
+
+	}
+
+	return SUCCESS;
 }
 
 GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
@@ -212,11 +347,15 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin,
 
 GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
 {
+
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;
 
 	GDirectX11* Surface = new GDirectX11();
 	Surface->SetGWindow(_gWin);
+	Surface->Initialize();
+
+	_gWin->RegisterListener(Surface, 0);
 
 	if (Surface == nullptr)
 		return FAILURE;

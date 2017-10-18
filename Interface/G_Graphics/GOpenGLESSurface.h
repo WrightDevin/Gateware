@@ -24,11 +24,9 @@ namespace GW
 
 			virtual GReturn GetDeviceContextHandle(void** _outHDC) = 0;
 
-			virtual float GetAspectRatio() = 0;
-
 		};
 	
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLESSurface(SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface);
 	
 	}
 }

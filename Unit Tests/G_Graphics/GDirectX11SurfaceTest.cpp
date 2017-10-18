@@ -16,7 +16,7 @@ using namespace SYSTEM;
 using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
-GWindow*				gWnd;
+GWindow*				gWnd_DX;
 GDirectX11Surface*		dx11Surface = nullptr;
 ID3D11Device*			device;
 ID3D11DeviceContext*	context;
@@ -28,82 +28,83 @@ unsigned int			surfaceHeight;
 
 TEST_CASE("Create GDirectX11Surface Object.", "[CreateGDirectX11Surface]")
 {
-	REQUIRE(G_SUCCESS(CreateGWindow(100, 100, 1000, 1000, WINDOWEDBORDERED, &gWnd)));
+	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1000, 1000, WINDOWEDBORDERED, &gWnd_DX)));
 
-	CHECK(CreateGDirectX11Surface(gWnd, &dx11Surface) == SUCCESS);
+	CHECK(CreateGDirectX11Surface(gWnd_DX, &dx11Surface) == SUCCESS);
 }
 
-TEST_CASE("Initialize GDirectX11Surface.", "[Initialize]")
-{
-	CHECK(dx11Surface->Initialize() == SUCCESS);
-
-	gWnd->MoveWindow(0, 0);
-}
-
-TEST_CASE("Querying Surface Information.", "[GetDevice], [GetContext], [GetSwapchain]")
+TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwapchain]")
 {
 	CHECK(dx11Surface->GetDevice((void**)&device) == SUCCESS);
 	CHECK(dx11Surface->GetContext((void**)&context) == SUCCESS);
 	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);
 }
 
-TEST_CASE("Querying Swap Chain.")
-{
-	DXGI_SWAP_CHAIN_DESC testDesc;
-	RECT testRect;
-	unsigned int testWidth;
-	unsigned int testHeight;
-
-	if (swapChain != nullptr)
-	{
-		swapChain->GetDesc(&testDesc);
-		GetClientRect((&testDesc)->OutputWindow, &testRect);
-		
-		surfaceWidth = (&testRect)->right - (&testRect)->left;
-		surfaceHeight = (&testRect)->bottom - (&testRect)->top;
-
-		gWnd->GetClientWidth(testWidth);
-		gWnd->GetClientHeight(testHeight);
-
-		REQUIRE(surfaceWidth == testWidth);
-		REQUIRE(surfaceHeight == testHeight);
-
-		if (context != nullptr)
-		{
-			ID3D11RenderTargetView* surfaceRTV = nullptr;
-			const float color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-			dx11Surface->GetRenderTarget((void**)&surfaceRTV);
-
-			context->ClearRenderTargetView(surfaceRTV, color);
-			swapChain->Present(0, 0);
-		}
-
-	}
-}
+//TEST_CASE("Querying Swap Chain.")
+//{
+//	unsigned int testWidth;
+//	unsigned int testHeight;
+//
+//	if (swapChain != nullptr)
+//	{
+//		ID3D11Texture2D* testTex;
+//		swapChain->GetBuffer(0, __uuidof(testTex), reinterpret_cast<void**>(&testTex));
+//		
+//		D3D11_TEXTURE2D_DESC testTexDesc;
+//		testTex->GetDesc(&testTexDesc);
+//
+//		surfaceWidth = testTexDesc.Width;
+//		surfaceHeight = testTexDesc.Height;
+//
+//		gWnd_DX->GetClientWidth(testWidth);
+//		gWnd_DX->GetClientHeight(testHeight);
+//
+//		REQUIRE(surfaceWidth == testWidth);
+//		REQUIRE(surfaceHeight == testHeight);
+//
+//		if (context != nullptr)
+//		{
+//			ID3D11RenderTargetView* surfaceRTV = nullptr;
+//			const float color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+//
+//			dx11Surface->GetRenderTarget((void**)&surfaceRTV);
+//
+//			context->ClearRenderTargetView(surfaceRTV, color);
+//			swapChain->Present(0, 0);
+//		}
+//
+//		testTex->Release();
+//
+//	}
+//}
 
 TEST_CASE("Testing Window Events.")
 {
-	// Resizing Window
-	gWnd->ResizeWindow(500, 500);
-	gWnd->MoveWindow(0, 0);
 
-	// Checking Size of Surface with New Window
-	DXGI_SWAP_CHAIN_DESC testDesc;
-	RECT testRect;
 	unsigned int testWidth;
 	unsigned int testHeight;
 
+	// Checking Current Size of Window
+	gWnd_DX->GetClientWidth(testWidth);
+	gWnd_DX->GetClientHeight(testHeight);
+
+	// Resizing Window
+	gWnd_DX->ResizeWindow(500, 500);
+
+	// Checking New Size of Window After Resize
+	gWnd_DX->GetClientWidth(testWidth);
+	gWnd_DX->GetClientHeight(testHeight);
+
 	if (swapChain != nullptr)
 	{
-		swapChain->GetDesc(&testDesc);
-		GetClientRect((&testDesc)->OutputWindow, &testRect);
+		ID3D11Texture2D* testTex;
+		HRESULT result = swapChain->GetBuffer(0, __uuidof(testTex), reinterpret_cast<void**>(&testTex));
 
-		surfaceWidth = (&testRect)->right - (&testRect)->left;
-		surfaceHeight = (&testRect)->bottom - (&testRect)->top;
+		D3D11_TEXTURE2D_DESC testTexDesc;
+		testTex->GetDesc(&testTexDesc);
 
-		gWnd->GetClientWidth(testWidth);
-		gWnd->GetClientHeight(testHeight);
+		surfaceWidth = testTexDesc.Width;
+		surfaceHeight = testTexDesc.Height;
 
 		REQUIRE(surfaceWidth == testWidth);
 		REQUIRE(surfaceHeight == testHeight);
@@ -118,6 +119,8 @@ TEST_CASE("Testing Window Events.")
 			context->ClearRenderTargetView(surfaceRTV, color);
 			swapChain->Present(0, 0);
 		}
+
+		testTex->Release();
 
 	}
 }

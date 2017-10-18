@@ -1,11 +1,15 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLESSurface.h"
+#include "../../Source/G_System/GUtility.h"
+
 
 #ifdef _WIN32
 
-#pragma comment(lib, "OpenGL32.lib")
 #include <Windows.h>
+
+#pragma comment(lib, "OpenGL32.lib")
 #include <gl\GL.h>
+
 #include <atomic>
 #include <mutex>
 #include <thread>
@@ -23,14 +27,21 @@ class GOpenGLES : public GOpenGLESSurface
 {
 private:
 	// declare all necessary members (platform specific)
-	GWindow*	gWnd;
-	float		width;
-	float		height;
-	float		aspectRatio;
+	unsigned int	refCount;
+
+	GWindow*		gWnd;
+	HDC				hdc;
+	HGLRC			OGLcontext;
+	unsigned int	clientX;
+	unsigned int	clientY;
+	float			width;
+	float			height;
+	float			aspectRatio;
 
 #ifdef _WIN32
-	HDC			hdc;
-	HGLRC		OGLcontext;
+
+	HWND surfaceWindow;
+
 #elif __linux__
 #elif __APPLE__
 #endif
@@ -43,34 +54,79 @@ public:
 	GReturn GetDeviceContextHandle(void** _outHDC);
 	float GetAspectRatio();
 
-	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
-	GReturn DeregisterListener(GListener* _removeListener);
+	void	SetGWindow(GWindow* _window);
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
-	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outInterface);
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	GReturn OnEvent(const GUUIID& _senderInterface, unsigned int _eventID, void* _eventData, unsigned int _dataSize);
 };
 
 GOpenGLES::GOpenGLES()
 {
+#ifdef _WIN32
+
+	ZeroMemory(&surfaceWindow, sizeof(HWND));
+
+#elif __linux__
+#elif __APPLE__
+#endif
 }
 
 GOpenGLES::~GOpenGLES()
 {
 }
 
+void GOpenGLES::SetGWindow(GWindow* _window)
+{
+	gWnd = _window;
+}
+
 GReturn GOpenGLES::Initialize()
 {
 #ifdef _WIN32
 
+	gWnd->OpenWindow();
+	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
+	RECT windowRect;
+	GetWindowRect(surfaceWindow, &windowRect);
+	width = windowRect.right - windowRect.left;
+	height = windowRect.bottom - windowRect.top;
 	aspectRatio = width / height;
+
+	hdc = GetDC(surfaceWindow);
+
+	PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),
+		1,
+		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+		PFD_TYPE_RGBA,
+		32,
+		0, 0, 0, 0, 0, 0,
+		0,
+		0,
+		0,
+		0, 0, 0, 0,
+		24,
+		8,
+		0,
+		PFD_MAIN_PLANE,
+		0,
+		0, 0, 0
+	};
+
+	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
+	SetPixelFormat(hdc, pixelFormat, &pfd);
+
+	OGLcontext = wglCreateContext(hdc);
+	wglMakeCurrent(hdc, OGLcontext);
 
 #elif __linux__
 #elif __APPLE__
 #endif
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GOpenGLES::GetContext(void ** _outContext)
@@ -83,20 +139,20 @@ GReturn GOpenGLES::GetContext(void ** _outContext)
 #elif __APPLE__
 #endif
 
-	return FAILURE;
+	return SUCCESS;
 }
 
-GReturn GOpenGLES::GetDeviceContextHandle(void ** _outHDC)
+GReturn GOpenGLES::GetDeviceContextHandle(void** _outHDC)
 {
 #ifdef _WIN32
 
-	*_outHDC = hdc;
+	*_outHDC = &hdc;
 
 #elif __linux__
 #elif __APPLE__
 #endif
 
-	return FAILURE;
+	return SUCCESS;
 }
 
 float GOpenGLES::GetAspectRatio()
@@ -104,89 +160,162 @@ float GOpenGLES::GetAspectRatio()
 	return aspectRatio;
 }
 
-GReturn GOpenGLES::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
+GReturn GOpenGLES::GetCount(unsigned int& _outCount)
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	_outCount = refCount;
 
-	return GReturn();
-}
-
-GReturn GOpenGLES::DeregisterListener(GListener * _removeListener)
-{
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
-
-	return GReturn();
-}
-
-GReturn GOpenGLES::GetCount(unsigned int & _outCount)
-{
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
-	return FAILURE;
+	return SUCCESS;
 }
 
 GReturn GOpenGLES::IncrementCount()
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	if (refCount == G_UINT_MAX)
+		return FAILURE;
 
-	return FAILURE;
+	++refCount;
+
+	return SUCCESS;
 }
 
 GReturn GOpenGLES::DecrementCount()
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	if (refCount == 0)
+	{
+		delete this;
+		return FAILURE;
+	}
 
-	return FAILURE;
+	--refCount;
+
+	return SUCCESS;
 }
 
-GReturn GOpenGLES::RequestInterface(const GUUIID & _interfaceID, void ** _outInterface)
+GReturn GOpenGLES::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
+	if (_outputInterface == nullptr)
+		return INVALID_ARGUMENT;
 
-	return FAILURE;
+	if (_interfaceID == GWindowUUIID)
+	{
+		GWindow* convert = reinterpret_cast<GWindow*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GBroadcastingUUIID)
+	{
+		GBroadcasting* convert = reinterpret_cast<GBroadcasting*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GMultiThreadedUUIID)
+	{
+		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GInterfaceUUIID)
+	{
+		GInterface* convert = reinterpret_cast<GInterface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else if (_interfaceID == GOpenGLESSurfaceUUIID)
+	{
+		GOpenGLESSurface* convert = reinterpret_cast<GOpenGLESSurface*>(this);
+		convert->IncrementCount();
+		(*_outputInterface) = convert;
+	}
+	else
+		return INTERFACE_UNSUPPORTED;
+
+	return SUCCESS;
 }
 
 GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
 {
-#ifdef _WIN32
-#elif __linux__
-#elif __APPLE__
-#endif
 
-	return FAILURE;
+	if (_senderInterface == GWindowUUIID)
+	{
+
+		GWINDOW_EVENT_DATA* eventStruct = (GWINDOW_EVENT_DATA*)_eventData;
+
+		switch (_eventID)
+		{
+		case GW::SYSTEM::NOTIFY:
+			break;
+		case GW::SYSTEM::MINIMIZE:
+			break;
+		case GW::SYSTEM::MAXIMIZE:
+		{
+			unsigned int maxWidth;
+			unsigned int maxHeight;
+			unsigned int currX;
+			unsigned int currY;
+
+			gWnd->GetWidth(maxWidth);
+			gWnd->GetHeight(maxHeight);
+
+			aspectRatio = maxWidth / maxHeight;
+
+			glViewport(0, 0, maxWidth, maxHeight);
+		}
+			break;
+		case GW::SYSTEM::RESIZE:
+		{
+			unsigned int maxWidth;
+			unsigned int maxHeight;
+			unsigned int currX;
+			unsigned int currY;
+
+			gWnd->GetWidth(maxWidth);
+			gWnd->GetHeight(maxHeight);
+			gWnd->GetClientTopLeft(currX, currY);
+
+			aspectRatio = maxWidth / maxHeight;
+
+			glViewport(currX, currY, maxWidth, maxHeight);
+		}
+			break;
+		case GW::SYSTEM::MOVE:
+		{
+			unsigned int maxWidth;
+			unsigned int maxHeight;
+			unsigned int currX;
+			unsigned int currY;
+
+			gWnd->GetWidth(maxWidth);
+			gWnd->GetHeight(maxHeight);
+			gWnd->GetClientTopLeft(currX, currY);
+
+			glViewport(currX, currY, maxWidth, maxHeight);
+		}
+			break;
+		case GW::SYSTEM::DESTROY:
+			break;
+
+		}
+	}
+
+	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(const SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
 {
 	return GW::GRAPHICS::CreateGOpenGLESSurface(gWin, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLESSurface(const SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLESSurface(SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
 {
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;
 
 	GOpenGLES* Surface = new GOpenGLES();
+	Surface->SetGWindow(gWin);
 
 	if (Surface == nullptr)
 		return FAILURE;
 
-	return FAILURE;
+	*_outSurface = Surface;
+
+	return SUCCESS;
 }
