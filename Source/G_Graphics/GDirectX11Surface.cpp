@@ -300,17 +300,6 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 		case GW::SYSTEM::MINIMIZE:
 			break;
 		case GW::SYSTEM::MAXIMIZE:
-		{
-			unsigned int maxWidth;
-			unsigned int maxHeight;
-
-			gWnd->GetWidth(maxWidth);
-			gWnd->GetHeight(maxHeight);
-
-			aspectRatio = maxWidth / maxHeight;
-			swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-		}
-			break;
 		case GW::SYSTEM::RESIZE:
 		{
 
@@ -357,8 +346,21 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 		}
 			break;
 		case GW::SYSTEM::MOVE:
+		{
+			D3D11_VIEWPORT viewport;
+			gWnd->GetWidth((unsigned int&)viewport.Width);
+			gWnd->GetHeight((unsigned int&)viewport.Height);
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
+			gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+
+			context->RSSetViewports(1, &viewport);
+		}
 			break;
 		case GW::SYSTEM::DESTROY:
+		{
+			this->~GDirectX11();
+		}
 			break;
 		}
 
