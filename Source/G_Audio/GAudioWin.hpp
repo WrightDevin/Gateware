@@ -410,6 +410,7 @@ HRESULT LoadWaveData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_B
 			theResult = S_FALSE;
 			return theResult;
 		}
+		fclose(someWaveFile);
 	}
 
 	return theResult;
@@ -475,6 +476,7 @@ HRESULT LoadOnlyWaveHeaderData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX,
 			case fourRIFFcc:
 			{
 				dwRiffDataSize = dwChunkDataSize;
+				myAudioBuffer.AudioBytes = dwChunkDataSize;
 				dwChunkDataSize = 4;
 				//ReadFile(theFile, &dwFileType, 4, &dwRead, NULL);
 				dwRead = fread(&dwFileType, 1, 4, someWaveFile);
@@ -531,114 +533,37 @@ HRESULT LoadOnlyWaveHeaderData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX,
 		{
 			theResult = S_FALSE;
 		}
+	fclose(someWaveFile);
 	}
-
 	return theResult;
 }
 
-
-HRESULT FindChunk(HANDLE & theFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition, DWORD & dwRiffSize)
+int GetCharSize(const char * theConstChar)
 {
-	//by default code assumes its reading PCM file with 'RIFF', 'fmt ', and 'data' chunks
-	//but in future I hope to include .mp3 if time allows
-
-
-	//Check if file is valid
-	HRESULT theResult = S_OK;
-	if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-		return HRESULT_FROM_WIN32(GetLastError());
-	//Setting data variables
-	DWORD dwChunkType;
-	DWORD dwChunkDataSize;
-	DWORD dwRIFFDataSize = 0;
-	DWORD dwFileType;
-	DWORD bytesRead = 0;
-	DWORD dwOffset = 0;
-
-
-	while (theResult == S_OK)
+	int returnValue = 0;
+	for (int i = 0; ; i++)
 	{
-		//populating variables with data from file
-
-		DWORD dwRead;
-		// reads in the chunk type 
-		if (0 == ReadFile(theFile, &dwChunkType, sizeof(DWORD), &dwRead, NULL))
-			theResult = HRESULT_FROM_WIN32(GetLastError());
-		bytesRead += dwRead;
-
-		if (0 == ReadFile(theFile, &dwChunkDataSize, sizeof(DWORD), &dwRead, NULL))
-			theResult = HRESULT_FROM_WIN32(GetLastError());
-		bytesRead += dwRead;
-
-		switch (dwChunkType)
+		if (theConstChar[i] == '\0')
 		{
-		case fourRIFFcc:
-			// RIFF is header and contains info about the rest of the data
-
-
-			dwRIFFDataSize = dwChunkDataSize;
-			dwChunkDataSize = 4;
-			dwChunkSize = 4;
-
-			dwRiffSize = dwRIFFDataSize;
-
-			if (0 == ReadFile(theFile, &dwFileType, sizeof(DWORD), &dwRead, NULL))
-				theResult = HRESULT_FROM_WIN32(GetLastError());
-
-
-
-			bytesRead += dwRead;
-
 			break;
-
-		default:
-			//returns if it encounters a pointer error
-			if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, dwChunkDataSize, NULL, FILE_CURRENT))
-			{
-				theResult = HRESULT_FROM_WIN32(GetLastError());
-				return theResult;
-			}
 		}
+		returnValue++;
 
-		//updates the offset infromation to read from
-		dwOffset += sizeof(DWORD) * 2;
-
-		if (dwChunkType == fourcc && dwChunkType)
-		{
-			//checks if this is the chunk we were looking for,
-			//if so then returns
-			dwChunkSize = dwChunkDataSize;
-			dwChunkDataPosition = dwOffset;
-			return S_OK;
-		}
-
-		dwOffset += dwChunkDataSize;
-		if (bytesRead >= dwRIFFDataSize)
-			return S_FALSE;
 	}
-	return theResult;
+	return returnValue;
 }
-HRESULT ReadChunkData(HANDLE & theFile, void * someBuffer, DWORD buffersize, DWORD bufferOffset)
+void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size)
 {
-	HRESULT theResult = S_OK;
-	//Checks if pointer is valid
-	DWORD dResult = SetFilePointer(theFile, bufferOffset, NULL, FILE_BEGIN);
-	if (dResult <= 0)
+	char * testChar = new char[size + 1];
+	for (int i = 0; i < size; i++)
 	{
-		theResult = HRESULT_FROM_WIN32(GetLastError());
-		return theResult;
+		testChar[i] = theConstChar[i];
+
 	}
-
-	DWORD dwRead;
-	//attempts to read data into the supplied buffer
-	//If done successfully returns S_OK, otherwise returns error
-	//theResult = myRead(theFile, someBuffer, buffersize, bufferOffset);
-	BOOL theBool = ReadFile(theFile, someBuffer, buffersize, &dwRead, NULL);
-	if (0 == (theBool))
-		theResult = HRESULT_FROM_WIN32(GetLastError());
-
-	return theResult;
+	testChar[size] = '\0';
+	*myChar = testChar;
 }
+
 
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
 {
@@ -1192,95 +1117,113 @@ GReturn WindowAppMusic::Stream()
 	HANDLE theFile = myFile;
 
 
-	if (INVALID_HANDLE_VALUE == theFile)
-		theResult = HRESULT_FROM_WIN32(GetLastError());
+	//if (INVALID_HANDLE_VALUE == theFile)
+		//theResult = HRESULT_FROM_WIN32(GetLastError());
 
-	DWORD ptrLocation = 0;
-	if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
-		theResult = HRESULT_FROM_WIN32(GetLastError());
+	//DWORD ptrLocation = 0;
+	//if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
+		//theResult = HRESULT_FROM_WIN32(GetLastError());
 	myAudioBuffer.Flags = 0;
 	XAUDIO2_VOICE_STATE state;
 	mySourceVoice->GetState(&state);
-	XAUDIO2_SEND_DESCRIPTOR send = { 0, mySourceVoice };
-	XAUDIO2_VOICE_SENDS sendlist = { 1, &send };
-	send.pOutputVoice = mySubmixVoice;
-	mySubmixVoice->SetOutputVoices(&sendlist);
 
-	DWORD dwChunkSize = 0;
-	DWORD dwChunkPosition = 0;
-	DWORD dataSize = 0;
 	//checks the file type, expects a WAVE or XWMA
 	//returns false otherwise
-	theResult = FindChunk(theFile, fourRIFFcc, dwChunkSize, dwChunkPosition, dataSize);
-	if (theResult != S_OK)
+	//theResult = FindChunk(theFile, fourRIFFcc, dwChunkSize, dwChunkPosition, dataSize);
+	
+	unsigned long dwChunktype = 0;
+	unsigned long dwChunkDataSize = 0;
+	unsigned long bytesRead = 0;
+	unsigned long throwAway = 0;
+	unsigned long dwRead = 0;
+	int breakOut = 0;
+	WAVEFORMATEXTENSIBLE throwAwayInfo;
+	int CurrentDiskReadBuffer = 0;
+	int CurrentPosition = 0;
+	int cbWaveSize = myAudioBuffer.AudioBytes;
+	//uint8_t * byteBuffer = new uint8_t[STREAMING_BUFFER_SIZE];
+	int dwDataSize = dataSize;
+	FILE * someWaveFile = NULL;
+
+	someWaveFile = fopen(myFile, "r");
+	int errCheck = 0;
+
+	if (someWaveFile == NULL)
 	{
 		return FAILURE;
 	}
-
-	int CurrentDiskReadBuffer = 0;
-	int CurrentPosition = 0;
-	int cbWaveSize = dataSize;
-	//uint8_t * byteBuffer = new uint8_t[STREAMING_BUFFER_SIZE];
-	int dwDataSize = dataSize;
-	while (CurrentPosition < cbWaveSize && stopFlag == false)
+	if (someWaveFile != NULL)
 	{
-	
-		if (!isPaused)
+		clearerr(someWaveFile);
+	CurrentPosition = bytesRead;
+		while (CurrentPosition < cbWaveSize && stopFlag == false)
 		{
-			DWORD dwRead;
-			//if (SUCCEEDED(theResult) && 0 == ReadFile(theFile, &byteBuffer, dwDataSize, &dwRead, &overlap))
-			//theResult = HRESULT_FROM_WIN32(GetLastError());
-			DWORD cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
 
-			if (0 == ReadFile(theFile, buffers[CurrentDiskReadBuffer], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
-				theResult = HRESULT_FROM_WIN32(GetLastError());
-			overlap.Offset += cbValid;
-
-			//update the file position to where it will be once the read finishes
-			CurrentPosition += cbValid;
-
-			DWORD NumberBytesTransfered;
-			GetOverlappedResult(theFile, &overlap, &NumberBytesTransfered, true);
-		
-
-			
-			XAUDIO2_BUFFER buf = { 0 };
-			if (myAudioBuffer.pAudioData == nullptr)
+			if (!isPaused)
 			{
-				myAudioBuffer.AudioBytes = cbValid;
-				myAudioBuffer.pAudioData = buffers[CurrentDiskReadBuffer];
-				if (CurrentPosition >= cbWaveSize)
-				{
-					myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
-				}
-				while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
-				{
-					WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
-
-				}
-				mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
-			}
-			else
-			{
-				buf.AudioBytes = cbValid;
-				buf.pAudioData = buffers[CurrentDiskReadBuffer];
-				if (CurrentPosition >= cbWaveSize)
-				{
-					buf.Flags = XAUDIO2_END_OF_STREAM;
-				}
-				while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
-				{
-					WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
-
-				}
-				mySourceVoice->SubmitSourceBuffer(&buf);
-			}
 			
+				//if (SUCCEEDED(theResult) && 0 == ReadFile(theFile, &byteBuffer, dwDataSize, &dwRead, &overlap))
+				//theResult = HRESULT_FROM_WIN32(GetLastError());
 			
-			CurrentDiskReadBuffer++;
-			CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
+				size_t cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
+
+				dwRead = fread(buffers[CurrentDiskReadBuffer], 1, cbValid, someWaveFile);
+				if (dwRead != cbValid)
+				{
+					errCheck = feof(someWaveFile);
+					if (errCheck == 1)
+					{
+						clearerr(someWaveFile);
+						dwRead = fread(buffers[CurrentDiskReadBuffer], 1, cbValid, someWaveFile);
+						errCheck = feof(someWaveFile);
+					}
+					errCheck = 0;
+				}
+				//overlap.Offset += cbValid;
+
+				//update the file position to where it will be once the read finishes
+				CurrentPosition += cbValid;
+
+				//DWORD NumberBytesTransfered;
+				//GetOverlappedResult(theFile, &overlap, &NumberBytesTransfered, true);
+
+				XAUDIO2_BUFFER buf = { 0 };
+				if (myAudioBuffer.pAudioData == nullptr)
+				{
+					myAudioBuffer.AudioBytes = cbValid;
+					myAudioBuffer.pAudioData = buffers[CurrentDiskReadBuffer];
+					if (CurrentPosition >= cbWaveSize)
+					{
+						myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
+					}
+					while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
+					{
+						WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
+
+					}
+					mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
+				}
+				else
+				{
+					buf.AudioBytes = cbValid;
+					buf.pAudioData = buffers[CurrentDiskReadBuffer];
+					if (CurrentPosition >= cbWaveSize)
+					{
+						buf.Flags = XAUDIO2_END_OF_STREAM;
+					}
+					while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
+					{
+						WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
+
+					}
+					mySourceVoice->SubmitSourceBuffer(&buf);
+				}
+
+
+				CurrentDiskReadBuffer++;
+				CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
+			}
 		}
-	}
 	
 	myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
 	mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
@@ -1294,19 +1237,18 @@ GReturn WindowAppMusic::Stream()
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		return FAILURE;
 	}
-
-	DWORD dwRead;
-	for (int i = 0; i < MAX_BUFFER_COUNT; i++)
-	{
-		if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
-			theResult = HRESULT_FROM_WIN32(GetLastError());
-		if (0 == ReadFile(theFile, buffers[i], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
-			theResult = HRESULT_FROM_WIN32(GetLastError());
+	fclose(someWaveFile);
 	}
+	//DWORD dwRead;
+	//for (int i = 0; i < MAX_BUFFER_COUNT; i++)
+	//{
+		//if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
+			//theResult = HRESULT_FROM_WIN32(GetLastError());
+		//if (0 == ReadFile(theFile, buffers[i], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
+			//theResult = HRESULT_FROM_WIN32(GetLastError());
+	//}
 	
-	XAUDIO2_SEND_DESCRIPTOR send2 = { 0, mySourceVoice };
-	XAUDIO2_VOICE_SENDS sendlist2 = { 1, &send2 };
-	mySubmixVoice->SetOutputVoices(&sendlist2);
+
 	isPlaying = false;
 	isPaused = true;
 }
@@ -1330,27 +1272,17 @@ GReturn WindowAppMusic::StreamStart()
 		isPaused = false;
 
 		//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
-		HANDLE theFile = myFile;
+		//HANDLE theFile = myFile;
 
-		if (INVALID_HANDLE_VALUE == theFile)
-			theResult = HRESULT_FROM_WIN32(GetLastError());
+		//if (INVALID_HANDLE_VALUE == theFile)
+			//theResult = HRESULT_FROM_WIN32(GetLastError());
 
-		if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-			theResult = HRESULT_FROM_WIN32(GetLastError());
+		//if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+			//theResult = HRESULT_FROM_WIN32(GetLastError());
 
-
-		DWORD dwChunkSize = 0;
-		DWORD dwChunkPosition = 0;
-		DWORD dataSize = 0;
 		//checks the file type, expects a WAVE or XWMA
 		//returns false otherwise
-		theResult = FindChunk(theFile, fourRIFFcc, dwChunkSize, dwChunkPosition, dataSize);
-		if (theResult != S_OK)
-		{
-			return FAILURE;
-		}
-
-
+	
 
 
 
@@ -1458,6 +1390,7 @@ GReturn WindowAppAudio::Init(int _numOfOutputs)
 		return result;
 	}
 	numberOfOutputs = _numOfOutputs;
+	maxChannels = 8;
 	result = SUCCESS;
 
 	return result;
@@ -1532,7 +1465,9 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 		return result;
 	}
 	WAVEFORMATEXTENSIBLE wfmx;
-	if (LoadOnlyWaveHeaderData(_path, msc->myFile, wfmx, msc->myAudioBuffer, msc->dataSize) != S_OK)
+	int size = GetCharSize(_path);
+	CreateCharFromConstChar(&msc->myFile, _path, size);
+	if (LoadOnlyWaveHeaderData2(msc->myFile, wfmx, msc->myAudioBuffer, msc->dataSize) != S_OK)
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
