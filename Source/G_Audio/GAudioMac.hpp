@@ -6,24 +6,29 @@
 
 using namespace GW;
 using namespace AUDIO;
-
+#define G_UINT_MAX 0xffffffff
+unsigned int AudioCounter = 0;
+unsigned int SoundCounter = 0;
+unsigned int MusicCounter = 0;
 class MacAppAudio;
 class MacAppSound : public GSound
 {
 public:
 	int index = -1;
 	MacAppAudio * audio;
+	bool loops = false;
 
 	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
-	
 	GReturn SetVolume(float _newVolume);
-	GReturn GetChannels(unsigned int & returnedChannelNum);
-	GReturn Play();
+	GReturn Play(bool _loop = false);
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
+	GReturn isSoundPlaying(bool & _returnedBool);
+	GReturn GetSoundSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetSoundOutputChannels(unsigned int & returnedChannelNum);
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
@@ -43,6 +48,7 @@ public:
 	char * myFile;
 	int index = -1;
 	unsigned long dataSize;
+	bool loops = false;
 	MacAppAudio * audio;
 	
 	//std::thread* streamThread = nullptr;
@@ -50,14 +56,14 @@ public:
 	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
-
-	GReturn GetChannels(unsigned int & returnedChannelNum);
 	GReturn SetVolume(float _newVolume);
-	GReturn StreamStart();
-	GReturn Stream();
+	GReturn StreamStart(bool _loop = false);
 	GReturn PauseStream();
 	GReturn ResumeStream();
 	GReturn StopStream();
+	GReturn isStreamPlaying(bool & _returnedBool);
+	GReturn GetStreamSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetStreamOutputChannels(unsigned int & returnedChannelNum);
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
@@ -75,9 +81,7 @@ class MacAppAudio : public GAudio
 {
 public:
 	const char * myFile;
-	//std::vector<WindowAppSound *> activeSounds;
-	//std::vector<WindowAppMusic *> activeMusic;
-
+	bool loops = false;
 	float maxVolume;
 	int maxChannels;
 	
@@ -148,8 +152,7 @@ GReturn MacAppSound::SetChannelVolumes(float * _values, int _numChannels)
 #endif
 	return result;
 }
-
-GReturn MacAppSound::GetChannels(unsigned int & returnedChannelNum)
+GReturn MacAppSound::GetSoundSourceChannels(unsigned int & returnedChannelNum)
 {
 	GReturn result = FAILURE;
 	if (audio == nullptr)
@@ -162,6 +165,22 @@ GReturn MacAppSound::GetChannels(unsigned int & returnedChannelNum)
         result = SUCCESS;
     else
         result = FAILURE;
+#endif
+	return result;
+}
+GReturn MacAppSound::GetSoundOutputChannels(unsigned int & returnedChannelNum)
+{
+	GReturn result = FAILURE;
+	if (audio == nullptr)
+	{
+		return result;
+	}
+#if __APPLE__
+	returnedChannelNum = [mac_snd GetChannels];
+	if (returnedChannelNum > 0)
+		result = SUCCESS;
+	else
+		result = FAILURE;
 #endif
 	return result;
 }
@@ -182,7 +201,7 @@ GReturn MacAppSound::SetVolume(float _newVolume)
 #endif
 	return result;
 }
-GReturn MacAppSound::Play()
+GReturn MacAppSound::Play(bool _loop)
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == nullptr)
@@ -244,6 +263,94 @@ GReturn MacAppSound::StopSound()
 
 	return result;
 }
+GReturn MacAppSound::isSoundPlaying(bool & _returnedBool)
+{
+	GReturn result = GReturn::FAILURE;
+#if __APPLE__
+	_returnedBool = mac_snd->isPlaying;
+	result = SUCCESS;
+#endif
+	return 	result;
+}
+GReturn MacAppSound::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = SoundCounter;
+	result = SUCCESS;
+
+	return result;
+}
+GReturn MacAppSound::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (SoundCounter == G_UINT_MAX)
+		return result;
+	SoundCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppSound::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (SoundCounter == 0)
+		return result;
+	SoundCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppSound::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GSoundUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GSound* convert = reinterpret_cast<GSound*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
+	return result;
+}
 MacAppSound::~MacAppSound()
 {
 
@@ -298,8 +405,23 @@ GReturn MacAppMusic::SetChannelVolumes(float * _values, int _numChannels)
 #endif
     return result;
 }
-
-GReturn MacAppMusic::GetChannels(unsigned int & returnedChannelNum)
+GReturn MacAppMusic::GetStreamSourceChannels(unsigned int & returnedChannelNum)
+{
+	GReturn result = FAILURE;
+	if (audio == nullptr)
+	{
+		return result;
+	}
+#if __APPLE__
+	returnedChannelNum = [mac_msc GetChannels];
+	if (returnedChannelNum > 0)
+		result = SUCCESS;
+	else
+		result = FAILURE;
+#endif
+	return result;
+}
+GReturn MacAppMusic::GetStreamOutputChannels(unsigned int & returnedChannelNum)
 {
 	GReturn result = FAILURE;
 	if (audio == nullptr)
@@ -335,14 +457,7 @@ GReturn MacAppMusic::SetVolume(float _newVolume)
 #endif
 	return result;
 }
-GReturn MacAppMusic::Stream()
-{
-    GReturn result = FAILURE;
-
-    return result;
-}
-
-GReturn MacAppMusic::StreamStart()
+GReturn MacAppMusic::StreamStart(bool _loop)
 {
 	GReturn result = FAILURE;
     if (audio == nullptr)
@@ -358,7 +473,6 @@ GReturn MacAppMusic::StreamStart()
 #endif
 	return result;
 }
-
 GReturn MacAppMusic::PauseStream()
 {
 	GReturn result = GReturn::FAILURE;
@@ -405,6 +519,95 @@ GReturn MacAppMusic::StopStream()
         result = FAILURE;
     
 #endif
+	return result;
+}
+GReturn MacAppMusic::isStreamPlaying(bool & _returnedBool)
+{
+	GReturn result = GReturn::FAILURE;
+
+#if __APPLE__
+	_returnedBool = mac_msc->isPlaying;
+	result = SUCCESS;
+#endif
+	return 	result;
+}
+GReturn MacAppMusic::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = MusicCounter;
+	result = SUCCESS;
+
+	return result;
+}
+GReturn MacAppMusic::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (MusicCounter == G_UINT_MAX)
+		return result;
+	MusicCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppMusic::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (MusicCounter == 0)
+		return result;
+	MusicCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GMusicUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GMusic* convert = reinterpret_cast<GMusic*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
 	return result;
 }
 MacAppMusic::~MacAppMusic()
@@ -578,6 +781,85 @@ GReturn MacAppAudio::ResumeAll()
         result = FAILURE;
     
 #endif
+	return result;
+}
+GReturn MacAppAudio::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = AudioCounter;
+	result = SUCCESS;
+
+	return result;
+}
+GReturn MacAppAudio::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (AudioCounter == G_UINT_MAX)
+		return result;
+	AudioCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppAudio::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (AudioCounter == 0)
+		return result;
+	AudioCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn MacAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GAudioUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GAudio* convert = reinterpret_cast<GAudio*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
 	return result;
 }
 MacAppAudio::~MacAppAudio()

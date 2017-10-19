@@ -1,13 +1,13 @@
 #ifndef GAUDIO_H
 #define GAUDIO_H
-#endif
+
 /*!
 File: GAudio.h
 Purpose: A Gateware interface that handles sounds and music.
 Author: TJay Cargle
 Contributors: N/A
 Last Modified: 10/19/2017
-Interface Status: Nearly Complete
+Interface Status: Complete
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -152,3 +152,4 @@ namespace GW
 
 	} // end SYSTEM namespace
 } // end GW namespace
+#endif

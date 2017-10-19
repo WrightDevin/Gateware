@@ -1,14 +1,14 @@
 #pragma once
 #ifndef GSound_H
 #define GSound_H
-#endif
+
 /*!
 File: GAudio.h
 Purpose: A Gateware internal interface that handles sounds.
 Author: TJay Cargle
 Contributors: N/A
 Last Modified: 8/12/2017
-Interface Status: Early Stage Development
+Interface Status: Complete
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -99,3 +99,4 @@ namespace GW
 
 	} // end SYSTEM namespace
 } // end GW namespace
+#endif

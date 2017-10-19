@@ -1,14 +1,14 @@
 #pragma once
 #ifndef GMUSIC_H
 #define GMUSIC_H
-#endif
+
 /*!
 File: GMusic.h
 Purpose: A Gateware internal interface that handles music.
 Author: TJay Cargle
 Contributors: N/A
 Last Modified: 8/12/2017
-Interface Status: Early Stage Development
+Interface Status: Complete
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -97,3 +97,4 @@ namespace GW
 
 	} // end SYSTEM namespace
 } // end GW namespace
+#endif

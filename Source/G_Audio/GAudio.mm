@@ -368,6 +368,7 @@
     AVAudioOutputNode * rightSpeaker;
     NSMutableArray *ActiveSounds;
     NSMutableArray *ActiveMusic;
+
     float MasterVolume ;
 }
 

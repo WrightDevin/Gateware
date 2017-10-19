@@ -100,7 +100,7 @@ TEST_CASE("Playing test sound", "[PlaySound]")
  sleep(1);
 #endif;
 
-    REQUIRE(G_SUCCESS(checkReturned = testSound2->Play(true)));
+    REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
 
 
     checkReturned = FAILURE;
@@ -166,7 +166,7 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 		REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 6)));
 		REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
 	}
-	Sleep(2000);
+	Sleep(1000);
 #endif
 	checkReturned = FAILURE;
 }

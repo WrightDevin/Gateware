@@ -321,47 +321,84 @@ returnedWave.isSigned = true;
 return result;
 
 }
+int GetCharSize(const char * theConstChar)
+{
+	int returnValue = 0;
+	for (int i = 0; ; i++)
+	{
+		if (theConstChar[i] == '\0')
+		{
+			break;
+		}
+		returnValue++;
+
+	}
+	return returnValue;
+}
+void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size)
+{
+	char * testChar = new char[size + 1];
+	for (int i = 0; i < size; i++)
+	{
+		testChar[i] = theConstChar[i];
+
+	}
+	testChar[size] = '\0';
+	*myChar = testChar;
+}
 
 using std::atomic;
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
-
+atomic<unsigned int> AudioCounter = 0;
+atomic<unsigned int> SoundCounter = 0;
+atomic<unsigned int> MusicCounter = 0;
 class LinuxAppAudio;
 class LinuxAppSound : public GSound
 {
 public:
+	char * streamName = "Sound";
     int index = -1;
-    LinuxAppAudio * audio = nullptr;
+	int quitVal = 0;
+	bool loops = false;
+	atomic<bool> isPlaying;
+	atomic<bool> isPaused;
+	float volume = -1.0f;
+	bool stopFlag = false;
+
+	LinuxAppAudio * audio = nullptr;
+	WAVE_FILE myFile;
+	atomic<TJState> myState;
+	std::thread* streamThread = nullptr;
+	std::thread* loopThread = nullptr;
+
     pa_channel_map * myMap = nullptr;
     pa_stream * myStream = nullptr;
- int quitVal = 0;
-
     pa_mainloop * myMainLoop;
      pa_context * myContext = nullptr;
-
-       std::thread* loopThread = nullptr;
-    std::thread* streamThread = nullptr;
-     atomic<TJState> myState;
-    char * streamName = "Sound";
     pa_cvolume vol;
     pa_sample_format myPulseFormat;
-    WAVE_FILE myFile;
-    bool loops = false;
-    atomic<bool> isPlaying;
-    atomic<bool> isPaused;
-    float volume = -1.0f;
-    bool stopFlag = false;
+
+
     GReturn Init();
     GReturn SetPCMShader(const char* _data);
     GReturn SetChannelVolumes(float *_values, int _numChannels);
     GReturn CheckChannelVolumes(const float *_values, int _numChannels);
     GReturn SetVolume(float _newVolume);
-    GReturn GetChannels(unsigned int & returnedChannelNum );
-    GReturn Play();
+  
+    GReturn Play(bool _loop = false);
     GReturn Pause();
     GReturn Resume();
     GReturn StopSound();
     GReturn StreamSound();
+	GReturn StopSound();
+	GReturn isSoundPlaying(bool & _returnedBool);
+	GReturn GetSoundSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetSoundOutputChannels(unsigned int & returnedChannelNum);
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
     ~LinuxAppSound();
 
 };
@@ -369,40 +406,51 @@ public:
 class LinuxAppMusic : public GMusic
 {
 public:
+	char * streamName = "Sound";
     int index = -1;
-     atomic<TJState> myState;
     char * myFilePath;
+	unsigned long fileSize = 0;
+	int quitVal = 0;
+	bool loops = false;
+	atomic<bool> isPlaying;
+	atomic<bool> isPaused;
+	float volume = -1.0f;
+	bool stopFlag = false;
+
+     atomic<TJState> myState;
     LinuxAppAudio * audio = nullptr;
-    pa_channel_map * myMap = nullptr;
-    pa_stream * myStream = nullptr;
     std::thread* loopThread = nullptr;
     std::thread* streamThread = nullptr;
-    char * streamName = "Sound";
-    unsigned long fileSize = 0;
-    pa_sample_format myPulseFormat;
+	PCM_FORMAT_INFO myPCMFormat;
+	PCM_BUFFER myBuffers[MAX_BUFFER_COUNT];
 
+	pa_channel_map * myMap = nullptr;
+	pa_stream * myStream = nullptr;
+    pa_sample_format myPulseFormat;
     pa_mainloop * myMainLoop;
      pa_context * myContext = nullptr;
-    int quitVal = 0;
 
-    PCM_FORMAT_INFO myPCMFormat;
-    PCM_BUFFER myBuffers[MAX_BUFFER_COUNT];
-    bool loops = false;
-    atomic<bool> isPlaying;
-    atomic<bool> isPaused;
-    float volume = -1.0f;
-    bool stopFlag = false;
+
+
+  
     GReturn Init();
     GReturn SetPCMShader(const char* _data);
     GReturn SetChannelVolumes(float *_values, int _numChannels);
     GReturn CheckChannelVolumes(const float *_values, int _numChannels);
-    GReturn GetChannels(unsigned int & returnedChannelNum);
+
     GReturn SetVolume(float _newVolume);
-    GReturn StreamStart();
+    GReturn StreamStart(bool _loop = false);
     GReturn StreamMusic();
     GReturn PauseStream();
     GReturn ResumeStream();
     GReturn StopStream();
+	GReturn GetStreamSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetStreamOutputChannels(unsigned int & returnedChannelNum);
+	GReturn isStreamPlaying(bool & _returnedBool);
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
     ~LinuxAppMusic();
 
 
@@ -413,18 +461,18 @@ public:
 class LinuxAppAudio : public GAudio
 {
 public:
+	float maxVolume = 1;
+	int maxChannels = 0;
+	int quitVal = 0;
+	int numberOfOutputs = 2;
 
+	atomic<TJState> myState;
+	atomic<bool> isIterating;
     std::vector<LinuxAppSound *> activeSounds;
     std::vector<LinuxAppMusic *> activeMusic;
     std::thread* streamThread = nullptr;
-   // pa_mainloop * myMainLoop = nullptr;
-    //pa_context * myContext = nullptr;
-    atomic<TJState> myState; //= TJState.Wait;
-   // atomic<int> request;
-    atomic<bool> isIterating;
-    float maxVolume = 1;
-    int maxChannels = 0;
-    int quitVal = 0;
+
+ 
     GReturn Init(int _numOfOutputs = 2);
     GReturn CreateSound(const char* _path, GSound** _outSound);
     GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
@@ -433,7 +481,10 @@ public:
     GReturn PauseAll();
     GReturn ResumeAll();
     GReturn StopAll();
-   // void Iterate();
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
     ~LinuxAppAudio();
 
 };
@@ -678,12 +729,11 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
         return result;
 
     unsigned int currentChannels;
-    result = GetChannels(currentChannels);
+    result = GetSoundSourceChannels(currentChannels);
     if (result != SUCCESS)
         return result;
     float * currentValues = new float[currentChannels];
-//    vol.values
-//    mySourceVoice->GetChannelVolumes(_numChannels, currentValues);
+
     if (currentValues == nullptr)
         return result;
 
@@ -715,7 +765,7 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
 result = SUCCESS;
     return result;
 }
-GReturn LinuxAppSound::GetChannels(unsigned int & returnedChannelNum)
+GReturn LinuxAppSound::GetSoundSourceChannels(unsigned int & returnedChannelNum)
 {
     GReturn result = FAILURE;
     if (audio == nullptr)
@@ -725,6 +775,17 @@ GReturn LinuxAppSound::GetChannels(unsigned int & returnedChannelNum)
     returnedChannelNum = myFile.myFormat.mNumChannels;
     result = SUCCESS;
     return result;
+}
+GReturn LinuxAppSound::GetSoundOutputChannels(unsigned int & returnedChannelNum)
+{
+	GReturn result = FAILURE;
+	if (audio == nullptr)
+	{
+		return result;
+	}
+	returnedChannelNum = audio->numberOfOutputs;
+	result = SUCCESS;
+	return result;
 }
 GReturn LinuxAppSound::SetVolume(float _newVolume)
 {
@@ -743,7 +804,7 @@ GReturn LinuxAppSound::SetVolume(float _newVolume)
     }
     unsigned int channelNum = 0;
      pa_cvolume theVolume;
-     result = GetChannels(channelNum);
+     result = GetSoundSourceChannels(channelNum);
      if(result!= SUCCESS)
         return result;
      theVolume.channels = channelNum;
@@ -848,7 +909,7 @@ time_t prevT = time(nullptr) -1;
     }
     return theResult;
 }
-GReturn LinuxAppSound::Play()
+GReturn LinuxAppSound::Play(bool _loop)
 {
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
@@ -956,6 +1017,90 @@ pa_stream_unref(myStream);
 pa_context_disconnect(myContext);
 pa_context_unref(myContext);
 pa_mainloop_free(myMainLoop);
+}
+GReturn LinuxAppSound::isSoundPlaying(bool & _returnedBool)
+{
+	_returnedBool = isPlaying;
+	return SUCCESS;
+}
+GReturn LinuxAppSound::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = SoundCounter;
+	result = SUCCESS;
+
+	return result;
+}
+GReturn LinuxAppSound::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (SoundCounter == UINT_MAX)
+		return result;
+	SoundCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppSound::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (SoundCounter == 0)
+		return result;
+	SoundCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppSound::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GSoundUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GSound* convert = reinterpret_cast<GSound*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
+	return result;
 }
 //End of GSound implementation
 
@@ -1096,7 +1241,7 @@ GReturn LinuxAppMusic::CheckChannelVolumes(const float * _values, int _numChanne
 
     result = FAILURE;
     unsigned int currentChannels;
-    result = GetChannels(currentChannels);
+    result = GetStreamSourceChannels(currentChannels);
     if (result != SUCCESS)
         return result;
     float * currentValues = new float [currentChannels];
@@ -1132,7 +1277,7 @@ GReturn LinuxAppMusic::CheckChannelVolumes(const float * _values, int _numChanne
 result = SUCCESS;
     return result;
 }
-GReturn LinuxAppMusic::GetChannels(unsigned int & returnedChannelNum)
+GReturn LinuxAppMusic::GetStreamSourceChannels(unsigned int & returnedChannelNum)
 {
     GReturn result = FAILURE;
     if (audio == nullptr)
@@ -1147,6 +1292,22 @@ GReturn LinuxAppMusic::GetChannels(unsigned int & returnedChannelNum)
     returnedChannelNum = myPCMFormat.mNumChannels;
     result = SUCCESS;
     return result;
+}
+GReturn LinuxAppMusic::GetStreamOutputChannels(unsigned int & returnedChannelNum)
+{
+	GReturn result = FAILURE;
+	if (audio == nullptr)
+	{
+		return result;
+	}
+	if (myFilePath == nullptr)
+	{
+		return result;
+	}
+
+	returnedChannelNum = audio->numberOfOutputs;
+	result = SUCCESS;
+	return result;
 }
 GReturn LinuxAppMusic::SetVolume(float _newVolume)
 {
@@ -1167,7 +1328,7 @@ GReturn LinuxAppMusic::SetVolume(float _newVolume)
     }
     unsigned int channelNum = 0;
      pa_cvolume theVolume;
-     result = GetChannels(channelNum);
+     result = GetStreamSourceChannels(channelNum);
      if(result!= SUCCESS)
         return result;
      theVolume.channels = channelNum;
@@ -1181,8 +1342,6 @@ GReturn LinuxAppMusic::SetVolume(float _newVolume)
 GReturn LinuxAppMusic::StreamMusic()
 {
 GReturn theResult = SUCCESS;
-
-
 
 TJCALLBACK myCallback;
 myCallback.streamOperationSucceed = FinishedDrain;
@@ -1360,7 +1519,6 @@ bool ready = false;
                     ready = false;
     }
 
-   // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
 
 
 
@@ -1388,7 +1546,7 @@ bool ready = false;
     fclose(someWaveFile);
     return theResult;
 }
-GReturn LinuxAppMusic::StreamStart()
+GReturn LinuxAppMusic::StreamStart(bool _loop)
 {
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
@@ -1398,6 +1556,7 @@ GReturn LinuxAppMusic::StreamStart()
 
 if (!isPlaying)
     {
+	loops = _loop;
         stopFlag = false;
 
 
@@ -1486,13 +1645,97 @@ GReturn LinuxAppMusic::StopStream()
     result = SUCCESS;
     return result;
 }
+GReturn LinuxAppMusic::isStreamPlaying(bool & _returnedBool)
+{
+	_returnedBool = isPlaying;
+	return SUCCESS;
+}
+GReturn LinuxAppMusic::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = MusicCounter;
+	result = SUCCESS;
+
+	return result;
+}
+GReturn LinuxAppMusic::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (MusicCounter == UINT_MAX)
+		return result;
+	MusicCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppMusic::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (MusicCounter == 0)
+		return result;
+	MusicCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GMusicUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GMusic* convert = reinterpret_cast<GMusic*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
+	return result;
+}
 LinuxAppMusic::~LinuxAppMusic()
 {
-pa_stream_disconnect(myStream);
-pa_stream_unref(myStream);
-pa_context_disconnect(myContext);
-pa_context_unref(myContext);
-pa_mainloop_free(myMainLoop);
+	pa_stream_disconnect(myStream);
+	pa_stream_unref(myStream);
+	pa_context_disconnect(myContext);
+	pa_context_unref(myContext);
+	pa_mainloop_free(myMainLoop);
 }
 //End of GMusic implementation
 GReturn LinuxAppAudio::Init(int _numOfOutputs)
@@ -1620,7 +1863,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
     unsigned int theirChannels;
     for (int i = 0; i < activeSounds.size(); i++)
     {
-        result = activeSounds[i]->GetChannels(theirChannels);
+        result = activeSounds[i]->GetSoundSourceChannels(theirChannels);
         if (result != SUCCESS)
         {
           return result;
@@ -1638,7 +1881,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
     }
     for (int i = 0; i < activeMusic.size(); i++)
     {
-        result = activeMusic[i]->GetChannels(theirChannels);
+        result = activeMusic[i]->GetStreamSourceChannels(theirChannels);
         if (result != SUCCESS)
         {
                 result = activeMusic[i]->CheckChannelVolumes(_values, _numChannels);
@@ -1718,7 +1961,85 @@ GReturn LinuxAppAudio::ResumeAll()
 
     return result;
 }
+GReturn LinuxAppAudio::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = AudioCounter;
+	result = SUCCESS;
 
+	return result;
+}
+GReturn LinuxAppAudio::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (AudioCounter == UINT_MAX)
+		return result;
+	AudioCounter++;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppAudio::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (AudioCounter == 0)
+		return result;
+	AudioCounter--;
+	result = SUCCESS;
+	return result;
+}
+GReturn LinuxAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GAudioUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GAudio* convert = reinterpret_cast<GAudio*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
+	return result;
+}
 LinuxAppAudio::~LinuxAppAudio()
 {
 	while (activeSounds.size() > 0)
