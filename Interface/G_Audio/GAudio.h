@@ -6,8 +6,8 @@ File: GAudio.h
 Purpose: A Gateware interface that handles sounds and music.
 Author: TJay Cargle
 Contributors: N/A
-Last Modified: 8/15/2017
-Interface Status: Early Stage Development
+Last Modified: 10/19/2017
+Interface Status: Nearly Complete
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -104,7 +104,45 @@ namespace GW
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
 			virtual GReturn StopAll() = 0;
+			//! Return the total number of active references to this object.
+			/*!
+			*	\param [out] _outCount The total number of active references of this object.
+			*
+			*	\retval SUCCESS Successfully ran.
+			*	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+			*/
+			virtual GReturn GetCount(unsigned int& _outCount) = 0;
 
+			//! Increase the total number of active references to this object.
+			/*!
+			*	End users should only call this operation if they are familiar with reference counting behavior.
+			*
+			*	\retval SUCCESS Successfully incremented the internal reference count.
+			*	\retval FAILURE Incrementation of internal reference count would overflow the value.
+			*/
+			virtual GReturn IncrementCount() = 0;
+
+			//! Decrease the total number of active references to this object.
+			/*!
+			*	Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
+			*
+			*	\retval SUCCESS Successfully decremented the internal reference count.
+			*	\retval FAILURE Decrementing of internal reference count would underflow the value.
+			*/
+			virtual GReturn DecrementCount() = 0;
+
+			//! Requests an interface that may or may not be supported by this object.
+			/*!
+			*	 Can be used by the end-user to query for a new interface using the
+			*	 unique ID of the interface they want and implement an interface update.
+			*
+			*	\param [in] _interfaceID The GUUIID of the interface you are requesting.
+			*	\param [out] _outputInterface Where the interface will be stored if function is successful.
+			*
+			*	\retval SUCCESS The interface is supported and function succeded.
+			*	\retval INTERFACE_UNSUPPORTED The requested interface is not supported.
+			*/
+			virtual GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) = 0;
 			
 
 		}; // end GAudio class

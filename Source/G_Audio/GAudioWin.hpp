@@ -4,6 +4,7 @@
 #include "../../Interface/G_Audio/GAudio.h"
 #include <xaudio2.h>
 #include <xaudio2fx.h>
+#include <atomic>
 #include <vector>
 #include <iostream>
 #include <thread>
@@ -20,6 +21,10 @@ const unsigned long fourDPDScc = 'sdpd';
 
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
+using std::atomic;
+atomic<unsigned int> AudioCounter = 0;
+atomic<unsigned int> SoundCounter = 0;
+atomic<unsigned int> MusicCounter = 0;
 HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
 {
 	//WAVEFORMATEXTENSIBLE myWFX = { 0 };
@@ -157,11 +162,11 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 
 	return theResult;
 }
-HRESULT LoadOnlyWaveHeaderData(const char * path, HANDLE & returnedHandle, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer, DWORD & dataSize)
+HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
 {
 
 	HRESULT theResult = S_OK;
-
+	HANDLE  returnedHandle;
 	wchar_t* tpath = new wchar_t[4096];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
 	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
@@ -207,7 +212,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, HANDLE & returnedHandle, WAVEF
 		{
 		case fourRIFFcc:
 		{
-			dataSize = dwRiffDataSize = dwChunkDataSize;
+			 dwRiffDataSize = dwChunkDataSize;
 			dwChunkDataSize = 4;
 			ReadFile(returnedHandle, &dwFileType, 4, &dwRead, NULL);
 			if (dwRead != 4)
@@ -259,285 +264,111 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, HANDLE & returnedHandle, WAVEF
 		return theResult;
 	}
 
-
+	CloseHandle(returnedHandle);
 	return theResult;
 }
-
-HRESULT LoadWaveData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
+HRESULT FindChunk(HANDLE & theFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition, DWORD & dwRiffSize)
 {
-	//WAVEFORMATEXTENSIBLE myWFX = { 0 };
-	//XAUDIO2_BUFFER myAudioBuffer = { 0 };
+	//by default code assumes its reading PCM file with 'RIFF', 'fmt ', and 'data' chunks
+	//but in future I hope to include .mp3 if time allows
+
+
+	//Check if file is valid
 	HRESULT theResult = S_OK;
-
-	//wchar_t* tpath = new wchar_t[4096];
-	//MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
-	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
-	//HANDLE theFile = CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-
-	//if (INVALID_HANDLE_VALUE == theFile)
-		//return HRESULT_FROM_WIN32(GetLastError());
-
-	//if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-		//return HRESULT_FROM_WIN32(GetLastError());
+	if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+		return HRESULT_FROM_WIN32(GetLastError());
+	//Setting data variables
+	DWORD dwChunkType;
+	DWORD dwChunkDataSize;
+	DWORD dwRIFFDataSize = 0;
+	DWORD dwFileType;
+	DWORD bytesRead = 0;
+	DWORD dwOffset = 0;
 
 
-	int result = 0; //zero is good
-	unsigned long dwChunktype = 0;
-	unsigned long dwChunkDataSize = 0;
-	unsigned long dwRiffDataSize = 0;
-	unsigned long dwFileType = 0;
-	unsigned long bytesRead = 0;
-
-	unsigned long dwIsWave = 0;
-	unsigned long throwAwayValue = 0;
-	bool foundAudioData = false;
-	FILE * someWaveFile = NULL;
-	someWaveFile = fopen(path, "r");
-	if (someWaveFile == NULL)
+	while (theResult == S_OK)
 	{
-		return 1;
-	}
-	if (someWaveFile != NULL)
-	{
-		while (result == 0)
+		//populating variables with data from file
+
+		DWORD dwRead;
+		// reads in the chunk type 
+		if (0 == ReadFile(theFile, &dwChunkType, sizeof(DWORD), &dwRead, NULL))
+			theResult = HRESULT_FROM_WIN32(GetLastError());
+		bytesRead += dwRead;
+
+		if (0 == ReadFile(theFile, &dwChunkDataSize, sizeof(DWORD), &dwRead, NULL))
+			theResult = HRESULT_FROM_WIN32(GetLastError());
+		bytesRead += dwRead;
+
+		switch (dwChunkType)
 		{
-			unsigned long dwRead;
-			//ReadFile(theFile, &dwChunktype, 4, &dwRead, NULL);
-			dwRead = fread(&dwChunktype, 1, 4, someWaveFile);
-			if (dwRead != 4)
-			{
-				result = -1;
-				break;
-			}
-			bytesRead += dwRead;
-			//ReadFile(theFile, &dwChunkDataSize, 4, &dwRead, NULL);
-			dwRead = fread(&dwChunkDataSize, 1, 4, someWaveFile);
-			if (dwRead != 4)
-			{
-				result = -2;
-				break;
-			}
-			bytesRead += dwRead;
+		case fourRIFFcc:
+			// RIFF is header and contains info about the rest of the data
 
-			switch (dwChunktype)
-			{
-			case fourRIFFcc:
-			{
-				dwRiffDataSize = dwChunkDataSize;
-				dwChunkDataSize = 4;
-				//ReadFile(theFile, &dwFileType, 4, &dwRead, NULL);
-				dwRead = fread(&dwFileType, 1, 4, someWaveFile);
-				if (dwRead != 4)
-				{
-					result = -3;
-					break;
-				}
-				if (dwFileType != fourWAVEcc)
-				{
-					result = -3;
-					break;
-				}
-				bytesRead += dwRead;
-				break;
-			}
-			case fourWAVEcc:
-			{
-				//ReadFile(theFile, &dwIsWave, 4, &dwRead, NULL);
-				dwRead = fread(&dwIsWave, 1, 4, someWaveFile);
-				if (dwRead != 4)
-				{
-					result = -4;
-					break;
-				}
-				bytesRead += dwRead;
 
-				break;
-			}
-			case fourFMTcc:
-			{
-				//ReadFile(theFile, &myWFX, dwChunkDataSize, &dwRead, NULL);
-				dwRead = fread(&myWFX, 1, dwChunkDataSize, someWaveFile);
-				if (dwRead != dwChunkDataSize)
-				{
-					result = -5;
-					break;
-				}
-				bytesRead += dwRead;
+			dwRIFFDataSize = dwChunkDataSize;
+			dwChunkDataSize = 4;
+			dwChunkSize = 4;
 
-				break;
-			}
-			case fourDATAcc:
-			{
-				BYTE * pDataBuffer = new BYTE[dwChunkDataSize];
-				//ReadFile(theFile, pDataBuffer, dwChunkDataSize, &dwRead, NULL);
-				dwRead = fread(pDataBuffer, 1, dwChunkDataSize, someWaveFile);
-				if (dwRead != dwChunkDataSize)
-				{
-					result = -6;
-					break;
-				}
-				myAudioBuffer.AudioBytes = dwChunkDataSize;  //contains size of the audio buffer in bytes
-				myAudioBuffer.pAudioData = pDataBuffer;  // this buffer contains all audio data
-				myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;// tells source this is EOF and should stop
-				bytesRead += dwRead;
-				foundAudioData = true;
-				break;
-			}
-			default:
-			{
-				//ReadFile(theFile, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
-				dwRead = fread(&throwAwayValue, 1, dwChunkDataSize, someWaveFile);
-				if (dwRead != dwChunkDataSize)
-				{
-					result = -7;
-				}
-				bytesRead += dwRead;
-				break;
-			}
+			dwRiffSize = dwRIFFDataSize;
 
-			}
+			if (0 == ReadFile(theFile, &dwFileType, sizeof(DWORD), &dwRead, NULL))
+				theResult = HRESULT_FROM_WIN32(GetLastError());
 
 
 
-			if (bytesRead - 8 >= dwRiffDataSize)//excludes the first 8 byte header information
-			{
-
-				break;
-			}
-		}
-		if (result < 0)
-		{
-			theResult = S_FALSE;
-			return theResult;
-		}
-		fclose(someWaveFile);
-	}
-
-	return theResult;
-}
-HRESULT LoadOnlyWaveHeaderData2(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer, DWORD & dataSize)
-{
-
-	HRESULT theResult = S_OK;
-
-	//wchar_t* tpath = new wchar_t[4096];
-	//MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
-	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
-
-	//returnedHandle = CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-
-	//if (INVALID_HANDLE_VALUE == returnedHandle)
-		//return HRESULT_FROM_WIN32(GetLastError());
-
-	//if (INVALID_SET_FILE_POINTER == SetFilePointer(returnedHandle, 0, NULL, FILE_BEGIN))
-		//return HRESULT_FROM_WIN32(GetLastError());
-
-
-	int result = 0; //zero is good
-	unsigned long dwChunktype = 0;
-	unsigned long dwChunkDataSize = 0;
-	unsigned long dwRiffDataSize = 0;
-	unsigned long dwFileType = 0;
-	unsigned long bytesRead = 0;
-
-	unsigned long dwIsWave = 0;
-	unsigned long throwAwayValue = 0;
-	bool foundAudioData = false;
-	FILE * someWaveFile = NULL;
-	someWaveFile = fopen(path, "r");
-	if (someWaveFile == NULL)
-	{
-		return 1;
-	}
-	if (someWaveFile != NULL)
-	{
-		while (result == 0)
-		{
-			unsigned long dwRead;
-			//ReadFile(theFile, &dwChunktype, 4, &dwRead, NULL);
-			dwRead = fread(&dwChunktype, 1, 4, someWaveFile);
-			if (dwRead != 4)
-			{
-				result = -1;
-				break;
-			}
-			bytesRead += dwRead;
-			//ReadFile(theFile, &dwChunkDataSize, 4, &dwRead, NULL);
-			dwRead = fread(&dwChunkDataSize, 1, 4, someWaveFile);
-			if (dwRead != 4)
-			{
-				result = -2;
-				break;
-			}
 			bytesRead += dwRead;
 
-			switch (dwChunktype)
-			{
-			case fourRIFFcc:
-			{
-				dwRiffDataSize = dwChunkDataSize;
-				myAudioBuffer.AudioBytes = dwChunkDataSize;
-				dwChunkDataSize = 4;
-				//ReadFile(theFile, &dwFileType, 4, &dwRead, NULL);
-				dwRead = fread(&dwFileType, 1, 4, someWaveFile);
-				if (dwRead != 4)
-				{
-					result = -3;
-					break;
-				}
-				if (dwFileType != fourWAVEcc)
-				{
-					result = -3;
-					break;
-				}
-				bytesRead += dwRead;
-				break;
-			}
-			case fourWAVEcc:
-			{
-				//ReadFile(theFile, &dwIsWave, 4, &dwRead, NULL);
-				dwRead = fread(&dwIsWave, 1, 4, someWaveFile);
-				if (dwRead != 4)
-				{
-					result = -4;
-					break;
-				}
-				bytesRead += dwRead;
+			break;
 
-				break;
-			}
-			case fourFMTcc:
+		default:
+			//returns if it encounters a pointer error
+			if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, dwChunkDataSize, NULL, FILE_CURRENT))
 			{
-				//ReadFile(theFile, &myWFX, dwChunkDataSize, &dwRead, NULL);
-				dwRead = fread(&myWFX, 1, dwChunkDataSize, someWaveFile);
-				if (dwRead != dwChunkDataSize)
-				{
-					result = -5;
-					break;
-				}
-				bytesRead += dwRead;
-				result = 1; //break us out of loop
-				break;
-			}
-
-			}
-			if (result < 0)
-			{
-				theResult = S_FALSE;
+				theResult = HRESULT_FROM_WIN32(GetLastError());
 				return theResult;
 			}
 		}
 
+		//updates the offset infromation to read from
+		dwOffset += sizeof(DWORD) * 2;
 
-		if (result < 0)
+		if (dwChunkType == fourcc && dwChunkType)
 		{
-			theResult = S_FALSE;
+			//checks if this is the chunk we were looking for,
+			//if so then returns
+			dwChunkSize = dwChunkDataSize;
+			dwChunkDataPosition = dwOffset;
+			return S_OK;
 		}
-	fclose(someWaveFile);
+
+		dwOffset += dwChunkDataSize;
+		if (bytesRead >= dwRIFFDataSize)
+			return S_FALSE;
 	}
 	return theResult;
 }
+HRESULT ReadChunkData(HANDLE & theFile, void * someBuffer, DWORD buffersize, DWORD bufferOffset)
+{
+	HRESULT theResult = S_OK;
+	//Checks if pointer is valid
+	DWORD dResult = SetFilePointer(theFile, bufferOffset, NULL, FILE_BEGIN);
+	if (dResult <= 0)
+	{
+		theResult = HRESULT_FROM_WIN32(GetLastError());
+		return theResult;
+	}
 
+	DWORD dwRead;
+	//attempts to read data into the supplied buffer
+	//If done successfully returns S_OK, otherwise returns error
+	//theResult = myRead(theFile, someBuffer, buffersize, bufferOffset);
+	BOOL theBool = ReadFile(theFile, someBuffer, buffersize, &dwRead, NULL);
+	if (0 == (theBool))
+		theResult = HRESULT_FROM_WIN32(GetLastError());
+
+	return theResult;
+}
 int GetCharSize(const char * theConstChar)
 {
 	int returnValue = 0;
@@ -564,54 +395,45 @@ void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size
 	*myChar = testChar;
 }
 
-
-struct StreamingVoiceContext : public IXAudio2VoiceCallback
-{
-	HANDLE hBufferEndEvent;
-	HANDLE hStreamEndEvent;
-	//StreamingVoiceContext() : hBufferEndEvent(CreateEvent(NULL, FALSE, FALSE, NULL)) {}
-	StreamingVoiceContext() :
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-	hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)), hStreamEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)){}
-#else
-		hBufferEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)), hStreamEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)) {}
-#endif	
-	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); CloseHandle(hStreamEndEvent); }
-	void OnBufferEnd(void*) { SetEvent(hBufferEndEvent); }
-	void OnVoiceProcessingPassStart(UINT32) {  }
-	void OnVoiceProcessingPassEnd() {  }
-	void OnVoiceError(void*, HRESULT) {  }
-	void OnStreamEnd() { SetEvent(hStreamEndEvent); }
-	void OnBufferStart(void*) {  }
-	void OnLoopEnd(void*) {  }
-	void OnLoopEnd(void*, HRESULT) {  }
-
-
-};
+//Forward Declarations so classes can have certain members
 class WindowAppAudio;
+struct StreamingVoiceContext;
+
+
 class WindowAppSound : public GSound
 {
 public:
 	int index = -1;
+	bool loops = false;
+	bool isPlaying = false;
+	bool isPaused = false;
+	float volume = 1.0f;
+
 	WindowAppAudio * audio;
 	IXAudio2SourceVoice * mySourceVoice = nullptr;
 	IXAudio2SubmixVoice * mySubmixVoice = nullptr;
 	WAVEFORMATEX myWFM = {0};
 	XAUDIO2_BUFFER myAudioBuffer = { 0 };
-	bool loops = false;
-	bool isPlaying = false;
-	bool isPaused = false;
-	float volume = 1.0f;
+	StreamingVoiceContext * myContext;
+
 	GReturn Init();
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn CheckChannelVolumes(const float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
-	GReturn GetChannels(uint32_t & returnedChannelNum );
-	GReturn Play();
+	
+	GReturn GetSoundSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetSoundOutputChannels(unsigned int & returnedChannelNum);
+	GReturn Play(bool _loop = false);
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
+	GReturn isSoundPlaying(bool & _returnedBool);
+
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~WindowAppSound();
 };
 
@@ -621,42 +443,50 @@ private:
 	BYTE buffers[MAX_BUFFER_COUNT][STREAMING_BUFFER_SIZE];
 	OVERLAPPED overlap = { 0 };
 public:
-	char *  myFile;
+	char * myFile;
 	int index = -1;
-	DWORD dataSize;
-	WindowAppAudio * audio;
-	IXAudio2SourceVoice * mySourceVoice = nullptr;
-	IXAudio2SubmixVoice * mySubmixVoice = nullptr;
-	WAVEFORMATEX myWFM = {0};
-	std::thread* streamThread = nullptr;
-	XAUDIO2_BUFFER myAudioBuffer = { 0 };
-
 	bool loops = false;
 	bool isPlaying = false;
 	bool isPaused = false;
 	bool stopFlag = false;
 	float volume = 1.0f;
+
+	WindowAppAudio * audio;
+	IXAudio2SourceVoice * mySourceVoice = nullptr;
+	IXAudio2SubmixVoice * mySubmixVoice = nullptr;
+	WAVEFORMATEX myWFM = {0};
+	XAUDIO2_BUFFER myAudioBuffer = { 0 };
+	StreamingVoiceContext * myContext;
+	std::thread* streamThread = nullptr;
+
 	GReturn Init();
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn CheckChannelVolumes(const float *_values, int _numChannels);
-	GReturn GetChannels(uint32_t & returnedChannelNum);
+	GReturn GetStreamSourceChannels(unsigned int & returnedChannelNum);
+	GReturn GetStreamOutputChannels(unsigned int & returnedChannelNum);
 	GReturn SetVolume(float _newVolume);
-	GReturn StreamStart();
+	GReturn StreamStart(bool _loop = false);
 	GReturn Stream();
 	GReturn PauseStream();
 	GReturn ResumeStream();
 	GReturn StopStream();
+	GReturn isStreamPlaying(bool & _returnedBool);
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~WindowAppMusic();
 
 
-	StreamingVoiceContext myContext;
+
 };
 
 
 class WindowAppAudio : public GAudio
 {
 public:
+
 	std::vector<WindowAppSound *> activeSounds;
 	std::vector<WindowAppMusic *> activeMusic;
 	IXAudio2 * myAudio = nullptr;
@@ -672,9 +502,82 @@ public:
 	GReturn PauseAll();
 	GReturn ResumeAll();
 	GReturn StopAll();
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~WindowAppAudio();
 
 };
+
+struct StreamingVoiceContext : public IXAudio2VoiceCallback
+{
+	WindowAppSound * sndUser = nullptr;
+	HANDLE hBufferEndEvent;
+	HANDLE hstreamEndEvent;
+	StreamingVoiceContext() :
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
+		hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)), hstreamEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE))
+#else
+		hBufferEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)), hstreamEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr))
+#endif
+	{}
+	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); CloseHandle(hstreamEndEvent);}
+	void OnBufferEnd(void*)
+	{
+		SetEvent(hBufferEndEvent);
+	
+	}
+	void OnVoiceProcessingPassStart(UINT32) {  }
+	void OnVoiceProcessingPassEnd() {  }
+	void OnVoiceError(void*, HRESULT) {  }
+	void OnStreamEnd()
+	{
+		SetEvent(hstreamEndEvent);
+		if (sndUser != nullptr)
+		{
+			if (sndUser->loops == false)
+			{
+				sndUser->isPlaying = false;
+				sndUser->isPaused = true;
+			}
+			else
+			{
+				sndUser->Play(true);
+			}
+		}
+	}
+	void OnBufferStart(void*) {  }
+	void OnLoopEnd(void*) {  }
+	void OnLoopEnd(void*, HRESULT) {  }
+
+
+};
+GReturn CreateVoiceContext(StreamingVoiceContext ** outcontext)
+{
+	GReturn result = FAILURE;
+	if (outcontext == nullptr)
+	{
+		result = INVALID_ARGUMENT;
+		return result;
+	}
+	StreamingVoiceContext* context = new StreamingVoiceContext();
+
+	if (context == nullptr)
+	{
+		result = FAILURE;
+		return result;
+	}
+
+	if (result == INVALID_ARGUMENT)
+		return result;
+
+	*outcontext = context;
+
+	result = SUCCESS;
+	return result;
+}
+
 //Start of GSound implementation 
 GReturn WindowAppSound::Init()
 {
@@ -725,32 +628,36 @@ GReturn WindowAppSound::SetChannelVolumes(float * _values, int _numChannels)
 
 	}
 	unsigned int sourceChannels = 0;
-	GetChannels(sourceChannels);
+	GetSoundSourceChannels(sourceChannels);
 	HRESULT theResult = S_OK;
 
 
 	// can only support up to 6 outputs
-	int matrixSize = sourceChannels * audio->numberOfOutputs;
-	float * matrix = new float[matrixSize];
 
-	for (size_t i = 0; i < matrixSize; i++)
+	float  matrix[12] = {0};
+	int trueIndex = 0;
+	for (size_t i = 0; i < 12;)
 	{
-		if (i < _numChannels)
+		if (trueIndex < _numChannels)
 		{
-			matrix[i] = _values[i];
+			matrix[i] = _values[trueIndex];
+			matrix[i + 1] = _values[trueIndex];
+			trueIndex++;
+			i+=2;
 		}
 		else
 		{
 			matrix[i] = 0;
+			i++;
 		}
 	}
 	if (FAILED(theResult = mySourceVoice->SetOutputMatrix(mySubmixVoice, sourceChannels, audio->numberOfOutputs, matrix)))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
-		delete matrix;
+		
 		return result;
 	}
-	delete matrix;
+
 
 	result = SUCCESS;
 	return result;
@@ -768,7 +675,7 @@ GReturn WindowAppSound::CheckChannelVolumes(const float * _values, int _numChann
 		return result;
 
 	uint32_t currentChannels;
-	result = GetChannels(currentChannels);
+	result = GetSoundSourceChannels(currentChannels);
 	if (result != SUCCESS)
 		return result;
 	float * currentValues = (float *)malloc(currentChannels);
@@ -806,7 +713,7 @@ GReturn WindowAppSound::CheckChannelVolumes(const float * _values, int _numChann
 	result = SUCCESS;
 	return result;
 }
-GReturn WindowAppSound::GetChannels(uint32_t & returnedChannelNum)
+GReturn WindowAppSound::GetSoundSourceChannels(unsigned int & returnedChannelNum)
 {
 	GReturn result = FAILURE;
 	if (audio == NULL)
@@ -814,6 +721,17 @@ GReturn WindowAppSound::GetChannels(uint32_t & returnedChannelNum)
 		return result;
 	}
 	returnedChannelNum = myWFM.nChannels;
+	result = SUCCESS;
+	return result;
+}
+ GReturn WindowAppSound::GetSoundOutputChannels(unsigned int & returnedChannelNum)
+{
+	GReturn result = FAILURE;
+	if (audio == NULL)
+	{
+		return result;
+	}
+	returnedChannelNum = audio->numberOfOutputs;
 	result = SUCCESS;
 	return result;
 }
@@ -843,7 +761,7 @@ GReturn WindowAppSound::SetVolume(float _newVolume)
 
 	return result;
 }
-GReturn WindowAppSound::Play()
+GReturn WindowAppSound::Play(bool _loop)
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == NULL)
@@ -851,6 +769,8 @@ GReturn WindowAppSound::Play()
 	if (mySourceVoice == NULL)
 		return result;
 	HRESULT theResult = S_OK;
+	loops = _loop;
+
 	if (isPlaying)
 	{
 		result = StopSound();
@@ -940,6 +860,90 @@ GReturn WindowAppSound::StopSound()
 	result = SUCCESS;
 	return result;
 }
+ GReturn WindowAppSound::isSoundPlaying(bool & _returnedBool)
+{
+	_returnedBool = isPlaying;
+	return SUCCESS;
+}
+ GReturn WindowAppSound::GetCount(unsigned int & _outCount)
+{
+	 GReturn result = FAILURE;
+	 _outCount = SoundCounter;
+	 result = SUCCESS;
+
+	 return result;
+}
+ GReturn WindowAppSound::IncrementCount()
+{
+	 GReturn result = FAILURE;
+	 //Results in Failure if increment would overflow
+	 if (SoundCounter == UINT_MAX)
+		 return result;
+	 SoundCounter++;
+	 result = SUCCESS;
+	 return result;
+}
+ GReturn WindowAppSound::DecrementCount()
+{
+	 GReturn result = FAILURE;
+	 //Results in Failure if decrement would underflow
+	 if (SoundCounter == 0)
+		 return result;
+	 SoundCounter--;
+	 result = SUCCESS;
+	 return result;
+}
+ GReturn WindowAppSound::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	 GReturn result = FAILURE;
+	 if (_outputInterface == nullptr)
+		 return GW::INVALID_ARGUMENT;
+
+	 //If passed in interface is equivalent to current interface (this).
+	 if (_interfaceID == GW::AUDIO::GSoundUUIID)
+	 {
+		 //Temporary GFile* to ensure proper functions are called.
+		 GSound* convert = reinterpret_cast<GSound*>(this);
+
+		 //Increment the count of the GFile.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //If requested interface is multithreaded.
+	 else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	 {
+		 //Temporary GMultiThreaded* to ensure proper functions are called.
+		 GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		 //Increment the count of the GMultithreaded.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //If requested interface is the primary interface.
+	 else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	 {
+		 //Temporary GInterface* to ensure proper functions are called.
+		 GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		 //Increment the count of the GInterface.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //Interface is not supported.
+	 else
+		 return 	result = INTERFACE_UNSUPPORTED;
+
+	 return result;
+}
 WindowAppSound::~WindowAppSound()
 {
 
@@ -990,32 +994,35 @@ GReturn WindowAppMusic::SetChannelVolumes(float * _values, int _numChannels)
 
 	}
 	unsigned int sourceChannels = 0;
-	GetChannels(sourceChannels);
+	GetStreamSourceChannels(sourceChannels);
 	HRESULT theResult = S_OK;
 
 
 	// can only support up to 6 outputs
-	int matrixSize = sourceChannels * audio->numberOfOutputs;
-	float * matrix = new float[matrixSize];
-	
-	for (size_t i = 0; i < matrixSize; i++)
+	float  matrix[12] = { 0 };
+	int trueIndex = 0;
+	for (size_t i = 0; i < 12;)
 	{
-		if (i < _numChannels)
+		if (trueIndex < _numChannels)
 		{
-			matrix[i] = _values[i];
+			matrix[i] = _values[trueIndex];
+			matrix[i + 1] = _values[trueIndex];
+			trueIndex++;
+			i += 2;
 		}
 		else
 		{
 			matrix[i] = 0;
+			i++;
 		}
 	}
 	if (FAILED(theResult = mySourceVoice->SetOutputMatrix(mySubmixVoice, sourceChannels, audio->numberOfOutputs, matrix)))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
-		delete matrix;
+	
 		return result;
 	}
-	delete matrix;
+
 
 	result = SUCCESS;
 	return result;
@@ -1034,7 +1041,7 @@ GReturn WindowAppMusic::CheckChannelVolumes(const float * _values, int _numChann
 
 	result = FAILURE;
 	uint32_t currentChannels;
-	result = GetChannels(currentChannels);
+	result = GetStreamSourceChannels(currentChannels);
 	if (result != SUCCESS)
 		return result;
 	float * currentValues = (float *)malloc(currentChannels);
@@ -1073,7 +1080,7 @@ GReturn WindowAppMusic::CheckChannelVolumes(const float * _values, int _numChann
 	result = SUCCESS;
 	return result;
 }
-GReturn WindowAppMusic::GetChannels(uint32_t & returnedChannelNum)
+GReturn WindowAppMusic::GetStreamSourceChannels(uint32_t & returnedChannelNum)
 {
 	GReturn result = FAILURE;
 	if (audio == NULL)
@@ -1085,6 +1092,17 @@ GReturn WindowAppMusic::GetChannels(uint32_t & returnedChannelNum)
 	returnedChannelNum = myWFM.nChannels;
 	result = SUCCESS;
 	return result;
+}
+ GReturn WindowAppMusic::GetStreamOutputChannels(unsigned int & returnedChannelNum)
+{
+	 GReturn result = FAILURE;
+	 if (audio == NULL)
+	 {
+		 return result;
+	 }
+	 returnedChannelNum = audio->numberOfOutputs;
+	 result = SUCCESS;
+	 return result;
 }
 GReturn WindowAppMusic::SetVolume(float _newVolume)
 {
@@ -1107,6 +1125,7 @@ GReturn WindowAppMusic::SetVolume(float _newVolume)
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		return result;
 	}
+	volume = _newVolume;
 	result = SUCCESS;
 
 	return result;
@@ -1114,152 +1133,136 @@ GReturn WindowAppMusic::SetVolume(float _newVolume)
 GReturn WindowAppMusic::Stream()
 {
 	HRESULT theResult = S_OK;
-	HANDLE theFile = myFile;
+	DWORD errorCheck = 0;
+	wchar_t* tpath = new wchar_t[4096];
+	MultiByteToWideChar(CP_ACP, 0, myFile, -1, tpath, 4096);
+	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
+
+	HANDLE theFile =  CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 
 
-	//if (INVALID_HANDLE_VALUE == theFile)
-		//theResult = HRESULT_FROM_WIN32(GetLastError());
+	if (INVALID_HANDLE_VALUE == theFile)
+		theResult = HRESULT_FROM_WIN32(GetLastError());
 
-	//DWORD ptrLocation = 0;
-	//if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
-		//theResult = HRESULT_FROM_WIN32(GetLastError());
-	myAudioBuffer.Flags = 0;
-	XAUDIO2_VOICE_STATE state;
-	mySourceVoice->GetState(&state);
-
-	//checks the file type, expects a WAVE or XWMA
-	//returns false otherwise
-	//theResult = FindChunk(theFile, fourRIFFcc, dwChunkSize, dwChunkPosition, dataSize);
+	if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+		theResult = HRESULT_FROM_WIN32(GetLastError());
 	
-	unsigned long dwChunktype = 0;
-	unsigned long dwChunkDataSize = 0;
-	unsigned long bytesRead = 0;
-	unsigned long throwAway = 0;
-	unsigned long dwRead = 0;
-	int breakOut = 0;
-	WAVEFORMATEXTENSIBLE throwAwayInfo;
+	errorCheck = GetLastError();
+
+	if (errorCheck != NOERROR)
+		theResult = HRESULT_FROM_WIN32(GetLastError());
+
+
+	DWORD ptrPosition = SetFilePointer(theFile, 0, NULL, FILE_CURRENT);
+		
+
 	int CurrentDiskReadBuffer = 0;
-	int CurrentPosition = 0;
-	int cbWaveSize = myAudioBuffer.AudioBytes;
-	//uint8_t * byteBuffer = new uint8_t[STREAMING_BUFFER_SIZE];
-	int dwDataSize = dataSize;
-	FILE * someWaveFile = NULL;
+	DWORD CurrentPosition = 0;
+	DWORD cbWaveSize = GetFileSize(theFile, 0);
 
-	someWaveFile = fopen(myFile, "r");
-	int errCheck = 0;
-
-	if (someWaveFile == NULL)
+	while (CurrentPosition < cbWaveSize && stopFlag == false)
 	{
-		return FAILURE;
-	}
-	if (someWaveFile != NULL)
-	{
-		clearerr(someWaveFile);
-	CurrentPosition = bytesRead;
-		while (CurrentPosition < cbWaveSize && stopFlag == false)
+	
+		if (!isPaused)
 		{
+			DWORD dwRead;
+			DWORD cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
 
-			if (!isPaused)
+			if (0 == ReadFile(theFile, buffers[CurrentDiskReadBuffer], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
+				theResult = HRESULT_FROM_WIN32(GetLastError());
+			overlap.Offset += cbValid;
+
+			//update the file position to where it will be once the read finishes
+			CurrentPosition += cbValid;
+
+			DWORD NumberBytesTransfered;
+			GetOverlappedResult(theFile, &overlap, &NumberBytesTransfered, true);
+			XAUDIO2_VOICE_STATE state;
+
+			while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
 			{
+
+				WaitForSingleObject(myContext->hBufferEndEvent, INFINITE);
+			}
+
+			/*
+			FOR FUTURE AUDIO DEVELOPER
+
+			PCM FUNTION POINTER GOES HERE
+
+			If I had time I would do something like the following:
+
+			for(int i = 0; i < cbValid; i++)
+			{
+			dataFunction(buffers[CurrentDiskReadBuffer][i]);
+			}
+			*/
+
+			XAUDIO2_BUFFER buf = { 0 };
+			buf.AudioBytes = cbValid;
+			buf.pAudioData = buffers[CurrentDiskReadBuffer];
+
 			
-				//if (SUCCEEDED(theResult) && 0 == ReadFile(theFile, &byteBuffer, dwDataSize, &dwRead, &overlap))
-				//theResult = HRESULT_FROM_WIN32(GetLastError());
-			
-				size_t cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
 
-				dwRead = fread(buffers[CurrentDiskReadBuffer], 1, cbValid, someWaveFile);
-				if (dwRead != cbValid)
-				{
-					errCheck = feof(someWaveFile);
-					if (errCheck == 1)
-					{
-						clearerr(someWaveFile);
-						dwRead = fread(buffers[CurrentDiskReadBuffer], 1, cbValid, someWaveFile);
-						errCheck = feof(someWaveFile);
-					}
-					errCheck = 0;
-				}
-				//overlap.Offset += cbValid;
-
-				//update the file position to where it will be once the read finishes
-				CurrentPosition += cbValid;
-
-				//DWORD NumberBytesTransfered;
-				//GetOverlappedResult(theFile, &overlap, &NumberBytesTransfered, true);
-
-				XAUDIO2_BUFFER buf = { 0 };
-				if (myAudioBuffer.pAudioData == nullptr)
-				{
-					myAudioBuffer.AudioBytes = cbValid;
-					myAudioBuffer.pAudioData = buffers[CurrentDiskReadBuffer];
-					if (CurrentPosition >= cbWaveSize)
-					{
-						myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
-					}
-					while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
-					{
-						WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
-
-					}
-					mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
-				}
-				else
-				{
-					buf.AudioBytes = cbValid;
-					buf.pAudioData = buffers[CurrentDiskReadBuffer];
-					if (CurrentPosition >= cbWaveSize)
-					{
-						buf.Flags = XAUDIO2_END_OF_STREAM;
-					}
-					while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
-					{
-						WaitForSingleObject(myContext.hBufferEndEvent, INFINITE);
-
-					}
-					mySourceVoice->SubmitSourceBuffer(&buf);
-				}
-
-
+			if (CurrentPosition >= cbWaveSize && !loops)
+			{
+				buf.Flags = XAUDIO2_END_OF_STREAM;
+				mySourceVoice->SubmitSourceBuffer(&buf);
 				CurrentDiskReadBuffer++;
 				CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
 			}
+			else if (CurrentPosition >= cbWaveSize && loops)
+			{
+				mySourceVoice->SubmitSourceBuffer(&buf);
+				CurrentDiskReadBuffer++;
+				CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
+				if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+					theResult = HRESULT_FROM_WIN32(GetLastError());
+				CurrentPosition = 0;
+				overlap.Offset = 0;
+			}
+		
+
+
 		}
-	
-	myAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
-	mySourceVoice->SubmitSourceBuffer(&myAudioBuffer);
+	}
+	XAUDIO2_VOICE_STATE state;
+	mySourceVoice->GetState(&state);
+
+	//Waits for last buffers to finish playing
 	while (state.BuffersQueued > 0)
 	{
 		mySourceVoice->GetState(&state);
-		WaitForSingleObjectEx(myContext.hBufferEndEvent, INFINITE, TRUE);
+		WaitForSingleObjectEx(myContext->hBufferEndEvent, INFINITE, TRUE);
 	}
-	if (FAILED(theResult = mySourceVoice->Stop(0, 0)))
+
+	//Stops the voice from producing more sound
+	if (FAILED(theResult = mySourceVoice->Stop()))
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		return FAILURE;
 	}
-	fclose(someWaveFile);
-	}
-	//DWORD dwRead;
-	//for (int i = 0; i < MAX_BUFFER_COUNT; i++)
-	//{
-		//if (INVALID_SET_FILE_POINTER == (ptrLocation = SetFilePointer(theFile, 0, NULL, FILE_BEGIN)))
-			//theResult = HRESULT_FROM_WIN32(GetLastError());
-		//if (0 == ReadFile(theFile, buffers[i], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
-			//theResult = HRESULT_FROM_WIN32(GetLastError());
-	//}
-	
 
+	//This needs to be reset so xaudio2 doesn't remeber where it left off playing
+	overlap.Offset = 0;
+	
+	//Closes the Handle since we are no longer using it
+	CloseHandle(theFile);
+
+	//Updates information about playback state
 	isPlaying = false;
 	isPaused = true;
 }
-GReturn WindowAppMusic::StreamStart()
+GReturn WindowAppMusic::StreamStart(bool _loop)
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == NULL)
 		return result;
 	if (mySourceVoice == NULL)
 		return result;
+
 	HRESULT theResult = S_OK;
+	loops = _loop;
 	if (!isPlaying)
 	{
 		stopFlag = false;
@@ -1271,24 +1274,9 @@ GReturn WindowAppMusic::StreamStart()
 		isPlaying = true;
 		isPaused = false;
 
-		//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
-		//HANDLE theFile = myFile;
-
-		//if (INVALID_HANDLE_VALUE == theFile)
-			//theResult = HRESULT_FROM_WIN32(GetLastError());
-
-		//if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-			//theResult = HRESULT_FROM_WIN32(GetLastError());
-
-		//checks the file type, expects a WAVE or XWMA
-		//returns false otherwise
-	
-
-
-
 		streamThread = new std::thread(&WindowAppMusic::Stream, this);
 
-		//streamThread->detach();
+
 	}
 	result = SUCCESS;
 	return result;
@@ -1342,33 +1330,103 @@ GReturn WindowAppMusic::StopStream()
 		return result;
 	if (mySourceVoice == NULL)
 		return result;
-	result = REDUNDANT_OPERATION;
 	if (streamThread == nullptr)
 		return result;
 	HRESULT theResult = S_OK;
 	
 	stopFlag = true;
-	WaitForSingleObjectEx(myContext.hStreamEndEvent, INFINITE, TRUE);
-	XAUDIO2_VOICE_STATE state;
-	state.SamplesPlayed = 0;
-
-	mySourceVoice->GetState(&state);
-
 
 	streamThread->join();
-theResult =	mySourceVoice->FlushSourceBuffers();
+	
 	isPlaying = false;
 	isPaused = true;
-	result = FAILURE;
-	delete streamThread;
-	streamThread = nullptr;
-
-
-
-
-
+	mySourceVoice->FlushSourceBuffers();
 	result = SUCCESS;
 	return result;
+}
+ GReturn WindowAppMusic::isStreamPlaying(bool & _returnedBool)
+{
+	 _returnedBool = isPlaying;
+	 return SUCCESS;
+}
+ GReturn WindowAppMusic::GetCount(unsigned int & _outCount)
+{
+	 GReturn result = FAILURE;
+	 _outCount = MusicCounter;
+	 result = SUCCESS;
+
+	 return result;
+}
+ GReturn WindowAppMusic::IncrementCount()
+{
+	 GReturn result = FAILURE;
+	 //Results in Failure if increment would overflow
+	 if (MusicCounter == UINT_MAX)
+		 return result;
+	 MusicCounter++;
+	 result = SUCCESS;
+	 return result;
+}
+ GReturn WindowAppMusic::DecrementCount()
+{
+	 GReturn result = FAILURE;
+	 //Results in Failure if decrement would underflow
+	 if (MusicCounter == 0)
+		 return result;
+	 MusicCounter--;
+	 result = SUCCESS;
+	 return result;
+}
+ GReturn WindowAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	 GReturn result = FAILURE;
+	 if (_outputInterface == nullptr)
+		 return GW::INVALID_ARGUMENT;
+
+	 //If passed in interface is equivalent to current interface (this).
+	 if (_interfaceID == GW::AUDIO::GMusicUUIID)
+	 {
+		 //Temporary GFile* to ensure proper functions are called.
+		 GMusic* convert = reinterpret_cast<GMusic*>(this);
+
+		 //Increment the count of the GFile.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //If requested interface is multithreaded.
+	 else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	 {
+		 //Temporary GMultiThreaded* to ensure proper functions are called.
+		 GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		 //Increment the count of the GMultithreaded.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //If requested interface is the primary interface.
+	 else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	 {
+		 //Temporary GInterface* to ensure proper functions are called.
+		 GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		 //Increment the count of the GInterface.
+		 convert->IncrementCount();
+
+		 //Store the value.
+		 (*_outputInterface) = convert;
+		 result = SUCCESS;
+	 }
+	 //Interface is not supported.
+	 else
+		 return 	result = INTERFACE_UNSUPPORTED;
+
+	 return result;
 }
 WindowAppMusic::~WindowAppMusic()
 {
@@ -1390,12 +1448,10 @@ GReturn WindowAppAudio::Init(int _numOfOutputs)
 		return result;
 	}
 	numberOfOutputs = _numOfOutputs;
-	maxChannels = 8;
 	result = SUCCESS;
 
 	return result;
 }
-
 GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 {
 
@@ -1429,14 +1485,21 @@ GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 		result = FAILURE;
 		return result;
 	}
+
+	result = CreateVoiceContext(&snd->myContext);
+	if (result != SUCCESS)
+	{
+		return result;
+	}
 	XAUDIO2_SEND_DESCRIPTOR sndSendDcsp = { 0, snd->mySubmixVoice };
 	XAUDIO2_VOICE_SENDS sndSendList = { 1, &sndSendDcsp };
-	if (myAudio->CreateSourceVoice(&snd->mySourceVoice, &snd->myWFM, 0, XAUDIO2_DEFAULT_FREQ_RATIO, NULL, &sndSendList) != S_OK)
+	if (myAudio->CreateSourceVoice(&snd->mySourceVoice, &snd->myWFM, 0, XAUDIO2_DEFAULT_FREQ_RATIO, snd->myContext, &sndSendList) != S_OK)
 	{
 		theResult= HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
 		return result;
 	}
+	snd->myContext->sndUser = snd;
 	result = snd->Init();
 	activeSounds.push_back(snd);
 	snd->audio = this;
@@ -1467,7 +1530,7 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	WAVEFORMATEXTENSIBLE wfmx;
 	int size = GetCharSize(_path);
 	CreateCharFromConstChar(&msc->myFile, _path, size);
-	if (LoadOnlyWaveHeaderData2(msc->myFile, wfmx, msc->myAudioBuffer, msc->dataSize) != S_OK)
+	if (LoadOnlyWaveHeaderData(msc->myFile, wfmx, msc->myAudioBuffer) != S_OK)
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
@@ -1483,9 +1546,14 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 		result = FAILURE;
 		return result;
 	}
+	result = CreateVoiceContext(&msc->myContext);
+	if (result != SUCCESS)
+	{
+		return result;
+	}
 	XAUDIO2_SEND_DESCRIPTOR mscSendDcsp = { 0, msc->mySubmixVoice };
 	XAUDIO2_VOICE_SENDS mscSendList= { 1, &mscSendDcsp };
-	if (theResult = myAudio->CreateSourceVoice(&msc->mySourceVoice, &msc->myWFM,0, XAUDIO2_DEFAULT_FREQ_RATIO, &msc->myContext, &mscSendList) != S_OK)
+	if (theResult = myAudio->CreateSourceVoice(&msc->mySourceVoice, &msc->myWFM,0, XAUDIO2_DEFAULT_FREQ_RATIO, msc->myContext, &mscSendList) != S_OK)
 	{
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		result = FAILURE;
@@ -1537,7 +1605,7 @@ GReturn WindowAppAudio::SetMasterChannelVolumes(const float * _values, int _numC
 	uint32_t theirChannels;
 	for (int i = 0; i < activeSounds.size(); i++)
 	{
-		result = activeSounds[i]->GetChannels(theirChannels);
+		result = activeSounds[i]->GetSoundSourceChannels(theirChannels);
 		if (result != SUCCESS)
 		{
 			return result;
@@ -1550,7 +1618,7 @@ GReturn WindowAppAudio::SetMasterChannelVolumes(const float * _values, int _numC
 	}
 	for (int i = 0; i < activeMusic.size(); i++)
 	{
-		result = activeMusic[i]->GetChannels(theirChannels);
+		result = activeMusic[i]->GetStreamSourceChannels(theirChannels);
 		if (result != SUCCESS)
 		{
 			return result;
@@ -1605,6 +1673,85 @@ GReturn WindowAppAudio::StopAll()
 	}
 	return result;
 }
+ GReturn WindowAppAudio::GetCount(unsigned int & _outCount)
+{
+	GReturn result = FAILURE;
+	_outCount = AudioCounter;
+	result = SUCCESS;
+
+	return result;
+}
+ GReturn WindowAppAudio::IncrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if increment would overflow
+	if (AudioCounter == UINT_MAX)
+		return result;
+	AudioCounter++;
+	result = SUCCESS;
+	return result;
+}
+ GReturn WindowAppAudio::DecrementCount()
+{
+	GReturn result = FAILURE;
+	//Results in Failure if decrement would underflow
+	if (AudioCounter == 0)
+		return result;
+	AudioCounter--;
+	result = SUCCESS;
+	return result;
+}
+ GReturn WindowAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+{
+	GReturn result = FAILURE;
+	if (_outputInterface == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	//If passed in interface is equivalent to current interface (this).
+	if (_interfaceID == GW::AUDIO::GAudioUUIID)
+	{
+		//Temporary GFile* to ensure proper functions are called.
+		GAudio* convert = reinterpret_cast<GAudio*>(this);
+
+		//Increment the count of the GFile.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is multithreaded.
+	else if (_interfaceID == GW::CORE::GMultiThreadedUUIID)
+	{
+		//Temporary GMultiThreaded* to ensure proper functions are called.
+		GW::CORE::GMultiThreaded* convert = reinterpret_cast<GW::CORE::GMultiThreaded*>(this);
+
+		//Increment the count of the GMultithreaded.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//If requested interface is the primary interface.
+	else if (_interfaceID == GW::CORE::GInterfaceUUIID)
+	{
+		//Temporary GInterface* to ensure proper functions are called.
+		GW::CORE::GInterface* convert = reinterpret_cast<GW::CORE::GInterface*>(this);
+
+		//Increment the count of the GInterface.
+		convert->IncrementCount();
+
+		//Store the value.
+		(*_outputInterface) = convert;
+		result = SUCCESS;
+	}
+	//Interface is not supported.
+	else
+		return 	result = INTERFACE_UNSUPPORTED;
+
+	return result;
+}
 GReturn WindowAppAudio::ResumeAll()
 {
 	GReturn result = FAILURE;
@@ -1628,15 +1775,7 @@ GReturn WindowAppAudio::ResumeAll()
 }
 WindowAppAudio::~WindowAppAudio()
 {
-	while(activeSounds.size() > 0)
-	{
-		activeSounds.erase(activeSounds.begin());
-	}
-	while (activeMusic.size() > 0)
-	{
-		activeMusic.erase(activeMusic.begin());
-	}
-	
+
 }
 
 
@@ -1665,6 +1804,7 @@ GReturn PlatformGetAudio(GAudio ** _outAudio)
 		return result;
 
 	*_outAudio = audio;
+
 	result = SUCCESS;
 	return result;
 }

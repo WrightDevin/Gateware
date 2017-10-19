@@ -24,6 +24,10 @@ public:
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~MacAppSound();
 #if __APPLE__
 	GMacSound * mac_snd = nullptr;
@@ -54,6 +58,10 @@ public:
 	GReturn PauseStream();
 	GReturn ResumeStream();
 	GReturn StopStream();
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~MacAppMusic();
 
 #if __APPLE__
@@ -81,6 +89,10 @@ public:
 	GReturn PauseAll();
 	GReturn ResumeAll();
 	GReturn StopAll();
+	GReturn GetCount(unsigned int& _outCount);
+	GReturn IncrementCount();
+	GReturn DecrementCount();
+	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	~MacAppAudio();
 
 #if __APPLE__
