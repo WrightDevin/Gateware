@@ -147,10 +147,10 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
 #ifdef WIN32
 
-	for (int k = 0; k < numOfOutputs; k++)
+	for (int k = 1; k < numOfOutputs; k++)
 	{
 		Sleep(2000);
-		for (int i = 2; i < 12; i++)
+		for (int i = 0; i < 12; i++)
 		{
 			atestVolume[i] = 0.0f;
 		}
@@ -250,10 +250,10 @@ TEST_CASE("Playing test music", "[Playmusic]")
 		{
 			atestVolume[i] = 0.0f;
 		}
-		atestVolume[2] = 1.0f;
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 12)));
-		atestVolume[2] = 0.0f;
 		atestVolume[8] = 1.0f;
+		REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 12)));
+		atestVolume[8] = 0.0f;
+		atestVolume[2] = 1.0f;
 
 		REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 12)));
 		REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));

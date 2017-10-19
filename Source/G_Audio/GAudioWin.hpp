@@ -1002,6 +1002,7 @@ GReturn WindowAppMusic::Stream()
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 		return FAILURE;
 	}
+	overlap.Offset = 0;
 	isPlaying = false;
 	isPaused = true;
 }
