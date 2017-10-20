@@ -5,7 +5,7 @@ File: GMatrix.h
 Purpose: A Gateware interface that handles Martix functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 9/30/2016
+Last Modified: 10/18/2016
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {2DEF34B3-E6C1-40C3-815B-86E2ED1D9CAA}
+		//! Unique Identifier for this interface. {AD50013E-94F3-40B6-8FB9-715635F0B8FE}
 		static const GUUIID GMatrixUUIID =
 		{
-			0x2def34b3, 0xe6c1, 0x40c3,{ 0x81, 0x5b, 0x86, 0xe2, 0xed, 0x1d, 0x9c, 0xaa }
+			0xad50013e, 0x94f3, 0x40b6,{ 0x8f, 0xb9, 0x71, 0x56, 0x35, 0xf0, 0xb8, 0xfe }
 		};
 
 		//! Matrix functions
@@ -275,7 +275,6 @@ namespace GW
 			*/
 			virtual GReturn TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatrix) = 0;
 
-
 			//! Scale the matrix by the specified vector
 			/*!
 			*	Scales the matrix by the specified vector
@@ -306,6 +305,38 @@ namespace GW
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn  LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GMATRIXF& _outMatrix) = 0;
+
+			//! Builds a left-handed perspective matrix
+			/*!
+			*	Builds a left-handed perspective matrix
+			*
+			*	\param [in]  _fieldOfView		Field of view in the y direction, in radians
+			*	\param [in]  _aspect			Aspect ratio, defined as view space width divided by height
+			*	\param [in]  _zn				Z-value of the near view-plane
+			*	\param [in]  _zf				Z-value of the far view-plane
+			*	\param [out] _outMatrix			The result of the projection matrix
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn ProjectionLHF(float _fovY, float _aspect, float _zn, float _zf, GMATRIXF& _outMatrix) = 0;
+
+			//! Builds a left-handed view matrix
+			/*!
+			*	Builds a left-handed view matrix
+			*
+			*	\param [in]  _eye				The position of eye
+			*	\param [in]  _at				The position of the camera look-at target
+			*	\param [in]  _out				The direction of the world's up
+			*	\param [out] _outMatrix			The result of the look-at matrix
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIXF& _outMatrix) = 0;
+
 
 			//double Matrix
 
@@ -581,6 +612,36 @@ namespace GW
 			*/
 			virtual GReturn  LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, GMATRIXD& _outMatrix) = 0;
 
+			//! Builds a left-handed perspective matrix
+			/*!
+			*	Builds a left-handed perspective matrix
+			*
+			*	\param [in]  _fieldOfView		Field of view in the y direction, in radians
+			*	\param [in]  _aspect			Aspect ratio, defined as view space width divided by height
+			*	\param [in]  _zn				Z-value of the near view-plane
+			*	\param [in]  _zf				Z-value of the far view-plane
+			*	\param [out] _outMatrix			The result of the projection matrix
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn ProjectionLHD(double _fovY, double _aspect, double _zn, double _zf, GMATRIXD& _outMatrix) = 0;
+			
+			//! Builds a left-handed view matrix
+			/*!
+			*	Builds a left-handed view matrix
+			*
+			*	\param [in]  _eye				The position of eye
+			*	\param [in]  _at				The position of the camera look-at target
+			*	\param [in]  _out				The direction of the world's up
+			*	\param [out] _outMatrix			The result of the look-at matrix
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn LookAtLHD(GVECTORD _eye, GVECTORD _at, GVECTORD _up, GMATRIXD& _outMatrix) = 0;
 			
 		}; //! end GMatrix class
 		

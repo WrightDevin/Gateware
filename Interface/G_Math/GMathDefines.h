@@ -52,6 +52,8 @@ License: MIT
 #define G_LERP(start , end, ratio)  ( start + ratio * (end - start) )		//LINEAR INTERPOLATE TWO POINT WITH THE RATIO
 #define G_CLAMP(num , top, bottom)  ((((num) > (top)) ? (top) : (num)) < (bottom)) ? (bottom) : (num)		//CLAMP THE NUMBER BETWEEN THE TOP NUMBER AND THE BOTTOM NUMBER
 
+#define G_DEGREE_TO_RADIAN(degree) ( (degree) * ( (G_PI) / (180.0) ) )
+#define G_RADIAN_TO_DEGREE(radian) ( (radian) * ( (180.0) / (G_PI) ) )
 
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
