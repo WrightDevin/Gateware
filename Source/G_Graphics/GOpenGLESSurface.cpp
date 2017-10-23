@@ -75,6 +75,8 @@ GOpenGLES::GOpenGLES()
 
 GOpenGLES::~GOpenGLES()
 {
+	gWnd->DeregisterListener(this);
+	DecrementCount();
 }
 
 void GOpenGLES::SetGWindow(GWindow* _window)
@@ -291,6 +293,9 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 		}
 			break;
 		case GW::SYSTEM::DESTROY:
+		{
+			this->~GOpenGLES();
+		}
 			break;
 
 		}
@@ -299,18 +304,21 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGOpenGLESSurface(gWin, _outSurface);
+	return GW::GRAPHICS::CreateGOpenGLESSurface(_gWin, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLESSurface(SYSTEM::GWindow* gWin, GOpenGLESSurface** _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLESSurface(SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface)
 {
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;
 
 	GOpenGLES* Surface = new GOpenGLES();
-	Surface->SetGWindow(gWin);
+	Surface->SetGWindow(_gWin);
+	Surface->Initialize();
+
+	_gWin->RegisterListener(Surface, 0);
 
 	if (Surface == nullptr)
 		return FAILURE;

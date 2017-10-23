@@ -29,11 +29,6 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 	CHECK(CreateGOpenGLESSurface(gWnd_OGL, &oglSurface) == SUCCESS);
 }
 
-TEST_CASE("Initialize GOpenGLESSurface.", "[Initialize]")
-{
-	CHECK(oglSurface->Initialize() == SUCCESS);
-}
-
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
 {
 
@@ -66,7 +61,7 @@ TEST_CASE("Testing OGLSurface Events")
 	SwapBuffers(*hdc);
 
 	// Manipulate GWindow and Retest OGL Functions.
-	gWnd_OGL->ResizeWindow(1500, 1500);
+	gWnd_OGL->ResizeWindow(1500, 1000);
 
 	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
