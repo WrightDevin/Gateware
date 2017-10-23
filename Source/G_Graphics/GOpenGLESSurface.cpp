@@ -1,20 +1,25 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLESSurface.h"
 #include "../../Source/G_System/GUtility.h"
-
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 
 #include <Windows.h>
-
 #pragma comment(lib, "OpenGL32.lib")
 #include <gl\GL.h>
-
 #include <atomic>
 #include <mutex>
 #include <thread>
 
 #elif __linux__
+
+#include <X11/Xlib.h>
+#include <GL/gl.h>
+#include <GL/glx.h>
+
 #elif __APPLE__
 #endif
 
@@ -30,8 +35,6 @@ private:
 	unsigned int	refCount;
 
 	GWindow*		gWnd;
-	HDC				hdc;
-	HGLRC			OGLcontext;
 	unsigned int	clientX;
 	unsigned int	clientY;
 	float			width;
@@ -41,11 +44,25 @@ private:
 #ifdef _WIN32
 
 	HWND surfaceWindow;
+    HDC				hdc;
+	HGLRC			OGLcontext;
 
 #elif __linux__
+
+    Display*                dsp;
+    Window                  root;
+    GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
+    XVisualInfo*            vi;
+    Colormap                cmap;
+    XSetWindowAttributes    swa;
+    Window                  wnd;
+    GLXContext              OGLcontext;
+    XWindowAttributes       gwa;
+    XEvent                  event;
+
 #elif __APPLE__
 #endif
-	
+
 public:
 	GOpenGLES();
 	virtual ~GOpenGLES();
@@ -77,6 +94,18 @@ GOpenGLES::~GOpenGLES()
 {
 	gWnd->DeregisterListener(this);
 	DecrementCount();
+
+	#ifdef _WIN32
+	#elif __linux__
+
+	glXMakeCurrent(dsp, None, NULL);
+	glXDestroyContext(dsp, OGLcontext);
+	XDestroyWindow(dsp, wnd);
+	XCloseDisplay(dsp);
+
+	#elif __APPLE__
+	#endif
+
 }
 
 void GOpenGLES::SetGWindow(GWindow* _window)
@@ -86,9 +115,11 @@ void GOpenGLES::SetGWindow(GWindow* _window)
 
 GReturn GOpenGLES::Initialize()
 {
+
+    gWnd->OpenWindow();
+
 #ifdef _WIN32
 
-	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
@@ -125,6 +156,21 @@ GReturn GOpenGLES::Initialize()
 	wglMakeCurrent(hdc, OGLcontext);
 
 #elif __linux__
+
+gWnd->GetWindowHandle(&dsp, sizeof(LINUX_WINDOW));
+wnd = DefaultRootWindow(dsp);
+root = RootWindow(dsp, DefaultScreen(dsp));
+vi = glXChooseVisual(dsp, DefaultScreen(dsp), attributes);
+cmap = XCreateColormap(dsp, root, vi->visual, AllocNone);
+OGLcontext = glXCreateContext(dsp, vi, NULL, GL_TRUE);
+
+int ret = glXMakeCurrent(dsp, root, OGLcontext);
+XGetWindowAttributes(dsp, root, &gwa);
+glViewport(0, 0, gwa.width, gwa.height);
+
+//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
 #elif __APPLE__
 #endif
 
@@ -297,8 +343,8 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 			this->~GOpenGLES();
 		}
 			break;
-
 		}
+
 	}
 
 	return SUCCESS;

@@ -1,56 +1,104 @@
-﻿project(LibraryProject)
+project(LibraryProject)
+
+
+
+if(WIN32)
+
+
+
 add_library (GDirectX11Surface GDirectX11Surface.cpp ${HEADER_FILES})
-add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
 
 add_library (GDirectX11Surface_DLL SHARED GDirectX11Surface.cpp ${HEADER_FILES})
+
+
+
+set_property(TARGET 
+
+GDirectX11Surface
+
+PROPERTY FOLDER "Static libraries")
+
+
+
+set_property(TARGET 
+
+GDirectX11Surface_DLL
+
+PROPERTY FOLDER "Dynamic libraries")
+
+
+
+target_compile_definitions(GDirectX11Surface_DLL PUBLIC GATEWARE_EXPORT_BUILD)
+
+
+
+endif(WIN32)
+
+
+
+
+
+add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
+
 add_library (GOpenGLESSurface_DLL SHARED GOpenGLESSurface.cpp ${HEADER_FILES})
+
+
+
+
+
+if(UNIX AND NOT APPLE)
+
+#target_link_libraries(GOpenGLESSurface ${OPENGL_gl_LIBRARY})
+#set(CMAKE_SHARED_LINKER_FLAGS "-lX11, -lGL")
+
+endif(UNIX AND NOT APPLE)
+
+
 
 
 
 if(APPLE)
 
+
+
 #Set(GUI_TYPE MACOSX_BUNDLE)
 
-FIND_LIBRARY(COCOA_LIBRARY Cocoa)
 
 
-message(“Adding .mm files”)
-
-add_library(GDirectX11Surface GDirectX11Surface.mm)
-
-add_library(GOpenGLESSurface GOpenGLESSurface.mm)
+set(COCOA_LIBRARY Cocoa)
 
 
-target_link_libraries(GDirectX11Surface “-framework ${COCOA_LIBRARY}”)
 
-target_link_libraries(GOpenGLESSurface “-framework ${COCOA_LIBRARY}”)
-
-target_link_libraries(GDirectX11Surface_DLL "-framework cocoa")
-
-target_link_libraries(GOpenGLESSurface_DLL "-framework cocoa")
+target_link_libraries(GOpenGLESSurface "-framework ${COCOA_LIBRARY}")
 
 
-else(APPLE)
+
+target_link_libraries(GOpenGLESSurface_DLL "-framework Cocoa")
 
 
-#message(“Adding .cpp files”)
 
-#add_library (GDirectX11Surface GDirectX11Surface.cpp ${HEADER_FILES})
-
-#add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
+endif(APPLE)
 
 
-endif()
+
+
 
 set_property(TARGET 
-GDirectX11Surface
+
 GOpenGLESSurface
+
 PROPERTY FOLDER "Static libraries")
 
+
+
 set_property(TARGET 
-GDirectX11Surface_DLL
+
 GOpenGLESSurface_DLL
+
 PROPERTY FOLDER "Dynamic libraries")
 
-target_compile_definitions(GDirectX11Surface_DLL PUBLIC GATEWARE_EXPORT_BUILD)
+
+
 target_compile_definitions(GOpenGLESSurface_DLL PUBLIC GATEWARE_EXPORT_BUILD)
+
+
