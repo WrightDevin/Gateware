@@ -30,6 +30,7 @@ using namespace AUDIO;
 #include <mutex>
 #include <atomic>
 #include <unistd.h>
+#include <stdio.h>
 #include <functional>
 #include <string.h>
 #include <pulse/mainloop.h>
@@ -48,7 +49,12 @@ const unsigned long fourFMTcc = ' tmf';
 const unsigned long fourWAVEcc = 'EVAW';
 const unsigned long fourXWMAcc = 'AMWX';
 const unsigned long fourDPDScc = 'sdpd';
-
+using std::atomic;
+#define STREAMING_BUFFER_SIZE 65536
+#define MAX_BUFFER_COUNT 3
+atomic<unsigned int> AudioCounter;
+atomic<unsigned int> SoundCounter;
+atomic<unsigned int> MusicCounter;
 struct PCM_FORMAT_INFO
 {
     unsigned short mFormatTag = 0;
@@ -99,7 +105,7 @@ TJCALLBACK * theCallback = reinterpret_cast<TJCALLBACK*>(userdata);
 theCallback->didFinish =1;
 
 }
-int LoadWavFormatOnly(const char * path, PCM_FORMAT_INFO & returnedInfo, unsigned long & _fileSize)
+int LoadWavFormatOnly(const char * path, PCM_FORMAT_INFO & returnedInfo, long & _fileSize)
 {
 int result = 0; //zero is good
 unsigned long dwChunktype = 0;
@@ -347,12 +353,7 @@ void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size
 	*myChar = testChar;
 }
 
-using std::atomic;
-#define STREAMING_BUFFER_SIZE 65536
-#define MAX_BUFFER_COUNT 3
-atomic<unsigned int> AudioCounter = 0;
-atomic<unsigned int> SoundCounter = 0;
-atomic<unsigned int> MusicCounter = 0;
+
 class LinuxAppAudio;
 class LinuxAppSound : public GSound
 {
@@ -385,13 +386,12 @@ public:
     GReturn SetChannelVolumes(float *_values, int _numChannels);
     GReturn CheckChannelVolumes(const float *_values, int _numChannels);
     GReturn SetVolume(float _newVolume);
-  
+
     GReturn Play(bool _loop = false);
     GReturn Pause();
     GReturn Resume();
     GReturn StopSound();
     GReturn StreamSound();
-	GReturn StopSound();
 	GReturn isSoundPlaying(bool & _returnedBool);
 	GReturn GetSoundSourceChannels(unsigned int & returnedChannelNum);
 	GReturn GetSoundOutputChannels(unsigned int & returnedChannelNum);
@@ -407,9 +407,9 @@ class LinuxAppMusic : public GMusic
 {
 public:
 	char * streamName = "Sound";
-    int index = -1;
+
     char * myFilePath;
-	unsigned long fileSize = 0;
+	 long fileSize = 0;
 	int quitVal = 0;
 	bool loops = false;
 	atomic<bool> isPlaying;
@@ -432,7 +432,7 @@ public:
 
 
 
-  
+
     GReturn Init();
     GReturn SetPCMShader(const char* _data);
     GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -472,7 +472,7 @@ public:
     std::vector<LinuxAppMusic *> activeMusic;
     std::thread* streamThread = nullptr;
 
- 
+
     GReturn Init(int _numOfOutputs = 2);
     GReturn CreateSound(const char* _path, GSound** _outSound);
     GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
@@ -664,6 +664,7 @@ GReturn LinuxAppSound::Init()
     {
         return result;
     }
+    isPlaying = false;
     result = SUCCESS;
     return result;
 }
@@ -923,12 +924,13 @@ if (!isPlaying)
         streamThread = new std::thread(&LinuxAppSound::StreamSound, this);
         result = SUCCESS;
     }
-    else
-    {
-        result = REDUNDANT_OPERATION;
-    }
+else if(streamThread != nullptr)
+{
+    result = SUCCESS;
+}
 
     return result;
+
 }
 GReturn LinuxAppSound::Pause()
 {
@@ -1175,7 +1177,7 @@ GReturn result = GReturn::INVALID_ARGUMENT;
     {
         return result;
     }
-
+    isPlaying = false;
     result = SUCCESS;
     return result;
 }
@@ -1347,7 +1349,7 @@ TJCALLBACK myCallback;
 myCallback.streamOperationSucceed = FinishedDrain;
 myCallback.cbSucceed = myCallback.streamOperationSucceed;
 const time_t t0 = time(nullptr);
-unsigned int playBackPt = 0;
+ long playBackPt = 0;
 unsigned int currplayBackPt = 0;
 
         FILE * someWaveFile = NULL;
@@ -1430,9 +1432,10 @@ PCM_FORMAT_INFO throwAwayInfo;
     }
       fread(myBuffers[0].bytes,1,STREAMING_BUFFER_SIZE,someWaveFile);
             fread(myBuffers[1].bytes,1,STREAMING_BUFFER_SIZE,someWaveFile);
-                  fread(myBuffers[2].bytes,1,STREAMING_BUFFER_SIZE,someWaveFile);
+
 
     }
+playBackPt += bytesRead;
 int prevbuffer = 2;
 int nextBuffer = 1;
 unsigned int readSize = (STREAMING_BUFFER_SIZE * 3 < fileSize-playBackPt? STREAMING_BUFFER_SIZE : fileSize - playBackPt);
@@ -1440,9 +1443,10 @@ time_t prevT = time(nullptr) -1;
 unsigned int currentBuffer = 0;
 isPlaying = true;
 isPaused = false;
-bool writeSizeWasZero = false;
+
 bool ready = false;
  pa_stream_state_t state;
+  int errCheck = 0;
         while(true)
         {
             if(stopFlag == true)
@@ -1474,31 +1478,40 @@ bool ready = false;
                     pa_stream_write(myStream, myBuffers[currentBuffer].bytes + currplayBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
                     playBackPt +=writeSize;
                     currplayBackPt += writeSize;
-                  //  ready = true;
+
                 }
-                else if(writeableSize > 0 && fileSize - playBackPt > 0 )
+                else if(writeableSize > 0  )
                 {
+                    if((fileSize - playBackPt) > 0)
+                    {
                     ready = true;
                     currplayBackPt = 0;
-                }
-                else if (writeableSize > 0 &myCallback.didFinish != 1)
-                {
+                    }
+                    else if (myCallback.didFinish != 1 )
+                    {
+                        if(loops)
+                        {
+                    errCheck  = fseek(someWaveFile,0,SEEK_SET);
+                       playBackPt = 0;
+                        }
+                        else
+                        {
                       myCallback.myOperation = pa_stream_drain(myStream,myCallback.cbSucceed,&myCallback);
-                      //  pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
-
                        break;
+                        }
+
+
+                    }
                 }
+
 
 
             }
 
             if(PA_STREAM_FAILED == state)
             {
+                //Used to debug the error
                 const char * err = pa_strerror(pa_context_errno(myContext));
-                int  i = 0;
-
 
             }
 

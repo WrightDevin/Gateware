@@ -25,7 +25,7 @@ GReturn checkReturned = FAILURE;
 const char * testpath = "TestBeep.wav";
 const char * testpath2 = "TestMusic.wav";
 const char * testpath3 = "TestMusic2.wav";
-const char * testpath4 = "TestSound2.wav";
+//const char * testpath4 = "TestSound2.wav";
 int numOfOutputs;
 float atestVolume[6] = { 1.0f, 0.0f, 0.0f ,0.0f, 0.0f, 0.0f};
 
@@ -60,7 +60,7 @@ TEST_CASE("Creating Sound.", "[CreateSound]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &testSound)));
 
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath4, &testSound2)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath3, &testSound2)));
 
 	checkReturned = FAILURE;
 }
@@ -143,9 +143,9 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 
 
 	float * testvolumes = atestVolume;
-	
+
 	REQUIRE(G_SUCCESS(checkReturned = testSound2->SetChannelVolumes(testvolumes, 6)));
-	
+
 	atestVolume[0] = 0.5f;
 	// Fail cases
 	CHECK(testSound->SetChannelVolumes(nullptr, 0) == INVALID_ARGUMENT);
@@ -218,7 +218,7 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 		atestVolume[i] = 0.0f;
 	}
 	atestVolume[5] = { 1.0f };
-	
+
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
 	checkReturned = FAILURE;
 }
@@ -268,7 +268,7 @@ TEST_CASE("Playing test music", "[Playmusic]")
 		REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
 		REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
 		Sleep(10000);
-	
+
 #else
  sleep(10);
 #endif
@@ -384,7 +384,7 @@ TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 6)));
-	
+
 	for (int i = 0; i < 6; i++)
 	{
 		atestVolume[i] = 0.0f;
@@ -428,7 +428,7 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 #ifdef WIN32
   	Sleep(2000);
 #else
- sleep(2);
+ sleep(2000);
 #endif
 
 }
