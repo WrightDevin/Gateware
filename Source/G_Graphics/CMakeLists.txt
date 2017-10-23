@@ -48,8 +48,17 @@ add_library (GOpenGLESSurface_DLL SHARED GOpenGLESSurface.cpp ${HEADER_FILES})
 
 if(UNIX AND NOT APPLE)
 
-#target_link_libraries(GOpenGLESSurface ${OPENGL_gl_LIBRARY})
-#set(CMAKE_SHARED_LINKER_FLAGS "-lX11, -lGL")
+set(OPENGL_LIBRARY libgl.so)
+set(OPENGLX_LIBRARY libglx.so)
+
+target_link_libraries(GOpenGLESSurface "${OPENGL_LIBRARY}")
+target_link_libraries(GOpenGLESSurface_DLL "${OPENGL_LIBRARY}")
+
+
+target_link_libraries(GOpenGLESSurface "${OPENGLX_LIBRARY}")
+target_link_libraries(GOpenGLESSurface_DLL "${OPENGLX_LIBRARY}")
+
+set(CMAKE_SHARED_LINKER_FLAGS "-lX11, -lGL")
 
 endif(UNIX AND NOT APPLE)
 
