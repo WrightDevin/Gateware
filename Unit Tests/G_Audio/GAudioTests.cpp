@@ -1,6 +1,6 @@
 #include "../G_System/Common.h"
 #ifdef __APPLE__
-    sleep(2);
+
 #elif __linux__
 #include <unistd.h>
 #endif

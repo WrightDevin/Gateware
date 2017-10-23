@@ -187,7 +187,7 @@
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
 -(bool) SetVolume:(float) _newVolume;
 -(unsigned int) GetChannels;
--(bool) StreamStart;
+-(bool) StreamStart:(bool) _loops;
 -(bool) PauseStream;
 -(bool) ResumeStream;
 -(bool) StopStream;
@@ -203,19 +203,19 @@
     self = [super init];
     if(self)
     {
-        
+        AVAudioFrameCount bufferLength = 63553;
         self->mySound = [[AVAudioPlayerNode alloc] init];
         
         self->myMixer = [[AVAudioMixerNode alloc] init];
         
         NSURL * filePath =[[NSURL alloc] initFileURLWithPath:_path];
         self->myFile = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
-        self->myBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:myFile.length];
-        self->myLastBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity: myFile.length];
-        self->myNextBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:myFile.length];
+        self->myBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
+        self->myLastBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength ];
+        self->myNextBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
         
         bool success = [self->myFile readIntoBuffer:self->myBuffer error:&testError];
-        
+        success = [self->myFile readIntoBuffer:self->myNextBuffer error:&testError];
         if(!success)
         {
             NSAssert(success, @"could nor read file into buffer", [testError localizedDescription]);
@@ -288,18 +288,34 @@
 -(void) ScheduleBuffers
 {
     NSError *testError;
- 
- 
+    if(CurrentPosition >= MaxPosition)
+    {
+        
+        if(loops)
+        {
+            [mySound stop];
+            [mySound prepareWithFrameCount:63553];
+            
+            CurrentPosition = 0;
+            myFile.framePosition = 0;
+            
+        }
+        else
+        {
+            [self StopStream];
+        }
+    }
     
     AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition:CurrentPosition );
+   
     CurrentPosition += valid;
     
         [myFile readIntoBuffer:myNextBuffer frameCount:valid error:&testError];
-    
-        
         [mySound scheduleBuffer:myNextBuffer completionHandler:^{
             [self UpdateBuffers];
         }];
+    
+  
     
 
 }
@@ -313,14 +329,14 @@
     [self ScheduleBuffers];
     }
 }
--(bool) StreamStart
+-(bool) StreamStart:(bool) _loops
 {
- 
+    loops = _loops;
     if(![mySound isPlaying])
     {
     [mySound playAtTime:0];
-    [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:^{[self UpdateBuffers];}];
-    [self ScheduleBuffers];
+    //[mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:nil];
+       [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:^{[self UpdateBuffers];}];
     }
     bool returnValue = [mySound isPlaying];
     

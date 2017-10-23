@@ -464,7 +464,7 @@ GReturn MacAppMusic::StreamStart(bool _loop)
         return result;
 #if __APPLE__
     bool bresult = false;
-    bresult = [mac_msc StreamStart];
+    bresult = [mac_msc StreamStart:_loop];
     if (bresult == true)
         result = SUCCESS;
     else
