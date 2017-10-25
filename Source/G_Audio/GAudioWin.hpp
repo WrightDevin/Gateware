@@ -53,7 +53,7 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 	unsigned long dwIsWave = 0;
 	unsigned long throwAwayValue = 0;
 	bool foundAudioData = false;
-	while (result == 0)
+	while (result == 0 && foundAudioData == false)
 	{
 		unsigned long dwRead;
 		ReadFile(theFile, &dwChunktype, 4, &dwRead, NULL);
