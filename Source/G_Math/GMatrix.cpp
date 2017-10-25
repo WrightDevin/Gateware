@@ -53,6 +53,8 @@ public:
 
 	GReturn RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) override;
 
+	GReturn RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) override;
+
 	GReturn TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatrix) override;
 
 	GReturn ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatirx) override;
@@ -96,6 +98,8 @@ public:
 	GReturn RotationYD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) override;
 
 	GReturn RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) override;
+
+	GReturn RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) override;
 
 	GReturn TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) override;
 
@@ -450,6 +454,23 @@ GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 	Rotation.data[5] = c;
 
 	MultiplyMatrixF(_matrix, Rotation, _outMatrix);
+	return SUCCESS;
+}
+
+GReturn GMatirxCpp::RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixF;
+	GMATRIXF RotationX;
+	GMATRIXF RotationY;
+	GMATRIXF RotationZ;
+	GMATRIXF reuslt;
+	RotationZF(GIdentityMatrixF, _roll, RotationZ);
+	RotationXF(GIdentityMatrixF, _roll, RotationX);
+	RotationYF(GIdentityMatrixF, _roll, RotationY);
+
+	MultiplyMatrixF(RotationZ, RotationX, reuslt);
+	MultiplyMatrixF(reuslt, RotationY, _outMatrix);
+
 	return SUCCESS;
 }
 
@@ -888,6 +909,23 @@ GReturn GMatirxCpp::RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 	Rotation.data[5] = c;
 
 	MultiplyMatrixD(_matrix, Rotation, _outMatrix);
+	return SUCCESS;
+}
+
+GReturn GMatirxCpp::RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixD;
+	GMATRIXD RotationX;
+	GMATRIXD RotationY;
+	GMATRIXD RotationZ;
+	GMATRIXD reuslt;
+	RotationZD(GIdentityMatrixD, _roll, RotationZ);
+	RotationXD(GIdentityMatrixD, _roll, RotationX);
+	RotationYD(GIdentityMatrixD, _roll, RotationY);
+
+	MultiplyMatrixD(RotationZ, RotationX, reuslt);
+	MultiplyMatrixD(reuslt, RotationY, _outMatrix);
+
 	return SUCCESS;
 }
 

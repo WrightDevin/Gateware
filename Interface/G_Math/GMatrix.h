@@ -259,6 +259,22 @@ namespace GW
 			*/
 			virtual GReturn RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
+			//! Builds a matrix based on specified yaw, pitch, and roll angles in radian. 
+			/*!
+			*	Uses Left-handed coordinate system to build the rotation matrix. 
+			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
+			*
+			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
+			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.
+			*	\param [in]  _roll				Angle of rotation around the z-axis, in radians.
+			*	\param [out] _outMatrix			The result of the rotation
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) = 0;
+
 			//! Translate the matrix by the specified vector
 			/*!
 			*	Translates the matrix by the specified vector
@@ -563,6 +579,22 @@ namespace GW
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
+
+			//! Builds a matrix based on specified yaw, pitch, and roll angles in radian. 
+			/*!
+			*	Uses Left-handed coordinate system to build the rotation matrix.
+			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
+			*
+			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
+			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.
+			*	\param [in]  _roll				Angle of rotation around the z-axis, in radians.
+			*	\param [out] _outMatrix			The result of the rotation
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) = 0;
 
 			//! Translate the matrix by the specified vector
 			/*!
