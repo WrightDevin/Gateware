@@ -53,11 +53,17 @@ public:
 
 	GReturn RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) override;
 
+	GReturn RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) override;
+
 	GReturn TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatrix) override;
 
 	GReturn ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatirx) override;
 
 	GReturn LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GMATRIXF& _outMatrix) override;
+
+	GReturn ProjectionLHF(float _fovY, float _aspect, float _zn, float _zf, GMATRIXF& _outMatrix) override;
+
+	GReturn LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIXF& _outMatrix) override;
 
 	//double Matrix
 
@@ -93,11 +99,17 @@ public:
 
 	GReturn RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) override;
 
+	GReturn RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) override;
+
 	GReturn TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) override;
 
 	GReturn ScalingD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatirx) override;
 
 	GReturn LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, GMATRIXD& _outMatrix) override;
+
+	GReturn ProjectionLHD(double _fovY, double _aspect, double _zn, double _zf, GMATRIXD& _outMatrix) override;
+
+	GReturn LookAtLHD(GVECTORD _eye, GVECTORD _at, GVECTORD _up, GMATRIXD& _outMatrix) override;
 
 	GReturn GetCount(unsigned int& _outCount) override;
 
@@ -122,15 +134,19 @@ GMatirxCpp::~GMatirxCpp()
 
 GReturn GMatirxCpp::AddMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & _outMatrix)
 {
+	GMATRIXF _m1 = _matrix1;
+	GMATRIXF _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix1.data[i] + _matrix2.data[i];
+		_outMatrix.data[i] = _m1.data[i] + _m2.data[i];
 	}
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & _outMatrix)
 {
+	GMATRIXF _m1 = _matrix1;
+	GMATRIXF _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
 		_outMatrix.data[i] = _matrix1.data[i] - _matrix2.data[i];
@@ -140,6 +156,9 @@ GReturn GMatirxCpp::SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 
 GReturn GMatirxCpp::MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF & _outMatrix)
 {
+	GMATRIXF _m1 = _matrix1;
+	GMATRIXF _m2 = _matrix2;
+
 	_outMatrix.data[0] = _matrix1.data[0] * _matrix2.data[0] + _matrix1.data[1] * _matrix2.data[4] + _matrix1.data[2] * _matrix2.data[8] + _matrix1.data[3] * _matrix2.data[12];
 	_outMatrix.data[1] = _matrix1.data[0] * _matrix2.data[1] + _matrix1.data[1] * _matrix2.data[5] + _matrix1.data[2] * _matrix2.data[9] + _matrix1.data[3] * _matrix2.data[13];
 	_outMatrix.data[2] = _matrix1.data[0] * _matrix2.data[2] + _matrix1.data[1] * _matrix2.data[6] + _matrix1.data[2] * _matrix2.data[10] + _matrix1.data[3] * _matrix2.data[14];
@@ -162,9 +181,12 @@ GReturn GMatirxCpp::MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 
 	return SUCCESS;
 }
- 
+
 GReturn GMatirxCpp::VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF & _outVector)
 {
+	GMATRIXF _m = _matrix;
+	GVECTORF _v = _vector;
+
 	_outVector.x = _vector.data[0] * _matrix.data[0] + _vector.data[1] * _matrix.data[4] + _vector.data[2] * _matrix.data[8] + _vector.data[3] * _matrix.data[12];
 	_outVector.y = _vector.data[0] * _matrix.data[1] + _vector.data[1] * _matrix.data[5] + _vector.data[2] * _matrix.data[9] + _vector.data[3] * _matrix.data[13];
 	_outVector.z = _vector.data[0] * _matrix.data[2] + _vector.data[1] * _matrix.data[6] + _vector.data[2] * _matrix.data[10] + _vector.data[3] * _matrix.data[14];
@@ -175,6 +197,7 @@ GReturn GMatirxCpp::VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF 
 
 GReturn GMatirxCpp::ConvertQuaternionF(GQUATERNIONF _quaternion, GMATRIXF & _outMatrix)
 {
+
 	float xx2 = 2 * _quaternion.x * _quaternion.x;
 	float yy2 = 2 * _quaternion.y * _quaternion.y;
 	float zz2 = 2 * _quaternion.z * _quaternion.z;
@@ -205,10 +228,11 @@ GReturn GMatirxCpp::ConvertQuaternionF(GQUATERNIONF _quaternion, GMATRIXF & _out
 	_outMatrix.data[15] = 1.0f;
 
 	return SUCCESS;
-} 
+}
 
 GReturn GMatirxCpp::MultiplyNumF(GMATRIXF _matrix, float _scalar, GMATRIXF & _outMatrix)
 {
+	GMATRIXF _m = _matrix;
 	for (int i = 0; i < 16; i++)
 	{
 		_outMatrix.data[i] = _matrix.data[i] * _scalar;
@@ -238,27 +262,31 @@ GReturn GMatirxCpp::DeterminantF(GMATRIXF _matrix, float & _outValue)
 
 GReturn GMatirxCpp::TransposeF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 {
-	_outMatrix.data[0] = _matrix.data[0];
-	_outMatrix.data[1] = _matrix.data[4];
-	_outMatrix.data[2] = _matrix.data[8];
-	_outMatrix.data[3] = _matrix.data[12];
-	_outMatrix.data[4] = _matrix.data[1];
-	_outMatrix.data[5] = _matrix.data[5];
-	_outMatrix.data[6] = _matrix.data[9];
-	_outMatrix.data[7] = _matrix.data[13];
-	_outMatrix.data[8] = _matrix.data[2];
-	_outMatrix.data[9] = _matrix.data[6];
-	_outMatrix.data[10] = _matrix.data[10];
-	_outMatrix.data[11] = _matrix.data[14];
-	_outMatrix.data[12] = _matrix.data[3];
-	_outMatrix.data[13] = _matrix.data[7];
-	_outMatrix.data[14] = _matrix.data[11];
-	_outMatrix.data[15] = _matrix.data[15];
+	GMATRIXF _m = _matrix;
+
+	_outMatrix.data[0] = _m.data[0];
+	_outMatrix.data[1] = _m.data[4];
+	_outMatrix.data[2] = _m.data[8];
+	_outMatrix.data[3] = _m.data[12];
+	_outMatrix.data[4] = _m.data[1];
+	_outMatrix.data[5] = _m.data[5];
+	_outMatrix.data[6] = _m.data[9];
+	_outMatrix.data[7] = _m.data[13];
+	_outMatrix.data[8] = _m.data[2];
+	_outMatrix.data[9] = _m.data[6];
+	_outMatrix.data[10] = _m.data[10];
+	_outMatrix.data[11] = _m.data[14];
+	_outMatrix.data[12] = _m.data[3];
+	_outMatrix.data[13] = _m.data[7];
+	_outMatrix.data[14] = _m.data[11];
+	_outMatrix.data[15] = _m.data[15];
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 {
+	GMATRIXF _m = _matrix;
+
 	float det;
 	float a0 = _matrix.data[0] * _matrix.data[5] - _matrix.data[1] * _matrix.data[4];
 	float a1 = _matrix.data[0] * _matrix.data[6] - _matrix.data[2] * _matrix.data[4];
@@ -300,7 +328,7 @@ GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 	return SUCCESS;
 }
 
-GReturn GMatirxCpp::IdentityF(GMATRIXF & _outMatrix) 
+GReturn GMatirxCpp::IdentityF(GMATRIXF & _outMatrix)
 {
 	_outMatrix = GIdentityMatrixF;
 	return SUCCESS;
@@ -383,7 +411,7 @@ GReturn GMatirxCpp::GetTranslationF(GMATRIXF _matrix, GVECTORF& _outVector)
 	_outVector.w = 0;
 	return SUCCESS;
 }
- 
+
 GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
 {
 	float det;
@@ -401,7 +429,7 @@ GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
 
 	return SUCCESS;
 }
- 
+
 GReturn GMatirxCpp::RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
 {
 	float c = cosf(_radian);
@@ -445,6 +473,23 @@ GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 	return SUCCESS;
 }
 
+GReturn GMatirxCpp::RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixF;
+	GMATRIXF RotationX;
+	GMATRIXF RotationY;
+	GMATRIXF RotationZ;
+	GMATRIXF reuslt;
+	RotationZF(GIdentityMatrixF, _roll, RotationZ);
+	RotationXF(GIdentityMatrixF, _roll, RotationX);
+	RotationYF(GIdentityMatrixF, _roll, RotationY);
+
+	MultiplyMatrixF(RotationZ, RotationX, reuslt);
+	MultiplyMatrixF(reuslt, RotationY, _outMatrix);
+
+	return SUCCESS;
+}
+
 GReturn GMatirxCpp::TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _outMatrix)
 {
 	GMATRIXF Translation = GIdentityMatrixF;
@@ -478,7 +523,82 @@ GReturn GMatirxCpp::LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GM
 	}
 	return SUCCESS;
 }
- 
+
+GReturn GMatirxCpp::ProjectionLHF(float _fovY, float _aspect, float _zn, float _zf, GMATRIXF & _outMatrix)
+{
+	if (G_COMPARISON_STANDARD_F(_aspect, 0.0f)) return FAILURE;
+
+	_outMatrix = GZeroMatrixF;
+	_outMatrix.row2.data[1] = 1 / tanf(_fovY / 2.0f);
+	_outMatrix.row1.data[0] = _outMatrix.row2.data[1] / _aspect;
+	_outMatrix.row3.data[2] = _zf / (_zf - _zn);
+	_outMatrix.row3.data[3] = 1;
+	_outMatrix.row4.data[2] = -_zn * _zf / (_zf - _zn);
+
+	return SUCCESS;
+}
+
+GReturn GMatirxCpp::LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIXF & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixF;
+	GVECTORF temp;
+	GVECTORF normalDir;		  //zaxis
+	GVECTORF normalCrossUP_Z; //xaxis
+	GVECTORF CrossZ_X;		  //yaxis
+	float magnitudeX;
+	float magnitudeZ;
+
+	normalDir.x = _at.x - _eye.x;
+	normalDir.y = _at.y - _eye.y;
+	normalDir.z = _at.z - _eye.z;
+
+	magnitudeZ = sqrtf((normalDir.x * normalDir.x) + (normalDir.y * normalDir.y) + (normalDir.z * normalDir.z));
+	if (G_COMPARISON_STANDARD_F(magnitudeZ, 0.0f)) return FAILURE;
+	
+
+	normalDir.x /= magnitudeZ;
+	normalDir.y /= magnitudeZ;
+	normalDir.z /= magnitudeZ;
+
+
+	normalCrossUP_Z.x = (_up.y * normalDir.z) - (_up.z * normalDir.y);
+	normalCrossUP_Z.y = (_up.z * normalDir.x) - (_up.x * normalDir.z);
+	normalCrossUP_Z.z = (_up.x * normalDir.y) - (_up.y * normalDir.x);
+
+	magnitudeX = sqrtf((normalCrossUP_Z.x * normalCrossUP_Z.x) + (normalCrossUP_Z.y * normalCrossUP_Z.y) + (normalCrossUP_Z.z * normalCrossUP_Z.z));
+	if (G_COMPARISON_STANDARD_F(magnitudeX, 0.0f)) return FAILURE;
+
+
+	normalCrossUP_Z.x /= magnitudeX;
+	normalCrossUP_Z.y /= magnitudeX;
+	normalCrossUP_Z.z /= magnitudeX;
+
+
+	CrossZ_X.x = (normalDir.y * normalCrossUP_Z.z) - (normalDir.z * normalCrossUP_Z.y);
+	CrossZ_X.y = (normalDir.z * normalCrossUP_Z.x) - (normalDir.x * normalCrossUP_Z.z);
+	CrossZ_X.z = (normalDir.x * normalCrossUP_Z.y) - (normalDir.y * normalCrossUP_Z.x);
+
+	temp.x = normalCrossUP_Z.x * _eye.x + normalCrossUP_Z.y * _eye.y + normalCrossUP_Z.z * _eye.z;
+	temp.y = CrossZ_X.x * _eye.x + CrossZ_X.y * _eye.y + CrossZ_X.z * _eye.z;
+	temp.z = normalDir.x * _eye.x + normalDir.y * _eye.y + normalDir.z * _eye.z;
+
+	_outMatrix.data[0] = normalCrossUP_Z.x;
+	_outMatrix.data[4] = normalCrossUP_Z.y;
+	_outMatrix.data[8] = normalCrossUP_Z.z;
+	_outMatrix.data[12] = -temp.x;
+
+	_outMatrix.data[1] = CrossZ_X.x;
+	_outMatrix.data[5] = CrossZ_X.y;
+	_outMatrix.data[9] = CrossZ_X.z;
+	_outMatrix.data[13] = -temp.y;
+
+	_outMatrix.data[2] = normalDir.x;
+	_outMatrix.data[6] = normalDir.y;
+	_outMatrix.data[10] = normalDir.z;
+	_outMatrix.data[14] = -temp.z;
+	return SUCCESS;
+}
+
 
 //double Matrix
 
@@ -636,7 +756,7 @@ GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 	double b5 = _matrix.data[10] * _matrix.data[15] - _matrix.data[11] * _matrix.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-	if (G_COMPARISON_STANDARD_F(det,0))
+	if (G_COMPARISON_STANDARD_F(det, 0))
 	{
 		return FAILURE;
 	}
@@ -678,7 +798,7 @@ GReturn GMatirxCpp::GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion)
 	double sy = sqrt(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
 	double sz = sqrt(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
 	DeterminantD(_matrix, det);
-	if (G_COMPARISON_STANDARD_D(det,0))
+	if (G_COMPARISON_STANDARD_D(det, 0))
 	{
 		return FAILURE;
 	}
@@ -743,7 +863,7 @@ GReturn GMatirxCpp::GetTranslationD(GMATRIXD _matrix, GVECTORD& _outVector)
 	_outVector.x = _matrix.data[3];
 	_outVector.y = _matrix.data[7];
 	_outVector.z = _matrix.data[11];
-	_outVector.w = 0 ;
+	_outVector.w = 0;
 	return SUCCESS;
 }
 
@@ -808,6 +928,23 @@ GReturn GMatirxCpp::RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 	return SUCCESS;
 }
 
+GReturn GMatirxCpp::RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixD;
+	GMATRIXD RotationX;
+	GMATRIXD RotationY;
+	GMATRIXD RotationZ;
+	GMATRIXD reuslt;
+	RotationZD(GIdentityMatrixD, _roll, RotationZ);
+	RotationXD(GIdentityMatrixD, _roll, RotationX);
+	RotationYD(GIdentityMatrixD, _roll, RotationY);
+
+	MultiplyMatrixD(RotationZ, RotationX, reuslt);
+	MultiplyMatrixD(reuslt, RotationY, _outMatrix);
+
+	return SUCCESS;
+}
+
 GReturn GMatirxCpp::TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _outMatrix)
 {
 	GMATRIXD Translation = GIdentityMatrixD;
@@ -838,6 +975,81 @@ GReturn GMatirxCpp::LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, G
 	{
 		_outMatrix.data[i] = G_LERP(_matrix1.data[i], _matrix2.data[i], _ratio);
 	}
+	return SUCCESS;
+}
+
+GReturn GMatirxCpp::ProjectionLHD(double _fovY, double _aspect, double _zn, double _zf, GMATRIXD & _outMatrix)
+{
+	if (G_COMPARISON_STANDARD_D(_aspect, 0)) return FAILURE;
+
+	_outMatrix = GZeroMatrixD;
+	_outMatrix.row2.data[1] = 1 / tan(_fovY / 2);
+	_outMatrix.row1.data[0] = _outMatrix.row2.data[1] / _aspect;
+	_outMatrix.row3.data[2] = _zf / (_zf - _zn);
+	_outMatrix.row3.data[3] = 1;
+	_outMatrix.row4.data[2] = -_zn * _zf / (_zf - _zn);
+
+	return SUCCESS;
+}
+
+GReturn GMatirxCpp::LookAtLHD(GVECTORD _eye, GVECTORD _at, GVECTORD _up, GMATRIXD & _outMatrix)
+{
+	_outMatrix = GIdentityMatrixD;
+	GVECTORD temp;
+	GVECTORD normalDir;		  //zaxis
+	GVECTORD normalCrossUP_Z; //xaxis
+	GVECTORD CrossZ_X;		  //yaxis
+	double magnitudeX;
+	double magnitudeZ;
+
+	normalDir.x = _at.x - _eye.x;
+	normalDir.y = _at.y - _eye.y;
+	normalDir.z = _at.z - _eye.z;
+
+	magnitudeZ = sqrt((normalDir.x * normalDir.x) + (normalDir.y * normalDir.y) + (normalDir.z * normalDir.z));
+	if (G_COMPARISON_STANDARD_F(magnitudeZ, 0)) return FAILURE;
+
+	normalDir.x /= magnitudeZ;
+	normalDir.y /= magnitudeZ;
+	normalDir.z /= magnitudeZ;
+
+
+	normalCrossUP_Z.x = (_up.y * normalDir.z) - (_up.z * normalDir.y);
+	normalCrossUP_Z.y = (_up.z * normalDir.x) - (_up.x * normalDir.z);
+	normalCrossUP_Z.z = (_up.x * normalDir.y) - (_up.y * normalDir.x);
+
+	magnitudeX = sqrt((normalCrossUP_Z.x * normalCrossUP_Z.x) + (normalCrossUP_Z.y * normalCrossUP_Z.y) + (normalCrossUP_Z.z * normalCrossUP_Z.z));
+	if (G_COMPARISON_STANDARD_F(magnitudeX, 0)) return FAILURE;
+
+
+	normalCrossUP_Z.x /= magnitudeX;
+	normalCrossUP_Z.y /= magnitudeX;
+	normalCrossUP_Z.z /= magnitudeX;
+
+
+	CrossZ_X.x = (normalDir.y * normalCrossUP_Z.z) - (normalDir.z * normalCrossUP_Z.y);
+	CrossZ_X.y = (normalDir.z * normalCrossUP_Z.x) - (normalDir.x * normalCrossUP_Z.z);
+	CrossZ_X.z = (normalDir.x * normalCrossUP_Z.y) - (normalDir.y * normalCrossUP_Z.x);
+
+	temp.x = normalCrossUP_Z.x * _eye.x + normalCrossUP_Z.y * _eye.y + normalCrossUP_Z.z * _eye.z;
+	temp.y = CrossZ_X.x * _eye.x + CrossZ_X.y * _eye.y + CrossZ_X.z * _eye.z;
+	temp.z = normalDir.x * _eye.x + normalDir.y * _eye.y + normalDir.z * _eye.z;
+
+	_outMatrix.data[0] = normalCrossUP_Z.x;
+	_outMatrix.data[4] = normalCrossUP_Z.y;
+	_outMatrix.data[8] = normalCrossUP_Z.z;
+	_outMatrix.data[12] = -temp.x;
+
+	_outMatrix.data[1] = CrossZ_X.x;
+	_outMatrix.data[5] = CrossZ_X.y;
+	_outMatrix.data[9] = CrossZ_X.z;
+	_outMatrix.data[13] = -temp.y;
+
+	_outMatrix.data[2] = normalDir.x;
+	_outMatrix.data[6] = normalDir.y;
+	_outMatrix.data[10] = normalDir.z;
+	_outMatrix.data[14] = -temp.z;
+
 	return SUCCESS;
 }
 
