@@ -361,7 +361,6 @@ public:
 	char * streamName = "Sound";
     int index = -1;
 	int quitVal = 0;
-	bool loops = false;
 	atomic<bool> isPlaying;
 	atomic<bool> isPaused;
 	float volume = -1.0f;
@@ -387,7 +386,7 @@ public:
     GReturn CheckChannelVolumes(const float *_values, int _numChannels);
     GReturn SetVolume(float _newVolume);
 
-    GReturn Play(bool _loop = false);
+    GReturn Play();
     GReturn Pause();
     GReturn Resume();
     GReturn StopSound();
@@ -498,7 +497,7 @@ void RunMainLoop(pa_mainloop * myMainLoop)
     int result = 0;
     while(myMainLoop != nullptr)
     {
-        //if(stopVal == 0)
+      
         {
             switch(myState)
             {
@@ -564,7 +563,7 @@ time_t timeLimit = time(NULL) + timeOut;
     while(timeLimit >= time (NULL))
     {
 
-   // int yo = pa_mainloop_iterate(mainLoop,0,NULL);
+
         if(PA_CONTEXT_READY == pa_context_get_state(aContext))
         {
         return true;
@@ -592,7 +591,7 @@ GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myCont
         *myMainLoop = newLoop;
         *myContext = newContext;
 
-  // streamThread = new std::thread(&LinuxAppAudio::Iterate, this);
+  
   return result;
 }
 
@@ -617,9 +616,9 @@ GReturn LinuxAppSound::Init()
     if(myContext == nullptr)
         return result;
 
-//RunMainLoop(myMainLoop, quitVal);
+
     loopThread = new std::thread(RunMainLoop, myMainLoop);
-   // pa_mainloop_run(myMainLoop,&quitVal);
+
   pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
     bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 5);
     if(connected)
@@ -741,7 +740,7 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
     bool didChange = false;
     for (int i = 0; i < _numChannels; i++)
     {
-        //try
+
         {
             if (currentValues[i] > _values[i])
             {
@@ -835,11 +834,7 @@ time_t prevT = time(nullptr) -1;
 
         while(true)
         {
-//myMutex.lock();
-//if(audio->request >0)
-//{
-  //  continue;
-//}myMutex.unlock();
+
             if(stopFlag == true)
             {
                 pa_stream_cancel_write((myStream));
@@ -875,17 +870,11 @@ time_t prevT = time(nullptr) -1;
                 {
                       myCallback.myOperation = pa_stream_drain(myStream,myCallback.cbSucceed,&myCallback);
 
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
-
                        break;
                 }
 
 
             }
-
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
 
 
         }
@@ -903,14 +892,12 @@ time_t prevT = time(nullptr) -1;
             break;
             }
 
-       // pa_mainloop_iterate(audio->myMainLoop,0,nullptr);
-
 
         }
     }
     return theResult;
 }
-GReturn LinuxAppSound::Play(bool _loop)
+GReturn LinuxAppSound::Play()
 {
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
@@ -1591,12 +1578,7 @@ GReturn LinuxAppMusic::PauseStream()
     TJCALLBACK myCallback;
     if(isPlaying)
     {
-       // int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
-        //if(value == 0)
-        //{
-          //   pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
 
-//        }
             isPaused = true;
             isPlaying = false;
                 result = SUCCESS;
@@ -1620,12 +1602,6 @@ GReturn LinuxAppMusic::ResumeStream()
     if (!isPlaying)
     {
 
-       // int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
-       // if(value == 1)
-        //{
-          //   pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
-
-        //}
 
             isPaused = false;
             isPlaying = true;
@@ -1889,7 +1865,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
 
         if (result != SUCCESS)
         {
-    //result = activeSounds[i]->CheckChannelVolumes(_values, theirChannels);
+
         }
     }
     for (int i = 0; i < activeMusic.size(); i++)

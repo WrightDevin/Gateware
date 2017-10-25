@@ -44,15 +44,75 @@ namespace GW
 		public:
 		
 			//SetPCMShader
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetPCMShader(const char* _data) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetChannelVolumes(float *_values, int _numChannels) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetVolume(float _newVolume) = 0;
-			virtual GReturn Play(bool _loop = false) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
+			virtual GReturn Play() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn Pause() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn Resume() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn StopSound() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn GetSoundSourceChannels(unsigned int & returnedChannelNum) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn GetSoundOutputChannels(unsigned int & returnedChannelNum) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn isSoundPlaying(bool & _returnedBool) = 0;
 			//! Return the total number of active references to this object.
 			/*!

@@ -41,16 +41,75 @@ namespace GW
 		{
 
 		public:
-		
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetPCMShader(const char* _data) = 0;//function ptr
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetChannelVolumes(float * _values, int _numChannels) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn SetVolume(float _newVolume) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn StreamStart(bool _loop = false) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn PauseStream() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn ResumeStream() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn StopStream() = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn GetStreamSourceChannels(unsigned int & returnedChannelNum) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn GetStreamOutputChannels(unsigned int & returnedChannelNum) = 0;
+            //! TBH
+            /*!
+             *
+             *	\retval SUCCESS Successfully ran.
+             *	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
+             */
 			virtual GReturn isStreamPlaying(bool & _returnedBool) = 0;
 			//! Return the total number of active references to this object.
 			/*!

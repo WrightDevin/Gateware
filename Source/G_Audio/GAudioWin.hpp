@@ -421,7 +421,7 @@ public:
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn CheckChannelVolumes(const float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
-	GReturn Play(bool _loop = false);
+	GReturn Play();
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
@@ -532,18 +532,7 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 	void OnStreamEnd()
 	{
 		SetEvent(hstreamEndEvent);
-		if (sndUser != nullptr)
-		{
-			if (sndUser->loops == false)
-			{
-				sndUser->isPlaying = false;
-				sndUser->isPaused = true;
-			}
-			else
-			{
-				sndUser->Play(true);
-			}
-		}
+
 	}
 	void OnBufferStart(void*) {  }
 	void OnLoopEnd(void*) {  }
@@ -759,7 +748,7 @@ GReturn WindowAppSound::SetVolume(float _newVolume)
 
 	return result;
 }
-GReturn WindowAppSound::Play(bool _loop)
+GReturn WindowAppSound::Play()
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == NULL)
@@ -767,7 +756,6 @@ GReturn WindowAppSound::Play(bool _loop)
 	if (mySourceVoice == NULL)
 		return result;
 	HRESULT theResult = S_OK;
-	loops = _loop;
 
 	if (isPlaying)
 	{
@@ -1336,7 +1324,8 @@ GReturn WindowAppMusic::StopStream()
 	stopFlag = true;
 
 	streamThread->join();
-	
+    delete streamThread;
+    streamThread = nullptr;
 	isPlaying = false;
 	isPaused = true;
 	mySourceVoice->FlushSourceBuffers();

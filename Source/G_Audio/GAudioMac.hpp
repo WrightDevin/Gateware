@@ -3,13 +3,20 @@
 #include "../DLL_Export_Symbols.h"
 
 #include "../../Interface/G_Audio/GAudio.h"
-
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+#endif
+#include <thread>
+#include <atomic>
+#include <mutex>
 using namespace GW;
 using namespace AUDIO;
 #define G_UINT_MAX 0xffffffff
-unsigned int AudioCounter = 0;
-unsigned int SoundCounter = 0;
-unsigned int MusicCounter = 0;
+std::atomic<unsigned int> AudioCounter;
+std::atomic<unsigned int> SoundCounter;
+std::atomic<unsigned int> MusicCounter;
+
 class MacAppAudio;
 class MacAppSound : public GSound
 {
@@ -22,7 +29,7 @@ public:
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
 	GReturn SetVolume(float _newVolume);
-	GReturn Play(bool _loop = false);
+	GReturn Play();
 	GReturn Pause();
 	GReturn Resume();
 	GReturn StopSound();
@@ -42,8 +49,7 @@ public:
 class MacAppMusic : public GMusic
 {
 private:
-	//char buffers[3][65543];
-	//OVERLAPPED overlap = { 0 };
+    GReturn Stream();
 public:
 	char * myFile;
 	int index = -1;
@@ -51,7 +57,7 @@ public:
 	bool loops = false;
 	MacAppAudio * audio;
 	
-	//std::thread* streamThread = nullptr;
+	std::thread* streamThread = nullptr;
 
 	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
@@ -68,6 +74,7 @@ public:
 	GReturn IncrementCount();
 	GReturn DecrementCount();
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+    MacAppMusic();
 	~MacAppMusic();
 
 #if __APPLE__
@@ -201,7 +208,7 @@ GReturn MacAppSound::SetVolume(float _newVolume)
 #endif
 	return result;
 }
-GReturn MacAppSound::Play(bool _loop)
+GReturn MacAppSound::Play()
 {
 	GReturn result = GReturn::FAILURE;
 	if (audio == nullptr)
@@ -359,6 +366,10 @@ MacAppSound::~MacAppSound()
 //End of GSound implementation
 
 //Start of GMusic implementation
+MacAppMusic::MacAppMusic()
+{
+    IncrementCount();
+}
 GReturn MacAppMusic::Init(const char * _path)
 {
 	GReturn result = GReturn::FAILURE;
@@ -457,6 +468,14 @@ GReturn MacAppMusic::SetVolume(float _newVolume)
 #endif
 	return result;
 }
+GReturn MacAppMusic::Stream()
+{
+    GReturn result = SUCCESS;
+#if __APPLE__
+[mac_msc StreamMusic];
+#endif
+    return result;
+}
 GReturn MacAppMusic::StreamStart(bool _loop)
 {
 	GReturn result = FAILURE;
@@ -465,11 +484,16 @@ GReturn MacAppMusic::StreamStart(bool _loop)
 #if __APPLE__
     bool bresult = false;
     bresult = [mac_msc StreamStart:_loop];
-    if (bresult == true)
-        result = SUCCESS;
-    else
-        result = FAILURE;
     
+    if (bresult == true)
+    {
+        result = SUCCESS;
+        streamThread = new std::thread(&MacAppMusic::Stream, this);
+    }
+    else
+    {
+        result = FAILURE;
+    }
 #endif
 	return result;
 }
@@ -519,6 +543,9 @@ GReturn MacAppMusic::StopStream()
         result = FAILURE;
     
 #endif
+    streamThread->join();
+    delete streamThread;
+    streamThread = nullptr;
 	return result;
 }
 GReturn MacAppMusic::isStreamPlaying(bool & _returnedBool)
@@ -612,7 +639,7 @@ GReturn MacAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outp
 }
 MacAppMusic::~MacAppMusic()
 {
-
+    DecrementCount();
 }
 //End of GMusic implementation 
 GReturn MacAppAudio::Init(int _numOfOutputs)
@@ -686,7 +713,7 @@ GReturn MacAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 #if __APPLE__
     msc->mac_msc->myAudio = mac_audio->myAudio;
     [mac_audio->myAudio attachNode:msc->mac_msc->mySound];
-    [mac_audio->myAudio connect:msc->mac_msc->mySound to:mac_audio->myAudio.mainMixerNode format:msc->mac_msc->myBuffer.format];
+    [mac_audio->myAudio connect:msc->mac_msc->mySound to:mac_audio->myAudio.mainMixerNode format:msc->mac_msc->myBuffers[0].format];
     [mac_audio->ActiveMusic addObject:msc->mac_msc];
 #endif
 	msc->audio = this;

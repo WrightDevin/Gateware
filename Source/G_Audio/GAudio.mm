@@ -5,6 +5,7 @@
 #import <AVFoundation/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
 
+#include <atomic>
 @interface GMacSound : NSObject
 {
     @public
@@ -119,29 +120,38 @@
     [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:nil];
 
     bool returnValue = [mySound isPlaying];
- 
-        return returnValue;
-   
- 
- //   AudioBufferList
+    isPlaying = returnValue;
+    isPaused = !returnValue;
+    return returnValue;
+
 }
 -(bool) PauseSound
 {
     
      [mySound pause];
-    return ![mySound isPlaying];
+    
+    bool returnValue = [mySound isPlaying];
+    isPlaying = returnValue;
+    isPaused = !returnValue;
+    return isPaused;
 }
 -(bool) ResumeSound
 {
     
      [mySound playAtTime:nil];
-      return [mySound isPlaying];
+    bool returnValue = [mySound isPlaying];
+    isPlaying = returnValue;
+    isPaused = !returnValue;
+    return returnValue;
 }
 -(bool) StopSound
 {
    
      [mySound stop];
-        return ![mySound isPlaying];
+    bool returnValue = [mySound isPlaying];
+    isPlaying = returnValue;
+    isPaused = !returnValue;
+    return isPaused;
 }
 -(bool) Unload
 {
@@ -161,7 +171,7 @@
 }
 
 @end
-//#define  MAX_BUFFER_COUNT = 3;
+#define  MAX_BUFFER_COUNT = 3;
 #define  STREAMING_BUFFER_SIZE = 65536;
 @interface GMacMusic : NSObject
 {
@@ -171,10 +181,12 @@
     AVAudioPlayerNode * mySound;
     AVAudioMixerNode * myMixer;
     AVAudioFile * myFile;
-    AVAudioPCMBuffer * myLastBuffer;
-    AVAudioPCMBuffer * myBuffer;
-    AVAudioPCMBuffer * myNextBuffer;
+    AVAudioPCMBuffer * myBuffers[3];
     NSThread * myScheduler;
+    int currentBufferIndex;
+    int index;
+    std::atomic<int> buffersQueued;
+    std::atomic<bool> stopFlag;
     bool loops ;
     bool isPlaying;
     bool isPaused;
@@ -182,6 +194,7 @@
     AVAudioFrameCount MaxPosition;
     AVAudioFrameCount CurrentPosition;
 }
+
 -(id) initWithPath:(NSString*) _path;
 -(bool) SetPCMShader:(const char *) _data;
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
@@ -191,8 +204,8 @@
 -(bool) PauseStream;
 -(bool) ResumeStream;
 -(bool) StopStream;
--(void) ScheduleBuffers;
--(void) UpdateBuffers;
+-(void) StreamMusic;
+-(void) setBuffersQueued:(int) _value;
 @end
 
 @implementation GMacMusic
@@ -210,20 +223,17 @@
         
         NSURL * filePath =[[NSURL alloc] initFileURLWithPath:_path];
         self->myFile = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
-        self->myBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
-        self->myLastBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength ];
-        self->myNextBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
+        self->myBuffers[0] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
+        self->myBuffers[1] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength ];
+        self->myBuffers[2] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
         
-        bool success = [self->myFile readIntoBuffer:self->myBuffer error:&testError];
-        success = [self->myFile readIntoBuffer:self->myNextBuffer error:&testError];
-        if(!success)
-        {
-            NSAssert(success, @"could nor read file into buffer", [testError localizedDescription]);
-        }
+        
+        currentBufferIndex = 0;
+        buffersQueued = 0;
+        stopFlag = false;
         MaxPosition = myFile.length;
         volume = 1;
-       // myScheduler = [[NSThread alloc] initWithBlock:^{[self ScheduleBuffers];}];
-     
+      
     }
     return self;
 }
@@ -285,20 +295,52 @@
     }
     return false;
 }
--(void) ScheduleBuffers
+-(void) StreamMusic
 {
-    NSError *testError;
-    if(CurrentPosition >= MaxPosition)
+    if(stopFlag == true)
     {
-        
+        return;
+    }
+    NSError *testError;
+    AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition:CurrentPosition );
+    CurrentPosition += valid;
+ 
+        AVAudioPCMBuffer * currentBuffer = myBuffers[currentBufferIndex];
+    [myFile readIntoBuffer:currentBuffer frameCount:valid error:&testError];
+
+    while(buffersQueued >= 2)
+    {
+        sleep(1);
+    }
+    [self setBuffersQueued:(buffersQueued + 1)];
+    
+    [mySound scheduleBuffer:currentBuffer completionHandler:^{
+       [self setBuffersQueued:(buffersQueued - 1)];
+    }];
+    
+    currentBufferIndex++;
+    if(currentBufferIndex >2)
+        currentBufferIndex = 0;
+    
+    //This following code is simillar to needed code down below in an attempt to stop
+    //breaks in music when starting playback from begining
+    if(valid != 63553)
+    {
         if(loops)
         {
-            [mySound stop];
-            [mySound prepareWithFrameCount:63553];
-            
             CurrentPosition = 0;
             myFile.framePosition = 0;
-            
+        }
+    }
+    
+    //checks if we are at end of the song
+    if(CurrentPosition >= MaxPosition)
+    {
+        //if looping reset file pointer and our current position
+        if(loops)
+        {
+            CurrentPosition = 0;
+            myFile.framePosition = 0;
         }
         else
         {
@@ -306,40 +348,23 @@
         }
     }
     
-    AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition:CurrentPosition );
-   
-    CurrentPosition += valid;
-    
-        [myFile readIntoBuffer:myNextBuffer frameCount:valid error:&testError];
-        [mySound scheduleBuffer:myNextBuffer completionHandler:^{
-            [self UpdateBuffers];
-        }];
-    
-  
-    
+    [self StreamMusic];
 
 }
--(void) UpdateBuffers
-{
 
-    if([mySound isPlaying])
-    {
-    myLastBuffer = myBuffer;
-    myBuffer = myNextBuffer;
-    [self ScheduleBuffers];
-    }
-}
 -(bool) StreamStart:(bool) _loops
 {
     loops = _loops;
     if(![mySound isPlaying])
     {
     [mySound playAtTime:0];
-    //[mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:nil];
-       [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:^{[self UpdateBuffers];}];
+        CurrentPosition = 0;
+        myFile.framePosition = 0;
     }
+    stopFlag = false;
     bool returnValue = [mySound isPlaying];
-    
+    isPlaying = returnValue;
+    isPaused = !returnValue;
     return returnValue;
     
     
@@ -350,27 +375,34 @@
 {
     [mySound pause];
     bool returnValue = ![mySound isPlaying];
-    
+    isPlaying = returnValue;
+    isPaused = !returnValue;
     return returnValue;
 }
 -(bool) ResumeStream
 {
     [mySound play];
     bool returnValue = [mySound isPlaying];
-    
+    isPlaying = returnValue;
+    isPaused = !returnValue;
     return returnValue;
 }
 -(bool) StopStream
 {
     [mySound stop];
     [mySound prepareWithFrameCount:63553];
-   
+    stopFlag = true;
     CurrentPosition = 0;
+    buffersQueued = 0;
     bool returnValue = ![mySound isPlaying];
-    
+    isPlaying = returnValue;
+    isPaused = !returnValue;
     return returnValue;
 }
-
+-(void) setBuffersQueued:(int) _value
+{
+    buffersQueued = _value;
+}
 
 @end
 
@@ -389,8 +421,6 @@
 }
 
 -(bool) Init;
--(void) SetupOutputs;
-
 -(bool) SetMasterVolume:(float) _newVolume;
 -(bool) SetMasterVolumeChannels:(const float *) _values theNumberOfChannels:(int)_numChannels;
 -(bool) PauseAll;
@@ -428,12 +458,6 @@
     {
         return false;
     }
-}
--(void) SetupOutputs
-{
-  //  AVAudioOutputNode * leftSpeaker = [AVAudioOutputNode alloc];
-   // [leftSpeaker out];
-    
 }
 
 -(bool) SetMasterVolume:(float) _newVolume

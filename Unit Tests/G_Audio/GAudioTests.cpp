@@ -21,10 +21,22 @@ GSound * testSound2 = nullptr;
 GMusic * testMusic = nullptr;
 GMusic * testMusic2 = nullptr;
 GReturn checkReturned = FAILURE;
+#ifdef _WIN32
 
-const char * testpath = "TestBeep.wav";
-const char * testpath2 = "TestMusic.wav";
-const char * testpath3 = "TestMusic2.wav";
+const char * testpath =  u8"../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
+const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
+const char * testpath3 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+#elif __APPLE__
+const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
+const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
+const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+#elif __linux__
+const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
+const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
+const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+#endif
+
+
 //const char * testpath4 = "TestSound2.wav";
 int numOfOutputs;
 float atestVolume[6] = { 1.0f, 0.0f, 0.0f ,0.0f, 0.0f, 0.0f};
@@ -98,7 +110,7 @@ TEST_CASE("Playing test sound", "[PlaySound]")
   	Sleep(2000);
 #else
  sleep(1);
-#endif;
+#endif
 
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
 
@@ -187,6 +199,10 @@ TEST_CASE("Stop test sound", "[StopSound]")
        REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
 	checkReturned = FAILURE;
 }
+//////////////////////////
+//Following test case is if future developer gets PCM shader working
+/////////////////////////
+
 //TEST_CASE("Editing test sound PCM", "[EditPCM]")
 //{
 //	const char* testdata = nullptr;
@@ -426,16 +442,16 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->ResumeAll()));
 	checkReturned = FAILURE;
 #ifdef WIN32
-  	Sleep(2000);
+  	Sleep(20000);
 #else
- sleep(2000);
+ sleep(200);
 #endif
 
 }
-//TEST_CASE("Stopping all sounds and music.", "[Stopll]")
-//{
-//
-//	// Pass cases
-//	REQUIRE(G_SUCCESS(checkReturned = testAudio->StopAll()));
-//	checkReturned = FAILURE;
-//}
+TEST_CASE("Stopping all sounds and music.", "[Stopll]")
+{
+
+	// Pass cases
+	REQUIRE(G_SUCCESS(checkReturned = testAudio->StopAll()));
+	checkReturned = FAILURE;
+}
