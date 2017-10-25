@@ -38,6 +38,9 @@ GOpenGLESSurface*	oglSurface;
 
 HDC*				hdc;
 HGLRC*				context;
+#elif __linux__
+#elif __APPLE__
+#endif
 
 #elif __linux__
 

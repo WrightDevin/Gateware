@@ -28,6 +28,7 @@ private:
 	unsigned int refCount;
 
 	GWindow*					gWnd;
+	HWND surfaceWindow;
 	ID3D11Device*				device;
 	ID3D11DeviceContext*		context;
 	IDXGISwapChain*				swapChain;
@@ -35,14 +36,6 @@ private:
 	float						width;
 	float						height;
 	float						aspectRatio;
-
-#ifdef _WIN32
-
-	HWND surfaceWindow;
-
-#elif __linux__
-#elif __APPLE__
-#endif
 
 public:
 	GDirectX11();
@@ -81,7 +74,6 @@ void GDirectX11::SetGWindow(GWindow* _window)
 
 GReturn GDirectX11::Initialize()
 {
-#ifdef _WIN32
 
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
@@ -163,39 +155,21 @@ GReturn GDirectX11::Initialize()
 
 GReturn GDirectX11::GetDevice(void** _outDevice)
 {
-#ifdef _WIN32
-
 	*_outDevice = device;
-
-#elif __linux__
-#elif __APPLE__
-#endif
 
 	return SUCCESS;
 }
 
 GReturn GDirectX11::GetContext(void ** _outContext)
 {
-#ifdef _WIN32
-
 	*_outContext = context;
-
-#elif __linux__
-#elif __APPLE__
-#endif
 
 	return SUCCESS;
 }
 
 GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 {
-#ifdef _WIN32
-
 	*_outSwapchain = swapChain;
-
-#elif __linux__
-#elif __APPLE__
-#endif
 
 	return SUCCESS;
 }

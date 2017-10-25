@@ -32,11 +32,11 @@ using namespace SYSTEM;
 
 //namespace
 //{
-	// GWindow global variables.
+// GWindow global variables.
 
-	//! Map of Listeners to send event information to.
-	//std::map<GListener *, unsigned long long> listeners;
-	//int testInt;
+//! Map of Listeners to send event information to.
+//std::map<GListener *, unsigned long long> listeners;
+//int testInt;
 //}
 
 #include "../../Source/G_System/GWindow_Callback.hpp"
@@ -51,17 +51,17 @@ private:
 	Display * display;
 	Window window;
 
-    std::thread* linuxLoop = nullptr;
+	std::thread* linuxLoop = nullptr;
 	Atom prop_type;
-    Atom prop_hidden;
-    Atom prop_hMax;
-    Atom prop_vMax;
-    Atom prop_remove;
-    Atom prop_hints;
-    Atom prop_iconic;
-    Atom prop_active;
+	Atom prop_hidden;
+	Atom prop_hMax;
+	Atom prop_vMax;
+	Atom prop_remove;
+	Atom prop_hints;
+	Atom prop_iconic;
+	Atom prop_active;
 
-    typedef struct
+	typedef struct
 	{
 		unsigned long flags;
 		unsigned long functions;
@@ -74,9 +74,9 @@ private:
 	Hints hint;
 
 #elif __APPLE__
-    NSWindow * window;
-    NSAutoreleasePool* pool;
-    NSThread* nsMacLoop;
+	NSWindow * window;
+	NSAutoreleasePool* pool;
+	NSThread* nsMacLoop;
 #endif
 
 	std::atomic<unsigned int> refCount;
@@ -151,9 +151,9 @@ AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), sty
 	ZeroMemory(&wndHandle, sizeof(HWND));
 #elif __linux__
 	display = nullptr;
-	window = {0};
+	window = { 0 };
 #elif __APPLE__
-    window = nil;
+	window = nil;
 #endif // __WIN32
 }
 
@@ -205,7 +205,7 @@ GReturn AppWindow::OpenWindow()
 	}
 	//Create the window
 	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
-                              width, height, NULL, NULL, GetModuleHandleW(0), 0);
+		width, height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	if (wndHandle && style != MINIMIZED)
 	{
@@ -230,7 +230,7 @@ GReturn AppWindow::OpenWindow()
 		return FAILURE;
 
 #elif __linux__
-    XInitThreads();
+	XInitThreads();
 	if (window)
 		return REDUNDANT_OPERATION;
 
@@ -240,8 +240,8 @@ GReturn AppWindow::OpenWindow()
 	display = XOpenDisplay(NULL);
 	int screen = DefaultScreen(display);
 	int depth = DefaultDepth(display, screen);
-    int x, y;
-    unsigned int wid, heig, borderHeight, depthRet;
+	int x, y;
+	unsigned int wid, heig, borderHeight, depthRet;
 
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
@@ -259,10 +259,10 @@ GReturn AppWindow::OpenWindow()
 	// set rect hints
 	rect.flags = PSize | PPosition;
 
-    x = xPos;
-    y = yPos;
-    wid = width;
-    heig = height;
+	x = xPos;
+	y = yPos;
+	wid = width;
+	heig = height;
 
 	window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
 		depth, InputOutput, CopyFromParent, valueMask, &attributes);
@@ -273,99 +273,99 @@ GReturn AppWindow::OpenWindow()
 	XStoreName(display, window, "BasicWindowApp");
 
 
-	if(style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
+	if (style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
 	{
-	hint.flags = 2;
-	hint.decorations = 0;
+		hint.flags = 2;
+		hint.decorations = 0;
 
-	XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
+		XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5);
 	}
 
 	XSetWMNormalHints(display, window, &rect);
 
-	if(XMapWindow(display, window))
+	if (XMapWindow(display, window))
 	{
-        XSync(display, 0);
-        prop_type = XInternAtom(display, "_NET_WM_STATE", False);
-        prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
-        prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
-        prop_vMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
-        prop_remove = XInternAtom(display, "_NET_WM_STATE_REMOVE", False);
-        prop_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-        prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
-        prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
+		XSync(display, 0);
+		prop_type = XInternAtom(display, "_NET_WM_STATE", False);
+		prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+		prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+		prop_vMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+		prop_remove = XInternAtom(display, "_NET_WM_STATE_REMOVE", False);
+		prop_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
+		prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
+		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
-        linuxLoop = new std::thread(LinuxWndProc, display, window);
+		linuxLoop = new std::thread(LinuxWndProc, display, window);
 
-        linuxLoop->detach();
+		linuxLoop->detach();
 
-        return SUCCESS;
+		return SUCCESS;
 	}
 
-    else
-        return FAILURE;
+	else
+		return FAILURE;
 
 #elif __APPLE__
 
-    if(window)
-        return REDUNDANT_OPERATION;
+	if (window)
+		return REDUNDANT_OPERATION;
 
-    dispatch_sync(dispatch_get_main_queue(), ^ {
-        pool = [[NSAutoreleasePool alloc] init];
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		pool = [[NSAutoreleasePool alloc] init];
 
-        [NSApplication sharedApplication];
+	[NSApplication sharedApplication];
 
-        [NSThread detachNewThreadSelector:@selector(doNothing:) toTarget:[GWDelegate class] withObject:nil];
+	[NSThread detachNewThreadSelector : @selector(doNothing : ) toTarget:[GWDelegate class] withObject : nil];
 
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+	[NSApp setActivationPolicy : NSApplicationActivationPolicyRegular];
 
-        [NSApp setDelegate:appDel];
+	[NSApp setDelegate : appDel];
 
-        NSUInteger windowStyleMask = 0;
+	NSUInteger windowStyleMask = 0;
 
-        if(style == FULLSCREENBORDERED || style == WINDOWEDBORDERED || style == MINIMIZED)
-            windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+	if (style == FULLSCREENBORDERED || style == WINDOWEDBORDERED || style == MINIMIZED)
+		windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
 
-        NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
+	NSRect windowRect = NSMakeRect(xPos, yPos, width, height);
 
-        window = [[NSWindow alloc] initWithContentRect : windowRect
-                                             styleMask : windowStyleMask
-                                               backing : NSBackingStoreBuffered
-                                                 defer : NO];
+	window = [[NSWindow alloc] initWithContentRect:windowRect
+		styleMask : windowStyleMask
+		backing : NSBackingStoreBuffered
+		defer : NO];
 
-        [window setTitle:@"SampleCocoaWindow"];
+	[window setTitle : @"SampleCocoaWindow"];
 
-        //[window autorelease];
+	//[window autorelease];
 
-        [window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+	[window setCollectionBehavior : NSWindowCollectionBehaviorFullScreenPrimary];
 
-        [responder setNextResponder:window.nextResponder];
-        [window setNextResponder:responder];
-        [window makeFirstResponder:window.contentView];
-        [window.contentView setNextResponder:responder];
+	[responder setNextResponder : window.nextResponder];
+	[window setNextResponder : responder];
+	[window makeFirstResponder : window.contentView];
+	[window.contentView setNextResponder : responder];
 
-        [window setDelegate:delegate];
+	[window setDelegate : delegate];
 
-        //[window canBecomeMainWindow:YES];
+	//[window canBecomeMainWindow:YES];
 
-        //[window makeMainWindow];
+	//[window makeMainWindow];
 
-        [window makeKeyAndOrderFront : nil];
+	[window makeKeyAndOrderFront : nil];
 
-        FlushMacEventLoop();
+	FlushMacEventLoop();
 
 
-    if(style == FULLSCREENBORDERED || style == FULLSCREENBORDERLESS)
-    {
-        [window toggleFullScreen:nil];
-        FlushMacEventLoop();
-    }
-    } );
+	if (style == FULLSCREENBORDERED || style == FULLSCREENBORDERLESS)
+	{
+		[window toggleFullScreen : nil];
+		FlushMacEventLoop();
+	}
+	} );
 
-    if([window isVisible])
-        return SUCCESS;
-    else
-        return FAILURE;
+	if ([window isVisible])
+		return SUCCESS;
+	else
+		return FAILURE;
 
 #endif
 
@@ -380,8 +380,8 @@ GReturn AppWindow::ProcessWindowEvents()
 	if (!display)
 		return FAILURE;
 #elif __APPLE__
-		if (!window)
-			return FAILURE;
+	if (!window)
+		return FAILURE;
 #endif
 
 #ifdef _WIN32
@@ -412,10 +412,10 @@ GReturn AppWindow::ProcessWindowEvents()
 	XSync(display, 0);
 
 #elif __APPLE__
-		dispatch_sync(dispatch_get_main_queue(), ^{
+	dispatch_sync(dispatch_get_main_queue(), ^{
 
-			FlushMacEventLoop();
-} );
+		FlushMacEventLoop();
+	});
 #endif
 }
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
@@ -424,11 +424,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	if (!wndHandle)
 		return FAILURE;
 #elif __linux__
-    if(!display)
-        return FAILURE;
+	if (!display)
+		return FAILURE;
 #elif __APPLE__
-    if(!window)
-        return FAILURE;
+	if (!window)
+		return FAILURE;
 #endif
 
 	GWindowStyle previousStyle = style;
@@ -457,78 +457,78 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		return SUCCESS;
 #elif __linux__
-        int x = xPos, y = yPos;
-        unsigned int w = width, h = height;
+		int x = xPos, y = yPos;
+		unsigned int w = width, h = height;
 
-        XClientMessageEvent ev;
-        memset (&ev, 0, sizeof ev);
-        ev.type = ClientMessage;
-        ev.window = window;
-        ev.message_type = prop_active;
-        ev.format = 32;
-        ev.data.l[0] = 1;
-        ev.data.l[1] = CurrentTime;
-        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
-        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
-                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
-        sleep(1);
-        XFlush (display);
+		XClientMessageEvent ev;
+		memset(&ev, 0, sizeof ev);
+		ev.type = ClientMessage;
+		ev.window = window;
+		ev.message_type = prop_active;
+		ev.format = 32;
+		ev.data.l[0] = 1;
+		ev.data.l[1] = CurrentTime;
+		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
+			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
+		sleep(1);
+		XFlush(display);
 
-        if(!stat)
-            return FAILURE;
+		if (!stat)
+			return FAILURE;
 
-        XSync(display, 0);
+		XSync(display, 0);
 
-        hint.flags = 2;
-        hint.decorations = 5;
+		hint.flags = 2;
+		hint.decorations = 5;
 
-        if(!XMoveResizeWindow(display, window, x, y, w, h))
-            return FAILURE;
+		if (!XMoveResizeWindow(display, window, x, y, w, h))
+			return FAILURE;
 
-        if(!XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5))
-            return FAILURE;
+		if (!XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5))
+			return FAILURE;
 
-        XEvent unMaxEvent;
-        unMaxEvent.type = ClientMessage;
-        unMaxEvent.xclient.window = window;
-        unMaxEvent.xclient.message_type = prop_type;
-        unMaxEvent.xclient.format = 32;
-        unMaxEvent.xclient.data.l[0] = 0;
-        unMaxEvent.xclient.data.l[1] = prop_hMax;
-        unMaxEvent.xclient.data.l[2] = prop_vMax;
-        unMaxEvent.xclient.data.l[3] = 0;
-        unMaxEvent.xclient.data.l[4] = 0;
+		XEvent unMaxEvent;
+		unMaxEvent.type = ClientMessage;
+		unMaxEvent.xclient.window = window;
+		unMaxEvent.xclient.message_type = prop_type;
+		unMaxEvent.xclient.format = 32;
+		unMaxEvent.xclient.data.l[0] = 0;
+		unMaxEvent.xclient.data.l[1] = prop_hMax;
+		unMaxEvent.xclient.data.l[2] = prop_vMax;
+		unMaxEvent.xclient.data.l[3] = 0;
+		unMaxEvent.xclient.data.l[4] = 0;
 
-        stat = XSendEvent(display, DefaultRootWindow(display), False,
-			    SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
-        if (!stat)
-            return FAILURE;
+		stat = XSendEvent(display, DefaultRootWindow(display), False,
+			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+		if (!stat)
+			return FAILURE;
 
-        sleep(1);
-        XSync(display, 0);
+		sleep(1);
+		XSync(display, 0);
 
-        return SUCCESS;
+		return SUCCESS;
 #elif __APPLE__
-        if([window isMiniaturized])
-            [window deminiaturize:nil];
+		if ([window isMiniaturized])
+			[window deminiaturize : nil];
 
-        NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+		NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
+		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-        [window setStyleMask:styleMask];
-        [window setFrame:rect display:YES];
+		[window setStyleMask : styleMask];
+		[window setFrame : rect display : YES];
 
-        dispatch_sync(dispatch_get_main_queue(), ^ {
+		dispatch_sync(dispatch_get_main_queue(), ^{
 
-        FlushMacEventLoop();
-        } );
+			FlushMacEventLoop();
+		});
 
-        if(window)
-        {
-            return SUCCESS;
-        }
+		if (window)
+		{
+			return SUCCESS;
+		}
 
-        return FAILURE;
+		return FAILURE;
 #endif // __linux__
 	}
 	break;
@@ -553,78 +553,78 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __linux__
-        int x = xPos, y = yPos;
-        unsigned int w = width, h = height;
+		int x = xPos, y = yPos;
+		unsigned int w = width, h = height;
 
-        XClientMessageEvent ev;
-        memset (&ev, 0, sizeof ev);
-        ev.type = ClientMessage;
-        ev.window = window;
-        ev.message_type = prop_active;
-        ev.format = 32;
-        ev.data.l[0] = 1;
-        ev.data.l[1] = CurrentTime;
-        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
-        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
-                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
-        sleep(1);
-        XFlush (display);
+		XClientMessageEvent ev;
+		memset(&ev, 0, sizeof ev);
+		ev.type = ClientMessage;
+		ev.window = window;
+		ev.message_type = prop_active;
+		ev.format = 32;
+		ev.data.l[0] = 1;
+		ev.data.l[1] = CurrentTime;
+		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
+			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
+		sleep(1);
+		XFlush(display);
 
-        if(!stat)
-            return FAILURE;
+		if (!stat)
+			return FAILURE;
 
-        hint.flags = 2;
-        hint.decorations = 0;
+		hint.flags = 2;
+		hint.decorations = 0;
 
-        if(!XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5))
-            return FAILURE;
+		if (!XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5))
+			return FAILURE;
 
-        if(!XMoveResizeWindow(display, window, x, y, w, h))
-            return FAILURE;
+		if (!XMoveResizeWindow(display, window, x, y, w, h))
+			return FAILURE;
 
-        XEvent unMaxEvent;
-        unMaxEvent.type = ClientMessage;
-        unMaxEvent.xclient.window = window;
-        unMaxEvent.xclient.message_type = prop_type;
-        unMaxEvent.xclient.format = 32;
-        unMaxEvent.xclient.data.l[0] = 0;
-        unMaxEvent.xclient.data.l[1] = prop_hMax;
-        unMaxEvent.xclient.data.l[2] = prop_vMax;
-        unMaxEvent.xclient.data.l[3] = 0;
-        unMaxEvent.xclient.data.l[4] = 0;
+		XEvent unMaxEvent;
+		unMaxEvent.type = ClientMessage;
+		unMaxEvent.xclient.window = window;
+		unMaxEvent.xclient.message_type = prop_type;
+		unMaxEvent.xclient.format = 32;
+		unMaxEvent.xclient.data.l[0] = 0;
+		unMaxEvent.xclient.data.l[1] = prop_hMax;
+		unMaxEvent.xclient.data.l[2] = prop_vMax;
+		unMaxEvent.xclient.data.l[3] = 0;
+		unMaxEvent.xclient.data.l[4] = 0;
 
-        stat = XSendEvent(display, window, False,
-			    SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
-        if (!stat)
-            return FAILURE;
+		stat = XSendEvent(display, window, False,
+			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+		if (!stat)
+			return FAILURE;
 
-        sleep(1);
-        XSync(display, 0);
+		sleep(1);
+		XSync(display, 0);
 
-        return SUCCESS;
+		return SUCCESS;
 
 #elif __APPLE__
-        if([window isMiniaturized])
-            [window deminiaturize:nil];
+		if ([window isMiniaturized])
+			[window deminiaturize : nil];
 
-        NSUInteger styleMask = NSWindowStyleMaskBorderless;
-        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+		NSUInteger styleMask = NSWindowStyleMaskBorderless;
+		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-        [window setStyleMask:styleMask];
-        [window setFrame:rect display:YES];
+		[window setStyleMask : styleMask];
+		[window setFrame : rect display : YES];
 
-        [window setStyleMask:styleMask];
+		[window setStyleMask : styleMask];
 
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-        FlushMacEventLoop();
-        } );
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			FlushMacEventLoop();
+		});
 
-        if(window)
-        {
-            return SUCCESS;
-        }
+		if (window)
+		{
+			return SUCCESS;
+		}
 
-        return FAILURE;
+		return FAILURE;
 #endif // __linux__
 
 	}
@@ -652,60 +652,60 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 #elif __linux__
 
-        XClientMessageEvent ev;
-        memset (&ev, 0, sizeof ev);
-        ev.type = ClientMessage;
-        ev.window = window;
-        ev.message_type = prop_active;
-        ev.format = 32;
-        ev.data.l[0] = 1;
-        ev.data.l[1] = CurrentTime;
-        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
-        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
-                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
-        sleep(1);
-        XFlush (display);
+		XClientMessageEvent ev;
+		memset(&ev, 0, sizeof ev);
+		ev.type = ClientMessage;
+		ev.window = window;
+		ev.message_type = prop_active;
+		ev.format = 32;
+		ev.data.l[0] = 1;
+		ev.data.l[1] = CurrentTime;
+		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
+			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
+		sleep(1);
+		XFlush(display);
 
-        if(!stat)
-            return FAILURE;
+		if (!stat)
+			return FAILURE;
 
-        hint.flags = 2;
-        hint.decorations = 5;
+		hint.flags = 2;
+		hint.decorations = 5;
 
-        XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
+		XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5);
 
-        if(!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
-            return FAILURE;
+		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
+			return FAILURE;
 
-        XSync(display, 0);
+		XSync(display, 0);
 
-            return SUCCESS;
+		return SUCCESS;
 
 #elif __APPLE__
-        if([window isMiniaturized])
-            [window deminiaturize:nil];
+		if ([window isMiniaturized])
+			[window deminiaturize : nil];
 
-        NSUInteger styleMask = NSWindowStyleMaskFullScreen;
-        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+		NSUInteger styleMask = NSWindowStyleMaskFullScreen;
+		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-        [window setStyleMask:styleMask];
-        //[window setFrame:rect display:YES];
+		[window setStyleMask : styleMask];
+		//[window setFrame:rect display:YES];
 
 		bool fullscreen;
-		IsFullscreen(&fullscreen);
-        if(fullscreen == false)
-            [window toggleFullScreen:nil];
+		IsFullscreen(fullscreen);
+		if (fullscreen == false)
+			[window toggleFullScreen : nil];
 
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-            FlushMacEventLoop();
-        } );
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			FlushMacEventLoop();
+		});
 
-        if(window)
-        {
-            return SUCCESS;
-        }
+		if (window)
+		{
+			return SUCCESS;
+		}
 
-        return FAILURE;
+		return FAILURE;
 #endif // __linux__
 	}
 	break;
@@ -730,59 +730,59 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 #elif __linux__
 
-        XClientMessageEvent ev;
-        memset (&ev, 0, sizeof ev);
-        ev.type = ClientMessage;
-        ev.window = window;
-        ev.message_type = prop_active;
-        ev.format = 32;
-        ev.data.l[0] = 1;
-        ev.data.l[1] = CurrentTime;
-        ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
-        int stat = XSendEvent (display, RootWindow(display, XDefaultScreen(display)), False,
-                                SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
-        sleep(1);
-        XFlush (display);
+		XClientMessageEvent ev;
+		memset(&ev, 0, sizeof ev);
+		ev.type = ClientMessage;
+		ev.window = window;
+		ev.message_type = prop_active;
+		ev.format = 32;
+		ev.data.l[0] = 1;
+		ev.data.l[1] = CurrentTime;
+		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
+		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
+			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
+		sleep(1);
+		XFlush(display);
 
-        if(!stat)
-            return FAILURE;
+		if (!stat)
+			return FAILURE;
 
-        hint.flags = 2;
-        hint.decorations = 0;
+		hint.flags = 2;
+		hint.decorations = 0;
 
-        XChangeProperty(display,window,prop_hints,prop_hints,32,PropModeReplace,(unsigned char *)&hint,5);
+		XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5);
 
-        if(!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
-            return FAILURE;
+		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
+			return FAILURE;
 
-        XSync(display, 0);
-        return SUCCESS;
+		XSync(display, 0);
+		return SUCCESS;
 
 #elif __APPLE__
-        if([window isMiniaturized])
-            [window deminiaturize:nil];
+		if ([window isMiniaturized])
+			[window deminiaturize : nil];
 
-        NSUInteger styleMask = NSWindowStyleMaskFullScreen;
-        NSRect rect = NSMakeRect(xPos, yPos, width, height);
+		NSUInteger styleMask = NSWindowStyleMaskFullScreen;
+		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-        [window setStyleMask:styleMask];
-        [window setFrame:rect display:YES];
+		[window setStyleMask : styleMask];
+		[window setFrame : rect display : YES];
 
 		bool fullscreen;
-		isFullscreen(&fullscreen);
+		IsFullscreen(fullscreen);
 		if (fullscreen == false)
-            [window toggleFullScreen:nil];
+			[window toggleFullScreen : nil];
 
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-        FlushMacEventLoop();
-        } );
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			FlushMacEventLoop();
+		});
 
-        if(window)
-        {
-            return SUCCESS;
-        }
+		if (window)
+		{
+			return SUCCESS;
+		}
 
-        return FAILURE;
+		return FAILURE;
 
 #endif // __linux__
 	}
@@ -799,39 +799,39 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 #elif __linux__
 
-        if(!XIconifyWindow(display, window, DefaultScreen(display)))
-            return FAILURE;
+		if (!XIconifyWindow(display, window, DefaultScreen(display)))
+			return FAILURE;
 
-        else
-        {
-            XFlush(display);
-            return SUCCESS;
-        }
+		else
+		{
+			XFlush(display);
+			return SUCCESS;
+		}
 
 #elif __APPLE__
 		bool fullscreen;
-		IsFullscreen(&fullscreen);
+		IsFullscreen(fullscreen);
 		if (fullscreen == false)
-        {
-            ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
-        }
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-            FlushMacEventLoop();
-        } );
+		{
+			ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
+		}
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			FlushMacEventLoop();
+		});
 
-        if(![window isMiniaturized])
-            [window miniaturize:nil];
+		if (![window isMiniaturized])
+			[window miniaturize : nil];
 
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-        FlushMacEventLoop();
-        } );
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			FlushMacEventLoop();
+		});
 
-        if([window isMiniaturized])
-        {
-            return SUCCESS;
-        }
+		if ([window isMiniaturized])
+		{
+			return SUCCESS;
+		}
 
-        return FAILURE;
+		return FAILURE;
 #endif
 
 	}
@@ -871,8 +871,8 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	if (!display)
 		return FAILURE;
 #elif __APPLE__
-    if(!window)
-        return FAILURE;
+	if (!window)
+		return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(_x, _y, width, height, style);
@@ -888,26 +888,26 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 #elif __linux__
 	if (XMoveWindow(display, window, xPos, yPos))
 	{
-        XSync(display, 0);
-        return SUCCESS;
+		XSync(display, 0);
+		return SUCCESS;
 	}
 	else
 		return FAILURE;
 
 #elif __APPLE__
-    NSRect rect = window.frame;
-    CGPoint newPos;
-    newPos.y = yPos - height;
-    newPos.x = xPos;
+	NSRect rect = window.frame;
+	CGPoint newPos;
+	newPos.y = yPos - height;
+	newPos.x = xPos;
 
-    dispatch_sync(dispatch_get_main_queue(), ^ {
-    [window setFrame:rect display: YES animate: YES];
-    } );
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		[window setFrame : rect display : YES animate : YES];
+	});
 
-        return SUCCESS;
+	return SUCCESS;
 #endif
 
-    return FAILURE;
+	return FAILURE;
 }
 
 GReturn AppWindow::ResizeWindow(int _width, int _height)
@@ -919,8 +919,8 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	if (!display)
 		return FAILURE;
 #elif __APPLE__
-    if(!window)
-        return FAILURE;
+	if (!window)
+		return FAILURE;
 #endif
 
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
@@ -936,25 +936,25 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 #elif __linux__
 	if (XResizeWindow(display, window, width, height))
 	{
-        XSync(display, 0);
-        return SUCCESS;
+		XSync(display, 0);
+		return SUCCESS;
 	}
 	else
 		return FAILURE;
 
 #elif __APPLE__
-    NSRect rect = window.frame;
-    CGSize newSize;
-    newSize.height = height;
-    newSize.width = width;
+	NSRect rect = window.frame;
+	CGSize newSize;
+	newSize.height = height;
+	newSize.width = width;
 
-    dispatch_sync(dispatch_get_main_queue(), ^ {
-    [window setFrame:rect display:YES animate:YES];
-    } );
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		[window setFrame : rect display : YES animate : YES];
+	});
 
-        return SUCCESS;
+	return SUCCESS;
 #endif
-    return FAILURE;
+	return FAILURE;
 }
 
 GReturn AppWindow::Maximize()
@@ -1049,22 +1049,22 @@ GReturn AppWindow::RequestInterface(const GUUIID& _interfaceID, void** _outputIn
 #ifdef __APPLE__
 void FlushMacEventLoop()
 {
-    while(TRUE)
-    {
-        if([NSThread isMainThread])
-        {
-            NSEvent * event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                                 untilDate:[NSDate distantPast]
-                                                    inMode:NSDefaultRunLoopMode
-                                                   dequeue:YES];
+	while (TRUE)
+	{
+		if ([NSThread isMainThread])
+		{
+			NSEvent * event = [NSApp nextEventMatchingMask : NSEventMaskAny
+				untilDate : [NSDate distantPast]
+				inMode : NSDefaultRunLoopMode
+				dequeue : YES];
 
-            if(event == nil)
-                break;
+			if (event == nil)
+				break;
 
-            [NSApp sendEvent:event];
-            [NSApp updateWindows];
-        }
-    }
+			[NSApp sendEvent : event];
+			[NSApp updateWindows];
+		}
+	}
 }
 #endif
 
@@ -1351,17 +1351,17 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	if (!display)
 		return FAILURE;
 
-     Window root;
-    int x, y;
-    unsigned int w, h, bord, depth;
+	Window root;
+	int x, y;
+	unsigned int w, h, bord, depth;
 
-    XSync(display, 0);
+	XSync(display, 0);
 
-	if(!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return FAILURE;
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+		return FAILURE;
 
-    _outX = x;
-    _outY = y + bord;
+	_outX = x;
+	_outY = y + bord;
 
 #elif __APPLE__
 	if (!window)
@@ -1404,7 +1404,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 	linuxWnd.window = (void*)&window;
 	linuxWnd.display = (void*)display;
 
-	memcpy(_outWindowHandle, &linuxWnd , _handleSize );
+	memcpy(_outWindowHandle, &linuxWnd, _handleSize);
 	return SUCCESS;
 #elif __APPLE__
 	if (!(__bridge void*)window)
@@ -1459,6 +1459,12 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	Atom vProp = ((Atom *)prop_return)[0];
 	Atom hProp = ((Atom *)prop_return)[1];
 
+    if(result != Success)
+    {
+        char temp[1024];
+        XGetErrorText(display, result, temp, 1024);
+        return FAILURE;
+    }
 	if (hProp == prop_hMax && vProp == prop_vMax)
 		_outIsFullscreen = true;
 	else

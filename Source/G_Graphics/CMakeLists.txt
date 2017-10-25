@@ -72,6 +72,7 @@ endif(UNIX AND NOT APPLE)
 
 
 
+target_link_libraries(GOpenGLESSurface_DLL "-framework Cocoa")
 
 
 if(APPLE)
