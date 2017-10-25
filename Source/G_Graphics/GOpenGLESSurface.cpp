@@ -58,7 +58,7 @@ private:
     GLXContext              OGLXcontext;
     XWindowAttributes       gwa;
     XEvent                  event;
-    LINUX_WINDOW*           lWnd;
+    LINUX_WINDOW            lWnd;
 
 #elif __APPLE__
 #endif
@@ -98,10 +98,10 @@ GOpenGLES::~GOpenGLES()
 	#ifdef _WIN32
 	#elif __linux__
 
-	glXMakeCurrent((Display*)lWnd->display, None, NULL);
-	glXDestroyContext((Display*)lWnd->display, OGLXcontext);
-	XDestroyWindow((Display*)lWnd->display, *(Window*)lWnd->window);
-	XCloseDisplay((Display*)lWnd->display);
+	glXMakeCurrent((Display*)lWnd.display, None, NULL);
+	glXDestroyContext((Display*)lWnd.display, OGLXcontext);
+	XDestroyWindow((Display*)lWnd.display, *(Window*)lWnd.window);
+	XCloseDisplay((Display*)lWnd.display);
 
 	#elif __APPLE__
 	#endif
@@ -158,15 +158,14 @@ GReturn GOpenGLES::Initialize()
 #elif __linux__
 
 gWnd->GetWindowHandle(&lWnd, sizeof(LINUX_WINDOW));
-Display* tempDsp = (Display*)lWnd->display;
-lWnd->window = (void*)&DefaultRootWindow((Display*)lWnd->display);
-root = RootWindow((Display*)lWnd->display, DefaultScreen((Display*)lWnd->display));
-vi = glXChooseVisual((Display*)lWnd->display, DefaultScreen((Display*)lWnd->display), attributes);
-cmap = XCreateColormap((Display*)lWnd->display, root, vi->visual, AllocNone);
-OGLXcontext = glXCreateContext((Display*)lWnd->display, vi, NULL, GL_TRUE);
+lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
+root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
+vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
+cmap = XCreateColormap((Display*)lWnd.display, root, vi->visual, AllocNone);
+OGLXcontext = glXCreateContext((Display*)lWnd.display, vi, NULL, GL_TRUE);
 
-int ret = glXMakeCurrent((Display*)lWnd->display, root, OGLXcontext);
-XGetWindowAttributes((Display*)lWnd->display, root, &gwa);
+int ret = glXMakeCurrent((Display*)lWnd.display, root, OGLXcontext);
+XGetWindowAttributes((Display*)lWnd.display, root, &gwa);
 glViewport(0, 0, gwa.width, gwa.height);
 
 //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
