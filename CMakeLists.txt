@@ -94,7 +94,7 @@ if(UNIX AND NOT APPLE)
     link_directories(Source)
 
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lX11")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -lX11")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -lX11 -lGL")
 
     	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../../../Binaries/UNIX/${BUILD_TYPE}/Gateware_${Architecture})
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../../../Libraries/UNIX/${BUILD_TYPE}/Gateware_${Architecture})

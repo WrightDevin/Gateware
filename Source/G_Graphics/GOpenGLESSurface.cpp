@@ -1,5 +1,6 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLESSurface.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 #include <iostream>
 #include <stdio.h>
@@ -56,9 +57,10 @@ private:
     Colormap                cmap;
     XSetWindowAttributes    swa;
     Window                  wnd;
-    GLXContext              OGLcontext;
+    GLXContext              OGLXcontext;
     XWindowAttributes       gwa;
     XEvent                  event;
+    LINUX_WINDOW*            lWnd;
 
 #elif __APPLE__
 #endif
@@ -99,7 +101,7 @@ GOpenGLES::~GOpenGLES()
 	#elif __linux__
 
 	glXMakeCurrent(dsp, None, NULL);
-	glXDestroyContext(dsp, OGLcontext);
+	glXDestroyContext(dsp, OGLXcontext);
 	XDestroyWindow(dsp, wnd);
 	XCloseDisplay(dsp);
 
@@ -157,15 +159,15 @@ GReturn GOpenGLES::Initialize()
 
 #elif __linux__
 
-gWnd->GetWindowHandle(&dsp, sizeof(LINUX_WINDOW));
-wnd = DefaultRootWindow(dsp);
-root = RootWindow(dsp, DefaultScreen(dsp));
-vi = glXChooseVisual(dsp, DefaultScreen(dsp), attributes);
-cmap = XCreateColormap(dsp, root, vi->visual, AllocNone);
-OGLcontext = glXCreateContext(dsp, vi, NULL, GL_TRUE);
+gWnd->GetWindowHandle(&lWnd, sizeof(LINUX_WINDOW));
+lWnd->window = (void*)DefaultRootWindow(lWnd->display);
+root = RootWindow(lWnd->display, DefaultScreen(lWnd->display));
+vi = glXChooseVisual((Display*)lWnd->display, DefaultScreen(lWnd->display), attributes);
+cmap = XCreateColormap((Display*)lWnd->display, root, vi->visual, AllocNone);
+OGLXcontext = glXCreateContext((Display*)lWnd->display, vi, NULL, GL_TRUE);
 
-int ret = glXMakeCurrent(dsp, root, OGLcontext);
-XGetWindowAttributes(dsp, root, &gwa);
+int ret = glXMakeCurrent((Display*)lWnd->display, root, OGLXcontext);
+XGetWindowAttributes((Display*)lWnd->display, root, &gwa);
 glViewport(0, 0, gwa.width, gwa.height);
 
 //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -184,6 +186,9 @@ GReturn GOpenGLES::GetContext(void ** _outContext)
 	*_outContext = OGLcontext;
 
 #elif __linux__
+
+    *_outContext = OGLXcontext;
+
 #elif __APPLE__
 #endif
 
@@ -197,6 +202,9 @@ GReturn GOpenGLES::GetDeviceContextHandle(void** _outHDC)
 	*_outHDC = &hdc;
 
 #elif __linux__
+
+    *_outHDC = &lWnd;
+
 #elif __APPLE__
 #endif
 

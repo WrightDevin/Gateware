@@ -18,6 +18,8 @@ if(UNIX AND NOT APPLE)
 
 find_package(X11 REQUIRED)
 
+find_package(OpenGL REQUIRED)
+
 find_package(Threads REQUIRED)
 
 
@@ -42,7 +44,11 @@ message("X11 was found, attempting to link.")
 
 link_libraries(${X11_LIBRARIES})
 
+link_libraries(${OPENGL_LIBRARIES})
+
 include_directories(${X11_INCLUDE_DIR})
+
+include_directories(${OPENGL_INCLUDE_DIRS})
 
 
 

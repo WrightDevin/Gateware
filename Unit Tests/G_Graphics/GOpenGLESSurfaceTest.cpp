@@ -1,4 +1,5 @@
 #include "../Unit Tests/Common.h"
+#include "../Interface/G_System/GKeyDefines.h"
 
 #ifdef _WIN32
 
@@ -7,9 +8,9 @@
 
 #elif __linux__
 
+#include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
-#include <X11/Xlib.h>
 
 #elif __APPLE__
 #endif
@@ -31,7 +32,7 @@ using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
 GWindow*			gWnd_OGL;
-GOpenGLESSurface*	oglSurface = nullptr;
+GOpenGLESSurface*	oglSurface;
 
 #ifdef _WIN32
 
@@ -43,6 +44,7 @@ HGLRC*				context;
     Display*                dsp;
     Window                  wnd;
     GLXContext              OGLcontext;
+    LINUX_WINDOW*           lWnd;
 
 #elif __APPLE__
 #endif
@@ -70,6 +72,7 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 #elif __linux__
 
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);
+	CHECK(oglSurface->GetDeviceContextHandle((void**)&lWnd) == SUCCESS);
 
 #elif __APPLE__
 #endif
@@ -94,7 +97,7 @@ TEST_CASE("Testing OGLSurface Events")
 
 #elif __linux__
 
-    glXSwapBuffers(dsp, wnd);
+    glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
 
 #elif __APPLE__
 #endif
@@ -111,7 +114,7 @@ TEST_CASE("Testing OGLSurface Events")
 
 #elif __linux__
 
-    glXSwapBuffers(dsp, wnd);
+    glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
 
 #elif __APPLE__
 #endif
