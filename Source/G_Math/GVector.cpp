@@ -289,9 +289,11 @@ GReturn GVectorCpp::CrossVector2D(GVECTORD _vector1, GVECTORD _vector2, double& 
 
 GReturn GVectorCpp::CrossVector3D(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector)
 {
-	_outVector.x = (_vector1.y * _vector2.z) - (_vector1.z * _vector2.y);
-	_outVector.y = (_vector1.z * _vector2.x) - (_vector1.x * _vector2.z);
-	_outVector.z = (_vector1.x * _vector2.y) - (_vector1.y * _vector2.x);
+	GVECTORD _v1 = _vector1;
+	GVECTORD _v2 = _vector2;
+	_outVector.x = (_v1.y * _v2.z) - (_v1.z * _v2.y);
+	_outVector.y = (_v1.z * _v2.x) - (_v1.x * _v2.z);
+	_outVector.z = (_v1.x * _v2.y) - (_v1.y * _v2.x);
 	_outVector.w = 0.0f;
 
 	return SUCCESS;
@@ -299,19 +301,21 @@ GReturn GVectorCpp::CrossVector3D(GVECTORD _vector1, GVECTORD _vector2, GVECTORD
 
 GReturn GVectorCpp::VectorXMatrixD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector)
 {
-	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * _matrix.row4.x);
-	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * _matrix.row4.y);
-	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * _matrix.row4.z);
-	_outVector.w = (_vector.x * _matrix.row1.w) + (_vector.y * _matrix.row2.w) + (_vector.z * _matrix.row3.w) + (_vector.w * _matrix.row4.w);
+	GVECTORD _v = _vector;
+	_outVector.x = (_v.x * _matrix.row1.x) + (_v.y * _matrix.row2.x) + (_v.z * _matrix.row3.x) + (_v.w * _matrix.row4.x);
+	_outVector.y = (_v.x * _matrix.row1.y) + (_v.y * _matrix.row2.y) + (_v.z * _matrix.row3.y) + (_v.w * _matrix.row4.y);
+	_outVector.z = (_v.x * _matrix.row1.z) + (_v.y * _matrix.row2.z) + (_v.z * _matrix.row3.z) + (_v.w * _matrix.row4.z);
+	_outVector.w = (_v.x * _matrix.row1.w) + (_v.y * _matrix.row2.w) + (_v.z * _matrix.row3.w) + (_v.w * _matrix.row4.w);
 
 	return SUCCESS;
 }
 
 GReturn GVectorCpp::TransformD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector)
 {
-	_outVector.x = (_vector.x * _matrix.row1.x) + (_vector.y * _matrix.row2.x) + (_vector.z * _matrix.row3.x) + (_vector.w * 0.0f);
-	_outVector.y = (_vector.x * _matrix.row1.y) + (_vector.y * _matrix.row2.y) + (_vector.z * _matrix.row3.y) + (_vector.w * 0.0f);
-	_outVector.z = (_vector.x * _matrix.row1.z) + (_vector.y * _matrix.row2.z) + (_vector.z * _matrix.row3.z) + (_vector.w * 0.0f);
+	GVECTORD _v = _vector;
+	_outVector.x = (_v.x * _matrix.row1.x) + (_v.y * _matrix.row2.x) + (_v.z * _matrix.row3.x) + (_v.w * 0.0f);
+	_outVector.y = (_v.x * _matrix.row1.y) + (_v.y * _matrix.row2.y) + (_v.z * _matrix.row3.y) + (_v.w * 0.0f);
+	_outVector.z = (_v.x * _matrix.row1.z) + (_v.y * _matrix.row2.z) + (_v.z * _matrix.row3.z) + (_v.w * 0.0f);
 	_outVector.w = 1.0;
 
 	return SUCCESS;
