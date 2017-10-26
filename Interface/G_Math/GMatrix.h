@@ -263,7 +263,7 @@ namespace GW
 			/*!
 			*	Uses Left-handed coordinate system to build the rotation matrix. 
 			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
-			*	The mathematic formula will like: Mat_Rotation = ( Mat_Roll * ( Mat_Pitch * Mat_Yaw))
+			*	The mathematic formula will like: YawPitchRoll_RotationMatrix = ( Mat_Roll * ( Mat_Pitch * Mat_Yaw))
 			*
 			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.
@@ -585,6 +585,7 @@ namespace GW
 			/*!
 			*	Uses Left-handed coordinate system to build the rotation matrix.
 			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
+			*	The mathematic formula will like: YawPitchRoll_RotationMatrix = ( Mat_Roll * ( Mat_Pitch * Mat_Yaw))
 			*
 			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.

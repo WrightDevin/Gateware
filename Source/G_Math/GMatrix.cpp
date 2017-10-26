@@ -53,7 +53,7 @@ public:
 
 	GReturn RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) override;
 
-	GReturn RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) override;
+	GReturn RotationYawPitchRollF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) override;
 
 	GReturn TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatrix) override;
 
@@ -99,7 +99,7 @@ public:
 
 	GReturn RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) override;
 
-	GReturn RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) override;
+	GReturn RotationYawPitchRollD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) override;
 
 	GReturn TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) override;
 
@@ -149,7 +149,7 @@ GReturn GMatirxCpp::SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 	GMATRIXF _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix1.data[i] - _matrix2.data[i];
+		_outMatrix.data[i] = _m1.data[i] - _m2.data[i];
 	}
 	return SUCCESS;
 }
@@ -159,38 +159,37 @@ GReturn GMatirxCpp::MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRI
 	GMATRIXF _m1 = _matrix1;
 	GMATRIXF _m2 = _matrix2;
 
-	_outMatrix.data[0] = _matrix1.data[0] * _matrix2.data[0] + _matrix1.data[1] * _matrix2.data[4] + _matrix1.data[2] * _matrix2.data[8] + _matrix1.data[3] * _matrix2.data[12];
-	_outMatrix.data[1] = _matrix1.data[0] * _matrix2.data[1] + _matrix1.data[1] * _matrix2.data[5] + _matrix1.data[2] * _matrix2.data[9] + _matrix1.data[3] * _matrix2.data[13];
-	_outMatrix.data[2] = _matrix1.data[0] * _matrix2.data[2] + _matrix1.data[1] * _matrix2.data[6] + _matrix1.data[2] * _matrix2.data[10] + _matrix1.data[3] * _matrix2.data[14];
-	_outMatrix.data[3] = _matrix1.data[0] * _matrix2.data[3] + _matrix1.data[1] * _matrix2.data[7] + _matrix1.data[2] * _matrix2.data[11] + _matrix1.data[3] * _matrix2.data[15];
+	_outMatrix.data[0] = _m1.data[0] * _m2.data[0] + _m1.data[1] * _m2.data[4] + _m1.data[2] * _m2.data[8] + _m1.data[3] * _m2.data[12];
+	_outMatrix.data[1] = _m1.data[0] * _m2.data[1] + _m1.data[1] * _m2.data[5] + _m1.data[2] * _m2.data[9] + _m1.data[3] * _m2.data[13];
+	_outMatrix.data[2] = _m1.data[0] * _m2.data[2] + _m1.data[1] * _m2.data[6] + _m1.data[2] * _m2.data[10] + _m1.data[3] * _m2.data[14];
+	_outMatrix.data[3] = _m1.data[0] * _m2.data[3] + _m1.data[1] * _m2.data[7] + _m1.data[2] * _m2.data[11] + _m1.data[3] * _m2.data[15];
 
-	_outMatrix.data[4] = _matrix1.data[4] * _matrix2.data[0] + _matrix1.data[5] * _matrix2.data[4] + _matrix1.data[6] * _matrix2.data[8] + _matrix1.data[7] * _matrix2.data[12];
-	_outMatrix.data[5] = _matrix1.data[4] * _matrix2.data[1] + _matrix1.data[5] * _matrix2.data[5] + _matrix1.data[6] * _matrix2.data[9] + _matrix1.data[7] * _matrix2.data[13];
-	_outMatrix.data[6] = _matrix1.data[4] * _matrix2.data[2] + _matrix1.data[5] * _matrix2.data[6] + _matrix1.data[6] * _matrix2.data[10] + _matrix1.data[7] * _matrix2.data[14];
-	_outMatrix.data[7] = _matrix1.data[4] * _matrix2.data[3] + _matrix1.data[5] * _matrix2.data[7] + _matrix1.data[6] * _matrix2.data[11] + _matrix1.data[7] * _matrix2.data[15];
+	_outMatrix.data[4] = _m1.data[4] * _m2.data[0] + _m1.data[5] * _m2.data[4] + _m1.data[6] * _m2.data[8] + _m1.data[7] * _m2.data[12];
+	_outMatrix.data[5] = _m1.data[4] * _m2.data[1] + _m1.data[5] * _m2.data[5] + _m1.data[6] * _m2.data[9] + _m1.data[7] * _m2.data[13];
+	_outMatrix.data[6] = _m1.data[4] * _m2.data[2] + _m1.data[5] * _m2.data[6] + _m1.data[6] * _m2.data[10] + _m1.data[7] * _m2.data[14];
+	_outMatrix.data[7] = _m1.data[4] * _m2.data[3] + _m1.data[5] * _m2.data[7] + _m1.data[6] * _m2.data[11] + _m1.data[7] * _m2.data[15];
 
-	_outMatrix.data[8] = _matrix1.data[8] * _matrix2.data[0] + _matrix1.data[9] * _matrix2.data[4] + _matrix1.data[10] * _matrix2.data[8] + _matrix1.data[11] * _matrix2.data[12];
-	_outMatrix.data[9] = _matrix1.data[8] * _matrix2.data[1] + _matrix1.data[9] * _matrix2.data[5] + _matrix1.data[10] * _matrix2.data[9] + _matrix1.data[11] * _matrix2.data[13];
-	_outMatrix.data[10] = _matrix1.data[8] * _matrix2.data[2] + _matrix1.data[9] * _matrix2.data[6] + _matrix1.data[10] * _matrix2.data[10] + _matrix1.data[11] * _matrix2.data[14];
-	_outMatrix.data[11] = _matrix1.data[8] * _matrix2.data[3] + _matrix1.data[9] * _matrix2.data[7] + _matrix1.data[10] * _matrix2.data[11] + _matrix1.data[11] * _matrix2.data[15];
+	_outMatrix.data[8] = _m1.data[8] * _m2.data[0] + _m1.data[9] * _m2.data[4] + _m1.data[10] * _m2.data[8] + _m1.data[11] * _m2.data[12];
+	_outMatrix.data[9] = _m1.data[8] * _m2.data[1] + _m1.data[9] * _m2.data[5] + _m1.data[10] * _m2.data[9] + _m1.data[11] * _m2.data[13];
+	_outMatrix.data[10] = _m1.data[8] * _m2.data[2] + _m1.data[9] * _m2.data[6] + _m1.data[10] * _m2.data[10] + _m1.data[11] * _m2.data[14];
+	_outMatrix.data[11] = _m1.data[8] * _m2.data[3] + _m1.data[9] * _m2.data[7] + _m1.data[10] * _m2.data[11] + _m1.data[11] * _m2.data[15];
 
-	_outMatrix.data[12] = _matrix1.data[12] * _matrix2.data[0] + _matrix1.data[13] * _matrix2.data[4] + _matrix1.data[14] * _matrix2.data[8] + _matrix1.data[15] * _matrix2.data[12];
-	_outMatrix.data[13] = _matrix1.data[12] * _matrix2.data[1] + _matrix1.data[13] * _matrix2.data[5] + _matrix1.data[14] * _matrix2.data[9] + _matrix1.data[15] * _matrix2.data[13];
-	_outMatrix.data[14] = _matrix1.data[12] * _matrix2.data[2] + _matrix1.data[13] * _matrix2.data[6] + _matrix1.data[14] * _matrix2.data[10] + _matrix1.data[15] * _matrix2.data[14];
-	_outMatrix.data[15] = _matrix1.data[12] * _matrix2.data[3] + _matrix1.data[13] * _matrix2.data[7] + _matrix1.data[14] * _matrix2.data[11] + _matrix1.data[15] * _matrix2.data[15];
+	_outMatrix.data[12] = _m1.data[12] * _m2.data[0] + _m1.data[13] * _m2.data[4] + _m1.data[14] * _m2.data[8] + _m1.data[15] * _m2.data[12];
+	_outMatrix.data[13] = _m1.data[12] * _m2.data[1] + _m1.data[13] * _m2.data[5] + _m1.data[14] * _m2.data[9] + _m1.data[15] * _m2.data[13];
+	_outMatrix.data[14] = _m1.data[12] * _m2.data[2] + _m1.data[13] * _m2.data[6] + _m1.data[14] * _m2.data[10] + _m1.data[15] * _m2.data[14];
+	_outMatrix.data[15] = _m1.data[12] * _m2.data[3] + _m1.data[13] * _m2.data[7] + _m1.data[14] * _m2.data[11] + _m1.data[15] * _m2.data[15];
 
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF & _outVector)
 {
-	GMATRIXF _m = _matrix;
 	GVECTORF _v = _vector;
 
-	_outVector.x = _vector.data[0] * _matrix.data[0] + _vector.data[1] * _matrix.data[4] + _vector.data[2] * _matrix.data[8] + _vector.data[3] * _matrix.data[12];
-	_outVector.y = _vector.data[0] * _matrix.data[1] + _vector.data[1] * _matrix.data[5] + _vector.data[2] * _matrix.data[9] + _vector.data[3] * _matrix.data[13];
-	_outVector.z = _vector.data[0] * _matrix.data[2] + _vector.data[1] * _matrix.data[6] + _vector.data[2] * _matrix.data[10] + _vector.data[3] * _matrix.data[14];
-	_outVector.w = _vector.data[0] * _matrix.data[3] + _vector.data[1] * _matrix.data[7] + _vector.data[2] * _matrix.data[11] + _vector.data[3] * _matrix.data[15];
+	_outVector.x = _v.data[0] * _matrix.data[0] + _v.data[1] * _matrix.data[4] + _v.data[2] * _matrix.data[8] + _v.data[3] * _matrix.data[12];
+	_outVector.y = _v.data[0] * _matrix.data[1] + _v.data[1] * _matrix.data[5] + _v.data[2] * _matrix.data[9] + _v.data[3] * _matrix.data[13];
+	_outVector.z = _v.data[0] * _matrix.data[2] + _v.data[1] * _matrix.data[6] + _v.data[2] * _matrix.data[10] + _v.data[3] * _matrix.data[14];
+	_outVector.w = _v.data[0] * _matrix.data[3] + _v.data[1] * _matrix.data[7] + _v.data[2] * _matrix.data[11] + _v.data[3] * _matrix.data[15];
 
 	return SUCCESS;
 }
@@ -235,7 +234,7 @@ GReturn GMatirxCpp::MultiplyNumF(GMATRIXF _matrix, float _scalar, GMATRIXF & _ou
 	GMATRIXF _m = _matrix;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix.data[i] * _scalar;
+		_outMatrix.data[i] = _m.data[i] * _scalar;
 	}
 	return SUCCESS;
 }
@@ -288,40 +287,40 @@ GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 	GMATRIXF _m = _matrix;
 
 	float det;
-	float a0 = _matrix.data[0] * _matrix.data[5] - _matrix.data[1] * _matrix.data[4];
-	float a1 = _matrix.data[0] * _matrix.data[6] - _matrix.data[2] * _matrix.data[4];
-	float a2 = _matrix.data[0] * _matrix.data[7] - _matrix.data[3] * _matrix.data[4];
-	float a3 = _matrix.data[1] * _matrix.data[6] - _matrix.data[2] * _matrix.data[5];
-	float a4 = _matrix.data[1] * _matrix.data[7] - _matrix.data[3] * _matrix.data[5];
-	float a5 = _matrix.data[2] * _matrix.data[7] - _matrix.data[3] * _matrix.data[6];
-	float b0 = _matrix.data[8] * _matrix.data[13] - _matrix.data[9] * _matrix.data[12];
-	float b1 = _matrix.data[8] * _matrix.data[14] - _matrix.data[10] * _matrix.data[12];
-	float b2 = _matrix.data[8] * _matrix.data[15] - _matrix.data[11] * _matrix.data[12];
-	float b3 = _matrix.data[9] * _matrix.data[14] - _matrix.data[10] * _matrix.data[13];
-	float b4 = _matrix.data[9] * _matrix.data[15] - _matrix.data[11] * _matrix.data[13];
-	float b5 = _matrix.data[10] * _matrix.data[15] - _matrix.data[11] * _matrix.data[14];
+	float a0 = _m.data[0] * _m.data[5] - _m.data[1] * _m.data[4];
+	float a1 = _m.data[0] * _m.data[6] - _m.data[2] * _m.data[4];
+	float a2 = _m.data[0] * _m.data[7] - _m.data[3] * _m.data[4];
+	float a3 = _m.data[1] * _m.data[6] - _m.data[2] * _m.data[5];
+	float a4 = _m.data[1] * _m.data[7] - _m.data[3] * _m.data[5];
+	float a5 = _m.data[2] * _m.data[7] - _m.data[3] * _m.data[6];
+	float b0 = _m.data[8] * _m.data[13] - _m.data[9] * _m.data[12];
+	float b1 = _m.data[8] * _m.data[14] - _m.data[10] * _m.data[12];
+	float b2 = _m.data[8] * _m.data[15] - _m.data[11] * _m.data[12];
+	float b3 = _m.data[9] * _m.data[14] - _m.data[10] * _m.data[13];
+	float b4 = _m.data[9] * _m.data[15] - _m.data[11] * _m.data[13];
+	float b5 = _m.data[10] * _m.data[15] - _m.data[11] * _m.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
 
-	_outMatrix.data[0] = _matrix.data[5] * b5 - _matrix.data[6] * b4 + _matrix.data[7] * b3;
-	_outMatrix.data[1] = -_matrix.data[1] * b5 + _matrix.data[2] * b4 - _matrix.data[3] * b3;
-	_outMatrix.data[2] = _matrix.data[13] * a5 - _matrix.data[14] * a4 + _matrix.data[15] * a3;
-	_outMatrix.data[3] = -_matrix.data[9] * a5 + _matrix.data[10] * a4 - _matrix.data[11] * a3;
+	_outMatrix.data[0] = _m.data[5] * b5 - _m.data[6] * b4 + _m.data[7] * b3;
+	_outMatrix.data[1] = -_m.data[1] * b5 + _m.data[2] * b4 - _m.data[3] * b3;
+	_outMatrix.data[2] = _m.data[13] * a5 - _m.data[14] * a4 + _m.data[15] * a3;
+	_outMatrix.data[3] = -_m.data[9] * a5 + _m.data[10] * a4 - _m.data[11] * a3;
 
-	_outMatrix.data[4] = -_matrix.data[4] * b5 + _matrix.data[6] * b2 - _matrix.data[7] * b1;
-	_outMatrix.data[5] = _matrix.data[0] * b5 - _matrix.data[2] * b2 + _matrix.data[3] * b1;
-	_outMatrix.data[6] = -_matrix.data[12] * a5 + _matrix.data[14] * a2 - _matrix.data[15] * a1;
-	_outMatrix.data[7] = _matrix.data[8] * a5 - _matrix.data[10] * a2 + _matrix.data[11] * a1;
+	_outMatrix.data[4] = -_m.data[4] * b5 + _m.data[6] * b2 - _m.data[7] * b1;
+	_outMatrix.data[5] = _m.data[0] * b5 - _m.data[2] * b2 + _m.data[3] * b1;
+	_outMatrix.data[6] = -_m.data[12] * a5 + _m.data[14] * a2 - _m.data[15] * a1;
+	_outMatrix.data[7] = _m.data[8] * a5 - _m.data[10] * a2 + _m.data[11] * a1;
 
-	_outMatrix.data[8] = _matrix.data[4] * b4 - _matrix.data[5] * b2 + _matrix.data[7] * b0;
-	_outMatrix.data[9] = -_matrix.data[0] * b4 + _matrix.data[1] * b2 - _matrix.data[3] * b0;
-	_outMatrix.data[10] = _matrix.data[12] * a4 - _matrix.data[13] * a2 + _matrix.data[15] * a0;
-	_outMatrix.data[11] = -_matrix.data[8] * a4 + _matrix.data[9] * a2 - _matrix.data[11] * a0;
+	_outMatrix.data[8] = _m.data[4] * b4 - _m.data[5] * b2 + _m.data[7] * b0;
+	_outMatrix.data[9] = -_m.data[0] * b4 + _m.data[1] * b2 - _m.data[3] * b0;
+	_outMatrix.data[10] = _m.data[12] * a4 - _m.data[13] * a2 + _m.data[15] * a0;
+	_outMatrix.data[11] = -_m.data[8] * a4 + _m.data[9] * a2 - _m.data[11] * a0;
 
-	_outMatrix.data[12] = -_matrix.data[4] * b3 + _matrix.data[5] * b1 - _matrix.data[6] * b0;
-	_outMatrix.data[13] = _matrix.data[0] * b3 - _matrix.data[1] * b1 + _matrix.data[2] * b0;
-	_outMatrix.data[14] = -_matrix.data[12] * a3 + _matrix.data[13] * a1 - _matrix.data[14] * a0;
-	_outMatrix.data[15] = _matrix.data[8] * a3 - _matrix.data[9] * a1 + _matrix.data[10] * a0;
+	_outMatrix.data[12] = -_m.data[4] * b3 + _m.data[5] * b1 - _m.data[6] * b0;
+	_outMatrix.data[13] = _m.data[0] * b3 - _m.data[1] * b1 + _m.data[2] * b0;
+	_outMatrix.data[14] = -_m.data[12] * a3 + _m.data[13] * a1 - _m.data[14] * a0;
+	_outMatrix.data[15] = _m.data[8] * a3 - _m.data[9] * a1 + _m.data[10] * a0;
 
 	MultiplyNumF(_outMatrix, 1.0f / det, _outMatrix);
 
@@ -336,11 +335,13 @@ GReturn GMatirxCpp::IdentityF(GMATRIXF & _outMatrix)
 
 GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion)
 {
+	GMATRIXF _m = _matrix;
+
 	float det;
-	float sx = sqrtf(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
-	float sy = sqrtf(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
-	float sz = sqrtf(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
-	DeterminantF(_matrix, det);
+	float sx = sqrtf(_m.data[0] * _m.data[0] + _m.data[4] * _m.data[4] + _m.data[8] * _m.data[8]);
+	float sy = sqrtf(_m.data[1] * _m.data[1] + _m.data[5] * _m.data[5] + _m.data[9] * _m.data[9]);
+	float sz = sqrtf(_m.data[2] * _m.data[2] + _m.data[6] * _m.data[6] + _m.data[10] * _m.data[10]);
+	DeterminantF(_m, det);
 
 	if (G_COMPARISON_STANDARD_F(det, 0.0f))
 		return FAILURE;
@@ -350,7 +351,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 		sx = -sx;
 	}
 
-	GMATRIXF Rotation = _matrix;
+	GMATRIXF Rotation = _m;
 	Rotation.data[0] /= sx;
 	Rotation.data[4] /= sx;
 	Rotation.data[8] /= sx;
@@ -473,7 +474,7 @@ GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 	return SUCCESS;
 }
 
-GReturn GMatirxCpp::RotationRollPitchYawF(float _pitch, float _yaw, float _roll, GMATRIXF & _outMatrix)
+GReturn GMatirxCpp::RotationYawPitchRollF(float _pitch, float _yaw, float _roll, GMATRIXF & _outMatrix)
 {
 	_outMatrix = GIdentityMatrixF;
 	GMATRIXF RotationX;
@@ -481,8 +482,8 @@ GReturn GMatirxCpp::RotationRollPitchYawF(float _pitch, float _yaw, float _roll,
 	GMATRIXF RotationZ;
 	GMATRIXF reuslt;
 	RotationZF(GIdentityMatrixF, _roll, RotationZ);
-	RotationXF(GIdentityMatrixF, _roll, RotationX);
-	RotationYF(GIdentityMatrixF, _roll, RotationY);
+	RotationXF(GIdentityMatrixF, _pitch, RotationX);
+	RotationYF(GIdentityMatrixF, _yaw, RotationY);
 
 	MultiplyMatrixF(RotationZ, RotationX, reuslt);
 	MultiplyMatrixF(reuslt, RotationY, _outMatrix);
@@ -517,9 +518,12 @@ GReturn GMatirxCpp::ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _out
 GReturn GMatirxCpp::LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GMATRIXF & _outMatrix)
 {
 
+	GMATRIXF _m1 = _matrix1;
+	GMATRIXF _m2 = _matrix2;
+
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = G_LERP(_matrix1.data[i], _matrix2.data[i], _ratio);
+		_outMatrix.data[i] = G_LERP(_m1.data[i], _m2.data[i], _ratio);
 	}
 	return SUCCESS;
 }
@@ -604,53 +608,60 @@ GReturn GMatirxCpp::LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIX
 
 GReturn GMatirxCpp::AddMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & _outMatrix)
 {
+	GMATRIXD _m1 = _matrix1;
+	GMATRIXD _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix1.data[i] + _matrix2.data[i];
+		_outMatrix.data[i] = _m1.data[i] + _m2.data[i];
 	}
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::SubtractMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & _outMatrix)
 {
+	GMATRIXD _m1 = _matrix1;
+	GMATRIXD _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix1.data[i] - _matrix2.data[i];
+		_outMatrix.data[i] = _m1.data[i] - _matrix2.data[i];
 	}
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::MultiplyMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD & _outMatrix)
 {
-	_outMatrix.data[0] = _matrix1.data[0] * _matrix2.data[0] + _matrix1.data[1] * _matrix2.data[4] + _matrix1.data[2] * _matrix2.data[8] + _matrix1.data[3] * _matrix2.data[12];
-	_outMatrix.data[1] = _matrix1.data[0] * _matrix2.data[1] + _matrix1.data[1] * _matrix2.data[5] + _matrix1.data[2] * _matrix2.data[9] + _matrix1.data[3] * _matrix2.data[13];
-	_outMatrix.data[2] = _matrix1.data[0] * _matrix2.data[2] + _matrix1.data[1] * _matrix2.data[6] + _matrix1.data[2] * _matrix2.data[10] + _matrix1.data[3] * _matrix2.data[14];
-	_outMatrix.data[3] = _matrix1.data[0] * _matrix2.data[3] + _matrix1.data[1] * _matrix2.data[7] + _matrix1.data[2] * _matrix2.data[11] + _matrix1.data[3] * _matrix2.data[15];
+	GMATRIXD _m1 = _matrix1;
+	GMATRIXD _m2 = _matrix2;
+	_outMatrix.data[0] = _m1.data[0] * _m2.data[0] + _m1.data[1] * _m2.data[4] + _m1.data[2] * _m2.data[8] + _m1.data[3] * _m2.data[12];
+	_outMatrix.data[1] = _m1.data[0] * _m2.data[1] + _m1.data[1] * _m2.data[5] + _m1.data[2] * _m2.data[9] + _m1.data[3] * _m2.data[13];
+	_outMatrix.data[2] = _m1.data[0] * _m2.data[2] + _m1.data[1] * _m2.data[6] + _m1.data[2] * _m2.data[10] + _m1.data[3] * _m2.data[14];
+	_outMatrix.data[3] = _m1.data[0] * _m2.data[3] + _m1.data[1] * _m2.data[7] + _m1.data[2] * _m2.data[11] + _m1.data[3] * _m2.data[15];
 
-	_outMatrix.data[4] = _matrix1.data[4] * _matrix2.data[0] + _matrix1.data[5] * _matrix2.data[4] + _matrix1.data[6] * _matrix2.data[8] + _matrix1.data[7] * _matrix2.data[12];
-	_outMatrix.data[5] = _matrix1.data[4] * _matrix2.data[1] + _matrix1.data[5] * _matrix2.data[5] + _matrix1.data[6] * _matrix2.data[9] + _matrix1.data[7] * _matrix2.data[13];
-	_outMatrix.data[6] = _matrix1.data[4] * _matrix2.data[2] + _matrix1.data[5] * _matrix2.data[6] + _matrix1.data[6] * _matrix2.data[10] + _matrix1.data[7] * _matrix2.data[14];
-	_outMatrix.data[7] = _matrix1.data[4] * _matrix2.data[3] + _matrix1.data[5] * _matrix2.data[7] + _matrix1.data[6] * _matrix2.data[11] + _matrix1.data[7] * _matrix2.data[15];
+	_outMatrix.data[4] = _m1.data[4] * _m2.data[0] + _m1.data[5] * _m2.data[4] + _m1.data[6] * _m2.data[8] + _m1.data[7] * _m2.data[12];
+	_outMatrix.data[5] = _m1.data[4] * _m2.data[1] + _m1.data[5] * _m2.data[5] + _m1.data[6] * _m2.data[9] + _m1.data[7] * _m2.data[13];
+	_outMatrix.data[6] = _m1.data[4] * _m2.data[2] + _m1.data[5] * _m2.data[6] + _m1.data[6] * _m2.data[10] + _m1.data[7] * _m2.data[14];
+	_outMatrix.data[7] = _m1.data[4] * _m2.data[3] + _m1.data[5] * _m2.data[7] + _m1.data[6] * _m2.data[11] + _m1.data[7] * _m2.data[15];
 
-	_outMatrix.data[8] = _matrix1.data[8] * _matrix2.data[0] + _matrix1.data[9] * _matrix2.data[4] + _matrix1.data[10] * _matrix2.data[8] + _matrix1.data[11] * _matrix2.data[12];
-	_outMatrix.data[9] = _matrix1.data[8] * _matrix2.data[1] + _matrix1.data[9] * _matrix2.data[5] + _matrix1.data[10] * _matrix2.data[9] + _matrix1.data[11] * _matrix2.data[13];
-	_outMatrix.data[10] = _matrix1.data[8] * _matrix2.data[2] + _matrix1.data[9] * _matrix2.data[6] + _matrix1.data[10] * _matrix2.data[10] + _matrix1.data[11] * _matrix2.data[14];
-	_outMatrix.data[11] = _matrix1.data[8] * _matrix2.data[3] + _matrix1.data[9] * _matrix2.data[7] + _matrix1.data[10] * _matrix2.data[11] + _matrix1.data[11] * _matrix2.data[15];
+	_outMatrix.data[8] = _m1.data[8] * _m2.data[0] + _m1.data[9] * _m2.data[4] + _m1.data[10] * _m2.data[8] + _m1.data[11] * _m2.data[12];
+	_outMatrix.data[9] = _m1.data[8] * _m2.data[1] + _m1.data[9] * _m2.data[5] + _m1.data[10] * _m2.data[9] + _m1.data[11] * _m2.data[13];
+	_outMatrix.data[10] = _m1.data[8] * _m2.data[2] + _m1.data[9] * _m2.data[6] + _m1.data[10] * _m2.data[10] + _m1.data[11] * _m2.data[14];
+	_outMatrix.data[11] = _m1.data[8] * _m2.data[3] + _m1.data[9] * _m2.data[7] + _m1.data[10] * _m2.data[11] + _m1.data[11] * _m2.data[15];
 
-	_outMatrix.data[12] = _matrix1.data[12] * _matrix2.data[0] + _matrix1.data[13] * _matrix2.data[4] + _matrix1.data[14] * _matrix2.data[8] + _matrix1.data[15] * _matrix2.data[12];
-	_outMatrix.data[13] = _matrix1.data[12] * _matrix2.data[1] + _matrix1.data[13] * _matrix2.data[5] + _matrix1.data[14] * _matrix2.data[9] + _matrix1.data[15] * _matrix2.data[13];
-	_outMatrix.data[14] = _matrix1.data[12] * _matrix2.data[2] + _matrix1.data[13] * _matrix2.data[6] + _matrix1.data[14] * _matrix2.data[10] + _matrix1.data[15] * _matrix2.data[14];
-	_outMatrix.data[15] = _matrix1.data[12] * _matrix2.data[3] + _matrix1.data[13] * _matrix2.data[7] + _matrix1.data[14] * _matrix2.data[11] + _matrix1.data[15] * _matrix2.data[15];
+	_outMatrix.data[12] = _m1.data[12] * _m2.data[0] + _m1.data[13] * _m2.data[4] + _m1.data[14] * _m2.data[8] + _m1.data[15] * _m2.data[12];
+	_outMatrix.data[13] = _m1.data[12] * _m2.data[1] + _m1.data[13] * _m2.data[5] + _m1.data[14] * _m2.data[9] + _m1.data[15] * _m2.data[13];
+	_outMatrix.data[14] = _m1.data[12] * _m2.data[2] + _m1.data[13] * _m2.data[6] + _m1.data[14] * _m2.data[10] + _m1.data[15] * _m2.data[14];
+	_outMatrix.data[15] = _m1.data[12] * _m2.data[3] + _m1.data[13] * _m2.data[7] + _m1.data[14] * _m2.data[11] + _m1.data[15] * _m2.data[15];
 
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::VectorXMatrixD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD & _outVector)
 {
-	_outVector.x = _vector.data[0] * _matrix.data[0] + _vector.data[1] * _matrix.data[4] + _vector.data[2] * _matrix.data[8] + _vector.data[3] * _matrix.data[12];
-	_outVector.y = _vector.data[0] * _matrix.data[1] + _vector.data[1] * _matrix.data[5] + _vector.data[2] * _matrix.data[9] + _vector.data[3] * _matrix.data[13];
-	_outVector.z = _vector.data[0] * _matrix.data[2] + _vector.data[1] * _matrix.data[6] + _vector.data[2] * _matrix.data[10] + _vector.data[3] * _matrix.data[14];
-	_outVector.w = _vector.data[0] * _matrix.data[3] + _vector.data[1] * _matrix.data[7] + _vector.data[2] * _matrix.data[11] + _vector.data[3] * _matrix.data[15];
+	GMATRIXD _m = _matrix;
+	_outVector.x = _vector.data[0] * _m.data[0] + _vector.data[1] * _m.data[4] + _vector.data[2] * _m.data[8] + _vector.data[3] * _m.data[12];
+	_outVector.y = _vector.data[0] * _m.data[1] + _vector.data[1] * _m.data[5] + _vector.data[2] * _m.data[9] + _vector.data[3] * _m.data[13];
+	_outVector.z = _vector.data[0] * _m.data[2] + _vector.data[1] * _m.data[6] + _vector.data[2] * _m.data[10] + _vector.data[3] * _m.data[14];
+	_outVector.w = _vector.data[0] * _m.data[3] + _vector.data[1] * _m.data[7] + _vector.data[2] * _m.data[11] + _vector.data[3] * _m.data[15];
 
 	return SUCCESS;
 }
@@ -691,9 +702,10 @@ GReturn GMatirxCpp::ConvertQuaternionD(GQUATERNIOND _quaternion, GMATRIXD & _out
 
 GReturn GMatirxCpp::MultiplyNumD(GMATRIXD _matrix, double _scalar, GMATRIXD & _outMatrix)
 {
+	GMATRIXD _m = _matrix;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = _matrix.data[i] * _scalar;
+		_outMatrix.data[i] = _m.data[i] * _scalar;
 	}
 	return SUCCESS;
 }
@@ -720,65 +732,67 @@ GReturn GMatirxCpp::DeterminantD(GMATRIXD _matrix, double & _outValue)
 
 GReturn GMatirxCpp::TransposeD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 {
-	_outMatrix.data[0] = _matrix.data[0];
-	_outMatrix.data[1] = _matrix.data[4];
-	_outMatrix.data[2] = _matrix.data[8];
-	_outMatrix.data[3] = _matrix.data[12];
-	_outMatrix.data[4] = _matrix.data[1];
-	_outMatrix.data[5] = _matrix.data[5];
-	_outMatrix.data[6] = _matrix.data[9];
-	_outMatrix.data[7] = _matrix.data[13];
-	_outMatrix.data[8] = _matrix.data[2];
-	_outMatrix.data[9] = _matrix.data[6];
-	_outMatrix.data[10] = _matrix.data[10];
-	_outMatrix.data[11] = _matrix.data[14];
-	_outMatrix.data[12] = _matrix.data[3];
-	_outMatrix.data[13] = _matrix.data[7];
-	_outMatrix.data[14] = _matrix.data[11];
-	_outMatrix.data[15] = _matrix.data[15];
+	GMATRIXD _m = _matrix;
+	_outMatrix.data[0] = _m.data[0];
+	_outMatrix.data[1] = _m.data[4];
+	_outMatrix.data[2] = _m.data[8];
+	_outMatrix.data[3] = _m.data[12];
+	_outMatrix.data[4] = _m.data[1];
+	_outMatrix.data[5] = _m.data[5];
+	_outMatrix.data[6] = _m.data[9];
+	_outMatrix.data[7] = _m.data[13];
+	_outMatrix.data[8] = _m.data[2];
+	_outMatrix.data[9] = _m.data[6];
+	_outMatrix.data[10] = _m.data[10];
+	_outMatrix.data[11] = _m.data[14];
+	_outMatrix.data[12] = _m.data[3];
+	_outMatrix.data[13] = _m.data[7];
+	_outMatrix.data[14] = _m.data[11];
+	_outMatrix.data[15] = _m.data[15];
 	return SUCCESS;
 }
 
 GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 {
+	GMATRIXD _m = _matrix;
 	double det;
-	double a0 = _matrix.data[0] * _matrix.data[5] - _matrix.data[1] * _matrix.data[4];
-	double a1 = _matrix.data[0] * _matrix.data[6] - _matrix.data[2] * _matrix.data[4];
-	double a2 = _matrix.data[0] * _matrix.data[7] - _matrix.data[3] * _matrix.data[4];
-	double a3 = _matrix.data[1] * _matrix.data[6] - _matrix.data[2] * _matrix.data[5];
-	double a4 = _matrix.data[1] * _matrix.data[7] - _matrix.data[3] * _matrix.data[5];
-	double a5 = _matrix.data[2] * _matrix.data[7] - _matrix.data[3] * _matrix.data[6];
-	double b0 = _matrix.data[8] * _matrix.data[13] - _matrix.data[9] * _matrix.data[12];
-	double b1 = _matrix.data[8] * _matrix.data[14] - _matrix.data[10] * _matrix.data[12];
-	double b2 = _matrix.data[8] * _matrix.data[15] - _matrix.data[11] * _matrix.data[12];
-	double b3 = _matrix.data[9] * _matrix.data[14] - _matrix.data[10] * _matrix.data[13];
-	double b4 = _matrix.data[9] * _matrix.data[15] - _matrix.data[11] * _matrix.data[13];
-	double b5 = _matrix.data[10] * _matrix.data[15] - _matrix.data[11] * _matrix.data[14];
+	double a0 = _m.data[0] * _m.data[5] - _m.data[1] * _m.data[4];
+	double a1 = _m.data[0] * _m.data[6] - _m.data[2] * _m.data[4];
+	double a2 = _m.data[0] * _m.data[7] - _m.data[3] * _m.data[4];
+	double a3 = _m.data[1] * _m.data[6] - _m.data[2] * _m.data[5];
+	double a4 = _m.data[1] * _m.data[7] - _m.data[3] * _m.data[5];
+	double a5 = _m.data[2] * _m.data[7] - _m.data[3] * _m.data[6];
+	double b0 = _m.data[8] * _m.data[13] - _m.data[9] * _m.data[12];
+	double b1 = _m.data[8] * _m.data[14] - _m.data[10] * _m.data[12];
+	double b2 = _m.data[8] * _m.data[15] - _m.data[11] * _m.data[12];
+	double b3 = _m.data[9] * _m.data[14] - _m.data[10] * _m.data[13];
+	double b4 = _m.data[9] * _m.data[15] - _m.data[11] * _m.data[13];
+	double b5 = _m.data[10] * _m.data[15] - _m.data[11] * _m.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
 	if (G_COMPARISON_STANDARD_F(det, 0))
 	{
 		return FAILURE;
 	}
-	_outMatrix.data[0] = _matrix.data[5] * b5 - _matrix.data[6] * b4 + _matrix.data[7] * b3;
-	_outMatrix.data[1] = -_matrix.data[1] * b5 + _matrix.data[2] * b4 - _matrix.data[3] * b3;
-	_outMatrix.data[2] = _matrix.data[13] * a5 - _matrix.data[14] * a4 + _matrix.data[15] * a3;
-	_outMatrix.data[3] = -_matrix.data[9] * a5 + _matrix.data[10] * a4 - _matrix.data[11] * a3;
+	_outMatrix.data[0] = _m.data[5] * b5 - _m.data[6] * b4 + _m.data[7] * b3;
+	_outMatrix.data[1] = -_m.data[1] * b5 + _m.data[2] * b4 - _m.data[3] * b3;
+	_outMatrix.data[2] = _m.data[13] * a5 - _m.data[14] * a4 + _m.data[15] * a3;
+	_outMatrix.data[3] = -_m.data[9] * a5 + _m.data[10] * a4 - _m.data[11] * a3;
 
-	_outMatrix.data[4] = -_matrix.data[4] * b5 + _matrix.data[6] * b2 - _matrix.data[7] * b1;
-	_outMatrix.data[5] = _matrix.data[0] * b5 - _matrix.data[2] * b2 + _matrix.data[3] * b1;
-	_outMatrix.data[6] = -_matrix.data[12] * a5 + _matrix.data[14] * a2 - _matrix.data[15] * a1;
-	_outMatrix.data[7] = _matrix.data[8] * a5 - _matrix.data[10] * a2 + _matrix.data[11] * a1;
+	_outMatrix.data[4] = -_m.data[4] * b5 + _m.data[6] * b2 - _m.data[7] * b1;
+	_outMatrix.data[5] = _m.data[0] * b5 - _m.data[2] * b2 + _m.data[3] * b1;
+	_outMatrix.data[6] = -_m.data[12] * a5 + _m.data[14] * a2 - _m.data[15] * a1;
+	_outMatrix.data[7] = _m.data[8] * a5 - _m.data[10] * a2 + _m.data[11] * a1;
 
-	_outMatrix.data[8] = _matrix.data[4] * b4 - _matrix.data[5] * b2 + _matrix.data[7] * b0;
-	_outMatrix.data[9] = -_matrix.data[0] * b4 + _matrix.data[1] * b2 - _matrix.data[3] * b0;
-	_outMatrix.data[10] = _matrix.data[12] * a4 - _matrix.data[13] * a2 + _matrix.data[15] * a0;
-	_outMatrix.data[11] = -_matrix.data[8] * a4 + _matrix.data[9] * a2 - _matrix.data[11] * a0;
+	_outMatrix.data[8] = _m.data[4] * b4 - _m.data[5] * b2 + _m.data[7] * b0;
+	_outMatrix.data[9] = -_m.data[0] * b4 + _m.data[1] * b2 - _m.data[3] * b0;
+	_outMatrix.data[10] = _m.data[12] * a4 - _m.data[13] * a2 + _m.data[15] * a0;
+	_outMatrix.data[11] = -_m.data[8] * a4 + _m.data[9] * a2 - _m.data[11] * a0;
 
-	_outMatrix.data[12] = -_matrix.data[4] * b3 + _matrix.data[5] * b1 - _matrix.data[6] * b0;
-	_outMatrix.data[13] = _matrix.data[0] * b3 - _matrix.data[1] * b1 + _matrix.data[2] * b0;
-	_outMatrix.data[14] = -_matrix.data[12] * a3 + _matrix.data[13] * a1 - _matrix.data[14] * a0;
-	_outMatrix.data[15] = _matrix.data[8] * a3 - _matrix.data[9] * a1 + _matrix.data[10] * a0;
+	_outMatrix.data[12] = -_m.data[4] * b3 + _m.data[5] * b1 - _m.data[6] * b0;
+	_outMatrix.data[13] = _m.data[0] * b3 - _m.data[1] * b1 + _m.data[2] * b0;
+	_outMatrix.data[14] = -_m.data[12] * a3 + _m.data[13] * a1 - _m.data[14] * a0;
+	_outMatrix.data[15] = _m.data[8] * a3 - _m.data[9] * a1 + _m.data[10] * a0;
 
 	MultiplyNumD(_outMatrix, 1.0f / det, _outMatrix);
 
@@ -928,7 +942,7 @@ GReturn GMatirxCpp::RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD & _out
 	return SUCCESS;
 }
 
-GReturn GMatirxCpp::RotationRollPitchYawD(double _pitch, double _yaw, double _roll, GMATRIXD & _outMatrix)
+GReturn GMatirxCpp::RotationYawPitchRollD(double _pitch, double _yaw, double _roll, GMATRIXD & _outMatrix)
 {
 	_outMatrix = GIdentityMatrixD;
 	GMATRIXD RotationX;
@@ -936,8 +950,8 @@ GReturn GMatirxCpp::RotationRollPitchYawD(double _pitch, double _yaw, double _ro
 	GMATRIXD RotationZ;
 	GMATRIXD reuslt;
 	RotationZD(GIdentityMatrixD, _roll, RotationZ);
-	RotationXD(GIdentityMatrixD, _roll, RotationX);
-	RotationYD(GIdentityMatrixD, _roll, RotationY);
+	RotationXD(GIdentityMatrixD, _pitch, RotationX);
+	RotationYD(GIdentityMatrixD, _yaw, RotationY);
 
 	MultiplyMatrixD(RotationZ, RotationX, reuslt);
 	MultiplyMatrixD(reuslt, RotationY, _outMatrix);
@@ -971,9 +985,11 @@ GReturn GMatirxCpp::ScalingD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _out
 
 GReturn GMatirxCpp::LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, GMATRIXD & _outMatrix)
 {
+	GMATRIXD _m1 = _matrix1;
+	GMATRIXD _m2 = _matrix2;
 	for (int i = 0; i < 16; i++)
 	{
-		_outMatrix.data[i] = G_LERP(_matrix1.data[i], _matrix2.data[i], _ratio);
+		_outMatrix.data[i] = G_LERP(_m1.data[i], _m2.data[i], _ratio);
 	}
 	return SUCCESS;
 }
