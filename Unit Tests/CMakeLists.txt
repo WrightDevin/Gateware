@@ -34,13 +34,12 @@ G_System/GBufferedInputTests.cpp
 G_System/GFileTest.cpp
 G_System/GInputTests.cpp
 G_System/GLogTest.cpp
-#G_System/GWindowTests.cpp
+G_System/GWindowTests.cpp
 G_System/GBufferedInputTestListener.cpp
 G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
-
 G_Graphics/GOpenGLESSurfaceTest.cpp
-G_Audio/GAudioTests.cpp
+G_Audio/GAudioTests.cpp)
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
 target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface GAudio ${CMAKE_THREAD_LIBS_INIT})
