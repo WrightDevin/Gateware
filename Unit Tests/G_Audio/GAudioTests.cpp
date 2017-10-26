@@ -83,7 +83,7 @@ TEST_CASE("Creating Sound.", "[CreateSound]")
 
 TEST_CASE("Creating music.", "[CreateMusic]")
 {
-	
+
 	// Fail cases
 	CHECK(testAudio->CreateMusicStream(testpath, nullptr) == INVALID_ARGUMENT);
 
@@ -359,7 +359,7 @@ TEST_CASE("Resuming test music", "[Resume]")
 #ifdef WIN32
   	Sleep(1);
 #else
- Sleep(1);
+ sleep(1);
 #endif
 
 }

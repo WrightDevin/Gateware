@@ -497,7 +497,7 @@ void RunMainLoop(pa_mainloop * myMainLoop)
     int result = 0;
     while(myMainLoop != nullptr)
     {
-
+      
         {
             switch(myState)
             {
@@ -591,7 +591,7 @@ GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myCont
         *myMainLoop = newLoop;
         *myContext = newContext;
 
-
+  
   return result;
 }
 
@@ -982,22 +982,19 @@ GReturn LinuxAppSound::StopSound()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-   if (streamThread != nullptr)
-  {
-
-    if(stopFlag != true)
-       {
+   if (streamThread == nullptr)
+        return result;
+    result = REDUNDANT_OPERATION;
+    if(stopFlag == true)
+        return result;
     stopFlag = true;
     streamThread->join();
-
-    delete streamThread;
-    streamThread = nullptr;
-       }
-  }
 
     isPlaying = false;
     isPaused = true;
 
+    delete streamThread;
+    streamThread = nullptr;
 
     result = SUCCESS;
     return result;
@@ -1566,7 +1563,7 @@ if (!isPlaying)
       streamThread = new std::thread(&LinuxAppMusic::StreamMusic,this);
         result = SUCCESS;
     }
-
+  
 
     return result;
 }
@@ -1619,18 +1616,13 @@ GReturn LinuxAppMusic::StopStream()
     if (audio == nullptr)
         return result;
 
-    if (streamThread != nullptr)
-    {
-
-       if(stopFlag != true)
-       {
+    if (streamThread == nullptr)
+        return result;
+   
     stopFlag = true;
     streamThread->join();
-
     delete streamThread;
     streamThread = nullptr;
-       }
-    }
     isPlaying = false;
     isPaused = true;
 
@@ -1928,7 +1920,7 @@ GReturn LinuxAppAudio::StopAll()
             return result;
         }
     }
-   result = SUCCESS;
+
     return result;
 }
 GReturn LinuxAppAudio::ResumeAll()
@@ -1950,7 +1942,7 @@ GReturn LinuxAppAudio::ResumeAll()
             return result;
         }
     }
-result = SUCCESS;
+
     return result;
 }
 GReturn LinuxAppAudio::GetCount(unsigned int & _outCount)
