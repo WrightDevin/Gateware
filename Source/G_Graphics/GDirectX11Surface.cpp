@@ -331,7 +331,9 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 			gWnd->GetHeight((unsigned int&)viewport.Height);
 			viewport.MinDepth = 0.0f;
 			viewport.MaxDepth = 1.0f;
-			gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+			float newX = viewport.TopLeftX / viewport.Width;
+			float newY = viewport.TopLeftY / viewport.Height;
+			gWnd->GetClientTopLeft((unsigned int&)newX, (unsigned int&)newY);
 
 			context->RSSetViewports(1, &viewport);
 		}
