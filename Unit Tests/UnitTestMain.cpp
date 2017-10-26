@@ -40,6 +40,7 @@ int main(int _argc, char** _argv)
 
 
     //sleep(1.0);
+	std::cin.get();
 	return 0;
 }
 

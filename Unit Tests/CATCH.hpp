@@ -11615,4 +11615,4 @@ extern "C" int wmain (int argc, wchar_t * argv[], wchar_t * []) {
 #endif
     
 #endif // TWOBLUECUBES_SINGLE_INCLUDE_CATCH_HPP_INCLUDED
-    
+   
