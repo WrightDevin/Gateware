@@ -213,6 +213,8 @@ glViewport(0, 0, gwa.width, gwa.height);
     glClear(GL_COLOR_BUFFER_BIT);
     glFlush();
     
+    
+    
 #endif
 
 	return SUCCESS;
