@@ -80,15 +80,15 @@ if(APPLE)
 
 
 set(COCOA_LIBRARY Cocoa)
-
+set(OPENGL_LIBRARY OpenGL)
 
 
 target_link_libraries(GOpenGLESSurface "-framework ${COCOA_LIBRARY}")
-
+target_link_libraries(GOpenGLESSurface "-framework ${OPENGL_LIBRARY}")
 
 
 target_link_libraries(GOpenGLESSurface_DLL "-framework Cocoa")
-
+target_link_libraries(GOpenGLESSurface_DLL "-framework OpenGL")
 
 
 endif(APPLE)

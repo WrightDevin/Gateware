@@ -22,6 +22,10 @@
 #include <GL/glx.h>
 
 #elif __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl3.h>
+#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #endif
 
 using namespace GW;
@@ -61,6 +65,10 @@ private:
     LINUX_WINDOW            lWnd;
 
 #elif __APPLE__
+    
+    NSOpenGLContext* OGLMcontext;
+    NSWindow* nsWnd;
+    
 #endif
 
 public:
@@ -168,10 +176,43 @@ int ret = glXMakeCurrent((Display*)lWnd.display, root, OGLXcontext);
 XGetWindowAttributes((Display*)lWnd.display, root, &gwa);
 glViewport(0, 0, gwa.width, gwa.height);
 
-//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
 #elif __APPLE__
+    
+    gWnd->GetWindowHandle(nsWnd, sizeof(NSWindow*));
+    
+    NSOpenGLPixelFormatAttribute pixelAttributes[] =
+    {
+        NSOpenGLPFADoubleBuffer,
+        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
+        NSOpenGLPFAColorSize, 24,
+        NSOpenGLPFAAlphaSize, 8,
+        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFAStencilSize, 8,
+        NSOpenGLPFASampleBuffers, 0,
+        0,
+    };
+    
+    NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+    
+    assert(pixelFormat);
+    
+    OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:NULL];
+    assert(OGLMcontext);
+    
+    [OGLMcontext makeCurrentContext];
+    //[OGLMcontext setView:nsWnd.contentView];
+    //[nsWnd.contentView display];
+    
+    unsigned int temp_mWidth;
+    unsigned int temp_mHeight;
+    gWnd->GetWidth(temp_mWidth);
+    gWnd->GetHeight(temp_mHeight);
+    glViewport(0, 0, temp_mWidth, temp_mHeight);
+    
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();
+    
 #endif
 
 	return SUCCESS;
@@ -188,6 +229,9 @@ GReturn GOpenGLES::GetContext(void ** _outContext)
     *_outContext = OGLXcontext;
 
 #elif __APPLE__
+    
+    *_outContext = OGLMcontext;
+    
 #endif
 
 	return SUCCESS;
@@ -292,64 +336,129 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 	{
 
 		GWINDOW_EVENT_DATA* eventStruct = (GWINDOW_EVENT_DATA*)_eventData;
-
-		switch (_eventID)
-		{
-		case GW::SYSTEM::NOTIFY:
-			break;
-		case GW::SYSTEM::MINIMIZE:
-			break;
-		case GW::SYSTEM::MAXIMIZE:
-		{
-			unsigned int maxWidth;
-			unsigned int maxHeight;
-			unsigned int currX;
-			unsigned int currY;
-
-			gWnd->GetWidth(maxWidth);
-			gWnd->GetHeight(maxHeight);
-
-			aspectRatio = maxWidth / maxHeight;
-
-			glViewport(0, 0, maxWidth, maxHeight);
-		}
-			break;
-		case GW::SYSTEM::RESIZE:
-		{
-			unsigned int maxWidth;
-			unsigned int maxHeight;
-			unsigned int currX;
-			unsigned int currY;
-
-			gWnd->GetWidth(maxWidth);
-			gWnd->GetHeight(maxHeight);
-			gWnd->GetClientTopLeft(currX, currY);
-
-			aspectRatio = maxWidth / maxHeight;
-
-			glViewport(currX, currY, maxWidth, maxHeight);
-		}
-			break;
-		case GW::SYSTEM::MOVE:
-		{
-			unsigned int maxWidth;
-			unsigned int maxHeight;
-			unsigned int currX;
-			unsigned int currY;
-
-			gWnd->GetWidth(maxWidth);
-			gWnd->GetHeight(maxHeight);
-			gWnd->GetClientTopLeft(currX, currY);
-
-			glViewport(currX, currY, maxWidth, maxHeight);
-		}
-			break;
-		case GW::SYSTEM::DESTROY:
-		{
-			this->~GOpenGLES();
-		}
-			break;
-		}
+        
+#ifdef _WIN32
+        
+        switch (_eventID)
+        {
+            case GW::SYSTEM::NOTIFY:
+                break;
+            case GW::SYSTEM::MINIMIZE:
+                break;
+            case GW::SYSTEM::MAXIMIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(0, 0, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::RESIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::MOVE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::DESTROY:
+            {
+                this->~GOpenGLES();
+            }
+                break;
+        }
+        
+#elif __linux__
+        
+        switch (_eventID)
+        {
+            case GW::SYSTEM::NOTIFY:
+                break;
+            case GW::SYSTEM::MINIMIZE:
+                break;
+            case GW::SYSTEM::MAXIMIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(0, 0, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::RESIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::MOVE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::DESTROY:
+            {
+                this->~GOpenGLES();
+            }
+                break;
+        }
+        
+#elif __APPLE__
+#endif
 
 	}
 

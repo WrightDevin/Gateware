@@ -86,17 +86,20 @@ TEST_CASE("Testing OGLSurface Events")
 	gWnd_OGL->GetWidth(width);
 	gWnd_OGL->GetHeight(height);
 
-	// Test OGL Functions with current settings.
-	glViewport(clientX, clientY, width, height);
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 #ifdef _WIN32
 
+    // Test OGL Functions with current settings.
+    glViewport(clientX, clientY, width, height);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SwapBuffers(*hdc);
 
 #elif __linux__
 
+    // Test OGL Functions with current settings.
+    glViewport(clientX, clientY, width, height);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
 
 #elif __APPLE__
@@ -105,15 +108,16 @@ TEST_CASE("Testing OGLSurface Events")
 	// Manipulate GWindow and Retest OGL Functions.
 	gWnd_OGL->ResizeWindow(1500, 1000);
 
-	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 #ifdef _WIN32
 
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SwapBuffers(*hdc);
 
 #elif __linux__
 
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
 
 #elif __APPLE__
