@@ -27,6 +27,8 @@ namespace GW
 
 			virtual GReturn GetRenderTarget(void** _outRenderTarget) = 0;
 
+			virtual GReturn GetDepthStencilView(void** _outDepthStencilView) = 0;
+
 		};
 
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface);

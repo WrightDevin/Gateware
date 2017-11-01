@@ -33,6 +33,7 @@ private:
 	ID3D11DeviceContext*		context;
 	IDXGISwapChain*				swapChain;
 	ID3D11RenderTargetView*		rtv;
+	ID3D11DepthStencilView*		zBuffer;
 	float						width;
 	float						height;
 	float						aspectRatio;
@@ -48,6 +49,7 @@ public:
 	GReturn GetContext(void** _outContext);
 	GReturn GetSwapchain(void** _outSwapchain);
 	GReturn GetRenderTarget(void** _outRenderTarget);
+	GReturn GetDepthStencilView(void** _outDepthStencilView);
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -137,6 +139,25 @@ GReturn GDirectX11::Initialize()
 
 	buffer->Release();
 
+	D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
+	depthTextureDesc.Width = width;
+	depthTextureDesc.Height = height;
+	depthTextureDesc.ArraySize = 1;
+	depthTextureDesc.MipLevels = 1;
+	depthTextureDesc.SampleDesc.Count = 1;
+	depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	ID3D11Texture2D* depthBuffer;
+	device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
+	depthBuffer->Release();
+
 	D3D11_VIEWPORT viewport;
 	viewport.Width = width;
 	viewport.Height = height;
@@ -145,10 +166,6 @@ GReturn GDirectX11::Initialize()
 	gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
 	context->RSSetViewports(1, &viewport);
-	
-#elif __linux__
-#elif __APPLE__
-#endif
 
 	return SUCCESS;
 }
@@ -177,6 +194,13 @@ GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
 {
 	*_outRenderTarget = rtv;
+
+	return SUCCESS;
+}
+
+GReturn GDirectX11::GetDepthStencilView(void ** _outDepthStencilView)
+{
+	*_outDepthStencilView = zBuffer;
 
 	return SUCCESS;
 }
@@ -289,7 +313,7 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 			{
 				rtv->Release();
 
-				HRESULT result = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+				HRESULT result = swapChain->ResizeBuffers(0, newWidth, newHeight, DXGI_FORMAT_UNKNOWN, 0);
 
 				if (result != S_OK)
 					return FAILURE;
@@ -305,13 +329,31 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 				if (result != S_OK)
 					return FAILURE;
 
+				D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
+				depthTextureDesc.Width = newWidth;
+				depthTextureDesc.Height = newHeight;
+				depthTextureDesc.ArraySize = 1;
+				depthTextureDesc.MipLevels = 1;
+				depthTextureDesc.SampleDesc.Count = 1;
+				depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
+				depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+				ID3D11Texture2D* depthBuffer;
+				device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
+
+				D3D11_DEPTH_STENCIL_VIEW_DESC newDSVdesc;
+				ZeroMemory(&newDSVdesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+				newDSVdesc.Format = DXGI_FORMAT_D32_FLOAT;
+				newDSVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+				device->CreateDepthStencilView(depthBuffer, &newDSVdesc, &zBuffer);
+
 				newRTVBuffer->Release();
 
 				D3D11_VIEWPORT viewport;
 				viewport.Width = newWidth;
 				viewport.Height = newHeight;
 				viewport.MinDepth = 0.0f;
-				viewport.MaxDepth = 1.0f;				
+				viewport.MaxDepth = 1.0f;
 				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
 				context->RSSetViewports(1, &viewport);
@@ -319,14 +361,25 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 
 		}
 			break;
+
 		case GW::SYSTEM::MOVE:
 		{
+			unsigned int newX;
+			unsigned int newY;
+			unsigned int currWidth;
+			unsigned int currHeight;
+			gWnd->GetWidth(currWidth);
+			gWnd->GetHeight(currHeight);
+			gWnd->GetClientTopLeft(newX, newY);
+
 			D3D11_VIEWPORT viewport;
-			gWnd->GetWidth((unsigned int&)viewport.Width);
-			gWnd->GetHeight((unsigned int&)viewport.Height);
+			ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+			viewport.Width = (float)currWidth;
+			viewport.Height = (float)currHeight;
 			viewport.MinDepth = 0.0f;
 			viewport.MaxDepth = 1.0f;
-			gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+			viewport.TopLeftX = (float)newX / viewport.Width;
+			viewport.TopLeftY = (float)newY / viewport.Height;
 
 			context->RSSetViewports(1, &viewport);
 		}

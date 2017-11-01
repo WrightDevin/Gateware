@@ -1,4 +1,4 @@
-#add_subdirectory(G_System)
+﻿#add_subdirectory(G_System)
 
 #add_subdirectory(G_Audio)
 
@@ -7,6 +7,13 @@
 message(“Unit Test Generation”)
 
 
+if(WIN32)
+
+set(UnitTestDependecies G_Graphics/GDirectX11SurfaceTest.cpp)
+
+target_link_libraries(UnitTests GDirectX11Surface ${CMAKE_THREAD_LIBS_INIT})
+
+endif(WIN32)
 
 if(UNIX AND NOT APPLE)
 
@@ -137,17 +144,6 @@ target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGL
 
 
 endif()
-
-
-
-if(WIN32)
-
-set(UnitTestDependecies G_Graphics/GDirectX11SurfaceTest.cpp)
-
-target_link_libraries(UnitTests GDirectX11Surface ${CMAKE_THREAD_LIBS_INIT})
-
-endif(WIN32)
-
 
 
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})
