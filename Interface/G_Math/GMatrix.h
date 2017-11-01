@@ -5,7 +5,7 @@ File: GMatrix.h
 Purpose: A Gateware interface that handles Martix functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 10/18/2016
+Last Modified: 10/31/2017
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {AD50013E-94F3-40B6-8FB9-715635F0B8FE}
+		//! Unique Identifier for this interface. {AD401F3B-74D3-4C20-BF82-BA450077DB8C}
 		static const GUUIID GMatrixUUIID =
 		{
-			0xad50013e, 0x94f3, 0x40b6,{ 0x8f, 0xb9, 0x71, 0x56, 0x35, 0xf0, 0xb8, 0xfe }
+			0xad401f3b, 0x74d3, 0x4c20,{ 0xbf, 0x82, 0xba, 0x45, 0x0, 0x77, 0xdb, 0x8c }
 		};
 
 		//! Matrix functions
@@ -214,10 +214,11 @@ namespace GW
 			*/
 			virtual GReturn GetScaleF(GMATRIXF _matrix, GVECTORF& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the x-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the x-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the x-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the x-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -229,10 +230,11 @@ namespace GW
 			*/
 			virtual GReturn RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the y-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the y-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the y-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the y-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -244,10 +246,11 @@ namespace GW
 			*/
 			virtual GReturn RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the z-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the z-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the z-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the z-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -265,8 +268,8 @@ namespace GW
 			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
 			*	The mathematic formula will like: YawPitchRoll_RotationMatrix = ( Mat_Roll * ( Mat_Pitch * Mat_Yaw))
 			*
-			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.
+			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _roll				Angle of rotation around the z-axis, in radians.
 			*	\param [out] _outMatrix			The result of the rotation
 			*
@@ -274,7 +277,22 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
-			virtual GReturn RotationYawPitchRollF(float _pitch, float _yaw, float _roll, GMATRIXF& _outMatrix) = 0;
+			virtual GReturn RotationYawPitchRollF(float _yaw, float _pitch, float _roll, GMATRIXF& _outMatrix) = 0;
+			
+			//! Builds a rotation matrix based on specified vector and an angle in radian. 
+			/*!
+			*	Builds a matrix that rotates around a specified axis. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
+			*
+			*	\param [in]  _vector			Vector describing the axis of rotation.
+			*	\param [in]  _radian			Angle of rotation around the vector, in radians.
+			*	\param [out] _outMatrix			The result of the rotation
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn RotationByVectorF(GVECTORF _vector, float _radian, GMATRIXF& _outMatrix) = 0;
 
 			//! Translate the matrix by the specified vector
 			/*!
@@ -536,10 +554,11 @@ namespace GW
 			*/
 			virtual GReturn GetScaleD(GMATRIXD _matrix, GVECTORD& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the x-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the x-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the x-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the x-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -551,10 +570,11 @@ namespace GW
 			*/
 			virtual GReturn RotationXD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the y-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the y-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the y-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the y-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -566,10 +586,11 @@ namespace GW
 			*/
 			virtual GReturn RotationYD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
 
-			//! Roatate the specified matrix around the z-axis by multiplying a rotation matrix
+			//! Roatate the specified matrix around the z-axis by multiplying a left-handed rotation matrix
 			/*!
-			*	Roatate the specified matrix around the z-axis by multiplying a rotation matrix
-			*	and stores the result in the output matrix.
+			*	Roatate the specified matrix around the z-axis by multiplying a left-handed rotation matrix
+			*	and stores the result in the output matrix. Angles are measured clockwise when 
+			*	looking along the rotation axis toward the origin.
 			*
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [in]  _radian			The radian to rotate
@@ -587,8 +608,8 @@ namespace GW
 			*	Angles are measured clockwise when looking along the rotation axis toward the origin.
 			*	The mathematic formula will like: YawPitchRoll_RotationMatrix = ( Mat_Roll * ( Mat_Pitch * Mat_Yaw))
 			*
-			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _yaw				Angle of rotation around the y-axis, in radians.
+			*	\param [in]  _pitch				Angle of rotation around the x-axis, in radians.
 			*	\param [in]  _roll				Angle of rotation around the z-axis, in radians.
 			*	\param [out] _outMatrix			The result of the rotation
 			*
@@ -596,7 +617,22 @@ namespace GW
 			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
-			virtual GReturn RotationYawPitchRollD(double _pitch, double _yaw, double _roll, GMATRIXD& _outMatrix) = 0;
+			virtual GReturn RotationYawPitchRollD(double _yaw, double _pitch, double _roll, GMATRIXD& _outMatrix) = 0;
+
+			//! Builds a rotation matrix based on specified vector and an angle in radian. 
+			/*!
+			*	Builds a matrix that rotates around a specified axis. Angles are measured clockwise when
+			*	looking along the rotation axis toward the origin.
+			*
+			*	\param [in]  _vector			Vector describing the axis of rotation.
+			*	\param [in]  _radian			Angle of rotation around the vector, in radians.
+			*	\param [out] _outMatrix			The result of the rotation
+			*
+			*	\retval SUCCESS					The building succeed
+			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
+			*	\retval FAILURE					The building failed
+			*/
+			virtual GReturn RotationByVectorD(GVECTORD _vector, double _radian, GMATRIXD& _outMatrix) = 0;
 
 			//! Translate the matrix by the specified vector
 			/*!
@@ -613,7 +649,6 @@ namespace GW
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) = 0;
-
 
 			//! Scale the matrix by the specified vector
 			/*!

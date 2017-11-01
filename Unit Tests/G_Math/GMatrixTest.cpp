@@ -599,17 +599,17 @@ TEST_CASE("Rotate a specified matrix around the x-axis.", "[RotationXF], [Rotati
 
 	SECTION("Float matrix rotation.", "[RotationXF]")
 	{
-		CHECK(G_SUCCESS(MatrixC->RotationXF(mF, (float)G_PI/2.0f, resultF)));
+		CHECK(G_SUCCESS(MatrixC->RotationXF(mF, (float)G_PI / 2.0f, resultF)));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[4], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[5], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], -1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], 1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[7], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[8], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[9], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[9], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[10], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[11], 1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[12], 0.0f));
@@ -619,17 +619,17 @@ TEST_CASE("Rotate a specified matrix around the x-axis.", "[RotationXF], [Rotati
 	}
 	SECTION("Double matrix rotation.", "[RotationXD]")
 	{
-		CHECK(G_SUCCESS(MatrixC->RotationXD(mD, G_PI/2.0, resultD)));
+		CHECK(G_SUCCESS(MatrixC->RotationXD(mD, G_PI / 2.0, resultD)));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[4], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[5], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], -1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], 1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[7], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[8], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[9], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[9], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[10], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[11], 1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[12], 0.0));
@@ -653,13 +653,13 @@ TEST_CASE("Rotate a specified matrix around the y-axis.", "[RotationYF], [Rotati
 		CHECK(G_SUCCESS(MatrixC->RotationYF(mF, (float)G_PI / 2.0f, resultF)));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], -1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], -2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[4], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[5], 1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], -2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[7], -1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[8], -1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[8], 1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[9], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[10], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[11], 1.0f));
@@ -673,13 +673,13 @@ TEST_CASE("Rotate a specified matrix around the y-axis.", "[RotationYF], [Rotati
 		CHECK(G_SUCCESS(MatrixC->RotationYD(mD, G_PI / 2.0, resultD)));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], -1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], -2.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[4], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[5], 1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], -2.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], 2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[7], -1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[8], -1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[8], 1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[9], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[10], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[11], 1.0));
@@ -702,12 +702,12 @@ TEST_CASE("Rotate a specified matrix around the z-axis.", "[RotationZF], [Rotati
 	SECTION("Float matrix rotation.", "[RotationZF]")
 	{
 		CHECK(G_SUCCESS(MatrixC->RotationZF(mF, (float)G_PI / 2.0f, resultF)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], -1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 2.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[4], 1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[5], 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[4], -1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[5], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[7], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[8], 0.0f));
@@ -722,12 +722,12 @@ TEST_CASE("Rotate a specified matrix around the z-axis.", "[RotationZF], [Rotati
 	SECTION("Double matrix rotation.", "[RotationZD]")
 	{
 		CHECK(G_SUCCESS(MatrixC->RotationZD(mD, G_PI / 2.0, resultD)));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], -1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], 2.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 2.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[4], 1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[5], 2.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[4], -1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[5], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[7], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[8], 0.0));
@@ -742,10 +742,74 @@ TEST_CASE("Rotate a specified matrix around the z-axis.", "[RotationZF], [Rotati
 
 }
 
+
+TEST_CASE("Rotate a specified vector by rotating Yaw, Pitch and Roll axis.", "[RotationYawPitchRollF], [RotationYawPitchRollD]")
+{
+	GVECTORF vF = { 1.0f, 0.0f, 0.0f, 1.0f };
+	GMATRIXF rotMatF;
+	GVECTORF resultF;
+
+	GVECTORD vD = { 1.0, 0.0, 0.0, 1.0 };
+	GMATRIXD rotMatD;
+	GVECTORD resultD;
+
+	SECTION("Float matrix rotation.", "[RotationYawPitchRollF]")
+	{
+		CHECK(G_SUCCESS(MatrixC->RotationYawPitchRollF(G_DEGREE_TO_RADIAN(90), G_DEGREE_TO_RADIAN(0), G_DEGREE_TO_RADIAN(90), rotMatF)));
+		MatrixC->VectorXMatrixF(rotMatF, vF, resultF);
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], 0.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 0.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 1.0f));
+
+	}
+	SECTION("Double matrix rotation.", "[RotationYawPitchRollD")
+	{
+		CHECK(G_SUCCESS(MatrixC->RotationYawPitchRollD(G_DEGREE_TO_RADIAN(90), G_DEGREE_TO_RADIAN(90), G_DEGREE_TO_RADIAN(90), rotMatD)));
+		MatrixC->VectorXMatrixD(rotMatD, vD, resultD);
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], 0.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 0.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 1.0));
+	}
+}
+
+TEST_CASE("Rotate the vector by a specified vector and angle.", "[RotationByVectorF], [RotationByVectorD]")
+{
+	GVECTORF vF = { 1.0f, 0.0f, 0.0f, 1.0f };
+	GVECTORF axisF = { 0.0f, 0.0f, 1.0f, 1.0f };
+	GMATRIXF rotMatF;
+	GVECTORF resultF;
+
+	GVECTORD vD = { 1.0, 0.0, 0.0, 1.0 };
+	GVECTORD axisD = { 0.0, 0.0, 1.0, 1.0 };
+	GMATRIXD rotMatD;
+	GVECTORD resultD;
+
+	SECTION("Float vector rotation.", "[RotationByVectorF]")
+	{
+		CHECK(G_SUCCESS(MatrixC->RotationByVectorF(axisF, G_DEGREE_TO_RADIAN(90), rotMatF)));
+		MatrixC->VectorXMatrixF(rotMatF, vF, resultF);
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], 0.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 0.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 1.0f));
+	}
+	SECTION("Double vector rotation.", "[RotationByVectorD]")
+	{
+		CHECK(G_SUCCESS(MatrixC->RotationByVectorD(axisD, G_DEGREE_TO_RADIAN(90), rotMatD)));
+		MatrixC->VectorXMatrixD(rotMatD, vD, resultD);
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], 0.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 0.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 1.0));
+	}
+}
+
 TEST_CASE("Translate a specified matrix by the vector.", "[TranslatelocalF], [TranslatelocalD]")
 {
 	GMATRIXF mF = { -2.0f, -1.0f, 0.0f, 2.0f, -2.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f };
-	GVECTORF vF = {0.3f, 2, -7, 0};
+	GVECTORF vF = { 0.3f, 2, -7, 0 };
 	GMATRIXF resultF;
 
 	GMATRIXD mD = { -2.0, -1.0, 0.0, 2.0, -2.0, 1.0, 0.0, -1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0 };

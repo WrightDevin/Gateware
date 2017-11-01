@@ -109,7 +109,7 @@ namespace GW
 			
 			//! Set the quaternion by the specified matrix
 			/*!
-			*	Sets the quaternion by the rotation part of the specifed matrix 
+			*	Sets the quaternion by the rotational part of the specifed matrix 
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _matrix			The specified matrix
@@ -321,7 +321,7 @@ namespace GW
 
 			//! Set the quaternion by the specified matrix
 			/*!
-			*	Sets the quaternion by the rotation part of the specifed matrix 
+			*	Sets the quaternion by the rotational part of the specifed matrix 
 			*	and stores the result in the output quaternion.
 			*
 			*	\param [in]  _matrix			The specified matrix

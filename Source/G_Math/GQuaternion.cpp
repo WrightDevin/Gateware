@@ -126,10 +126,13 @@ GW::GReturn GQuaternionCpp::SubtractQuaternionF(GQUATERNIONF _quaternion1, GQUAT
 
 GW::GReturn GQuaternionCpp::MultiplyQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion)
 {
-	_outQuaternion.x = _quaternion1.w * _quaternion2.x + _quaternion1.x * _quaternion2.w + _quaternion1.y * _quaternion2.z - _quaternion1.z * _quaternion2.y;
-	_outQuaternion.y = _quaternion1.w * _quaternion2.y - _quaternion1.x * _quaternion2.z + _quaternion1.y * _quaternion2.w + _quaternion1.z * _quaternion2.x;
-	_outQuaternion.z = _quaternion1.w * _quaternion2.z + _quaternion1.x * _quaternion2.y - _quaternion1.y * _quaternion2.x + _quaternion1.z * _quaternion2.w;
-	_outQuaternion.w = _quaternion1.w * _quaternion2.w - _quaternion1.x * _quaternion2.x - _quaternion1.y * _quaternion2.y - _quaternion1.z * _quaternion2.z;
+	GQUATERNIONF _q1 = _quaternion1;
+	GQUATERNIONF _q2 = _quaternion2;
+
+	_outQuaternion.x = _q1.w * _q2.x + _q1.x * _q2.w + _q1.y * _q2.z - _q1.z * _q2.y;
+	_outQuaternion.y = _q1.w * _q2.y - _q1.x * _q2.z + _q1.y * _q2.w + _q1.z * _q2.x;
+	_outQuaternion.z = _q1.w * _q2.z + _q1.x * _q2.y - _q1.y * _q2.x + _q1.z * _q2.w;
+	_outQuaternion.w = _q1.w * _q2.w - _q1.x * _q2.x - _q1.y * _q2.y - _q1.z * _q2.z;
 
 	return SUCCESS;
 }
@@ -362,10 +365,12 @@ GReturn GQuaternionCpp::SubtractQuaternionD(GQUATERNIOND _quaternion1, GQUATERNI
 
 GReturn GQuaternionCpp::MultiplyQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion)
 {
-	_outQuaternion.x = _quaternion1.w * _quaternion2.x + _quaternion1.x * _quaternion2.w + _quaternion1.y * _quaternion2.z - _quaternion1.z * _quaternion2.y;
-	_outQuaternion.y = _quaternion1.w * _quaternion2.y - _quaternion1.x * _quaternion2.z + _quaternion1.y * _quaternion2.w + _quaternion1.z * _quaternion2.x;
-	_outQuaternion.z = _quaternion1.w * _quaternion2.z + _quaternion1.x * _quaternion2.y - _quaternion1.y * _quaternion2.x + _quaternion1.z * _quaternion2.w;
-	_outQuaternion.w = _quaternion1.w * _quaternion2.w - _quaternion1.x * _quaternion2.x - _quaternion1.y * _quaternion2.y - _quaternion1.z * _quaternion2.z;
+	GQUATERNIOND _q1 = _quaternion1;
+	GQUATERNIOND _q2 = _quaternion2;
+	_outQuaternion.x = _q1.w * _q2.x + _q1.x * _q2.w + _q1.y * _q2.z - _q1.z * _q2.y;
+	_outQuaternion.y = _q1.w * _q2.y - _q1.x * _q2.z + _q1.y * _q2.w + _q1.z * _q2.x;
+	_outQuaternion.z = _q1.w * _q2.z + _q1.x * _q2.y - _q1.y * _q2.x + _q1.z * _q2.w;
+	_outQuaternion.w = _q1.w * _q2.w - _q1.x * _q2.x - _q1.y * _q2.y - _q1.z * _q2.z;
 
 
 	return SUCCESS;
