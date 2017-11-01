@@ -20,19 +20,19 @@ int _mouseDeltaX = 0;
 int _mouseDeltaY = 0;
 unsigned int keyMask;
 
+unsigned int mouseReadCount = 0;
+unsigned int mouseWriteCount = 0;
+
 #ifdef _WIN32
 	//Variables
 
 	//! Store the users implementation of the windows procedure.
 	LONG_PTR _userWinProc;
-
-
-
+	
 	//Methods
 	LRESULT CALLBACK GWinProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp) {
 		switch (msg)
 		{
-
 		case WM_INPUT:
 		{
 			UINT dwSize;
@@ -95,6 +95,7 @@ unsigned int keyMask;
 			}
 			else if (raw->header.dwType == RIM_TYPEMOUSE)
 			{
+				++mouseWriteCount;
 
 				switch (raw->data.mouse.ulButtons) {
 				case 1:
@@ -138,6 +139,10 @@ unsigned int keyMask;
 					break;
 				}
 
+				//update delta mouse position
+				
+				_mouseDeltaX = raw->data.mouse.lLastX;
+				_mouseDeltaY = raw->data.mouse.lLastY;
 
 			}
 
@@ -158,13 +163,9 @@ unsigned int keyMask;
 				_mousePositionX = (float)p.x;
 				_mousePositionY = (float)p.y;
 			}
-
-			_mouseDeltaX = _mousePrevX - _mousePositionX;
-			_mouseDeltaY = _mousePrevY - _mousePositionY;
-
+		
 			_mousePrevX = _mousePositionX;
 			_mousePrevY = _mousePositionY;
-
 
 			delete[] lpb;
 		}
