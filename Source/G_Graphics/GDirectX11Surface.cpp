@@ -34,8 +34,8 @@ private:
 	IDXGISwapChain*				swapChain;
 	ID3D11RenderTargetView*		rtv;
 	ID3D11DepthStencilView*		zBuffer;
-	float						width;
-	float						height;
+	unsigned int				width;
+	unsigned int				height;
 	float						aspectRatio;
 
 public:
@@ -81,8 +81,8 @@ GReturn GDirectX11::Initialize()
 	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
-	width = windowRect.right - windowRect.left;
-	height = windowRect.bottom - windowRect.top;
+	gWnd->GetClientWidth(width);
+	gWnd->GetClientHeight(height);
 	aspectRatio = width / height;
 
 	D3D_FEATURE_LEVEL featureLevels[] =
@@ -301,19 +301,19 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 		case GW::SYSTEM::RESIZE:
 		{
 
-			unsigned int newWidth;
-			unsigned int newHeight;
+			/*unsigned int newWidth;
+			unsigned int newHeight;*/
 
-			gWnd->GetWidth(newWidth);
-			gWnd->GetHeight(newHeight);
+			gWnd->GetClientWidth(width);
+			gWnd->GetClientHeight(height);
 
-			aspectRatio = newWidth / newHeight;
+			aspectRatio = width / height;
 
 			if (swapChain)
 			{
 				rtv->Release();
 
-				HRESULT result = swapChain->ResizeBuffers(0, newWidth, newHeight, DXGI_FORMAT_UNKNOWN, 0);
+				HRESULT result = swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
 
 				if (result != S_OK)
 					return FAILURE;
@@ -330,8 +330,8 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 					return FAILURE;
 
 				D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
-				depthTextureDesc.Width = newWidth;
-				depthTextureDesc.Height = newHeight;
+				depthTextureDesc.Width = width;
+				depthTextureDesc.Height = height;
 				depthTextureDesc.ArraySize = 1;
 				depthTextureDesc.MipLevels = 1;
 				depthTextureDesc.SampleDesc.Count = 1;
@@ -350,8 +350,8 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 				newRTVBuffer->Release();
 
 				D3D11_VIEWPORT viewport;
-				viewport.Width = newWidth;
-				viewport.Height = newHeight;
+				viewport.Width = width;
+				viewport.Height = height;
 				viewport.MinDepth = 0.0f;
 				viewport.MaxDepth = 1.0f;
 				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);

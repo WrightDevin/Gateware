@@ -40,44 +40,6 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);
 }
 
-//TEST_CASE("Querying Swap Chain.")
-//{
-//	unsigned int testWidth;
-//	unsigned int testHeight;
-//
-//	if (swapChain != nullptr)
-//	{
-//		ID3D11Texture2D* testTex;
-//		swapChain->GetBuffer(0, __uuidof(testTex), reinterpret_cast<void**>(&testTex));
-//		
-//		D3D11_TEXTURE2D_DESC testTexDesc;
-//		testTex->GetDesc(&testTexDesc);
-//
-//		surfaceWidth = testTexDesc.Width;
-//		surfaceHeight = testTexDesc.Height;
-//
-//		gWnd_DX->GetClientWidth(testWidth);
-//		gWnd_DX->GetClientHeight(testHeight);
-//
-//		REQUIRE(surfaceWidth == testWidth);
-//		REQUIRE(surfaceHeight == testHeight);
-//
-//		if (context != nullptr)
-//		{
-//			ID3D11RenderTargetView* surfaceRTV = nullptr;
-//			const float color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-//
-//			dx11Surface->GetRenderTarget((void**)&surfaceRTV);
-//
-//			context->ClearRenderTargetView(surfaceRTV, color);
-//			swapChain->Present(0, 0);
-//		}
-//
-//		testTex->Release();
-//
-//	}
-//}
-
 TEST_CASE("Testing Window Events.")
 {
 

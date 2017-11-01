@@ -6,22 +6,48 @@
 
 message(“Unit Test Generation”)
 
-
 if(WIN32)
 
-set(UnitTestDependecies G_Graphics/GDirectX11SurfaceTest.cpp)
+set(UnitTestDependecies
 
-target_link_libraries(UnitTests GDirectX11Surface ${CMAKE_THREAD_LIBS_INIT})
+Common.cpp Common.h
+
+G_System/GBufferedInputTests.cpp
+
+G_System/GFileTest.cpp
+
+G_System/GInputTests.cpp
+
+G_System/GLogTest.cpp
+
+G_System/GWindowTests.cpp
+
+G_System/GBufferedInputTestListener.cpp
+
+G_System/GBufferedInputTestListener.h
+
+G_System/GWindowTestListener.cpp
+
+G_System/GWindowTestListener.h
+
+G_Graphics/GOpenGLESSurfaceTest.cpp
+
+G_Graphics/GDirectX11SurfaceTest.cpp
+
+ )
+
+
+add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
+
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
 
 endif(WIN32)
 
+
+
 if(UNIX AND NOT APPLE)
 
-
-
 # https://stackoverflow.com/questions/39863835/cmake-link-xlib-directories-c
-
-
 
 find_package(X11 REQUIRED)
 
@@ -47,8 +73,6 @@ if(X11_FOUND)
 
 message("X11 was found, attempting to link.")
 
-
-
 link_libraries(${X11_LIBRARIES})
 
 link_libraries(${OPENGL_LIBRARIES})
@@ -57,19 +81,14 @@ include_directories(${X11_INCLUDE_DIR})
 
 include_directories(${OPENGL_INCLUDE_DIRS})
 
-
-
 endif(X11_FOUND)
 
-
-
-endif(UNIX AND NOT APPLE)
-
+#endif(UNIX AND NOT APPLE)
 
 
 
 
-if(NOT APPLE)
+#if(NOT APPLE)
 
 set(UnitTestDependecies
 
@@ -97,13 +116,15 @@ G_Graphics/GOpenGLESSurfaceTest.cpp
 
  )
 
+
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
 target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
 
+endif(UNIX AND NOT APPLE)
 
 
-elseif(APPLE)
+if(APPLE)
 
 #Find_library(COCOA_LIB cocoa)
 
@@ -130,7 +151,6 @@ framework is originally linked to these libraries.
 #]=]
 
 
-
 add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 
@@ -143,7 +163,8 @@ target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGL
 
 
 
-endif()
+endif(APPLE)
+
 
 
 #target_sources(UnitTests PUBLIC ${UnitTestDependecies})
