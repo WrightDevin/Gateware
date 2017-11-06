@@ -7,6 +7,7 @@
 #include <atomic>  //atomic variables
 #include <mutex>  //mutex locks
 #include "GUtility.h"  //Internal utility functions
+#include <stdio.h>
 
 //iOS include, Apple Only.
 #if defined(__APPLE__)
@@ -70,6 +71,7 @@ class FileIO : public GW::SYSTEM::GFile
 {
 	DIR* currDirStream;  //Maintains the current directory.
 	fstream file;  //Maintains the current file (if one is open).
+	FILE* binaryFile = NULL; //for binary read and write 
 
 	string currDir;  //A cached directory path for faster fetching.
 
@@ -137,7 +139,7 @@ FileIO::~FileIO()
 {
 	//Close the current directory.
 	closedir(currDirStream);
-
+	
 	//Close the file stream.
 	if (file.is_open())
 	{
@@ -150,15 +152,15 @@ GW::GReturn FileIO::Init()
 {
 	//Set the current working directory to the directory the program was ran from.
 #if TARGET_OS_IOS || TARGET_OS_SIMULATOR
-    string tempDir = getenv("HOME");
-    tempDir += "/Library";
-    GW::GReturn rv = SetCurrentWorkingDirectory(tempDir.c_str());
-    if (G_FAIL(rv))
-        return rv;
+	string tempDir = getenv("HOME");
+	tempDir += "/Library";
+	GW::GReturn rv = SetCurrentWorkingDirectory(tempDir.c_str());
+	if (G_FAIL(rv))
+		return rv;
 #else
-    GW::GReturn rv = SetCurrentWorkingDirectory("./");
-    if (G_FAIL(rv))
-        return rv;
+	GW::GReturn rv = SetCurrentWorkingDirectory("./");
+	if (G_FAIL(rv))
+		return rv;
 #endif
 
 	//Imbue the file with utf8 if on Windows.
@@ -181,6 +183,15 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
+	char tempDir[260];
+	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
+	strcat_s(tempDir, _file);
+	binaryFile = fopen(tempDir, "rb");
+
+	if (binaryFile == NULL)
+		return GW::FILE_NOT_FOUND;
+
+	/*
 	//Ensure a file is not already open.
 	if (file.is_open())
 		return GW::FAILURE;
@@ -191,12 +202,25 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	//If the file failed to open the function fails.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-
+	*/
 	return GW::SUCCESS;
 }
 
 GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 {
+	//Check for invalid arguments.
+	if (_file == nullptr)
+		return GW::INVALID_ARGUMENT;
+
+	char tempDir[260];
+	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
+	strcat_s(tempDir, _file);
+	binaryFile = fopen(tempDir, "wb");
+
+	if (binaryFile == NULL)
+		return GW::FILE_NOT_FOUND;
+
+	/*
 	//Check for invalid arguments.
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
@@ -211,7 +235,7 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-
+	*/
 	return GW::SUCCESS;
 }
 
@@ -221,6 +245,15 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
+	char tempDir[260];
+	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
+	strcat_s(tempDir, _file);
+	binaryFile = fopen(tempDir, "ab");
+
+	if (binaryFile == NULL)
+		return GW::FILE_NOT_FOUND;
+
+	/*
 	//Close the current file if there is one.
 	if (file.is_open())
 		return GW::FAILURE;
@@ -231,7 +264,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-
+	*/
 	return GW::SUCCESS;
 }
 
@@ -329,7 +362,7 @@ GW::GReturn FileIO::Write(const char* const _inData, unsigned int _numBytes)
 		return GW::INVALID_ARGUMENT;
 
 	//Ensure a file is open.
-	if (!file.is_open())
+	if (!file.is_open() && binaryFile == NULL)
 		return GW::FAILURE;
 
 	//Lock the write operations.
@@ -339,7 +372,12 @@ GW::GReturn FileIO::Write(const char* const _inData, unsigned int _numBytes)
 	//We don't need to on MAC and Linux.
 
 #if defined(_WIN32)
-	file.write((wchar_t*)_inData, _numBytes);
+	if (binaryFile)
+	{
+		fwrite((void*)_inData, sizeof(char), _numBytes, binaryFile);
+	}
+	else
+		file.write((wchar_t*)_inData, _numBytes);
 
 #elif defined(__APPLE__) || defined(__linux__)
 	file.write(_inData, _numBytes);
@@ -356,7 +394,7 @@ GW::GReturn FileIO::Read(char* _outData, unsigned int _numBytes)
 		return GW::INVALID_ARGUMENT;
 
 	//Ensure a file is open.
-	if (!file.is_open())
+	if (!file.is_open() && binaryFile == NULL)
 	{
 		_outData = nullptr;
 		return GW::FAILURE;
@@ -368,7 +406,12 @@ GW::GReturn FileIO::Read(char* _outData, unsigned int _numBytes)
 	//On Windows we need to cast the char* to a wchar_t*.
 	//We don't need to on MAC or Linux.
 #if defined(_WIN32)
-	file.read((wchar_t*)_outData, _numBytes);
+	if (binaryFile)
+	{
+		fread(_outData, sizeof(char), _numBytes, binaryFile);
+	}
+	else
+		file.read((wchar_t*)_outData, _numBytes);
 
 #elif defined (__APPLE__) || (__linux__)
 	file.read(_outData, _numBytes);
@@ -432,8 +475,9 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	//Convert the UTF8 delimeter to UTF16.
 	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
 
-	//Read the information.
-	getline(file, outString, *delimiter);
+		//Read the information.
+		getline(file, outString, *delimiter);
+
 
 #elif defined(__APPLE__) || defined(__linux__)
 
@@ -442,41 +486,52 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #endif
 
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
-    strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
+	strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
 #else
-    //Copy the data over to the out parameter.
-    strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+	//Copy the data over to the out parameter.
+	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
 #endif
 
 	lock.unlock();
 
 	return GW::SUCCESS;
-}
+	}
 
 GW::GReturn FileIO::CloseFile()
 {
 	//If a file is not open, we can not close it.
-	if (!file.is_open())
+	if (!file.is_open() && binaryFile == NULL)
 		return GW::FAILURE;
 
-	//Flush the file.
-	file.flush();
-
-	//Close the file.
-	file.close();
-
+	if (binaryFile != NULL )
+	{
+		fflush(binaryFile);
+		fclose(binaryFile);
+		binaryFile = nullptr;
+	}
+	else
+	{
+		//Flush the file.
+		file.flush();
+		//Close the file.
+		file.close();
+	}
 	return GW::SUCCESS;
 }
 
 GW::GReturn FileIO::FlushFile()
 {
 	//If a file is not open we can not flush it.
-	if (!file.is_open())
+	if (!file.is_open() && binaryFile == NULL)
 		return GW::FAILURE;
 
-	//flush the file.
-	file.flush();
-
+	if (binaryFile != NULL)
+		fflush(binaryFile);
+	else
+	{
+		//flush the file.
+		file.flush();
+	}
 	return GW::SUCCESS;
 }
 
@@ -491,10 +546,10 @@ GW::GReturn FileIO::GetCurrentWorkingDirectory(char* _dir, unsigned int _dirSize
 		return GW::FAILURE;
 
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
-    strlcpy(_dir, G_TO_UTF8(currDir).c_str(), _dirSize);
+	strlcpy(_dir, G_TO_UTF8(currDir).c_str(), _dirSize);
 #else
-    //Copy the current directory to the out parameter.
-    strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
+	//Copy the current directory to the out parameter.
+	strcpy_s(_dir, _dirSize, G_TO_UTF8(currDir).c_str());
 #endif
 
 	return GW::SUCCESS;
@@ -589,17 +644,17 @@ GW::GReturn FileIO::GetFilesFromDirectory(char* _outFiles[], unsigned int _numFi
 	{
 		if (file->d_type == DT_REG)
 		{
-            string fileName(file->d_name);
+			string fileName(file->d_name);
 
-            #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
-                strlcpy(_outFiles[fileNumber], G_TO_UTF8(fileName).c_str(), _fileNameSize);
-            #else
-                strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
-            #endif
+#if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
+			strlcpy(_outFiles[fileNumber], G_TO_UTF8(fileName).c_str(), _fileNameSize);
+#else
+			strcpy_s(_outFiles[fileNumber], _fileNameSize, G_TO_UTF8(fileName).c_str());
+#endif
 
-            ++fileNumber;
-		}
+			++fileNumber;
 	}
+}
 
 	return GW::SUCCESS;
 }

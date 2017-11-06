@@ -12,23 +12,11 @@ A thread-\/safe window creation and management library.
 
 
 Inheritance diagram for GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Window\+:
-\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=224pt]{classGW_1_1SYSTEM_1_1GWindow__inherit__graph}
-\end{center}
-\end{figure}
+% FIG 0
 
 
 Collaboration diagram for GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Window\+:
-\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=224pt]{classGW_1_1SYSTEM_1_1GWindow__coll__graph}
-\end{center}
-\end{figure}
+% FIG 1
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -48,23 +36,23 @@ virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hy
 \begin{DoxyCompactList}\small\item\em Minimizes the currently opened window. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a21533c58e920d347c377ebdaa6d2b76f}{Change\+Window\+Style} (\hyperlink{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{G\+Window\+Style} \+\_\+style)=0
 \begin{DoxyCompactList}\small\item\em Sets the currently opened window\textquotesingle{}s style to the specified style. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a5afa3ef5f507b1dcb041d57280378e62}{Get\+Width} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a75672fb359ee44c5e551ee6223a10bdb}{Get\+Width} (unsigned int \&\+\_\+out\+Width)=0
 \begin{DoxyCompactList}\small\item\em Returns the width in pixels of the currently opened window. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a159a5aca2f2a77b756591ff29574cdc9}{Get\+Height} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_aab8f7e74d8554f309a7785216ff89ff3}{Get\+Height} (unsigned int \&\+\_\+out\+Height)=0
 \begin{DoxyCompactList}\small\item\em Returns the height in pixels of the currently opened window. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a1a4bdd7bb12a39d5bbaae53f1e180d91}{Get\+Client\+Width} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a6cedaf7ca08ed3519092196a8ae79784}{Get\+Client\+Width} (unsigned int \&\+\_\+out\+Client\+Width)=0
 \begin{DoxyCompactList}\small\item\em Returns the client width in pixels of the currently opened window. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_ac0a08847a67fbb588f6a851007f465f0}{Get\+Client\+Height} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_aca175a29d6e87e4d4ed848325216c8f1}{Get\+Client\+Height} (unsigned int \&\+\_\+out\+Client\+Height)=0
 \begin{DoxyCompactList}\small\item\em Returns the client height in pixels of the currently opened window. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a085fd92d1a4f5cb131ca405dc69d28ea}{GetX} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a61da1f01be5fa48df2375701ed0062e9}{GetX} (unsigned int \&\+\_\+outX)=0
 \begin{DoxyCompactList}\small\item\em Returns the X position in pixels of the currently opened window. \end{DoxyCompactList}\item 
-virtual int \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a37525397599eb9fc9fced0fe3a69fc04}{GetY} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a58d456c963afd1b4d9235a1336d57754}{GetY} (unsigned int \&\+\_\+outY)=0
 \begin{DoxyCompactList}\small\item\em Returns the Y position in pixels of the currently opened window. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_ac80bfaba809d5eb54d6a11b11deddeb7}{Get\+Client\+Top\+Left} (unsigned int \&\+\_\+outX, unsigned int \&\+\_\+outY)=0
 \begin{DoxyCompactList}\small\item\em Gets the location of the top-\/left pixel of the opened window\textquotesingle{}s client area. \end{DoxyCompactList}\item 
-virtual void $\ast$ \hyperlink{classGW_1_1SYSTEM_1_1GWindow_aa3cc3af1805ac9573424f8815420e9c5}{Get\+Window\+Handle} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a3feaec975b21a8a49a81995d7bbde271}{Get\+Window\+Handle} (void $\ast$\+\_\+out\+Window\+Handle, unsigned int \+\_\+handle\+Size)=0
 \begin{DoxyCompactList}\small\item\em Returns the platform specific window handle to the currently opened window. \end{DoxyCompactList}\item 
-virtual bool \hyperlink{classGW_1_1SYSTEM_1_1GWindow_acf85e727f26eeeeb3e006947c45d04a3}{Is\+Fullscreen} ()=0
+virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GWindow_a28ae1c50fbd7c1c292ed5aa055cae9a7}{Is\+Fullscreen} (bool \&\+\_\+out\+Is\+Fullscreen)=0
 \begin{DoxyCompactList}\small\item\em Returns a bool specifying whether or not the currently opened window is fullscreen. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -74,13 +62,12 @@ A thread-\/safe window creation and management library.
 This library is used to create, move, resize, and destroy a window. Methods exist to query information from the window as well. The window is also a broadcaster, meaning a G\+Listener can be written to receive events from it. 
 
 \subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a21533c58e920d347c377ebdaa6d2b76f}\label{classGW_1_1SYSTEM_1_1GWindow_a21533c58e920d347c377ebdaa6d2b76f}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Change\+Window\+Style@{Change\+Window\+Style}}
 \index{Change\+Window\+Style@{Change\+Window\+Style}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Change\+Window\+Style(\+G\+Window\+Style \+\_\+style)=0}{ChangeWindowStyle(GWindowStyle _style)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Change\+Window\+Style (
-\begin{DoxyParamCaption}
-\item[{{\bf G\+Window\+Style}}]{\+\_\+style}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a21533c58e920d347c377ebdaa6d2b76f}{}\label{classGW_1_1SYSTEM_1_1GWindow_a21533c58e920d347c377ebdaa6d2b76f}
+\subsubsection{\texorpdfstring{Change\+Window\+Style()}{ChangeWindowStyle()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Change\+Window\+Style (\begin{DoxyParamCaption}\item[{\hyperlink{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{G\+Window\+Style}}]{\+\_\+style }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Sets the currently opened window\textquotesingle{}s style to the specified style. 
@@ -99,13 +86,12 @@ G\+Window\+Style will be overwritten and the window resized or moved accordingly
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists to change. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_aca175a29d6e87e4d4ed848325216c8f1}\label{classGW_1_1SYSTEM_1_1GWindow_aca175a29d6e87e4d4ed848325216c8f1}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Client\+Height@{Get\+Client\+Height}}
 \index{Get\+Client\+Height@{Get\+Client\+Height}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Client\+Height()=0}{GetClientHeight()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Height (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_ac0a08847a67fbb588f6a851007f465f0}{}\label{classGW_1_1SYSTEM_1_1GWindow_ac0a08847a67fbb588f6a851007f465f0}
+\subsubsection{\texorpdfstring{Get\+Client\+Height()}{GetClientHeight()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Height (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Client\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the client height in pixels of the currently opened window. 
@@ -119,14 +105,12 @@ Returns the client height in pixels of the currently opened window.
 {\em else} & Height was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_ac80bfaba809d5eb54d6a11b11deddeb7}\label{classGW_1_1SYSTEM_1_1GWindow_ac80bfaba809d5eb54d6a11b11deddeb7}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Client\+Top\+Left@{Get\+Client\+Top\+Left}}
 \index{Get\+Client\+Top\+Left@{Get\+Client\+Top\+Left}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Client\+Top\+Left(unsigned int \&\+\_\+out\+X, unsigned int \&\+\_\+out\+Y)=0}{GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Top\+Left (
-\begin{DoxyParamCaption}
-\item[{unsigned int \&}]{\+\_\+outX, }
-\item[{unsigned int \&}]{\+\_\+outY}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_ac80bfaba809d5eb54d6a11b11deddeb7}{}\label{classGW_1_1SYSTEM_1_1GWindow_ac80bfaba809d5eb54d6a11b11deddeb7}
+\subsubsection{\texorpdfstring{Get\+Client\+Top\+Left()}{GetClientTopLeft()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Top\+Left (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+outX,  }\item[{unsigned int \&}]{\+\_\+outY }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Gets the location of the top-\/left pixel of the opened window\textquotesingle{}s client area. 
@@ -145,13 +129,12 @@ Gets the location of the top-\/left pixel of the opened window\textquotesingle{}
 {\em else} & Position was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a6cedaf7ca08ed3519092196a8ae79784}\label{classGW_1_1SYSTEM_1_1GWindow_a6cedaf7ca08ed3519092196a8ae79784}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Client\+Width@{Get\+Client\+Width}}
 \index{Get\+Client\+Width@{Get\+Client\+Width}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Client\+Width()=0}{GetClientWidth()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Width (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a1a4bdd7bb12a39d5bbaae53f1e180d91}{}\label{classGW_1_1SYSTEM_1_1GWindow_a1a4bdd7bb12a39d5bbaae53f1e180d91}
+\subsubsection{\texorpdfstring{Get\+Client\+Width()}{GetClientWidth()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Client\+Width (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Client\+Width }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the client width in pixels of the currently opened window. 
@@ -167,13 +150,12 @@ Client height is the height of the window\textquotesingle{}s drawable area.
 {\em else} & Width was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_aab8f7e74d8554f309a7785216ff89ff3}\label{classGW_1_1SYSTEM_1_1GWindow_aab8f7e74d8554f309a7785216ff89ff3}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Height@{Get\+Height}}
 \index{Get\+Height@{Get\+Height}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Height()=0}{GetHeight()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Height (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a159a5aca2f2a77b756591ff29574cdc9}{}\label{classGW_1_1SYSTEM_1_1GWindow_a159a5aca2f2a77b756591ff29574cdc9}
+\subsubsection{\texorpdfstring{Get\+Height()}{GetHeight()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Height (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the height in pixels of the currently opened window. 
@@ -189,13 +171,12 @@ Client width is the width of the window\textquotesingle{}s drawable area.
 {\em else} & Height was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a75672fb359ee44c5e551ee6223a10bdb}\label{classGW_1_1SYSTEM_1_1GWindow_a75672fb359ee44c5e551ee6223a10bdb}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Width@{Get\+Width}}
 \index{Get\+Width@{Get\+Width}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Width()=0}{GetWidth()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Width (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a5afa3ef5f507b1dcb041d57280378e62}{}\label{classGW_1_1SYSTEM_1_1GWindow_a5afa3ef5f507b1dcb041d57280378e62}
+\subsubsection{\texorpdfstring{Get\+Width()}{GetWidth()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Width (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Width }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the width in pixels of the currently opened window. 
@@ -209,13 +190,12 @@ Returns the width in pixels of the currently opened window.
 {\em else} & Width was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a3feaec975b21a8a49a81995d7bbde271}\label{classGW_1_1SYSTEM_1_1GWindow_a3feaec975b21a8a49a81995d7bbde271}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Get\+Window\+Handle@{Get\+Window\+Handle}}
 \index{Get\+Window\+Handle@{Get\+Window\+Handle}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Window\+Handle()=0}{GetWindowHandle()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual void$\ast$ G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Window\+Handle (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_aa3cc3af1805ac9573424f8815420e9c5}{}\label{classGW_1_1SYSTEM_1_1GWindow_aa3cc3af1805ac9573424f8815420e9c5}
+\subsubsection{\texorpdfstring{Get\+Window\+Handle()}{GetWindowHandle()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Get\+Window\+Handle (\begin{DoxyParamCaption}\item[{void $\ast$}]{\+\_\+out\+Window\+Handle,  }\item[{unsigned int}]{\+\_\+handle\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the platform specific window handle to the currently opened window. 
@@ -227,13 +207,12 @@ On Windows the void$\ast$ is an H\+W\+ND, on Linux a \hyperlink{structGW_1_1SYST
 {\em void$\ast$} & The void$\ast$ data to the window handle. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a61da1f01be5fa48df2375701ed0062e9}\label{classGW_1_1SYSTEM_1_1GWindow_a61da1f01be5fa48df2375701ed0062e9}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!GetX@{GetX}}
 \index{GetX@{GetX}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+X()=0}{GetX()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+GetX (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a085fd92d1a4f5cb131ca405dc69d28ea}{}\label{classGW_1_1SYSTEM_1_1GWindow_a085fd92d1a4f5cb131ca405dc69d28ea}
+\subsubsection{\texorpdfstring{Get\+X()}{GetX()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+GetX (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+outX }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the X position in pixels of the currently opened window. 
@@ -245,13 +224,12 @@ Returns the X position in pixels of the currently opened window.
 {\em else} & X position was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a58d456c963afd1b4d9235a1336d57754}\label{classGW_1_1SYSTEM_1_1GWindow_a58d456c963afd1b4d9235a1336d57754}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!GetY@{GetY}}
 \index{GetY@{GetY}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Get\+Y()=0}{GetY()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual int G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+GetY (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a37525397599eb9fc9fced0fe3a69fc04}{}\label{classGW_1_1SYSTEM_1_1GWindow_a37525397599eb9fc9fced0fe3a69fc04}
+\subsubsection{\texorpdfstring{Get\+Y()}{GetY()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+GetY (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+outY }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns the Y position in pixels of the currently opened window. 
@@ -263,13 +241,12 @@ Returns the Y position in pixels of the currently opened window.
 {\em else} & Y position was successfully queried and returned. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a28ae1c50fbd7c1c292ed5aa055cae9a7}\label{classGW_1_1SYSTEM_1_1GWindow_a28ae1c50fbd7c1c292ed5aa055cae9a7}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Is\+Fullscreen@{Is\+Fullscreen}}
 \index{Is\+Fullscreen@{Is\+Fullscreen}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Is\+Fullscreen()=0}{IsFullscreen()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Is\+Fullscreen (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_acf85e727f26eeeeb3e006947c45d04a3}{}\label{classGW_1_1SYSTEM_1_1GWindow_acf85e727f26eeeeb3e006947c45d04a3}
+\subsubsection{\texorpdfstring{Is\+Fullscreen()}{IsFullscreen()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Is\+Fullscreen (\begin{DoxyParamCaption}\item[{bool \&}]{\+\_\+out\+Is\+Fullscreen }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Returns a bool specifying whether or not the currently opened window is fullscreen. 
@@ -281,13 +258,12 @@ Returns a bool specifying whether or not the currently opened window is fullscre
 {\em false} & The window is not fullscreen. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a06b5f092e742baca82a0bfc2cbaef153}\label{classGW_1_1SYSTEM_1_1GWindow_a06b5f092e742baca82a0bfc2cbaef153}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Maximize@{Maximize}}
 \index{Maximize@{Maximize}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Maximize()=0}{Maximize()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Maximize (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a06b5f092e742baca82a0bfc2cbaef153}{}\label{classGW_1_1SYSTEM_1_1GWindow_a06b5f092e742baca82a0bfc2cbaef153}
+\subsubsection{\texorpdfstring{Maximize()}{Maximize()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Maximize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Resizes the currently opened window to the native maximum resolution. 
@@ -301,13 +277,12 @@ G\+Window\+Style will be overwritten to be the fullscreen version if it is not a
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists to maximize. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a2cced61a323dac10535904c3899563d8}\label{classGW_1_1SYSTEM_1_1GWindow_a2cced61a323dac10535904c3899563d8}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Minimize@{Minimize}}
 \index{Minimize@{Minimize}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Minimize()=0}{Minimize()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Minimize (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a2cced61a323dac10535904c3899563d8}{}\label{classGW_1_1SYSTEM_1_1GWindow_a2cced61a323dac10535904c3899563d8}
+\subsubsection{\texorpdfstring{Minimize()}{Minimize()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Minimize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Minimizes the currently opened window. 
@@ -321,14 +296,12 @@ G\+Window\+Style will be overwritten to be the minimized style if it is not alre
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists to minimize or window is already maximized. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a9fc043b893f26c35e6ba965adcc17edb}\label{classGW_1_1SYSTEM_1_1GWindow_a9fc043b893f26c35e6ba965adcc17edb}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Move\+Window@{Move\+Window}}
 \index{Move\+Window@{Move\+Window}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Move\+Window(int \+\_\+x, int \+\_\+y)=0}{MoveWindow(int _x, int _y)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Move\+Window (
-\begin{DoxyParamCaption}
-\item[{int}]{\+\_\+x, }
-\item[{int}]{\+\_\+y}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a9fc043b893f26c35e6ba965adcc17edb}{}\label{classGW_1_1SYSTEM_1_1GWindow_a9fc043b893f26c35e6ba965adcc17edb}
+\subsubsection{\texorpdfstring{Move\+Window()}{MoveWindow()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Move\+Window (\begin{DoxyParamCaption}\item[{int}]{\+\_\+x,  }\item[{int}]{\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Repositions the currently opened window to the specified x and y pixels on screen. 
@@ -351,13 +324,12 @@ If position parameters are less than 0 then 0 will be used. If position paramete
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists to move. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a402b550212d77f19638ef1a1db9ad397}\label{classGW_1_1SYSTEM_1_1GWindow_a402b550212d77f19638ef1a1db9ad397}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Open\+Window@{Open\+Window}}
 \index{Open\+Window@{Open\+Window}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Open\+Window()=0}{OpenWindow()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Open\+Window (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a402b550212d77f19638ef1a1db9ad397}{}\label{classGW_1_1SYSTEM_1_1GWindow_a402b550212d77f19638ef1a1db9ad397}
+\subsubsection{\texorpdfstring{Open\+Window()}{OpenWindow()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Open\+Window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Initializes a window handle and displays a window. 
@@ -373,13 +345,12 @@ The window is opened with the size, position and style specified in the paramete
 {\em F\+A\+I\+L\+U\+RE} & The window could not be created. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a6c7db60db04436ac21cba3147f287e84}\label{classGW_1_1SYSTEM_1_1GWindow_a6c7db60db04436ac21cba3147f287e84}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Process\+Window\+Events@{Process\+Window\+Events}}
 \index{Process\+Window\+Events@{Process\+Window\+Events}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Process\+Window\+Events()=0}{ProcessWindowEvents()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Process\+Window\+Events (
-\begin{DoxyParamCaption}
-{}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a6c7db60db04436ac21cba3147f287e84}{}\label{classGW_1_1SYSTEM_1_1GWindow_a6c7db60db04436ac21cba3147f287e84}
+\subsubsection{\texorpdfstring{Process\+Window\+Events()}{ProcessWindowEvents()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Process\+Window\+Events (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Flushes and processes all messages from the window\textquotesingle{}s event queue. 
@@ -393,17 +364,12 @@ This function is meant to be called once a frame in an application\textquotesing
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists process. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a113350a164370d30932a0476f00e4ea9}\label{classGW_1_1SYSTEM_1_1GWindow_a113350a164370d30932a0476f00e4ea9}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Reconfigure\+Window@{Reconfigure\+Window}}
 \index{Reconfigure\+Window@{Reconfigure\+Window}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Reconfigure\+Window(int \+\_\+x, int \+\_\+y, int \+\_\+width, int \+\_\+height, G\+Window\+Style \+\_\+style)=0}{ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Reconfigure\+Window (
-\begin{DoxyParamCaption}
-\item[{int}]{\+\_\+x, }
-\item[{int}]{\+\_\+y, }
-\item[{int}]{\+\_\+width, }
-\item[{int}]{\+\_\+height, }
-\item[{{\bf G\+Window\+Style}}]{\+\_\+style}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a113350a164370d30932a0476f00e4ea9}{}\label{classGW_1_1SYSTEM_1_1GWindow_a113350a164370d30932a0476f00e4ea9}
+\subsubsection{\texorpdfstring{Reconfigure\+Window()}{ReconfigureWindow()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Reconfigure\+Window (\begin{DoxyParamCaption}\item[{int}]{\+\_\+x,  }\item[{int}]{\+\_\+y,  }\item[{int}]{\+\_\+width,  }\item[{int}]{\+\_\+height,  }\item[{\hyperlink{namespaceGW_1_1SYSTEM_ad117891e556631f842625c348d36a071}{G\+Window\+Style}}]{\+\_\+style }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Gives the currently opened window the specified size, position and style. 
@@ -432,14 +398,12 @@ If width and height are equal to or greater than the native resolution, the pass
 {\em R\+E\+D\+U\+N\+D\+A\+N\+T\+\_\+\+O\+P\+E\+R\+A\+T\+I\+ON} & No window exists to edit. \\
 \hline
 \end{DoxyRetVals}
+\mbox{\Hypertarget{classGW_1_1SYSTEM_1_1GWindow_a92633707248f32e4c166f27f03690d6d}\label{classGW_1_1SYSTEM_1_1GWindow_a92633707248f32e4c166f27f03690d6d}} 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}!Resize\+Window@{Resize\+Window}}
 \index{Resize\+Window@{Resize\+Window}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window}}
-\subsubsection[{\texorpdfstring{Resize\+Window(int \+\_\+width, int \+\_\+height)=0}{ResizeWindow(int _width, int _height)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Resize\+Window (
-\begin{DoxyParamCaption}
-\item[{int}]{\+\_\+width, }
-\item[{int}]{\+\_\+height}
-\end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classGW_1_1SYSTEM_1_1GWindow_a92633707248f32e4c166f27f03690d6d}{}\label{classGW_1_1SYSTEM_1_1GWindow_a92633707248f32e4c166f27f03690d6d}
+\subsubsection{\texorpdfstring{Resize\+Window()}{ResizeWindow()}}
+{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Window\+::\+Resize\+Window (\begin{DoxyParamCaption}\item[{int}]{\+\_\+width,  }\item[{int}]{\+\_\+height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
 
 
 Resizes the currently opened window to the specified width and height. 
