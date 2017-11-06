@@ -30,7 +30,7 @@ G_System/GWindowTestListener.cpp
 
 G_System/GWindowTestListener.h
 
-G_Graphics/GOpenGLESSurfaceTest.cpp
+G_Graphics/GOpenGLSurfaceTest.cpp
 
 G_Graphics/GDirectX11SurfaceTest.cpp
 
@@ -39,7 +39,7 @@ G_Graphics/GDirectX11SurfaceTest.cpp
 
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLSurface ${CMAKE_THREAD_LIBS_INIT})
 
 endif(WIN32)
 
@@ -112,14 +112,14 @@ G_System/GWindowTestListener.cpp
 
 G_System/GWindowTestListener.h
 
-G_Graphics/GOpenGLESSurfaceTest.cpp
+G_Graphics/GOpenGLSurfaceTest.cpp
 
  )
 
 
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface ${CMAKE_THREAD_LIBS_INIT})
 
 endif(UNIX AND NOT APPLE)
 
@@ -159,7 +159,7 @@ target_sources(UnitTests INTERFACE UnitTests.cpp)
 
 
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface ${CMAKE_THREAD_LIBS_INIT})
 
 
 

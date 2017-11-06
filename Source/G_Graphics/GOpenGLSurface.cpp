@@ -1,5 +1,5 @@
 #include "../DLL_Export_Symbols.h"
-#include "../../Interface/G_Graphics/GOpenGLESSurface.h"
+#include "../../Interface/G_Graphics/GOpenGLSurface.h"
 #include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 #include <iostream>
@@ -33,7 +33,7 @@ using namespace CORE;
 using namespace SYSTEM;
 using namespace GRAPHICS;
 
-class GOpenGLES : public GOpenGLESSurface
+class GOpenGL : public GOpenGLSurface
 {
 private:
 	// declare all necessary members (platform specific)
@@ -72,8 +72,8 @@ private:
 #endif
 
 public:
-	GOpenGLES();
-	virtual ~GOpenGLES();
+	GOpenGL();
+	virtual ~GOpenGL();
 	GReturn Initialize();
 	GReturn GetContext(void** _outContext);
 	GReturn GetDeviceContextHandle(void** _outHDC);
@@ -87,7 +87,7 @@ public:
 	GReturn OnEvent(const GUUIID& _senderInterface, unsigned int _eventID, void* _eventData, unsigned int _dataSize);
 };
 
-GOpenGLES::GOpenGLES()
+GOpenGL::GOpenGL()
 {
 #ifdef _WIN32
 
@@ -98,7 +98,7 @@ GOpenGLES::GOpenGLES()
 #endif
 }
 
-GOpenGLES::~GOpenGLES()
+GOpenGL::~GOpenGL()
 {
 	gWnd->DeregisterListener(this);
 	DecrementCount();
@@ -116,12 +116,12 @@ GOpenGLES::~GOpenGLES()
 
 }
 
-void GOpenGLES::SetGWindow(GWindow* _window)
+void GOpenGL::SetGWindow(GWindow* _window)
 {
 	gWnd = _window;
 }
 
-GReturn GOpenGLES::Initialize()
+GReturn GOpenGL::Initialize()
 {
 
     gWnd->OpenWindow();
@@ -220,7 +220,7 @@ glViewport(0, 0, gwa.width, gwa.height);
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::GetContext(void ** _outContext)
+GReturn GOpenGL::GetContext(void ** _outContext)
 {
 #ifdef _WIN32
 
@@ -239,7 +239,7 @@ GReturn GOpenGLES::GetContext(void ** _outContext)
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::GetDeviceContextHandle(void** _outHDC)
+GReturn GOpenGL::GetDeviceContextHandle(void** _outHDC)
 {
 #ifdef _WIN32
 
@@ -255,19 +255,19 @@ GReturn GOpenGLES::GetDeviceContextHandle(void** _outHDC)
 	return SUCCESS;
 }
 
-float GOpenGLES::GetAspectRatio()
+float GOpenGL::GetAspectRatio()
 {
 	return aspectRatio;
 }
 
-GReturn GOpenGLES::GetCount(unsigned int& _outCount)
+GReturn GOpenGL::GetCount(unsigned int& _outCount)
 {
 	_outCount = refCount;
 
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::IncrementCount()
+GReturn GOpenGL::IncrementCount()
 {
 	if (refCount == G_UINT_MAX)
 		return FAILURE;
@@ -277,7 +277,7 @@ GReturn GOpenGLES::IncrementCount()
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::DecrementCount()
+GReturn GOpenGL::DecrementCount()
 {
 	if (refCount == 0)
 	{
@@ -290,7 +290,7 @@ GReturn GOpenGLES::DecrementCount()
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+GReturn GOpenGL::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
 {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
@@ -319,9 +319,9 @@ GReturn GOpenGLES::RequestInterface(const GUUIID & _interfaceID, void ** _output
 		convert->IncrementCount();
 		(*_outputInterface) = convert;
 	}
-	else if (_interfaceID == GOpenGLESSurfaceUUIID)
+	else if (_interfaceID == GOpenGLSurfaceUUIID)
 	{
-		GOpenGLESSurface* convert = reinterpret_cast<GOpenGLESSurface*>(this);
+		GOpenGLSurface* convert = reinterpret_cast<GOpenGLSurface*>(this);
 		convert->IncrementCount();
 		(*_outputInterface) = convert;
 	}
@@ -331,7 +331,7 @@ GReturn GOpenGLES::RequestInterface(const GUUIID & _interfaceID, void ** _output
 	return SUCCESS;
 }
 
-GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
+GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
 {
 
 	if (_senderInterface == GWindowUUIID)
@@ -394,7 +394,7 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
                 break;
             case GW::SYSTEM::DESTROY:
             {
-                this->~GOpenGLES();
+                this->~GOpenGL();
             }
                 break;
         }
@@ -454,7 +454,7 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
                 break;
             case GW::SYSTEM::DESTROY:
             {
-                this->~GOpenGLES();
+                this->~GOpenGL();
             }
                 break;
         }
@@ -467,17 +467,17 @@ GReturn GOpenGLES::OnEvent(const GUUIID & _senderInterface, unsigned int _eventI
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLESSurface(SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGOpenGLESSurface(_gWin, _outSurface);
+	return GW::GRAPHICS::CreateGOpenGLSurface(_gWin, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLESSurface(SYSTEM::GWindow* _gWin, GOpenGLESSurface** _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
 {
 	if (_outSurface == nullptr)
 		return INVALID_ARGUMENT;
 
-	GOpenGLES* Surface = new GOpenGLES();
+	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
 	Surface->Initialize();
 

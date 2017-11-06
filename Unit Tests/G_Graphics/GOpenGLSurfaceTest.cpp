@@ -32,7 +32,7 @@ using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
 GWindow*			gWnd_OGL;
-GOpenGLESSurface*	oglSurface;
+GOpenGLSurface*	oglSurface;
 
 #ifdef _WIN32
 
@@ -54,7 +54,7 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 {
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 500, 500, WINDOWEDBORDERED, &gWnd_OGL)));
 
-	CHECK(CreateGOpenGLESSurface(gWnd_OGL, &oglSurface) == SUCCESS);
+	CHECK(CreateGOpenGLSurface(gWnd_OGL, &oglSurface) == SUCCESS);
 }
 
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")

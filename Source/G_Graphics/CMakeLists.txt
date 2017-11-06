@@ -1,4 +1,4 @@
-project(LibraryProject)
+﻿project(LibraryProject)
 
 
 #########################################################################
@@ -12,24 +12,24 @@ set(OPENGL_LIBRARY OpenGL)
 
 message(“Adding .mm files”)
 
-add_library(GOpenGLESSurface GOpenGLESSurface.mm)
-add_library(GOpenGLESSurface_DLL SHARED GOpenGLESSurface.mm)
+add_library(GOpenGLSurface GOpenGLSurface.mm)
+add_library(GOpenGLSurface_DLL SHARED GOpenGLSurface.mm)
 
 
-target_link_libraries(GOpenGLESSurface "-framework ${COCOA_LIBRARY}")
-target_link_libraries(GOpenGLESSurface "-framework ${OPENGL_LIBRARY}")
+target_link_libraries(GOpenGLSurface "-framework ${COCOA_LIBRARY}")
+target_link_libraries(GOpenGLSurface "-framework ${OPENGL_LIBRARY}")
 
 
-target_link_libraries(GOpenGLESSurface_DLL "-framework Cocoa")
-target_link_libraries(GOpenGLESSurface_DLL "-framework OpenGL")
+target_link_libraries(GOpenGLSurface_DLL "-framework Cocoa")
+target_link_libraries(GOpenGLSurface_DLL "-framework OpenGL")
 
 #########################################################################
 
 else(APPLE)
 
-add_library (GOpenGLESSurface GOpenGLESSurface.cpp ${HEADER_FILES})
+add_library (GOpenGLSurface GOpenGLSurface.cpp ${HEADER_FILES})
 
-add_library (GOpenGLESSurface_DLL SHARED GOpenGLESSurface.cpp ${HEADER_FILES})
+add_library (GOpenGLSurface_DLL SHARED GOpenGLSurface.cpp ${HEADER_FILES})
 
 endif(APPLE)
 
@@ -86,22 +86,22 @@ if(UNIX AND NOT APPLE)
 
 #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lGL")
 
-target_link_libraries(GOpenGLESSurface "${OPENGL_LIBRARY}")
-target_link_libraries(GOpenGLESSurface_DLL "${OPENGL_LIBRARY}")
+target_link_libraries(GOpenGLSurface "${OPENGL_LIBRARY}")
+target_link_libraries(GOpenGLSurface_DLL "${OPENGL_LIBRARY}")
 
-target_link_libraries(GOpenGLESSurface "${OPENGLX_LIBRARY}")
-target_link_libraries(GOpenGLESSurface_DLL "${OPENGLX_LIBRARY}")
+target_link_libraries(GOpenGLSurface "${OPENGLX_LIBRARY}")
+target_link_libraries(GOpenGLSurface_DLL "${OPENGLX_LIBRARY}")
 
 endif(UNIX AND NOT APPLE)
 
 #########################################################################-ALL		
 #########################################################################-PLATFORMS
 
-set_property(TARGET GOpenGLESSurface PROPERTY FOLDER "Static libraries")
+set_property(TARGET GOpenGLSurface PROPERTY FOLDER "Static libraries")
 
-set_property(TARGET GOpenGLESSurface_DLL PROPERTY FOLDER "Dynamic libraries")
+set_property(TARGET GOpenGLSurface_DLL PROPERTY FOLDER "Dynamic libraries")
 
-target_compile_definitions(GOpenGLESSurface_DLL PUBLIC GATEWARE_EXPORT_BUILD)
+target_compile_definitions(GOpenGLSurface_DLL PUBLIC GATEWARE_EXPORT_BUILD)
 
 #########################################################################
 #########################################################################
