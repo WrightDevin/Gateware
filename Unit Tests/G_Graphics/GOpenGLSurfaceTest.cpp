@@ -67,12 +67,10 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 	std::cout << "OPENGL RENDERER: " << (char*)glGetString(GL_RENDERER) << std::endl;
 
 	CHECK(oglSurface->GetContext((void**)&context) == SUCCESS);
-	CHECK(oglSurface->GetDeviceContextHandle((void**)&hdc) == SUCCESS);
 
 #elif __linux__
 
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);
-	CHECK(oglSurface->GetDeviceContextHandle((void**)&lWnd) == SUCCESS);
 
 #elif __APPLE__
 #endif
@@ -92,7 +90,7 @@ TEST_CASE("Testing OGLSurface Events")
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SwapBuffers(*hdc);
+	oglSurface->GSwapBuffers();
 
 #elif __linux__
 
@@ -100,7 +98,7 @@ TEST_CASE("Testing OGLSurface Events")
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
+	oglSurface->GSwapBuffers();
 
 #elif __APPLE__
 #endif
@@ -112,13 +110,13 @@ TEST_CASE("Testing OGLSurface Events")
 
     glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SwapBuffers(*hdc);
+	oglSurface->GSwapBuffers();
 
 #elif __linux__
 
     glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
+	oglSurface->GSwapBuffers();
 
 #elif __APPLE__
 #endif

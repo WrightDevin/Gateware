@@ -75,9 +75,10 @@ public:
 	GOpenGL();
 	virtual ~GOpenGL();
 	GReturn Initialize();
-	GReturn GetContext(void** _outContext);
-	GReturn GetDeviceContextHandle(void** _outHDC);
-	float GetAspectRatio();
+	GReturn	GetContext(void** _outContext);
+
+	void	 GSwapBuffers();
+	float	 GetAspectRatio();
 
 	void	SetGWindow(GWindow* _window);
 	GReturn GetCount(unsigned int& _outCount);
@@ -239,20 +240,19 @@ GReturn GOpenGL::GetContext(void ** _outContext)
 	return SUCCESS;
 }
 
-GReturn GOpenGL::GetDeviceContextHandle(void** _outHDC)
+void GOpenGL::GSwapBuffers()
 {
 #ifdef _WIN32
 
-	*_outHDC = &hdc;
+	SwapBuffers(hdc);
 
 #elif __linux__
 
-    *_outHDC = &lWnd;
+	glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
 
 #elif __APPLE__
-#endif
 
-	return SUCCESS;
+#endif
 }
 
 float GOpenGL::GetAspectRatio()

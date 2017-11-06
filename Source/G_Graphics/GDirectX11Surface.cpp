@@ -307,7 +307,7 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 			gWnd->GetClientWidth(width);
 			gWnd->GetClientHeight(height);
 
-			aspectRatio = width / height;
+			aspectRatio = (float)width / (float)height;
 
 			if (swapChain)
 			{

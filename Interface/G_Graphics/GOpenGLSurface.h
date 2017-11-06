@@ -22,7 +22,7 @@ namespace GW
 
 			virtual GReturn GetContext(void** _outContext) = 0;
 
-			virtual GReturn GetDeviceContextHandle(void** _outHDC) = 0;
+			virtual void GSwapBuffers() = 0;
 
 		};
 	
