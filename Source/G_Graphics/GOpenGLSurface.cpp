@@ -10,7 +10,11 @@
 
 #include <Windows.h>
 #pragma comment(lib, "OpenGL32.lib")
+
 #include <gl\GL.h>
+#include "gl3.h"
+#include "wgl.h"
+
 #include <atomic>
 #include <mutex>
 #include <thread>
@@ -20,6 +24,8 @@
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+
+#include "glxext.h"
 
 #elif __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -46,11 +52,23 @@ private:
 	float			height;
 	float			aspectRatio;
 
+	GLint			numExtensions = 0;
+	const char*		glExtensions;
+
 #ifdef _WIN32
 
 	HWND surfaceWindow;
     HDC				hdc;
 	HGLRC			OGLcontext;
+
+	/////////////////////////////////////////////////////////
+	//				 WGL FUNCTION POINTERS				   //
+	/////////////////////////////////////////////////////////
+	PFNWGLGETEXTENSIONSSTRINGARBPROC	wglGetExtensionsStringARB;
+	PFNWGLGETEXTENSIONSSTRINGEXTPROC	wglGetExtensionsStringEXT;
+	PFNWGLCREATECONTEXTATTRIBSARBPROC	wglCreateContextAttribsARB;
+	PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+
 
 #elif __linux__
 
@@ -76,11 +94,13 @@ public:
 	virtual ~GOpenGL();
 	GReturn Initialize();
 	GReturn	GetContext(void** _outContext);
-
-	void	 GSwapBuffers();
-	float	 GetAspectRatio();
+	GReturn	UniversalSwapBuffers();
+	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
+	GReturn EnableSwapControl(bool& _toggle);
 
 	void	SetGWindow(GWindow* _window);
+	float	GetAspectRatio();
+
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
 	GReturn DecrementCount();
@@ -159,10 +179,59 @@ GReturn GOpenGL::Initialize()
 	};
 
 	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
+	UINT pixelCount = 0;
 	SetPixelFormat(hdc, pixelFormat, &pfd);
 
 	OGLcontext = wglCreateContext(hdc);
 	wglMakeCurrent(hdc, OGLcontext);
+
+	wglGetExtensionsStringARB =		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	wglGetExtensionsStringEXT =		(PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+	wglCreateContextAttribsARB =	(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	wglSwapIntervalEXT =			(PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
+
+	QueryExtensionFunction("WGL_ARB_extensions_string", "wglChoosePixelFormatARB", (void**)&wglChoosePixelFormatARB);
+
+	wglMakeCurrent(NULL, NULL);
+	wglDeleteContext(OGLcontext);
+
+	const int pixelAttributes[] = 
+	{
+		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+		WGL_COLOR_BITS_ARB, 32,
+		WGL_DEPTH_BITS_ARB, 16,
+		WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+		WGL_SAMPLE_BUFFERS_ARB, GL_FALSE,
+		WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+		0,
+	};
+
+	wglChoosePixelFormatARB(hdc, pixelAttributes, NULL, 1, &pixelFormat, &pixelCount);
+	SetPixelFormat(hdc, pixelFormat, &pfd);
+
+	// Create an OpenGL 3.0 Context
+	const int contextAttributes[] =
+	{
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+		0
+	};
+
+	// Create an OpenGL ES 3.0 Context
+	//const int contextAttributes[] =
+	//{
+	//	WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+	//	WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+	//	WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
+	//	0
+	//};
+
+	OGLcontext = wglCreateContextAttribsARB(hdc, 0, contextAttributes);
+	wglMakeCurrent(hdc, OGLcontext);
+
 
 #elif __linux__
 
@@ -240,7 +309,7 @@ GReturn GOpenGL::GetContext(void ** _outContext)
 	return SUCCESS;
 }
 
-void GOpenGL::GSwapBuffers()
+GReturn GOpenGL::UniversalSwapBuffers()
 {
 #ifdef _WIN32
 
@@ -253,11 +322,101 @@ void GOpenGL::GSwapBuffers()
 #elif __APPLE__
 
 #endif
+
+	return SUCCESS;
+
 }
 
 float GOpenGL::GetAspectRatio()
 {
 	return aspectRatio;
+}
+
+GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress)
+{
+
+#if _WIN32
+
+	// Invalid Arguments
+	if (_funcName == nullptr && _outFuncAddress != nullptr ||
+		_funcName != nullptr && _outFuncAddress == nullptr ||
+		_extension == nullptr)
+		return INVALID_ARGUMENT;
+
+	// User only passed in extension name, without function
+	if (_funcName == nullptr && _outFuncAddress == nullptr)
+	{
+		if (wglGetExtensionsStringEXT)
+		{
+			glExtensions = wglGetExtensionsStringEXT();
+
+			if (strstr(glExtensions, _extension) != NULL)
+				return SUCCESS;
+		}
+
+		if (wglGetExtensionsStringARB)
+		{
+			glExtensions = wglGetExtensionsStringARB(hdc);
+
+			if (strstr(glExtensions, _extension) != NULL)
+				return SUCCESS;
+		}
+
+		return FAILURE;
+	}
+
+	// User passed in extension name and function name
+	if (wglGetExtensionsStringEXT)
+	{
+		glExtensions = wglGetExtensionsStringEXT();
+
+		if (strstr(glExtensions, _extension) != NULL)
+		{
+			if (_funcName != NULL)
+				*_outFuncAddress = wglGetProcAddress(_funcName);
+			else
+				*_outFuncAddress = wglGetProcAddress(_extension);
+
+			return SUCCESS;
+		}
+	}
+
+	if (wglGetExtensionsStringARB)
+	{
+		glExtensions = wglGetExtensionsStringARB(hdc);
+
+		if (strstr(glExtensions, _extension) != NULL)
+		{
+			if (_funcName != NULL)
+				_outFuncAddress = (void**)wglGetProcAddress(_funcName);
+			else
+				_outFuncAddress = (void**)wglGetProcAddress(_extension);
+
+			return SUCCESS;
+		}
+
+	}
+
+#elif __linux__
+#elif __APPLE__
+#endif
+
+	return FAILURE;
+
+}
+
+GReturn GOpenGL::EnableSwapControl(bool& _toggle)
+{
+
+	if (!wglSwapIntervalEXT)
+		return FAILURE;
+
+	if (_toggle == true)
+		wglSwapIntervalEXT(1);
+	else
+		wglSwapIntervalEXT(0);
+
+	return SUCCESS;
 }
 
 GReturn GOpenGL::GetCount(unsigned int& _outCount)

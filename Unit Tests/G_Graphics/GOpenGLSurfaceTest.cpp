@@ -5,6 +5,7 @@
 
 #pragma comment(lib, "OpenGL32.lib")
 #include <gl\GL.h>
+#include "../../Source/G_Graphics/gl3.h"
 
 #elif __linux__
 
@@ -32,7 +33,7 @@ using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
 GWindow*			gWnd_OGL;
-GOpenGLSurface*	oglSurface;
+GOpenGLSurface*		oglSurface;
 
 #ifdef _WIN32
 
@@ -90,7 +91,7 @@ TEST_CASE("Testing OGLSurface Events")
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	oglSurface->GSwapBuffers();
+	oglSurface->UniversalSwapBuffers();
 
 #elif __linux__
 
@@ -98,7 +99,7 @@ TEST_CASE("Testing OGLSurface Events")
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	oglSurface->GSwapBuffers();
+	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
 #endif
@@ -110,13 +111,13 @@ TEST_CASE("Testing OGLSurface Events")
 
     glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	oglSurface->GSwapBuffers();
+	oglSurface->UniversalSwapBuffers();
 
 #elif __linux__
 
     glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	oglSurface->GSwapBuffers();
+	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
 #endif

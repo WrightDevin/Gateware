@@ -9,6 +9,13 @@ namespace GW
 	namespace GRAPHICS
 	{
 
+		enum GGraphicsInitOptions
+		{
+			COLOR_10_BIT			 = 0x01,
+			DEPTH_BUFFER_SUPPORT	 = 0x02,
+			DEPTH_STENCIL_SUPPORT	 = 0x04
+		};
+
 		static const GUUIID GOpenGLSurfaceUUIID = 
 		{
 			0x752bc1a0, 0x44d8, 0x4c03,{ 0xb2, 0xeb, 0x27, 0x4f, 0x80, 0x5c, 0xd9, 0xc9 }
@@ -22,7 +29,11 @@ namespace GW
 
 			virtual GReturn GetContext(void** _outContext) = 0;
 
-			virtual void GSwapBuffers() = 0;
+			virtual GReturn UniversalSwapBuffers() = 0;
+
+			virtual GReturn QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress) = 0;
+
+			virtual GReturn EnableSwapControl(bool& _toggle) = 0;
 
 		};
 	
