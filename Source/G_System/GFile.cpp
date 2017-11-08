@@ -71,7 +71,7 @@ class FileIO : public GW::SYSTEM::GFile
 {
 	DIR* currDirStream;  //Maintains the current directory.
 	fstream file;  //Maintains the current file (if one is open).
-	FILE* binaryFile = NULL; //for binary read and write 
+	FILE* binaryFile = NULL; //for binary read and write
 
 	string currDir;  //A cached directory path for faster fetching.
 
@@ -139,7 +139,7 @@ FileIO::~FileIO()
 {
 	//Close the current directory.
 	closedir(currDirStream);
-	
+
 	//Close the file stream.
 	if (file.is_open())
 	{
@@ -183,6 +183,7 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
+#if defined(_WIN32)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
@@ -191,7 +192,7 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
-	/*
+#elif defined(__APPLE__) || defined(__linux__)
 	//Ensure a file is not already open.
 	if (file.is_open())
 		return GW::FAILURE;
@@ -202,16 +203,18 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	//If the file failed to open the function fails.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-	*/
+#endif
 	return GW::SUCCESS;
 }
 
 GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 {
+
 	//Check for invalid arguments.
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
+#if defined(_WIN32)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
@@ -220,7 +223,7 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
-	/*
+#elif defined(__APPLE__) || defined(__linux__)
 	//Check for invalid arguments.
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
@@ -235,7 +238,7 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-	*/
+#endif
 	return GW::SUCCESS;
 }
 
@@ -245,6 +248,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	if (_file == nullptr)
 		return GW::INVALID_ARGUMENT;
 
+#if defined(_WIN32)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
@@ -253,7 +257,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
-	/*
+#elif defined(__APPLE__) || defined(__linux__)
 	//Close the current file if there is one.
 	if (file.is_open())
 		return GW::FAILURE;
@@ -264,7 +268,7 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
-	*/
+#endif
 	return GW::SUCCESS;
 }
 
