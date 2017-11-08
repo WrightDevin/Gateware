@@ -521,15 +521,15 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 #endif
 	{}
 	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); CloseHandle(hstreamEndEvent);}
-	void OnBufferEnd(void*)
+	void STDMETHODCALLTYPE OnBufferEnd(void*)
 	{
 		SetEvent(hBufferEndEvent);
 	
 	}
-	void OnVoiceProcessingPassStart(UINT32) {  }
-	void OnVoiceProcessingPassEnd() {  }
-	void OnVoiceError(void*, HRESULT) {  }
-	void OnStreamEnd()
+	void STDMETHODCALLTYPE OnVoiceProcessingPassStart(UINT32) {  }
+	void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() {  }
+	void STDMETHODCALLTYPE OnVoiceError(void*, HRESULT) {  }
+	void STDMETHODCALLTYPE OnStreamEnd()
 	{
 		SetEvent(hstreamEndEvent);
 		if (sndUser != nullptr)
@@ -539,9 +539,9 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 		}
 
 	}
-	void OnBufferStart(void*) {  }
-	void OnLoopEnd(void*) {  }
-	void OnLoopEnd(void*, HRESULT) {  }
+	void STDMETHODCALLTYPE OnBufferStart(void*) {  }
+	void STDMETHODCALLTYPE OnLoopEnd(void*) {  }
+	void STDMETHODCALLTYPE OnLoopEnd(void*, HRESULT) {  }
 
 
 };
