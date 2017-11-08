@@ -20,6 +20,87 @@ char directoryBuffer[260]; //Same size as MAX_PATH MACRO
 //Used in directory testing continued
 unsigned int dirSize;
 
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::SYSTEM::GFile *specific = nullptr;
+GW::CORE::GInterface *generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GFile core test battery", "[CreateGFile], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
+	
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGFile]")
+	{
+		CHECK(GW::SYSTEM::CreateGFile(nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGFile(&specific)));
+		REQUIRE(specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(specific->RequestInterface(notAnValidInterface, (void**)&generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&generic)));
+		REQUIRE(generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(generic) == reinterpret_cast<std::uintptr_t>(specific)); 
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(generic->IncrementCount())); // 4
+		specific->GetCount(countS);
+		generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(generic->DecrementCount())); // 2
+		// Free specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(specific->DecrementCount())); // 1
+		specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(generic->RequestInterface(notAnValidInterface, (void**)&specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(specific == nullptr); // should not have changed yet
+		// TODO: Check that generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(generic->RequestInterface(GW::SYSTEM::GFileUUIID, (void**)&specific))); // 2
+		CHECK(specific != nullptr); // specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_FAIL(generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport))); 
+		CHECK(singleSupport == nullptr); // GFile is NOT singlethreaded
+		REQUIRE(G_SUCCESS(generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		CHECK(multiSupport != nullptr); // GFile IS multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+		// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(specific->DecrementCount())); // 1
+		generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
+
+// Custom Unit Tests specific to this interface follow..
 
 TEST_CASE("Create GFile object.", "[CreateGFile]")
 {
