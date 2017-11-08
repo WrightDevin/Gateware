@@ -1,9 +1,9 @@
 ﻿project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
-add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h)
+add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog GLog.cpp ${HEADER_FILES})
 
-add_library (GFile_DLL SHARED GFile.cpp ${HEADER_FILES} direntw.h GUtility.h)
+add_library (GFile_DLL SHARED GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog_DLL SHARED GLog.cpp GFile.cpp ${HEADER_FILES})
 
 

@@ -7,6 +7,8 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+//#include <crtdbg.h>
+//#define _CRTDBG_MAO_ALLOC
 
 //Global variables for tests
 std::thread* workerThread = nullptr;
@@ -28,6 +30,9 @@ extern void Shutdown();
 
 int main(int _argc, char** _argv)
 {
+//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+//	_CrtSetBreakAlloc(8022);
+//	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 	//Kick off the thread
 	//This thread will initialize and run CATCH
 	workerThread = new std::thread(WorkerThread, _argc, _argv);
@@ -38,8 +43,8 @@ int main(int _argc, char** _argv)
 	//Wait for CATCH to finish
 	workerThread->join();
 
-
-    //sleep(1.0);
+	//std::cin.get();
+    //Sleep(1000);
 	return 0;
 }
 
