@@ -140,7 +140,7 @@ public:
 
 	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
-	GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize);
+	GReturn GetWindowHandle(void** _outWindowHandle, unsigned int _handleSize);
 
 	GReturn IsFullscreen(bool& _outIsFullscreen);
 };
@@ -1377,7 +1377,7 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize)
+GReturn AppWindow::GetWindowHandle(void** _outWindowHandle, unsigned int _handleSize)
 {
 #ifdef _WIN32
 	if (!wndHandle)
@@ -1416,7 +1416,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 		return INVALID_ARGUMENT;
 	}
 
-	_outWindowHandle = (__bridge void*)window; // should test this
+	*_outWindowHandle = window; // should test this
 
 	return SUCCESS;
 #endif

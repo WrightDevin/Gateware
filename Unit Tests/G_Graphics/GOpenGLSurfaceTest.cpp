@@ -53,7 +53,7 @@ HGLRC*				context;
 
 TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 {
-	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 500, 500, WINDOWEDBORDERED, &gWnd_OGL)));
+	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 800, 500, WINDOWEDBORDERED, &gWnd_OGL)));
 
 	CHECK(CreateGOpenGLSurface(gWnd_OGL, &oglSurface) == SUCCESS);
 }

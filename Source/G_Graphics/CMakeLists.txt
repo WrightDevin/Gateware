@@ -1,5 +1,4 @@
-﻿project(LibraryProject)
-
+project(LibraryProject)
 
 #########################################################################
 
@@ -10,10 +9,10 @@ if(APPLE)
 set(COCOA_LIBRARY Cocoa)
 set(OPENGL_LIBRARY OpenGL)
 
-message(“Adding .mm files”)
-
-add_library(GOpenGLSurface GOpenGLSurface.mm)
-add_library(GOpenGLSurface_DLL SHARED GOpenGLSurface.mm)
+message(“Adding .mm files”) 
+ 
+add_library(GOpenGLSurface GOpenGLSurface.mm) 
+add_library(GOpenGLSurface_DLL SHARED GOpenGLSurface.mm) 
 
 
 target_link_libraries(GOpenGLSurface "-framework ${COCOA_LIBRARY}")
@@ -25,7 +24,7 @@ target_link_libraries(GOpenGLSurface_DLL "-framework OpenGL")
 
 #########################################################################
 
-else(APPLE)
+elseif(APPLE)
 
 add_library (GOpenGLSurface GOpenGLSurface.cpp ${HEADER_FILES})
 
@@ -35,10 +34,7 @@ endif(APPLE)
 
 #########################################################################
 
-
 if(WIN32)
-
-
 
 add_library (GDirectX11Surface GDirectX11Surface.cpp ${HEADER_FILES})
 

@@ -251,7 +251,7 @@ namespace GW
 			*
 			*   \retval void* The void* data to the window handle.
 			*/
-			virtual GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize) = 0;
+			virtual GReturn GetWindowHandle(void** _outWindowHandle, unsigned int _handleSize) = 0;
 
 			//! Returns a bool specifying whether or not the currently opened window is fullscreen.
 			/*!

@@ -8,5 +8,5 @@
 //#import "../G_System/TestListener.cpp"
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
-#import "../G_Graphics/GOpenGLESSurfaceTest.cpp"
+#import "../G_Graphics/GOpenGLSurfaceTest.cpp"
 #import "../Common.cpp"

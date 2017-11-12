@@ -85,7 +85,8 @@ private:
 #elif __APPLE__
     
     NSOpenGLContext* OGLMcontext;
-    NSWindow* nsWnd;
+    NSWindow*        nsWnd;
+    NSView*          view;
     
 #endif
 
@@ -116,6 +117,9 @@ GOpenGL::GOpenGL()
 
 #elif __linux__
 #elif __APPLE__
+    
+    nsWnd = [NSWindow alloc];
+    
 #endif
 }
 
@@ -248,42 +252,49 @@ glViewport(0, 0, gwa.width, gwa.height);
 
 #elif __APPLE__
     
-    gWnd->GetWindowHandle(nsWnd, sizeof(NSWindow*));
+    gWnd->GetWindowHandle((void**)&nsWnd, sizeof(NSWindow*));
+    
+    unsigned int viewWidth;
+    unsigned int viewHeight;
+    unsigned int viewX;
+    unsigned int viewY;
+    
+    gWnd->GetClientWidth(viewWidth);
+    gWnd->GetClientHeight(viewHeight);
+    gWnd->GetX(viewX);
+    gWnd->GetY(viewY);
+    
+    view = [NSView alloc];
+    [view initWithFrame:NSMakeRect(viewX, viewY, viewWidth, viewHeight)];
+    
+    [nsWnd setContentView:view];
     
     NSOpenGLPixelFormatAttribute pixelAttributes[] =
     {
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
-        NSOpenGLPFAColorSize, 24,
+        NSOpenGLPFAColorSize, 32,
         NSOpenGLPFAAlphaSize, 8,
-        NSOpenGLPFADepthSize, 24,
-        NSOpenGLPFAStencilSize, 8,
-        NSOpenGLPFASampleBuffers, 0,
+        NSOpenGLPFADepthSize, 32,
         0,
     };
     
     NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
     
-    assert(pixelFormat);
-    
-    OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:NULL];
-    assert(OGLMcontext);
-    
+    OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
     [OGLMcontext makeCurrentContext];
-    //[OGLMcontext setView:nsWnd.contentView];
-    //[nsWnd.contentView display];
     
-    unsigned int temp_mWidth;
-    unsigned int temp_mHeight;
-    gWnd->GetWidth(temp_mWidth);
-    gWnd->GetHeight(temp_mHeight);
-    glViewport(0, 0, temp_mWidth, temp_mHeight);
+    [OGLMcontext setView:view];
     
-    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+    GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    
+    glViewport(viewX, viewY, viewWidth, viewHeight);
+    
+    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    result = glGetError();
     glClear(GL_COLOR_BUFFER_BIT);
-    glFlush();
-    
-    
+    result = glGetError();
+    [OGLMcontext flushBuffer];
     
 #endif
 
@@ -407,16 +418,23 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 
 GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 {
-
-	if (!wglSwapIntervalEXT)
-		return FAILURE;
-
-	if (_toggle == true)
-		wglSwapIntervalEXT(1);
-	else
-		wglSwapIntervalEXT(0);
-
-	return SUCCESS;
+    
+#if _WIN32
+    
+    if (!wglSwapIntervalEXT)
+        return FAILURE;
+    
+    if (_toggle == true)
+        wglSwapIntervalEXT(1);
+    else
+        wglSwapIntervalEXT(0);
+    
+    return SUCCESS;
+    
+#elif __linux__
+#elif __APPLE__
+#endif
+    
 }
 
 GReturn GOpenGL::GetCount(unsigned int& _outCount)

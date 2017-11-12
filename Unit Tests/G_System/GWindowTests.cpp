@@ -134,7 +134,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 #elif __linux__
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_unopenedWindow, l_windowSize)));
 #elif __APPLE__
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(m_unopenedWindow, m_windowSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle((void**)&m_unopenedWindow, m_windowSize)));
 #endif
 
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
@@ -167,7 +167,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	delete l_unopenedWindow;
 #elif __APPLE__
     REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(m_appWindow, m_windowSize)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle((void**)&m_appWindow, m_windowSize)));
     //delete m_appWindow;
     [m_appWindow release];
     [m_unopenedWindow release];
@@ -227,7 +227,7 @@ TEST_CASE("Sending events to listeners.", "")
 	appWindow->GetWindowHandle(&l_appWindow, l_windowSize);
 	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 #elif __APPLE__
-	appWindow->GetWindowHandle(&m_appWindow, m_windowSize);
+	appWindow->GetWindowHandle((void**)&m_appWindow, m_windowSize);
 	//ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
