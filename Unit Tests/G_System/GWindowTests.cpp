@@ -130,11 +130,11 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(unopenedWindow->GetY(unopenedWindowPosY)));
 
 #ifdef _WIN32
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(unopenedWindowHandle, windowHandleSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(windowHandleSize, (void**)&unopenedWindowHandle)));
 #elif __linux__
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_unopenedWindow, l_windowSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_windowSize, l_unopenedWindow)));
 #elif __APPLE__
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle((void**)&m_unopenedWindow, m_windowSize)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(m_windowSize, (void**)&m_unopenedWindow)));
 #endif
 
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
@@ -153,7 +153,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 
 #ifdef _WIN32
     REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(appWindowHandle, windowHandleSize)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(windowHandleSize, (void**)appWindowHandle)));
 	delete appWindowHandle;
 	delete unopenedWindowHandle;
 #elif __linux__
@@ -162,12 +162,12 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
     //We should write code to force window to become the true fullscreen(cover side bar).
     //Please refer this website:  http://bit.ly/2kBCgWH
 
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(l_appWindow, l_windowSize)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(l_windowSize, l_appWindow)));
 	delete l_appWindow;
 	delete l_unopenedWindow;
 #elif __APPLE__
     REQUIRE(appWindowIsFullscreen == true);
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle((void**)&m_appWindow, m_windowSize)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow)));
     //delete m_appWindow;
     [m_appWindow release];
     [m_unopenedWindow release];
@@ -221,13 +221,13 @@ TEST_CASE("Sending events to listeners.", "")
 
 #ifdef _WIN32
 	// Tell window to maximize
-	(HWND)appWindow->GetWindowHandle(&appWindowHandle, windowHandleSize);
+	appWindow->GetWindowHandle(windowHandleSize, (void**)&appWindowHandle);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
 #elif __linux__
-	appWindow->GetWindowHandle(&l_appWindow, l_windowSize);
+	appWindow->GetWindowHandle(l_windowSize, &l_appWindow);
 	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 #elif __APPLE__
-	appWindow->GetWindowHandle((void**)&m_appWindow, m_windowSize);
+	appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
 	//ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 

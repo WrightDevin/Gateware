@@ -28,7 +28,7 @@ private:
 	unsigned int refCount;
 
 	GWindow*					gWnd;
-	HWND surfaceWindow;
+	HWND						surfaceWindow;
 	ID3D11Device*				device;
 	ID3D11DeviceContext*		context;
 	IDXGISwapChain*				swapChain;
@@ -78,7 +78,7 @@ GReturn GDirectX11::Initialize()
 {
 
 	gWnd->OpenWindow();
-	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
+	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
 	gWnd->GetClientWidth(width);

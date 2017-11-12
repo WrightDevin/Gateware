@@ -46,7 +46,8 @@ class AppWindow : public GWindow
 private:
 
 #ifdef _WIN32
-	std::atomic<HWND> wndHandle;
+	//std::atomic<HWND> wndHandle;
+	HWND wndHandle;
 #elif __linux__
 	Display * display;
 	Window window;
@@ -140,7 +141,7 @@ public:
 
 	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
-	GReturn GetWindowHandle(void** _outWindowHandle, unsigned int _handleSize);
+	GReturn GetWindowHandle(unsigned int _handleSize, void** _outWindowHandle);
 
 	GReturn IsFullscreen(bool& _outIsFullscreen);
 };
@@ -1377,7 +1378,7 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetWindowHandle(void** _outWindowHandle, unsigned int _handleSize)
+GReturn AppWindow::GetWindowHandle(unsigned int _handleSize, void** _outWindowHandle)
 {
 #ifdef _WIN32
 	if (!wndHandle)
@@ -1389,6 +1390,7 @@ GReturn AppWindow::GetWindowHandle(void** _outWindowHandle, unsigned int _handle
 		return INVALID_ARGUMENT;
 	}
 	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
+	//*_outWindowHandle = &wndHandle;
 
 	return SUCCESS;
 #elif __linux__
@@ -1416,7 +1418,7 @@ GReturn AppWindow::GetWindowHandle(void** _outWindowHandle, unsigned int _handle
 		return INVALID_ARGUMENT;
 	}
 
-	*_outWindowHandle = window; // should test this
+	*_outWindowHandle = window;
 
 	return SUCCESS;
 #endif

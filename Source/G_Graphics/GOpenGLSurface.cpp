@@ -153,7 +153,7 @@ GReturn GOpenGL::Initialize()
 
 #ifdef _WIN32
 
-	gWnd->GetWindowHandle(&surfaceWindow, sizeof(HWND));
+	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
 	width = windowRect.right - windowRect.left;
@@ -239,7 +239,7 @@ GReturn GOpenGL::Initialize()
 
 #elif __linux__
 
-gWnd->GetWindowHandle(&lWnd, sizeof(LINUX_WINDOW));
+gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
 lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
 root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
 vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
@@ -252,7 +252,7 @@ glViewport(0, 0, gwa.width, gwa.height);
 
 #elif __APPLE__
     
-    gWnd->GetWindowHandle((void**)&nsWnd, sizeof(NSWindow*));
+    gWnd->GetWindowHandle(sizeof(NSWindow*), (void**)&nsWnd);
     
     unsigned int viewWidth;
     unsigned int viewHeight;

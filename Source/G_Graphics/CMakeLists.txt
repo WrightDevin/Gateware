@@ -1,4 +1,4 @@
-project(LibraryProject)
+﻿project(LibraryProject)
 
 #########################################################################
 
@@ -22,15 +22,17 @@ target_link_libraries(GOpenGLSurface "-framework ${OPENGL_LIBRARY}")
 target_link_libraries(GOpenGLSurface_DLL "-framework Cocoa")
 target_link_libraries(GOpenGLSurface_DLL "-framework OpenGL")
 
+endif(APPLE)
+
 #########################################################################
 
-elseif(APPLE)
+if(NOT APPLE)
 
 add_library (GOpenGLSurface GOpenGLSurface.cpp ${HEADER_FILES})
 
 add_library (GOpenGLSurface_DLL SHARED GOpenGLSurface.cpp ${HEADER_FILES})
 
-endif(APPLE)
+endif(NOT APPLE)
 
 #########################################################################
 
