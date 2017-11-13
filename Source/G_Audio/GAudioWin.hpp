@@ -29,7 +29,7 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 	//XAUDIO2_BUFFER myAudioBuffer = { 0 };
 	HRESULT theResult = S_OK;
 
-	wchar_t* tpath = new wchar_t[4096];
+	wchar_t tpath[4096];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
 	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
 	HANDLE theFile = CreateFile(tpath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
@@ -165,7 +165,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 
 	HRESULT theResult = S_OK;
 	HANDLE  returnedHandle;
-	wchar_t* tpath = new wchar_t[4096];
+	wchar_t tpath[4096];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, tpath, 4096);
 	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
 
@@ -895,6 +895,8 @@ GReturn WindowAppSound::StopSound()
 	 if (SoundCounter == 0)
 		 return result;
 	 SoundCounter--;
+	 //Here do not need to call "delete this" when the SoundCounter is 0
+	 //because in GAudio destructor will do that.
 	 result = SUCCESS;
 	 return result;
 }
@@ -1156,7 +1158,7 @@ GReturn WindowAppMusic::Stream()
 {
 	HRESULT theResult = S_OK;
 	DWORD errorCheck = 0;
-	wchar_t* tpath = new wchar_t[4096];
+	wchar_t tpath[4096];
 	MultiByteToWideChar(CP_ACP, 0, myFile, -1, tpath, 4096);
 	//if can't find file for unit tests, use : _wgetcwd to see where to put test file 
 
@@ -1271,7 +1273,6 @@ GReturn WindowAppMusic::Stream()
 	
 	//Closes the Handle since we are no longer using it
 	CloseHandle(theFile);
-	delete[] tpath;
 	//Updates information about playback state
 	isPlaying = false;
 	isPaused = true;
@@ -1402,6 +1403,8 @@ GReturn WindowAppMusic::StopStream()
 	 if (MusicCounter == 0)
 		 return result;
 	 MusicCounter--;
+	 //Here do not need to call "delete this" when the MusicCounter is 0
+	 //because in GAudio destructor will do that.
 	 result = SUCCESS;
 	 return result;
 }
@@ -1767,6 +1770,8 @@ GReturn WindowAppAudio::DecrementCount()
 	if (AudioCounter == 0)
 		return result;
 	AudioCounter--;
+	if (AudioCounter == 0)
+		delete this;
 	result = SUCCESS;
 	return result;
 }

@@ -121,6 +121,8 @@ GReturn Input::GetCount(unsigned int& _outCount) {
 }
 
 GReturn Input::IncrementCount() {
+	if (referenceCount == 0xFFFFFFFF)
+		return FAILURE;
 
 	referenceCount += 1;
 
@@ -129,9 +131,12 @@ GReturn Input::IncrementCount() {
 
 GReturn Input::DecrementCount() {
 
+	if (referenceCount == 0)
+		return FAILURE;
 	referenceCount -= 1;
-
+	
 	if (referenceCount == 0) {
+		delete inputThread;
 		delete this;
 	}
 

@@ -124,7 +124,7 @@ TEST_CASE("GAudio core test battery", "[CreateGAudio], [RequestInterface], [Incr
 		REQUIRE(countG == 1); // should be last remaining handle (again)
 		REQUIRE(G_SUCCESS(GAudio_generic->DecrementCount())); // 0
 
-		delete GAudio_specific;
+		//delete GAudio_specific;
 		GAudio_specific = nullptr;
 	}
 	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
@@ -213,7 +213,7 @@ TEST_CASE("GMusic core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 
 		//Free GAudio_specific
 		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 0
-		delete GAudio_specific;
+		//delete GAudio_specific;
 		GAudio_specific = nullptr;
 	}
 	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
@@ -301,7 +301,7 @@ TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 
 		//Free GAudio_specific
 		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 0
-		delete GAudio_specific;
+		//delete GAudio_specific;
 		GAudio_specific = nullptr;
 	}
 	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
@@ -728,12 +728,12 @@ TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->StopAll()));
 	checkReturned = FAILURE;
-	testAudio->DecrementCount();
 	testMusic->DecrementCount();
 	testMusic2->DecrementCount();
 	testSound->DecrementCount();
 	testSound2->DecrementCount();
-	delete testAudio;
+	testAudio->DecrementCount();
+	
 	testAudio = nullptr;
 	testMusic = nullptr;
 	testMusic2 = nullptr;

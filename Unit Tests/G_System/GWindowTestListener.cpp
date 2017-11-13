@@ -51,6 +51,8 @@ GW::GReturn GWindowTestListener::GetCount(unsigned int& _outCount)
 GW::GReturn GWindowTestListener::IncrementCount()
 {
 	//May wanna do some testing to ensure ref count is not going to overflow
+	if (m_refCount == 0xFFFFFFFF)
+		return GW::FAILURE;
 	++m_refCount;
 
 	return GW::SUCCESS;
@@ -59,7 +61,14 @@ GW::GReturn GWindowTestListener::IncrementCount()
 GW::GReturn GWindowTestListener::DecrementCount()
 {
 	//May wanna do some testing to ensure ref count is not going to underflow
+	if (m_refCount == 0) {
+		return GW::FAILURE;
+	}
 	--m_refCount;
+
+	if (m_refCount == 0) {
+		delete this;
+	}
 
 	return GW::SUCCESS;
 }

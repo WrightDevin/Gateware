@@ -1214,6 +1214,9 @@ GReturn GMatirxCpp::DecrementCount()
 	//Decrement reference count.
 	--refCount;
 
+	if (refCount == 0)
+		delete this;
+
 	return GW::SUCCESS;
 }
 

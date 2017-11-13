@@ -10,6 +10,88 @@ using namespace MATH;
 //Globals used for all test cases.
 GVector* VectorC;
 
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::MATH::GVector *GVector_specific = nullptr;
+GW::CORE::GInterface *GVector_generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GVector core test battery", "[CreateGVector], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
+
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGVector]")
+	{
+		CHECK(GW::MATH::CreateGVector(nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+		REQUIRE(G_SUCCESS(GW::MATH::CreateGVector(&GVector_specific)));
+		REQUIRE(GVector_specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly GVector_generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(GVector_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GVector_specific->RequestInterface(notAnValidInterface, (void**)&GVector_generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GVector_generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(GVector_specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&GVector_generic)));
+		REQUIRE(GVector_generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(GVector_generic) == reinterpret_cast<std::uintptr_t>(GVector_specific));
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(GVector_specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(GVector_generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(GVector_specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(GVector_generic->IncrementCount())); // 4
+		GVector_specific->GetCount(countS);
+		GVector_generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GVector_specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GVector_generic->DecrementCount())); // 2
+		// Free GVector_specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(GVector_specific->DecrementCount())); // 1
+		GVector_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		GVector_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(GVector_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GVector_generic->RequestInterface(notAnValidInterface, (void**)&GVector_specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GVector_specific == nullptr); // should not have changed yet
+		// TODO: Check that GVector_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(GVector_generic->RequestInterface(GW::MATH::GVectorUUIID, (void**)&GVector_specific))); // 2
+		CHECK(GVector_specific != nullptr); // GVector_specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_SUCCESS(GVector_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		CHECK(singleSupport != nullptr); // GVector IS singlethreaded
+		REQUIRE(G_FAIL(GVector_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
+		CHECK(multiSupport == nullptr); // GVector is NOT multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+		// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(singleSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(GVector_specific->DecrementCount())); // 1
+		GVector_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(GVector_generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
+
+// Custom Unit Tests specific to this interface follow..
+
 
 TEST_CASE("Create GVector.", "[CreateGVector]")
 {
@@ -367,6 +449,11 @@ TEST_CASE("Spline between two vectors.", "[SlerpF], [SlerpD]")
 		CHECK(G_COMPARISON_STANDARD_D(resultD.z, 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.w, 0.0));
 	}
+}
 
-	VectorC->DecrementCount();
+
+TEST_CASE("Free VectorC", "[DecrementCount]")
+{
+
+	REQUIRE(G_SUCCESS(VectorC->DecrementCount()));
 }

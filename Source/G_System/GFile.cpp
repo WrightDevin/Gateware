@@ -141,11 +141,7 @@ FileIO::~FileIO()
 	closedir(currDirStream);
 
 	//Close the file stream.
-	if (file.is_open())
-	{
-		file.flush();
-		file.close();
-	}
+	CloseFile();
 }
 
 GW::GReturn FileIO::Init()
@@ -720,6 +716,11 @@ GW::GReturn FileIO::DecrementCount()
 	//Decrement reference count.
 	--refCount;
 
+	if (refCount == 0)
+	{
+		this->CloseFile();
+		delete this;
+	}
 	return GW::SUCCESS;
 }
 

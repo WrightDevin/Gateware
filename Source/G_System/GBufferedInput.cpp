@@ -71,13 +71,17 @@ GReturn BufferedInput::GetCount(unsigned int& _outCount) {
 
 GReturn BufferedInput::IncrementCount() {
 
+	if (referenceCount == 0xFFFFFFFF)
+		return FAILURE;
+
 	referenceCount += 1;
 
 	return SUCCESS;
 }
 
 GReturn BufferedInput::DecrementCount() {
-
+	if (referenceCount == 0)
+		return FAILURE;
 	referenceCount -= 1;
 
 	if (referenceCount == 0) {

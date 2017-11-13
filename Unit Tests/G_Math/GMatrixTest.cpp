@@ -10,25 +10,88 @@ using namespace MATH;
 //Globals used for all test cases.
 GMatrix* MatrixC;
 
-GMATRIXF matrixTest_MatF1;
-GMATRIXF matrixTest_MatF2;
-GMATRIXF matrixTest_OutMatrixF;
 
-GMATRIXD matrixTest_MatD1;
-GMATRIXD matrixTest_MatD2;
-GMATRIXD matrixTest_OutMatrixD;
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::MATH::GMatrix *GMatrix_specific = nullptr;
+GW::CORE::GInterface *GMatrix_generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GMatrix core test battery", "[CreateGMatrix], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
 
-GVECTORF matrixTest_VecF;
-GVECTORF matrixTest_OutVectorF;
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGMatrix]")
+	{
+		CHECK(GW::MATH::CreateGMatrix(nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+		REQUIRE(G_SUCCESS(GW::MATH::CreateGMatrix(&GMatrix_specific)));
+		REQUIRE(GMatrix_specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly GMatrix_generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(GMatrix_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GMatrix_specific->RequestInterface(notAnValidInterface, (void**)&GMatrix_generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GMatrix_generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(GMatrix_specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&GMatrix_generic)));
+		REQUIRE(GMatrix_generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(GMatrix_generic) == reinterpret_cast<std::uintptr_t>(GMatrix_specific));
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(GMatrix_specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(GMatrix_generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(GMatrix_specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(GMatrix_generic->IncrementCount())); // 4
+		GMatrix_specific->GetCount(countS);
+		GMatrix_generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GMatrix_specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GMatrix_generic->DecrementCount())); // 2
+		// Free GMatrix_specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(GMatrix_specific->DecrementCount())); // 1
+		GMatrix_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		GMatrix_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(GMatrix_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GMatrix_generic->RequestInterface(notAnValidInterface, (void**)&GMatrix_specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GMatrix_specific == nullptr); // should not have changed yet
+		// TODO: Check that GMatrix_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(GMatrix_generic->RequestInterface(GW::MATH::GMatrixUUIID, (void**)&GMatrix_specific))); // 2
+		CHECK(GMatrix_specific != nullptr); // GMatrix_specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_SUCCESS(GMatrix_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		CHECK(singleSupport != nullptr); // GMatrix IS singlethreaded
+		REQUIRE(G_FAIL(GMatrix_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); 
+		CHECK(multiSupport == nullptr); // GMatrix is NOT multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+		// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(singleSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(GMatrix_specific->DecrementCount())); // 1
+		GMatrix_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(GMatrix_generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
 
-GVECTORD matrixTest_VecD;
-GVECTORD matrixTest_OutVectorD;
-
-GQUATERNIONF matrixTest_QuaF;
-GQUATERNIOND matrixTest_QuaD;
-
-float matrixTest_NumF = 0.5f;
-double matrixTest_NumD = 0.4;
+// Custom Unit Tests specific to this interface follow..
 
 
 
@@ -964,6 +1027,12 @@ TEST_CASE("Lerp between two matrices.", "[LerpF], [LerpD]")
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[15], 1.0));
 	}
 
-	MatrixC->DecrementCount();
 }
+
+TEST_CASE("Free MatrixC", "[DecrementCount]")
+{
+	
+	REQUIRE(G_SUCCESS(MatrixC->DecrementCount()));
+}
+
 

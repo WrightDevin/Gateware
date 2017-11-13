@@ -10,6 +10,89 @@ using namespace MATH;
 //Globals used for all test cases.
 GQuaternion* QuaternionC;
 
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::MATH::GQuaternion *GQuaternion_specific = nullptr;
+GW::CORE::GInterface *GQuaternion_generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GQuaternion core test battery", "[CreateGQuaternion], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
+
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGQuaternion]")
+	{
+		CHECK(GW::MATH::CreateGQuaternion(nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+		REQUIRE(G_SUCCESS(GW::MATH::CreateGQuaternion(&GQuaternion_specific)));
+		REQUIRE(GQuaternion_specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly GQuaternion_generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(GQuaternion_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GQuaternion_specific->RequestInterface(notAnValidInterface, (void**)&GQuaternion_generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GQuaternion_generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(GQuaternion_specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&GQuaternion_generic)));
+		REQUIRE(GQuaternion_generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(GQuaternion_generic) == reinterpret_cast<std::uintptr_t>(GQuaternion_specific));
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(GQuaternion_specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(GQuaternion_generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(GQuaternion_specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(GQuaternion_generic->IncrementCount())); // 4
+		GQuaternion_specific->GetCount(countS);
+		GQuaternion_generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GQuaternion_specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GQuaternion_generic->DecrementCount())); // 2
+		// Free GQuaternion_specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(GQuaternion_specific->DecrementCount())); // 1
+		GQuaternion_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		GQuaternion_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(GQuaternion_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GQuaternion_generic->RequestInterface(notAnValidInterface, (void**)&GQuaternion_specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GQuaternion_specific == nullptr); // should not have changed yet
+		// TODO: Check that GQuaternion_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(GQuaternion_generic->RequestInterface(GW::MATH::GQuaternionUUIID, (void**)&GQuaternion_specific))); // 2
+		CHECK(GQuaternion_specific != nullptr); // GQuaternion_specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_SUCCESS(GQuaternion_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		CHECK(singleSupport != nullptr); // GQuaternion IS singlethreaded
+		REQUIRE(G_FAIL(GQuaternion_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
+		CHECK(multiSupport == nullptr); // GQuaternion is NOT multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+		// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(singleSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(GQuaternion_specific->DecrementCount())); // 1
+		GQuaternion_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(GQuaternion_generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
+
+// Custom Unit Tests specific to this interface follow..
+
+
 
 TEST_CASE("Create GQuaternion.", "[CreateGQuaternion]")
 {
@@ -451,5 +534,11 @@ TEST_CASE("Calcuate the slerp of the quaternion.", "[SlerpF], [SlerpD]")
 		CHECK(G_COMPARISON_STANDARD_D(resultD.w, 0.8164965809277259));
 	}
 
-	QuaternionC->DecrementCount();
+	
+}
+
+TEST_CASE("Free QuaternionC", "[DecrementCount]")
+{
+
+	REQUIRE(G_SUCCESS(QuaternionC->DecrementCount()));
 }

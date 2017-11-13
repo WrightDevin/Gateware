@@ -81,7 +81,7 @@ public:
 
 };
 
-GVectorCpp::GVectorCpp()
+GVectorCpp::GVectorCpp() : refCount(1)
 {
 }
 
@@ -418,6 +418,8 @@ GReturn GVectorCpp::DecrementCount()
 
 	//Decrement reference count.
 	--refCount;
+	if (refCount == 0)
+		delete this;
 
 	return GW::SUCCESS;
 }

@@ -189,7 +189,7 @@
 		//=================================================================================
 
 		//TODO: Add any other shutdown operations you need here
-
+		//delete window;
 		exit(0); //Kill the application
 
 	#endif

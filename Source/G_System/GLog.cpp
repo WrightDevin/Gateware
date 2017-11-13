@@ -52,8 +52,8 @@ class LogFile : public GW::SYSTEM::GLog
 	condition_variable conditional;
 
 public:
-    LogFile();
-    virtual ~LogFile();
+	LogFile();
+	virtual ~LogFile();
 
 	GW::GReturn Init(const char* const _fileName);
 
@@ -162,7 +162,7 @@ GW::GReturn LogFile::Log(const char* const _log)
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';
 
 		//Create our log string.
-        logStream << "[" << timeBuffer << "] ThreadID[";
+		logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
 
@@ -209,25 +209,25 @@ GW::GReturn LogFile::LogCatergorized(const char* const _category, const char* co
 		time_t t = time(0);   //Get time now.
 		char timeBuffer[TIME_BUFFER];
 
-	#if defined(_WIN32)
+#if defined(_WIN32)
 
 		//Parse time to readable time.
 		struct tm buf;
 		localtime_s(&buf, &t);
 		asctime_s(timeBuffer, TIME_BUFFER, &buf);
 
-    #elif defined(__APPLE__) || defined(__linux__)
+#elif defined(__APPLE__) || defined(__linux__)
 
 		//Parse time to readable time.
 		string buffer(asctime(localtime(&t)));
 		strcpy_s(timeBuffer, TIME_BUFFER, buffer.c_str());
 
-	#endif
+#endif
 		//Get rid of new line added by asctime.
 		timeBuffer[strlen(timeBuffer) - 1] = '\0';
 
 		//Build the string.
-        logStream << "[" << timeBuffer << "] ThreadID[";
+		logStream << "[" << timeBuffer << "] ThreadID[";
 		logStream << GetThreadID() << "]\t";
 	}
 
@@ -456,7 +456,7 @@ void LogFile::LogWorker()
 		//If there is anything to write.
 		if (logQueue.size() != 0)
 		{
-			while(logQueue.size() != 0)
+			while (logQueue.size() != 0)
 			{
 				logFile->WriteLine(logQueue.front().c_str());
 				logQueue.pop();
@@ -466,6 +466,11 @@ void LogFile::LogWorker()
 		}
 	}
 
-	//Close the file.
-	logFile->CloseFile();
+	////Close the file.
+	//unsigned int refCount = 0;
+	//logFile->GetCount(refCount);
+	//if (refCount != 0)
+	//{
+	//	logFile->CloseFile();
+	//}
 }

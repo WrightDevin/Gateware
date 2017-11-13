@@ -1002,11 +1002,18 @@ GReturn AppWindow::DecrementCount()
 	//Check to make sure underflow will not occur.
 	if (refCount == 0)
 	{
-		delete this;
 		return FAILURE;
 	}
 
 	--refCount;
+
+	if (refCount == 0)
+	{
+#ifdef __linux__
+		delete linuxloop;
+#endif // __linux__
+		delete this;
+	}
 
 	return SUCCESS;
 }
