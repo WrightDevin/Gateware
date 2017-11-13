@@ -296,7 +296,7 @@ gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
     gWnd->GetClientHeight(cHeight);
 
 //lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
-//root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
+root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
 //vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
 //cmap = XCreateColormap((Display*)lWnd.display, root, vi->visual, AllocNone);
 //OGLXcontext = glXCreateContext((Display*)lWnd.display, vi, NULL, GL_TRUE);
@@ -371,16 +371,7 @@ XVisualInfo* vInfo = glXGetVisualFromFBConfig((Display*)lWnd.display, FBconfig[0
 ///////////////////////
 
 XSetWindowAttributes swa;
-Colormap cMap;
-swa.colormap = cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vInfo->screen), vInfo->visual, AllocNone);
-swa.background_pixmap = None;
-swa.border_pixel = 0;
-swa.event_mask = StructureNotifyMask;
-
-Window window2 = XCreateWindow((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vInfo->screen), cX, cY, cWidth, cHeight, 0,
-                               vInfo->depth, InputOutput, vInfo->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
-
-XMapWindow((Display*)lWnd.display, window2);
+Colormap cMap = XCreateColormap((Display*)lWnd.display, (Window)lWnd.window, vInfo->visual, AllocNone);
 
 /////////////////////////
 // Load GLX Extensions //
@@ -431,7 +422,9 @@ else
         return FAILURE;
     }
 
-    glXMakeCurrent((Display*)lWnd.display, window2, OGLXcontext);
+    Window test = (Window)lWnd.window;
+
+    glXMakeCurrent((Display*)lWnd.display, test, OGLXcontext);
 
     glViewport(cX, cY, cWidth, cHeight);
 
