@@ -11,14 +11,14 @@
 //Globals needed for all test cases
 GW::SYSTEM::GInput* input = nullptr;
 
-
+/*
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GInput *GInput_specific = nullptr;
 GW::CORE::GInterface *GInput_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -75,9 +75,9 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		CHECK(GInput_specific != nullptr); // GInput_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3
 		CHECK(singleSupport != nullptr); // GInput IS singlethreaded
-		REQUIRE(G_FAIL(GInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); 
+		REQUIRE(G_FAIL(GInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
 		CHECK(multiSupport == nullptr); // GInput is NOT multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
@@ -93,7 +93,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 }
 
 // Custom Unit Tests specific to this interface follow..
-
+*/
 
 /*
 TEST_CASE("CreateGInput Tests", "[CreateGInput]")

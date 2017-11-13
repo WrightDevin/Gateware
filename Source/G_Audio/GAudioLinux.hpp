@@ -52,9 +52,7 @@ const unsigned long fourDPDScc = 'sdpd';
 using std::atomic;
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
-atomic<unsigned int> AudioCounter;
-atomic<unsigned int> SoundCounter;
-atomic<unsigned int> MusicCounter;
+
 struct PCM_FORMAT_INFO
 {
     unsigned short mFormatTag = 0;
@@ -357,6 +355,7 @@ void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size
 class LinuxAppAudio;
 class LinuxAppSound : public GSound
 {
+        atomic<unsigned int> SoundCounter;
 public:
 	char * streamName = "Sound";
     int index = -1;
@@ -379,7 +378,7 @@ public:
     pa_cvolume vol;
     pa_sample_format myPulseFormat;
 
-
+    LinuxAppSound();
     GReturn Init();
     GReturn SetPCMShader(const char* _data);
     GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -404,6 +403,7 @@ public:
 
 class LinuxAppMusic : public GMusic
 {
+    atomic<unsigned int> MusicCounter;
 public:
 	char * streamName = "Sound";
 
@@ -431,7 +431,7 @@ public:
 
 
 
-
+    LinuxAppMusic();
     GReturn Init();
     GReturn SetPCMShader(const char* _data);
     GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -459,6 +459,7 @@ public:
 
 class LinuxAppAudio : public GAudio
 {
+    atomic<unsigned int> AudioCounter;
 public:
 	float maxVolume = 1;
 	int maxChannels = 0;
@@ -471,7 +472,7 @@ public:
     std::vector<LinuxAppMusic *> activeMusic;
     std::thread* streamThread = nullptr;
 
-
+    LinuxAppAudio();
     GReturn Init(int _numOfOutputs = 2);
     GReturn CreateSound(const char* _path, GSound** _outSound);
     GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
@@ -597,6 +598,7 @@ GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myCont
 
 
 //Start of GSound implementation
+LinuxAppSound::LinuxAppSound() : SoundCounter(1){}
 GReturn LinuxAppSound::Init()
 {
     GReturn result = GReturn::FAILURE;
@@ -1097,6 +1099,7 @@ GReturn LinuxAppSound::RequestInterface(const GUUIID & _interfaceID, void ** _ou
 //End of GSound implementation
 
 //Start of GMusic implementation
+LinuxAppMusic::LinuxAppMusic() :MusicCounter(1){}
 GReturn LinuxAppMusic::Init()
 {
 GReturn result = GReturn::INVALID_ARGUMENT;
@@ -1730,6 +1733,8 @@ LinuxAppMusic::~LinuxAppMusic()
 	pa_mainloop_free(myMainLoop);
 }
 //End of GMusic implementation
+LinuxAppAudio::LinuxAppAudio() : AudioCounter(1){}
+
 GReturn LinuxAppAudio::Init(int _numOfOutputs)
 {
     GReturn result = SUCCESS;

@@ -14,14 +14,14 @@
 //Global variables needed for all GBufferedInput Test Cases
 GW::SYSTEM::GBufferedInput* bufferedInput = nullptr; //Our buffered input object
 GW::CORE::GListener* listener = nullptr; //Our listener object
-
+/*
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GBufferedInput *GBufferedInput_specific = nullptr;
 GW::CORE::GInterface *GBufferedInput_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -32,6 +32,10 @@ TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestI
 	{
 		CHECK(GW::SYSTEM::CreateGBufferedInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
+#ifdef __linux__
+        window->window = (void*)&mainWindow;
+        window->display = (void*)display;
+#endif // __linux__
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)window, sizeof(window), &GBufferedInput_specific)));
 		REQUIRE(GBufferedInput_specific != nullptr);
 	}
@@ -80,7 +84,7 @@ TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestI
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GBufferedInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GBufferedInput is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GBufferedInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GBufferedInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GBufferedInput IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
@@ -97,8 +101,8 @@ TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestI
 
 // Custom Unit Tests specific to this interface follow..
 
-/*
-#ifndef __linux__ 
+
+#ifndef __linux__
 TEST_CASE("CreateGBufferedInput Tests", "[CreateGBufferedInput]")
 {
 	//Check that these cases fail appropriately

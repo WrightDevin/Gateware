@@ -52,7 +52,7 @@ GW::CORE::GInterface *GAudio_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GAudio core test battery", "[CreateGAudio], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -64,6 +64,7 @@ TEST_CASE("GAudio core test battery", "[CreateGAudio], [RequestInterface], [Incr
 		CHECK(GW::AUDIO::CreateGAudio(nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
 		REQUIRE(G_SUCCESS(GW::AUDIO::CreateGAudio(&GAudio_specific)));
+		REQUIRE(G_SUCCESS(GAudio_specific->GetCount(countS)));
 		REQUIRE(GAudio_specific != nullptr);
 	}
 	// The following tests can be copied verbatim as they are completly GAudio_generic for all interfaces
@@ -111,7 +112,7 @@ TEST_CASE("GAudio core test battery", "[CreateGAudio], [RequestInterface], [Incr
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GAudio_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GAudio is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GAudio_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GAudio_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GAudio IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
@@ -136,7 +137,7 @@ GW::CORE::GInterface *GMusic_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GMusic core test battery", "[CreateGAudio], [CreateMusicStream], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -198,7 +199,7 @@ TEST_CASE("GMusic core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GMusic_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GMusic is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GMusic IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
@@ -224,7 +225,7 @@ GW::CORE::GInterface *GSound_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -286,7 +287,7 @@ TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GSound_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GSound is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GSound IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
