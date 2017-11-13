@@ -132,7 +132,7 @@ TEST_CASE("Testing OGLSurface Events")
     // Test OGL Functions with current settings.
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__

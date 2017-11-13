@@ -55,6 +55,12 @@ private:
 	GLint			numExtensions = 0;
 	const char*		glExtensions;
 
+	#ifdef __linux__
+
+	int xerrorhandle(Display* dpy, XErrorEvent* error);
+
+	#endif // __linux__
+
 #ifdef _WIN32
 
 	HWND surfaceWindow;
@@ -289,89 +295,51 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 #elif __linux__
 
 gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
+Window* lWindow = (Window*)lWnd.window;
 
-    unsigned int cX, cY, cWidth, cHeight;
+    unsigned int cX, cY, cWidth, cHeight, wX, wY, wWidth, wHeight;
     gWnd->GetClientTopLeft(cX, cY);
     gWnd->GetClientWidth(cWidth);
     gWnd->GetClientHeight(cHeight);
+    gWnd->GetX(wX);
+    gWnd->GetY(wY);
+    gWnd->GetWidth(wWidth);
+    gWnd->GetHeight(wHeight);
 
-//lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
-root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
-//vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
-//cmap = XCreateColormap((Display*)lWnd.display, root, vi->visual, AllocNone);
-//OGLXcontext = glXCreateContext((Display*)lWnd.display, vi, NULL, GL_TRUE);
-
-//int ret = glXMakeCurrent((Display*)lWnd.display, root, OGLXcontext);
-//XGetWindowAttributes((Display*)lWnd.display, root, &gwa);
-//glViewport(0, 0, gwa.width, gwa.height);
-
-static int FBattribs[] =
+    static int FBattribs[] =
 {
-    GLX_X_RENDERABLE, GL_TRUE,
-    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
     GLX_RENDER_TYPE, GLX_RGBA_BIT,
-    GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_DOUBLEBUFFER, true,
     GLX_RED_SIZE, 8,
     GLX_GREEN_SIZE, 8,
     GLX_BLUE_SIZE, 8,
-    GLX_ALPHA_SIZE, 8,
-    GLX_DEPTH_SIZE, 0,
-    GLX_STENCIL_SIZE, 0,
-    GLX_DOUBLEBUFFER, GL_TRUE,
     None
 };
-
-if (initOptions & COLOR_10_BIT)
-{
-    FBattribs[9] = 10;
-    FBattribs[11] = 10;
-    FBattribs[13] = 10;
-    FBattribs[15] = 2;
-}
-
-if (initOptions & DEPTH_BUFFER_SUPPORT)
-{
-    FBattribs[17] = 32;
-    glEnable(GL_DEPTH_TEST);
-}
-
-if (initOptions & DEPTH_STENCIL_SUPPORT)
-{
-    FBattribs[17] = 24;
-    FBattribs[19] = 8;
-    glEnable(GL_STENCIL_TEST);
-}
-
-int glxMajor, glxMinor;
-
-if (!glXQueryVersion((Display*)lWnd.display, &glxMajor, &glxMinor) ||
-    ((glxMajor == 1) && (glxMinor < 3)) || (glxMajor < 1))
-    {
-        printf("ERROR: Invalid GLX Version.\n");
-        return FAILURE;
-    }
-
-int FBcount;
-GLXFBConfig* FBconfig = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &FBcount);
-
-if (!FBconfig)
-{
-    printf("ERROR: Failed to get FrameBuffer Config.\n");
-    return FAILURE;
-}
 
 //////////////////////////////////////////////////////////////////////////
 //              Select the Default Framebuffer Configuration            //
 //////////////////////////////////////////////////////////////////////////
 
-XVisualInfo* vInfo = glXGetVisualFromFBConfig((Display*)lWnd.display, FBconfig[0]);
+int fbCount;
+GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
+XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
 
-///////////////////////
-// Creating Colormap //
-///////////////////////
-
+Colormap cMap = XCreateColormap((Display*)lWnd.display, *lWindow, vi->visual, AllocNone);
 XSetWindowAttributes swa;
-Colormap cMap = XCreateColormap((Display*)lWnd.display, (Window)lWnd.window, vInfo->visual, AllocNone);
+swa.background_pixel = XWhitePixel((Display*)lWnd.display, 0);
+swa.border_pixel = XBlackPixel((Display*)lWnd.display, 0);
+swa.event_mask = StructureNotifyMask | PropertyChangeMask | ExposureMask;
+
+unsigned long valueMask = CWBackPixel | CWEventMask | CWColormap;
+
+int ret = XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
+
+//XStoreName((Display*)lWnd.display, testWindow, "TEST WINDOW");
+
+//XMapWindow((Display*)lWnd.display, testWindow);
+
+GLXContext oldContext = glXCreateContext((Display*)lWnd.display, vi, 0, GL_TRUE);
 
 /////////////////////////
 // Load GLX Extensions //
@@ -379,19 +347,11 @@ Colormap cMap = XCreateColormap((Display*)lWnd.display, (Window)lWnd.window, vIn
 
 glExtensions = glXQueryExtensionsString((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
 
-////////////////////
-// Create Context //
-////////////////////
-
 glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
 glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalEXT");
 
-if (QueryExtensionFunction("GLX_ARB_create_context", nullptr, nullptr) == FAILURE)
-{
-    OGLXcontext = glXCreateNewContext((Display*)lWnd.display, FBconfig[0], GLX_RGBA_TYPE, 0, true);
-}
-else
-{
+glXMakeCurrent((Display*)lWnd.display, 0, 0);
+glXDestroyContext((Display*)lWnd.display, oldContext);
 
     /////////////////////////
     // Default 3.0 Context //
@@ -405,30 +365,21 @@ else
         None
     };
 
-    ///////////////////////////
-    // OpenGL ES 3.0 Context //
-    ///////////////////////////
-
-    if (initOptions & OPENGL_ES_SUPPORT)
-        contextAttribs[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
-
-    OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, FBconfig[0], 0, true, contextAttribs);
-
-    XSync((Display*)lWnd.display, false);
-
-    if (!OGLXcontext)
+    OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
+    if (!glXMakeCurrent((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), OGLXcontext))
     {
-        printf("%s \n", "ERROR: Could not create context.");
-        return FAILURE;
+
+        printf("Error!!!!!!!!!!");
     }
 
-    Window test = (Window)lWnd.window;
+    glViewport(clientX, clientY, width, height);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    glXMakeCurrent((Display*)lWnd.display, test, OGLXcontext);
+    glXSwapBuffers((Display*)lWnd.display, *lWindow);
 
-    glViewport(cX, cY, cWidth, cHeight);
 
-}
+
 
 
 #elif __APPLE__
@@ -870,7 +821,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT, OPENGL_ES_SUPPORT);
+	Surface->Initialize(0, 0, 0, 0);
 
 	_gWin->RegisterListener(Surface, 0);
 
