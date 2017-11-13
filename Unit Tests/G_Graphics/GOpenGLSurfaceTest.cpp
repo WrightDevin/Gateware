@@ -63,15 +63,16 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
 {
 
-#ifdef _WIN32
+GLint red, green, blue, alpha, depth, stencil;
 
-	GLint red, green, blue, alpha, depth, stencil;
-	glGetIntegerv(GL_RED_BITS, &red);
-	glGetIntegerv(GL_GREEN_BITS, &green);
-	glGetIntegerv(GL_BLUE_BITS, &blue);
-	glGetIntegerv(GL_ALPHA_BITS, &alpha);
-	glGetIntegerv(GL_DEPTH_BITS, &depth);
-	glGetIntegerv(GL_STENCIL_BITS, &stencil);
+glGetIntegerv(GL_RED_BITS, &red);
+glGetIntegerv(GL_GREEN_BITS, &green);
+glGetIntegerv(GL_BLUE_BITS, &blue);
+glGetIntegerv(GL_ALPHA_BITS, &alpha);
+glGetIntegerv(GL_DEPTH_BITS, &depth);
+glGetIntegerv(GL_STENCIL_BITS, &stencil);
+
+#ifdef _WIN32
 
 	std::cout << "\n" << "OPENGL INFORMATION" << std::endl;
 	std::cout << "OPENGL VERSION: " << (char*)glGetString(GL_VERSION) << "\n";
@@ -94,7 +95,14 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
-    //printf("%s %s \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
+    //printf("%s %s \n \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
+
+    printf("RED BITS: %d \n", red);
+    printf("GREEN BITS: %d \n", green);
+    printf("BLUE BITS: %d \n", blue);
+    printf("ALPHA BITS: %d \n", alpha);
+    printf("DEPTH BITS: %d \n", depth);
+    printf("STENCIL BITS: %d \n", stencil);
 
 
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);

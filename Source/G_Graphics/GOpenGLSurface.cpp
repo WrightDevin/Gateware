@@ -79,7 +79,7 @@ private:
     // GLX FUNCTION POINTERS //
     ///////////////////////////
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
-	PFNWGLSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
+	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
     Window                  root;
     GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
@@ -307,7 +307,7 @@ gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
 
 static int FBattribs[] =
 {
-    GLX_X_RENDERABLE, true,
+    GLX_X_RENDERABLE, GL_TRUE,
     GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
     GLX_RENDER_TYPE, GLX_RGBA_BIT,
     GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
@@ -315,11 +315,32 @@ static int FBattribs[] =
     GLX_GREEN_SIZE, 8,
     GLX_BLUE_SIZE, 8,
     GLX_ALPHA_SIZE, 8,
-    GLX_DEPTH_SIZE, 24,
-    GLX_STENCIL_SIZE, 8,
-    GLX_DOUBLEBUFFER, true,
+    GLX_DEPTH_SIZE, 0,
+    GLX_STENCIL_SIZE, 0,
+    GLX_DOUBLEBUFFER, GL_TRUE,
     None
 };
+
+if (initOptions & COLOR_10_BIT)
+{
+    FBattribs[9] = 10;
+    FBattribs[11] = 10;
+    FBattribs[13] = 10;
+    FBattribs[15] = 2;
+}
+
+if (initOptions & DEPTH_BUFFER_SUPPORT)
+{
+    FBattribs[17] = 32;
+    glEnable(GL_DEPTH_TEST);
+}
+
+if (initOptions & DEPTH_STENCIL_SUPPORT)
+{
+    FBattribs[17] = 24;
+    FBattribs[19] = 8;
+    glEnable(GL_STENCIL_TEST);
+}
 
 int glxMajor, glxMinor;
 
@@ -385,10 +406,11 @@ else
     // Default 3.0 Context //
     /////////////////////////
 
-    static int contextAttribs[] =
+    int contextAttribs[] =
     {
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+        GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
         None
     };
 
@@ -396,13 +418,8 @@ else
     // OpenGL ES 3.0 Context //
     ///////////////////////////
 
-    //static int contextAttribs[] =
-    //{
-    //    GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-    //    GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-    //    GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
-    //    None
-    //};
+    if (initOptions & OPENGL_ES_SUPPORT)
+        contextAttribs[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
 
     OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, FBconfig[0], 0, true, contextAttribs);
 
@@ -631,10 +648,10 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 	if (!glXSwapIntervalEXT)
 		return FAILURE;
 
-	if (toggle == true)
-		glXSwapInterval(1);
+	if (_toggle == true)
+		glXSwapIntervalEXT((Display*)lWnd.display, (Window)lWnd.window, 1);
 	else
-		glXSwapInterval(0);
+		glXSwapIntervalEXT((Display*)lWnd.display, (Window)lWnd.window, 0);
 
 #elif __APPLE__
 #endif
@@ -860,7 +877,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(COLOR_10_BIT, 0, 0, OPENGL_ES_SUPPORT);
+	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT, OPENGL_ES_SUPPORT);
 
 	_gWin->RegisterListener(Surface, 0);
 
