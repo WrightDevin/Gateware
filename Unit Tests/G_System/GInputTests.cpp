@@ -12,6 +12,111 @@
 GW::SYSTEM::GInput* input = nullptr;
 
 /*
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::SYSTEM::GInput *GInput_specific = nullptr;
+GW::CORE::GInterface *GInput_generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
+
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGInput]")
+	{
+#ifdef _WIN32
+		HWND* wndHandle;
+#elif __linux__
+		LINUX_WINDOW linuxWnd;
+		Display * display;
+		Window window;
+#elif __APPLE__
+		NSWindow * window;
+#endif
+
+
+		CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+
+#ifdef _WIN32
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)wndHandle, sizeof(wndHandle), &GInput_specific)));
+#elif __linux__
+		Display * display;
+		Window window;
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(wndHandle), &GInput_specific)));
+
+#elif __APPLE__
+		NSWindow * window;
+#endif
+		REQUIRE(GInput_specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly GInput_generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(GInput_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GInput_specific->RequestInterface(notAnValidInterface, (void**)&GInput_generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GInput_generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(GInput_specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&GInput_generic)));
+		REQUIRE(GInput_generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(GInput_generic) == reinterpret_cast<std::uintptr_t>(GInput_specific));
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(GInput_specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(GInput_generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(GInput_specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(GInput_generic->IncrementCount())); // 4
+		GInput_specific->GetCount(countS);
+		GInput_generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GInput_specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GInput_generic->DecrementCount())); // 2
+		// Free GInput_specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(GInput_specific->DecrementCount())); // 1
+		GInput_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		GInput_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(GInput_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GInput_generic->RequestInterface(notAnValidInterface, (void**)&GInput_specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GInput_specific == nullptr); // should not have changed yet
+		// TODO: Check that GInput_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::SYSTEM::GInputUUIID, (void**)&GInput_specific))); // 2
+		CHECK(GInput_specific != nullptr); // GInput_specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_FAIL(GInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
+		CHECK(singleSupport != nullptr); // GInput IS singlethreaded
+		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		CHECK(multiSupport == nullptr); // GInput is NOT multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+							// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(singleSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(GInput_specific->DecrementCount())); // 1
+		GInput_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(GInput_generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
+
+// Custom Unit Tests specific to this interface follow..
+*/
+
+/*
 TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 {
 	//Check that these cases fail appropriately

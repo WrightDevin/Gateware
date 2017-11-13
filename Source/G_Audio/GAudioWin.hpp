@@ -22,9 +22,7 @@ const unsigned long fourDPDScc = 'sdpd';
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
 using std::atomic;
-atomic<unsigned int> AudioCounter = 0;
-atomic<unsigned int> SoundCounter = 0;
-atomic<unsigned int> MusicCounter = 0;
+
 HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
 {
 	//WAVEFORMATEXTENSIBLE myWFX = { 0 };
@@ -402,6 +400,8 @@ struct StreamingVoiceContext;
 
 class WindowAppSound : public GSound
 {
+	atomic<unsigned int> SoundCounter = 0;
+
 public:
 	int index = -1;
 	bool loops = false;
@@ -416,6 +416,7 @@ public:
 	XAUDIO2_BUFFER myAudioBuffer = { 0 };
 	StreamingVoiceContext * myContext;
 
+	WindowAppSound();
 	GReturn Init();
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -438,6 +439,7 @@ public:
 class WindowAppMusic : public GMusic
 {
 private:
+	atomic<unsigned int> MusicCounter = 0;
 	BYTE buffers[MAX_BUFFER_COUNT][STREAMING_BUFFER_SIZE];
 	OVERLAPPED overlap = { 0 };
 public:
@@ -457,6 +459,7 @@ public:
 	StreamingVoiceContext * myContext;
 	std::thread* streamThread = nullptr;
 
+	WindowAppMusic();
 	GReturn Init();
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -483,6 +486,8 @@ public:
 
 class WindowAppAudio : public GAudio
 {
+	atomic<unsigned int> AudioCounter = 0;
+
 public:
 
 	std::vector<WindowAppSound *> activeSounds;
@@ -492,6 +497,7 @@ public:
 	int maxChannels;
 	int numberOfOutputs = 2;
 	IXAudio2MasteringVoice * theMasterVoice = nullptr;
+	WindowAppAudio();
 	GReturn Init(int _numOfOutputs = 2);
 	GReturn CreateSound(const char* _path, GSound** _outSound);
 	GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
@@ -568,6 +574,10 @@ GReturn CreateVoiceContext(StreamingVoiceContext ** outcontext)
 
 	result = SUCCESS;
 	return result;
+}
+
+WindowAppSound::WindowAppSound() : SoundCounter(1)
+{
 }
 
 //Start of GSound implementation 
@@ -957,6 +967,10 @@ WindowAppSound::~WindowAppSound()
 
 }
 //End of GSound implementation
+
+WindowAppMusic::WindowAppMusic() : MusicCounter(1)
+{
+}
 
 //Start of GMusic implementation
 GReturn WindowAppMusic::Init()
@@ -1460,6 +1474,9 @@ WindowAppMusic::~WindowAppMusic()
 	myContext = nullptr;
 	audio = nullptr;
 
+}
+WindowAppAudio::WindowAppAudio() : AudioCounter(1)
+{
 }
 //End of GMusic implementation 
 //Start of GAudio implementation for Windows

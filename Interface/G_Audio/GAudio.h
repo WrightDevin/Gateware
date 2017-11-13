@@ -30,15 +30,15 @@ namespace GW
 
 
 
-		//! Unique Identifier for this interface. {AA479919-631C-488D-B278-DBF6D139988C}.
+		//! Unique Identifier for this interface. {82DE61C1-C47A-41E5-90BE-C31604DF1140}.
 		static const GUUIID GAudioUUIID =
 		{
 
-		 0xaa479919, 0x631c, 0x488d,{ 0xb2, 0x78, 0xdb, 0xf6, 0xd1, 0x39, 0x98, 0x8c } 
+			0x82de61c1, 0xc47a, 0x41e5,{ 0x90, 0xbe, 0xc3, 0x16, 0x4, 0xdf, 0x11, 0x40 }
 
 		};
 
-		class GAudio
+		class GAudio : public GW::CORE::GMultiThreaded
 		{
 		private:
 		//	virtual GReturn Destroy() = 0;

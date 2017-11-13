@@ -30,14 +30,14 @@ namespace GW
 
 
 
-		//! Unique Identifier for this interface.  {9E2F8F9D-9786-4EA2-B955-B1F9E807F816}.
+		//! Unique Identifier for this interface.  {86C6E985-BFF0-499F-80E9-F0EE2271813A}.
 		static const GUUIID GMusicUUIID =
 		{
 		
-		 0x9e2f8f9d, 0x9786, 0x4ea2,{ 0xb9, 0x55, 0xb1, 0xf9, 0xe8, 0x7, 0xf8, 0x16 }
+			0x86c6e985, 0xbff0, 0x499f,{ 0x80, 0xe9, 0xf0, 0xee, 0x22, 0x71, 0x81, 0x3a }
 
 		};
-		class GMusic
+		class GMusic : public GW::CORE::GMultiThreaded
 		{
 
 		public:
