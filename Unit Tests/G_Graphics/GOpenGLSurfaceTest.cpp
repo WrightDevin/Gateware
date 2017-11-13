@@ -12,6 +12,8 @@
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+#include <string.h>
+//#include <string>
 
 #elif __APPLE__
 #endif
@@ -70,6 +72,11 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 	CHECK(oglSurface->GetContext((void**)&context) == SUCCESS);
 
 #elif __linux__
+
+    printf("%s \n", "OPENGL INFORMATON");
+    printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
+    printf("%s %s \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
+
 
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);
 

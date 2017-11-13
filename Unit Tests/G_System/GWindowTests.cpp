@@ -132,7 +132,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 #ifdef _WIN32
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(windowHandleSize, (void**)&unopenedWindowHandle)));
 #elif __linux__
-	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_windowSize, l_unopenedWindow)));
+	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(l_windowSize, (void**)l_unopenedWindow)));
 #elif __APPLE__
 	CHECK(G_FAIL(unopenedWindow->GetWindowHandle(m_windowSize, (void**)&m_unopenedWindow)));
 #endif
@@ -162,7 +162,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
     //We should write code to force window to become the true fullscreen(cover side bar).
     //Please refer this website:  http://bit.ly/2kBCgWH
 
-	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(l_windowSize, l_appWindow)));
+	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(l_windowSize, (void**)l_appWindow)));
 	delete l_appWindow;
 	delete l_unopenedWindow;
 #elif __APPLE__
@@ -224,7 +224,7 @@ TEST_CASE("Sending events to listeners.", "")
 	appWindow->GetWindowHandle(windowHandleSize, (void**)&appWindowHandle);
 	ShowWindowAsync(appWindowHandle, SW_SHOWMAXIMIZED);
 #elif __linux__
-	appWindow->GetWindowHandle(l_windowSize, &l_appWindow);
+	appWindow->GetWindowHandle(l_windowSize, (void**)&l_appWindow);
 	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 #elif __APPLE__
 	appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);

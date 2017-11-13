@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef _WIN32
 
@@ -72,22 +73,30 @@ private:
 
 #elif __linux__
 
+#define GLX_CONTEXT_MAJOR_VERSION_ARB   0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB   0x2092
+
+    ///////////////////////////
+    // GLX FUNCTION POINTERS //
+    ///////////////////////////
+    PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
+
     Window                  root;
     GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
     XVisualInfo*            vi;
-    Colormap                cmap;
-    XSetWindowAttributes    swa;
+    //Colormap                cmap;
+    //XSetWindowAttributes    swa;
     GLXContext              OGLXcontext;
-    XWindowAttributes       gwa;
-    XEvent                  event;
+    //XWindowAttributes       gwa;
+    //XEvent                  event;
     LINUX_WINDOW            lWnd;
 
 #elif __APPLE__
-    
+
     NSOpenGLContext* OGLMcontext;
     NSWindow*        nsWnd;
     NSView*          view;
-    
+
 #endif
 
 public:
@@ -117,9 +126,9 @@ GOpenGL::GOpenGL()
 
 #elif __linux__
 #elif __APPLE__
-    
+
     nsWnd = [NSWindow alloc];
-    
+
 #endif
 }
 
@@ -201,7 +210,7 @@ GReturn GOpenGL::Initialize()
 	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(OGLcontext);
 
-	const int pixelAttributes[] = 
+	const int pixelAttributes[] =
 	{
 		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
@@ -240,35 +249,156 @@ GReturn GOpenGL::Initialize()
 #elif __linux__
 
 gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
-lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
-root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
-vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
-cmap = XCreateColormap((Display*)lWnd.display, root, vi->visual, AllocNone);
-OGLXcontext = glXCreateContext((Display*)lWnd.display, vi, NULL, GL_TRUE);
 
-int ret = glXMakeCurrent((Display*)lWnd.display, root, OGLXcontext);
-XGetWindowAttributes((Display*)lWnd.display, root, &gwa);
-glViewport(0, 0, gwa.width, gwa.height);
+    unsigned int cX, cY, cWidth, cHeight;
+    gWnd->GetClientTopLeft(cX, cY);
+    gWnd->GetClientWidth(cWidth);
+    gWnd->GetClientHeight(cHeight);
+
+//lWnd.window = (void*)DefaultRootWindow((Display*)lWnd.display);
+//root = RootWindow((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
+//vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), attributes);
+//cmap = XCreateColormap((Display*)lWnd.display, root, vi->visual, AllocNone);
+//OGLXcontext = glXCreateContext((Display*)lWnd.display, vi, NULL, GL_TRUE);
+
+//int ret = glXMakeCurrent((Display*)lWnd.display, root, OGLXcontext);
+//XGetWindowAttributes((Display*)lWnd.display, root, &gwa);
+//glViewport(0, 0, gwa.width, gwa.height);
+
+static int FBattribs[] =
+{
+    GLX_X_RENDERABLE, true,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_RENDER_TYPE, GLX_RGBA_BIT,
+    GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+    GLX_RED_SIZE, 8,
+    GLX_GREEN_SIZE, 8,
+    GLX_BLUE_SIZE, 8,
+    GLX_ALPHA_SIZE, 8,
+    GLX_DEPTH_SIZE, 24,
+    GLX_STENCIL_SIZE, 8,
+    GLX_DOUBLEBUFFER, true,
+    None
+};
+
+int glxMajor, glxMinor;
+
+if (!glXQueryVersion((Display*)lWnd.display, &glxMajor, &glxMinor) ||
+    ((glxMajor == 1) && (glxMinor < 3)) || (glxMajor < 1))
+    {
+        printf("ERROR: Invalid GLX Version.\n");
+        return FAILURE;
+    }
+
+int FBcount;
+GLXFBConfig* FBconfig = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &FBcount);
+
+if (!FBconfig)
+{
+    printf("ERROR: Failed to get FrameBuffer Config.\n");
+    return FAILURE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//              Select the Default Framebuffer Configuration            //
+//////////////////////////////////////////////////////////////////////////
+
+XVisualInfo* vInfo = glXGetVisualFromFBConfig((Display*)lWnd.display, FBconfig[0]);
+
+///////////////////////
+// Creating Colormap //
+///////////////////////
+
+XSetWindowAttributes swa;
+Colormap cMap;
+swa.colormap = cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vInfo->screen), vInfo->visual, AllocNone);
+swa.background_pixmap = None;
+swa.border_pixel = 0;
+swa.event_mask = StructureNotifyMask;
+
+Window window2 = XCreateWindow((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vInfo->screen), cX, cY, cWidth, cHeight, 0,
+                               vInfo->depth, InputOutput, vInfo->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
+
+XMapWindow((Display*)lWnd.display, window2);
+
+/////////////////////////
+// Load GLX Extensions //
+/////////////////////////
+
+glExtensions = glXQueryExtensionsString((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display));
+
+////////////////////
+// Create Context //
+////////////////////
+
+glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
+
+if (QueryExtensionFunction("GLX_ARB_create_context", nullptr, nullptr) == FAILURE)
+{
+    OGLXcontext = glXCreateNewContext((Display*)lWnd.display, FBconfig[0], GLX_RGBA_TYPE, 0, true);
+}
+else
+{
+
+    /////////////////////////
+    // Default 3.0 Context //
+    /////////////////////////
+
+    static int contextAttribs[] =
+    {
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+        None
+    };
+
+    ///////////////////////////
+    // OpenGL ES 3.0 Context //
+    ///////////////////////////
+
+    //static int contextAttribs[] =
+    //{
+    //    GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+    //    GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+    //    GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
+    //    None
+    //};
+
+    OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, FBconfig[0], 0, true, contextAttribs);
+
+    XSync((Display*)lWnd.display, false);
+
+    if (!OGLXcontext)
+    {
+        printf("%s \n", "ERROR: Could not create context.");
+        return FAILURE;
+    }
+
+    glXMakeCurrent((Display*)lWnd.display, window2, OGLXcontext);
+
+    glViewport(cX, cY, cWidth, cHeight);
+
+}
+
 
 #elif __APPLE__
-    
+
     gWnd->GetWindowHandle(sizeof(NSWindow*), (void**)&nsWnd);
-    
+
     unsigned int viewWidth;
     unsigned int viewHeight;
     unsigned int viewX;
     unsigned int viewY;
-    
+
     gWnd->GetClientWidth(viewWidth);
     gWnd->GetClientHeight(viewHeight);
     gWnd->GetX(viewX);
     gWnd->GetY(viewY);
-    
+
     view = [NSView alloc];
     [view initWithFrame:NSMakeRect(viewX, viewY, viewWidth, viewHeight)];
-    
+
     [nsWnd setContentView:view];
-    
+
     NSOpenGLPixelFormatAttribute pixelAttributes[] =
     {
         NSOpenGLPFADoubleBuffer,
@@ -278,24 +408,24 @@ glViewport(0, 0, gwa.width, gwa.height);
         NSOpenGLPFADepthSize, 32,
         0,
     };
-    
+
     NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
-    
+
     OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
     [OGLMcontext makeCurrentContext];
-    
+
     [OGLMcontext setView:view];
-    
+
     GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    
+
     glViewport(viewX, viewY, viewWidth, viewHeight);
-    
+
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     result = glGetError();
     glClear(GL_COLOR_BUFFER_BIT);
     result = glGetError();
     [OGLMcontext flushBuffer];
-    
+
 #endif
 
 	return SUCCESS;
@@ -312,9 +442,9 @@ GReturn GOpenGL::GetContext(void ** _outContext)
     *_outContext = OGLXcontext;
 
 #elif __APPLE__
-    
+
     *_outContext = OGLMcontext;
-    
+
 #endif
 
 	return SUCCESS;
@@ -328,7 +458,7 @@ GReturn GOpenGL::UniversalSwapBuffers()
 
 #elif __linux__
 
-	glXSwapBuffers((Display*)lWnd->display, (Window)lWnd->window);
+	glXSwapBuffers((Display*)lWnd.display, (Window)lWnd.window);
 
 #elif __APPLE__
 
@@ -346,8 +476,6 @@ float GOpenGL::GetAspectRatio()
 GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress)
 {
 
-#if _WIN32
-
 	// Invalid Arguments
 	if (_funcName == nullptr && _outFuncAddress != nullptr ||
 		_funcName != nullptr && _outFuncAddress == nullptr ||
@@ -357,6 +485,8 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 	// User only passed in extension name, without function
 	if (_funcName == nullptr && _outFuncAddress == nullptr)
 	{
+#ifdef _WIN32
+
 		if (wglGetExtensionsStringEXT)
 		{
 			glExtensions = wglGetExtensionsStringEXT();
@@ -374,9 +504,21 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 		}
 
 		return FAILURE;
+
+#elif __linux__
+
+        if (strstr(glExtensions, _extension) != NULL)
+            return SUCCESS;
+
+        return FAILURE;
+
+#elif __APPLE__
+#endif
 	}
 
 	// User passed in extension name and function name
+#ifdef __WIN32
+
 	if (wglGetExtensionsStringEXT)
 	{
 		glExtensions = wglGetExtensionsStringEXT();
@@ -407,34 +549,46 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 		}
 
 	}
+	return FAILURE;
 
 #elif __linux__
-#elif __APPLE__
-#endif
 
-	return FAILURE;
+    if (strstr(glExtensions, _extension) != NULL)
+    {
+
+        if (_funcName != NULL)
+            _outFuncAddress = (void**)glXGetProcAddress((const GLubyte*)_funcName);
+        else
+            _outFuncAddress = (void**)glXGetProcAddress((const GLubyte*)_extension);
+
+        return SUCCESS;
+    }
+
+    return FAILURE;
+
+#endif
 
 }
 
 GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 {
-    
+
 #if _WIN32
-    
+
     if (!wglSwapIntervalEXT)
         return FAILURE;
-    
+
     if (_toggle == true)
         wglSwapIntervalEXT(1);
     else
         wglSwapIntervalEXT(0);
-    
+
     return SUCCESS;
-    
+
 #elif __linux__
 #elif __APPLE__
 #endif
-    
+
 }
 
 GReturn GOpenGL::GetCount(unsigned int& _outCount)
@@ -515,9 +669,9 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 	{
 
 		GWINDOW_EVENT_DATA* eventStruct = (GWINDOW_EVENT_DATA*)_eventData;
-        
+
 #ifdef _WIN32
-        
+
         switch (_eventID)
         {
             case GW::SYSTEM::NOTIFY:
@@ -530,12 +684,12 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
-                
+
                 aspectRatio = maxWidth / maxHeight;
-                
+
                 glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
@@ -545,13 +699,13 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
-                
+
                 aspectRatio = maxWidth / maxHeight;
-                
+
                 glViewport(currX, currY, maxWidth, maxHeight);
             }
                 break;
@@ -561,11 +715,11 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
-                
+
                 glViewport(currX, currY, maxWidth, maxHeight);
             }
                 break;
@@ -575,9 +729,9 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             }
                 break;
         }
-        
+
 #elif __linux__
-        
+
         switch (_eventID)
         {
             case GW::SYSTEM::NOTIFY:
@@ -590,12 +744,12 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
-                
+
                 aspectRatio = maxWidth / maxHeight;
-                
+
                 glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
@@ -605,13 +759,13 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
-                
+
                 aspectRatio = maxWidth / maxHeight;
-                
+
                 glViewport(currX, currY, maxWidth, maxHeight);
             }
                 break;
@@ -621,11 +775,11 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int maxHeight;
                 unsigned int currX;
                 unsigned int currY;
-                
+
                 gWnd->GetWidth(maxWidth);
                 gWnd->GetHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
-                
+
                 glViewport(currX, currY, maxWidth, maxHeight);
             }
                 break;
@@ -635,7 +789,7 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             }
                 break;
         }
-        
+
 #elif __APPLE__
 #endif
 
