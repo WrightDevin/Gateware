@@ -1,4 +1,5 @@
-#add_subdirectory(G_System)
+﻿#add_subdirectory(G_System)
+#add_subdirectory(G_Math)
 #add_subdirectory(G_Audio)
 #add_subdirectory(G_Graphics)
 message(“Unit Test Generation”)
@@ -39,10 +40,13 @@ G_System/GBufferedInputTestListener.cpp
 G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
 G_Graphics/GOpenGLESSurfaceTest.cpp
+G_Math/GMatrixTest.cpp
+G_Math/GVectorTest.cpp
+G_Math/GQuaternionTest.cpp
 G_Audio/GAudioTests.cpp)
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface GAudio ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLESSurface GAudio  GMatrix GVector GQuaternion${CMAKE_THREAD_LIBS_INIT})
 
 
 elseif(APPLE)
@@ -64,8 +68,9 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GAudio GOpenGLESSurface GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GAudio ${CMAKE_THREAD_LIBS_INIT})
+
 
 endif()
 
