@@ -11,7 +11,7 @@
 //Globals needed for all test cases
 GW::SYSTEM::GInput* input = nullptr;
 
-/*
+
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GInput *GInput_specific = nullptr;
 GW::CORE::GInterface *GInput_generic = nullptr;
@@ -27,30 +27,9 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
 	SECTION("Creation Tests", "[CreateGInput]")
 	{
-#ifdef _WIN32
-		HWND* wndHandle;
-#elif __linux__
-		LINUX_WINDOW linuxWnd;
-		Display * display;
-		Window window;
-#elif __APPLE__
-		NSWindow * window;
-#endif
-
-
 		CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
-
-#ifdef _WIN32
-		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)wndHandle, sizeof(wndHandle), &GInput_specific)));
-#elif __linux__
-		Display * display;
-		Window window;
-		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(wndHandle), &GInput_specific)));
-
-#elif __APPLE__
-		NSWindow * window;
-#endif
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(window), &GInput_specific)));
 		REQUIRE(GInput_specific != nullptr);
 	}
 	// The following tests can be copied verbatim as they are completly GInput_generic for all interfaces
@@ -96,14 +75,14 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		CHECK(GInput_specific != nullptr); // GInput_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_FAIL(GInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
+		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
 		CHECK(singleSupport != nullptr); // GInput IS singlethreaded
-		REQUIRE(G_SUCCESS(GInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_FAIL(GInput_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); 
 		CHECK(multiSupport == nullptr); // GInput is NOT multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
 		CHECK(countS == 3); // three valid handles should exist now
-							// Free all handles, all should succeed
+		// Free all handles, all should succeed
 		REQUIRE(G_SUCCESS(singleSupport->DecrementCount())); // 2
 		REQUIRE(G_SUCCESS(GInput_specific->DecrementCount())); // 1
 		GInput_generic->GetCount(countG);
@@ -114,7 +93,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 }
 
 // Custom Unit Tests specific to this interface follow..
-*/
+
 
 /*
 TEST_CASE("CreateGInput Tests", "[CreateGInput]")

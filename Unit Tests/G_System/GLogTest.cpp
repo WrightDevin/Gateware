@@ -8,6 +8,90 @@
 GW::SYSTEM::GLog* m_log;
 GW::SYSTEM::GFile* m_testFile; //Required for one of the create functions
 
+
+// ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
+GW::SYSTEM::GLog *GLog_specific = nullptr;
+GW::CORE::GInterface *GLog_generic = nullptr;
+// CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
+TEST_CASE("GLog core test battery", "[CreateGLog], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
+{
+	// CATCH WARNING!!! 
+	// Any variables declared here will be REPLICATED to EACH SECTION.
+	// If you need connectivity between sections your variables will need to be global or static.
+	unsigned int countS = 0, countG = 0;
+	const GW::GUUIID notAnValidInterface = { 0, };
+
+	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
+	SECTION("Creation Tests", "[CreateGLog]")
+	{
+		CHECK(GW::SYSTEM::CreateGLog("Something" ,nullptr) == GW::INVALID_ARGUMENT);
+		// TODO: Add additonal Creation parameter testing here as nessasary.
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./DONOTDELETE.txt", &GLog_specific)));
+		REQUIRE(GLog_specific != nullptr);
+	}
+	// The following tests can be copied verbatim as they are completly GLog_generic for all interfaces
+	SECTION("Interface Request Tests", "[RequestInterface]")
+	{
+		CHECK(GLog_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GLog_specific->RequestInterface(notAnValidInterface, (void**)&GLog_generic) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GLog_generic == nullptr); // should not have changed yet
+		REQUIRE(G_SUCCESS(GLog_specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&GLog_generic)));
+		REQUIRE(GLog_generic != nullptr);
+		// memory addresses should match
+		REQUIRE(reinterpret_cast<std::uintptr_t>(GLog_generic) == reinterpret_cast<std::uintptr_t>(GLog_specific));
+	}
+	// Test reference counting behavior
+	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
+	{
+		REQUIRE(G_SUCCESS(GLog_specific->GetCount(countS)));
+		REQUIRE(G_SUCCESS(GLog_generic->GetCount(countG)));
+		CHECK(countS == countG);
+		CHECK(countS == 2); // should be exactly 2 references at this point
+		REQUIRE(G_SUCCESS(GLog_specific->IncrementCount())); // 3
+		REQUIRE(G_SUCCESS(GLog_generic->IncrementCount())); // 4
+		GLog_specific->GetCount(countS);
+		GLog_generic->GetCount(countG);
+		CHECK(countS == countG);
+		CHECK(countS == 4); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GLog_specific->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GLog_generic->DecrementCount())); // 2
+		// Free GLog_specific pointer (user simulation of interface deletion)
+		CHECK(G_SUCCESS(GLog_specific->DecrementCount())); // 1
+		GLog_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
+		GLog_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle
+	}
+	// Finally test interface Forward Compatibilty
+	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
+	{
+		CHECK(GLog_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GLog_generic->RequestInterface(notAnValidInterface, (void**)&GLog_specific) == GW::INTERFACE_UNSUPPORTED);
+		CHECK(GLog_specific == nullptr); // should not have changed yet
+		// TODO: Check that GLog_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
+		REQUIRE(G_SUCCESS(GLog_generic->RequestInterface(GW::SYSTEM::GLogUUIID, (void**)&GLog_specific))); // 2
+		CHECK(GLog_specific != nullptr); // GLog_specific pointer is valid again
+		GW::CORE::GSingleThreaded *singleSupport = nullptr;
+		GW::CORE::GMultiThreaded *multiSupport = nullptr;
+		REQUIRE(G_FAIL(GLog_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
+		CHECK(singleSupport == nullptr); // GLog is NOT singlethreaded
+		REQUIRE(G_SUCCESS(GLog_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		CHECK(multiSupport != nullptr); // GLog IS multithreaded
+		// Check final count VS expectations
+		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
+		CHECK(countS == 3); // three valid handles should exist now
+		// Free all handles, all should succeed
+		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 2
+		REQUIRE(G_SUCCESS(GLog_specific->DecrementCount())); // 1
+		GLog_generic->GetCount(countG);
+		REQUIRE(countG == 1); // should be last remaining handle (again)
+		REQUIRE(G_SUCCESS(GLog_generic->DecrementCount())); // 0
+	}
+	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+}
+
+// Custom Unit Tests specific to this interface follow..
+
+
 //Testing creating a GLog
 TEST_CASE("Creating a GLog.", "[CreateGLog]")
 {
