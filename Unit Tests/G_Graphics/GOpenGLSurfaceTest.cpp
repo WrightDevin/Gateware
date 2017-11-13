@@ -65,9 +65,28 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 
 #ifdef _WIN32
 
-	std::cout << "\n" << "OPENGL INFORMATION" << "\n\n";
-	std::cout << "OPENGL VERSION: " << (char*)glGetString(GL_VERSION) << std::endl;
-	std::cout << "OPENGL RENDERER: " << (char*)glGetString(GL_RENDERER) << std::endl;
+	GLint red, green, blue, alpha, depth, stencil;
+	glGetIntegerv(GL_RED_BITS, &red);
+	glGetIntegerv(GL_GREEN_BITS, &green);
+	glGetIntegerv(GL_BLUE_BITS, &blue);
+	glGetIntegerv(GL_ALPHA_BITS, &alpha);
+	glGetIntegerv(GL_DEPTH_BITS, &depth);
+	glGetIntegerv(GL_STENCIL_BITS, &stencil);
+
+	std::cout << "\n" << "OPENGL INFORMATION" << std::endl;
+	std::cout << "OPENGL VERSION: " << (char*)glGetString(GL_VERSION) << "\n";
+	//std::cout << "OPENGL RENDERER: " << (char*)glGetString(GL_RENDERER) << "\n";
+
+	std::cout << "\n" << "OPENGL: COLOR INFORMATION" << std::endl;
+	//std::cout << "\n" << "STRING TEST: " << (char*)glGetString(GL_RED_INTEGER) << std::endl;
+	std::cout << "RED BITS: " << red << "\n";
+	std::cout << "GREEN BITS: " << green << "\n";
+	std::cout << "BLUE BITS: " << blue << "\n";
+	std::cout << "ALPHA BITS: " << alpha << std::endl;
+
+	std::cout << "\n" << "OPENGL: DEPTH INFORMATION" << std::endl;
+	std::cout << "DEPTH BITS: " << depth << "\n";
+	std::cout << "STENCIL BITS: " << stencil << "\n";
 
 	CHECK(oglSurface->GetContext((void**)&context) == SUCCESS);
 
@@ -75,7 +94,7 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
-    printf("%s %s \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
+    //printf("%s %s \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
 
 
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);

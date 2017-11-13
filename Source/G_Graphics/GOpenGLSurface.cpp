@@ -1,6 +1,5 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLSurface.h"
-#include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 #include <iostream>
 #include <stdio.h>
@@ -80,6 +79,7 @@ private:
     // GLX FUNCTION POINTERS //
     ///////////////////////////
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
+	PFNWGLSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
     Window                  root;
     GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
@@ -102,7 +102,7 @@ private:
 public:
 	GOpenGL();
 	virtual ~GOpenGL();
-	GReturn Initialize();
+	GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext);
 	GReturn	GetContext(void** _outContext);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
@@ -155,10 +155,11 @@ void GOpenGL::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GOpenGL::Initialize()
+GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext)
 {
 
     gWnd->OpenWindow();
+	unsigned char initOptions = _color10bit | _depthBuffer | _depthStencil | _esContext;
 
 #ifdef _WIN32
 
@@ -178,9 +179,10 @@ GReturn GOpenGL::Initialize()
 		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 		PFD_TYPE_RGBA,
 		32,
-		0, 0, 0, 0, 0, 0,
-		0,
-		0,
+		10, 0,
+		10, 0,
+		10, 0,
+		2, 0,
 		0,
 		0, 0, 0, 0,
 		24,
@@ -192,7 +194,6 @@ GReturn GOpenGL::Initialize()
 	};
 
 	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
-	UINT pixelCount = 0;
 	SetPixelFormat(hdc, pixelFormat, &pfd);
 
 	OGLcontext = wglCreateContext(hdc);
@@ -208,39 +209,78 @@ GReturn GOpenGL::Initialize()
 	QueryExtensionFunction("WGL_ARB_extensions_string", "wglChoosePixelFormatARB", (void**)&wglChoosePixelFormatARB);
 
 	wglMakeCurrent(NULL, NULL);
+	ReleaseDC(surfaceWindow, hdc);
 	wglDeleteContext(OGLcontext);
 
-	const int pixelAttributes[] =
+	int pixelAttributes[] =
 	{
 		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-		WGL_COLOR_BITS_ARB, 32,
-		WGL_DEPTH_BITS_ARB, 16,
+		WGL_RED_BITS_ARB, 8,
+		WGL_GREEN_BITS_ARB, 8,
+		WGL_BLUE_BITS_ARB, 8,
+		WGL_ALPHA_BITS_ARB, 8,
 		WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
 		WGL_SAMPLE_BUFFERS_ARB, GL_FALSE,
 		WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 		0,
 	};
 
+	if (initOptions & COLOR_10_BIT)
+	{
+		pixelAttributes[5] = 10;
+		pixelAttributes[7] = 10;
+		pixelAttributes[9] = 10;
+		pixelAttributes[11] = 2;
+
+		//GLuint framebuffer;
+		//glGenFramebuffers(1, &framebuffer);
+		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+		//GLuint renderedTexture;
+		//glGenTextures(1, &renderedTexture);
+		//glBindTexture(GL_TEXTURE_2D, renderedTexture);
+
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		////glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture, 0);
+		//GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+		//glDrawBuffers(1, DrawBuffers);
+
+	}
+
+	if (initOptions & DEPTH_BUFFER_SUPPORT)
+		pixelAttributes[13] = 32;
+
+	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	{
+		pixelAttributes[13] = 24;
+		pixelAttributes[15] = 8;
+	}
+
+	UINT pixelCount = 0;
+
 	wglChoosePixelFormatARB(hdc, pixelAttributes, NULL, 1, &pixelFormat, &pixelCount);
 	SetPixelFormat(hdc, pixelFormat, &pfd);
 
 	// Create an OpenGL 3.0 Context
-	const int contextAttributes[] =
+	int contextAttributes[] =
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 		WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
 
-	// Create an OpenGL ES 3.0 Context
-	//const int contextAttributes[] =
-	//{
-	//	WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-	//	WGL_CONTEXT_MINOR_VERSION_ARB, 0,
-	//	WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
-	//	0
-	//};
+	if (initOptions & OPENGL_ES_SUPPORT)
+	{
+		// Create an OpenGL ES 3.0 Context
+		contextAttributes[5] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
+	}
+
 
 	OGLcontext = wglCreateContextAttribsARB(hdc, 0, contextAttributes);
 	wglMakeCurrent(hdc, OGLcontext);
@@ -332,6 +372,7 @@ glExtensions = glXQueryExtensionsString((Display*)lWnd.display, DefaultScreen((D
 ////////////////////
 
 glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
+glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalEXT");
 
 if (QueryExtensionFunction("GLX_ARB_create_context", nullptr, nullptr) == FAILURE)
 {
@@ -517,7 +558,7 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 	}
 
 	// User passed in extension name and function name
-#ifdef __WIN32
+#ifdef _WIN32
 
 	if (wglGetExtensionsStringEXT)
 	{
@@ -586,6 +627,15 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
     return SUCCESS;
 
 #elif __linux__
+
+	if (!glXSwapIntervalEXT)
+		return FAILURE;
+
+	if (toggle == true)
+		glXSwapInterval(1);
+	else
+		glXSwapInterval(0);
+
 #elif __APPLE__
 #endif
 
@@ -810,7 +860,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize();
+	Surface->Initialize(COLOR_10_BIT, 0, 0, OPENGL_ES_SUPPORT);
 
 	_gWin->RegisterListener(Surface, 0);
 

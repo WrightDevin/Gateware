@@ -2,6 +2,7 @@
 
 #pragma comment (lib, "D3D11.lib")
 #include <d3d11.h>
+#include <iostream>
 
 ///=============================================================================
 //==============================TEST CASES======================================
@@ -16,13 +17,15 @@ using namespace SYSTEM;
 using namespace GRAPHICS;
 
 // GLOBAL VARIABLES
-GWindow*				gWnd_DX;
-GDirectX11Surface*		dx11Surface = nullptr;
-ID3D11Device*			device;
-ID3D11DeviceContext*	context;
-IDXGISwapChain*			swapChain;
-unsigned int			surfaceWidth;
-unsigned int			surfaceHeight;
+GWindow*					gWnd_DX;
+GDirectX11Surface*			dx11Surface = nullptr;
+ID3D11Device*				device;
+ID3D11DeviceContext*		context;
+IDXGISwapChain*				swapChain;
+ID3D11DepthStencilView*		zBuffer;
+ID3D11DepthStencilState*	stencilState;
+unsigned int				surfaceWidth;
+unsigned int				surfaceHeight;
 
 // TEST CASES
 
@@ -38,6 +41,32 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	CHECK(dx11Surface->GetDevice((void**)&device) == SUCCESS);
 	CHECK(dx11Surface->GetContext((void**)&context) == SUCCESS);
 	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);
+
+	DXGI_SWAP_CHAIN_DESC tempDesc;
+	swapChain->GetDesc(&tempDesc);
+	char* format;
+
+	if (tempDesc.BufferDesc.Format == DXGI_FORMAT_R8G8B8A8_UNORM)
+		format = "8-BIT COLOR (DXGI_FORMAT_R8G8B8A8_UNORM)";
+	else if (tempDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM)
+		format = "10-BIT COLOR (DXGI_FORMAT_R10G10B10A2_UNORM)";
+
+	std::cout << "\n" << "DIRECTX 11 INFORMATION" << "\n" << std::endl;
+	std::cout << "COLOR FORMAT: " << format << "\n";
+	std::cout << "DEPTH BUFFER ENABLED: ";
+
+	if (dx11Surface->GetDepthStencilView((void**)&zBuffer) == SUCCESS)
+		std::cout << "YES" << "\n";
+	else
+		std::cout << "NO" << "\n";
+
+	std::cout << "DEPTH STENCIL ENABLED: ";
+
+	if (dx11Surface->GetDepthStencilState((void**)&stencilState) == SUCCESS)
+		std::cout << "YES" << "\n";
+	else
+		std::cout << "NO" << "\n";
+
 }
 
 TEST_CASE("Testing Window Events.")

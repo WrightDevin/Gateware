@@ -1,5 +1,6 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GDirectX11Surface.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 
 
@@ -33,7 +34,8 @@ private:
 	ID3D11DeviceContext*		context;
 	IDXGISwapChain*				swapChain;
 	ID3D11RenderTargetView*		rtv;
-	ID3D11DepthStencilView*		zBuffer;
+	ID3D11DepthStencilView*		zBuffer = nullptr;
+	ID3D11DepthStencilState*	stencilState = nullptr;
 	unsigned int				width;
 	unsigned int				height;
 	float						aspectRatio;
@@ -42,7 +44,7 @@ public:
 	GDirectX11();
 	virtual ~GDirectX11();
 	void	SetGWindow(GWindow* _window);
-	GReturn Initialize();
+	GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil);
 	GReturn	GetAspectRatio(float& _outRatio);
 
 	GReturn GetDevice(void** _outDevice);
@@ -50,6 +52,7 @@ public:
 	GReturn GetSwapchain(void** _outSwapchain);
 	GReturn GetRenderTarget(void** _outRenderTarget);
 	GReturn GetDepthStencilView(void** _outDepthStencilView);
+	GReturn GetDepthStencilState(void** _outStencilState);
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -74,13 +77,14 @@ void GDirectX11::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GDirectX11::Initialize()
+GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil)
 {
+	unsigned char initOptions = _color10bit | _depthBuffer | _depthStencil;
 
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
 	RECT windowRect;
-	GetWindowRect(surfaceWindow, &windowRect);
+	GetWindowRect(surfaceWindow,&windowRect);
 	gWnd->GetClientWidth(width);
 	gWnd->GetClientHeight(height);
 	aspectRatio = width / height;
@@ -104,7 +108,12 @@ GReturn GDirectX11::Initialize()
 
 	DXGI_SWAP_CHAIN_DESC swapChainStruct;
 	swapChainStruct.BufferCount = 1;
-	swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	if (initOptions & _color10bit)
+		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+	else
+		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
 	swapChainStruct.BufferDesc.Width = width;
 	swapChainStruct.BufferDesc.Height = height;
 	ZeroMemory(&swapChainStruct.BufferDesc.RefreshRate, sizeof(swapChainStruct.BufferDesc.RefreshRate));
@@ -135,28 +144,84 @@ GReturn GDirectX11::Initialize()
 
 	ID3D11Resource* buffer;
 	swapChain->GetBuffer(0, __uuidof(buffer), reinterpret_cast<void**>(&buffer));
-	device->CreateRenderTargetView(buffer, NULL, &rtv);
+	device->CreateRenderTargetView(buffer, NULL,&rtv);
 
 	buffer->Release();
 
-	D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
-	depthTextureDesc.Width = width;
-	depthTextureDesc.Height = height;
-	depthTextureDesc.ArraySize = 1;
-	depthTextureDesc.MipLevels = 1;
-	depthTextureDesc.SampleDesc.Count = 1;
-	depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	if (initOptions& DEPTH_BUFFER_SUPPORT)
+	{
+		/////////////////////////////////
+		// Create Depth Buffer Texture //
+		/////////////////////////////////
 
-	ID3D11Texture2D* depthBuffer;
-	device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
+		D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
+		depthTextureDesc.Width = width;
+		depthTextureDesc.Height = height;
+		depthTextureDesc.ArraySize = 1;
+		depthTextureDesc.MipLevels = 1;
+		depthTextureDesc.SampleDesc.Count = 1;
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
-	depthBuffer->Release();
+		if (initOptions & DEPTH_STENCIL_SUPPORT)
+			depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		else
+			depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;		
+		
+		depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+		ID3D11Texture2D* depthBuffer;
+		device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
+
+		///////////////////////////////////////////////
+		// Create Depth Stencil State (if requested) // 
+		///////////////////////////////////////////////
+
+		if (initOptions & DEPTH_STENCIL_SUPPORT)
+		{
+			D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
+			ZeroMemory(&depthStencilStateDesc, sizeof(depthStencilStateDesc));
+
+			depthStencilStateDesc.DepthEnable = true;
+			depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+			depthStencilStateDesc.StencilEnable = true;
+			depthStencilStateDesc.StencilReadMask = 0xFF;
+			depthStencilStateDesc.StencilWriteMask = 0xFF;
+
+			depthStencilStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			depthStencilStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+			depthStencilStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			depthStencilStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+			
+			depthStencilStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			depthStencilStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+			depthStencilStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			depthStencilStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+			device->CreateDepthStencilState(&depthStencilStateDesc,&stencilState);
+
+		}
+
+		///////////////////////////////
+		// Create Depth Stencil View //
+		///////////////////////////////
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+
+		if (initOptions & DEPTH_STENCIL_SUPPORT)
+			depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		else
+			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+		hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
+		depthBuffer->Release();
+	}
+
+	/////////////////////////
+	// Initialize Viewport //
+	/////////////////////////
 
 	D3D11_VIEWPORT viewport;
 	viewport.Width = width;
@@ -165,20 +230,26 @@ GReturn GDirectX11::Initialize()
 	viewport.MaxDepth = 1.0f;
 	gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
-	context->RSSetViewports(1, &viewport);
+	context->RSSetViewports(1,&viewport);
 
 	return SUCCESS;
 }
 
 GReturn GDirectX11::GetDevice(void** _outDevice)
 {
+	if (device == nullptr)
+		return FAILURE;
+
 	*_outDevice = device;
 
 	return SUCCESS;
 }
 
-GReturn GDirectX11::GetContext(void ** _outContext)
+GReturn GDirectX11::GetContext(void** _outContext)
 {
+	if (context == nullptr)
+		return FAILURE;
+
 	*_outContext = context;
 
 	return SUCCESS;
@@ -186,6 +257,9 @@ GReturn GDirectX11::GetContext(void ** _outContext)
 
 GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 {
+	if (swapChain == nullptr)
+		return FAILURE;
+
 	*_outSwapchain = swapChain;
 
 	return SUCCESS;
@@ -193,14 +267,30 @@ GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 
 GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
 {
+	if (rtv == nullptr)
+		return FAILURE;
+
 	*_outRenderTarget = rtv;
 
 	return SUCCESS;
 }
 
-GReturn GDirectX11::GetDepthStencilView(void ** _outDepthStencilView)
+GReturn GDirectX11::GetDepthStencilView(void** _outDepthStencilView)
 {
+	if (zBuffer == nullptr)
+		return FAILURE;
+
 	*_outDepthStencilView = zBuffer;
+
+	return SUCCESS;
+}
+
+GReturn GDirectX11::GetDepthStencilState(void** _outStencilState)
+{
+	if (stencilState == nullptr)
+		return FAILURE;
+
+	*_outStencilState = stencilState;
 
 	return SUCCESS;
 }
@@ -212,7 +302,7 @@ GReturn GDirectX11::GetAspectRatio(float& _outRatio)
 	return SUCCESS;
 }
 
-GReturn GDirectX11::GetCount(unsigned int & _outCount)
+GReturn GDirectX11::GetCount(unsigned int& _outCount)
 {
 	_outCount = refCount;
 
@@ -242,7 +332,7 @@ GReturn GDirectX11::DecrementCount()
 	return SUCCESS;
 }
 
-GReturn GDirectX11::RequestInterface(const GUUIID & _interfaceID, void ** _outputInterface)
+GReturn GDirectX11::RequestInterface(const GUUIID& _interfaceID, void** _outputInterface)
 {
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
@@ -283,7 +373,7 @@ GReturn GDirectX11::RequestInterface(const GUUIID & _interfaceID, void ** _outpu
 	return SUCCESS;
 }
 
-GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
+GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
 {
 
 	if (_senderInerface == GWindowUUIID)
@@ -324,7 +414,7 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 				if (result != S_OK)
 					return FAILURE;
 
-				result = device->CreateRenderTargetView(newRTVBuffer, NULL, &rtv);
+				result = device->CreateRenderTargetView(newRTVBuffer, NULL,&rtv);
 
 				if (result != S_OK)
 					return FAILURE;
@@ -339,13 +429,13 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 				depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 				ID3D11Texture2D* depthBuffer;
-				device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
+				device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
 
 				D3D11_DEPTH_STENCIL_VIEW_DESC newDSVdesc;
 				ZeroMemory(&newDSVdesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 				newDSVdesc.Format = DXGI_FORMAT_D32_FLOAT;
 				newDSVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-				device->CreateDepthStencilView(depthBuffer, &newDSVdesc, &zBuffer);
+				device->CreateDepthStencilView(depthBuffer,&newDSVdesc,&zBuffer);
 
 				newRTVBuffer->Release();
 
@@ -356,7 +446,7 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 				viewport.MaxDepth = 1.0f;
 				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
-				context->RSSetViewports(1, &viewport);
+				context->RSSetViewports(1,&viewport);
 			}
 
 		}
@@ -381,7 +471,7 @@ GReturn GDirectX11::OnEvent(const GUUIID & _senderInerface, unsigned int _eventI
 			viewport.TopLeftX = (float)newX / viewport.Width;
 			viewport.TopLeftY = (float)newY / viewport.Height;
 
-			context->RSSetViewports(1, &viewport);
+			context->RSSetViewports(1,&viewport);
 		}
 			break;
 		case GW::SYSTEM::DESTROY:
@@ -409,7 +499,7 @@ GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11
 
 	GDirectX11* Surface = new GDirectX11();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize();
+	Surface->Initialize(COLOR_10_BIT, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT);
 
 	_gWin->RegisterListener(Surface, 0);
 

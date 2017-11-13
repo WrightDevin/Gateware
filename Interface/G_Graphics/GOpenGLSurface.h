@@ -3,18 +3,12 @@
 
 #include "../../Interface/G_Core/GListener.h"
 #include "../../Interface/G_System/GWindow.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 
 namespace GW
 {
 	namespace GRAPHICS
 	{
-
-		enum GGraphicsInitOptions
-		{
-			COLOR_10_BIT			 = 0x01,
-			DEPTH_BUFFER_SUPPORT	 = 0x02,
-			DEPTH_STENCIL_SUPPORT	 = 0x04
-		};
 
 		static const GUUIID GOpenGLSurfaceUUIID = 
 		{
@@ -25,7 +19,7 @@ namespace GW
 		{
 
 		public:
-			virtual GReturn Initialize() = 0;
+			virtual GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext) = 0;
 
 			virtual GReturn GetContext(void** _outContext) = 0;
 

@@ -19,6 +19,8 @@ namespace GW
 
 		public:
 
+			virtual GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil) = 0;
+
 			virtual GReturn GetDevice(void** _outDevice) = 0;
 
 			virtual GReturn GetContext(void** _outContext) = 0;
@@ -28,6 +30,8 @@ namespace GW
 			virtual GReturn GetRenderTarget(void** _outRenderTarget) = 0;
 
 			virtual GReturn GetDepthStencilView(void** _outDepthStencilView) = 0;
+
+			virtual GReturn GetDepthStencilState(void** _outStencilState) = 0;
 
 		};
 

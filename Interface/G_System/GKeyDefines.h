@@ -143,7 +143,18 @@ namespace GW
 		};
 
 #pragma pack(pop)
-	} // end CORE namespace
+	} // end SYSTEM namespace
+
+	namespace GRAPHICS
+	{
+		enum GGraphicsInitOptions
+		{
+			COLOR_10_BIT = 0x01,
+			DEPTH_BUFFER_SUPPORT = 0x02,
+			DEPTH_STENCIL_SUPPORT = 0x04,
+			OPENGL_ES_SUPPORT = 0x08
+		};
+	}
 } // end GW namespace
 
 #endif
