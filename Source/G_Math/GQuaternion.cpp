@@ -148,11 +148,11 @@ GW::GReturn GQuaternionCpp::ScaleF(GQUATERNIONF _quaternion, float _scalar, GQUA
 
 GW::GReturn GQuaternionCpp::SetByVectorAngleF(GVECTORF _vector, float _radian, GQUATERNIONF& _outQuaternion)
 {
-	float s = sinf(_radian / 2.0f);
+	float s = sin(_radian / 2.0f);
 	_outQuaternion.x = s * _vector.x;
 	_outQuaternion.y = s * _vector.y;
 	_outQuaternion.z = s * _vector.z;
-	_outQuaternion.w = cosf(_radian / 2.0f);
+	_outQuaternion.w = cos(_radian / 2.0f);
 	return SUCCESS;
 }
 
@@ -334,8 +334,8 @@ GReturn GQuaternionCpp::SlerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaterni
 	DotF(q1, q2, dot);
 	float theta = acos(dot);
 
-	ScaleF(q1, sinf(theta * (1 - _ratio)) / sinf(theta), q1);
-	ScaleF(q2, sinf(theta * _ratio) / sinf(theta), q2);
+	ScaleF(q1, sin(theta * (1 - _ratio)) / sin(theta), q1);
+	ScaleF(q2, sin(theta * _ratio) / sin(theta), q2);
 
 	AddQuaternionF(q1, q2, _outQuaternion);
 
