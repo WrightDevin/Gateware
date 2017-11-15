@@ -1390,7 +1390,6 @@ GReturn AppWindow::GetWindowHandle(unsigned int _handleSize, void** _outWindowHa
 		return INVALID_ARGUMENT;
 	}
 	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
-	//*_outWindowHandle = &wndHandle;
 
 	return SUCCESS;
 #elif __linux__

@@ -524,19 +524,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 
     OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
     [OGLMcontext makeCurrentContext];
-
     [OGLMcontext setView:view];
 
-    GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-    glViewport(viewX, viewY, viewWidth, viewHeight);
-
-    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-    result = glGetError();
-    glClear(GL_COLOR_BUFFER_BIT);
-    result = glGetError();
-    [OGLMcontext flushBuffer];
-
+    //gWnd->ProcessWindowEvents();
+    
 #endif
 
 	return SUCCESS;
@@ -572,6 +563,8 @@ GReturn GOpenGL::UniversalSwapBuffers()
 	glXSwapBuffers((Display*)lWnd.display, *lWindow);
 
 #elif __APPLE__
+    
+    [OGLMcontext flushBuffer];
 
 #endif
 
@@ -588,12 +581,15 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 {
 
 	// Invalid Arguments
-	if (_funcName == nullptr && _outFuncAddress != nullptr ||
-		_funcName != nullptr && _outFuncAddress == nullptr ||
+	if ((_funcName == nullptr && _outFuncAddress != nullptr) ||
+		(_funcName != nullptr && _outFuncAddress == nullptr) ||
 		_extension == nullptr)
 		return INVALID_ARGUMENT;
 
-	// User only passed in extension name, without function
+    //////////////////////////////////////////////////////////
+	// User only passed in extension name, without function //
+    //////////////////////////////////////////////////////////
+
 	if (_funcName == nullptr && _outFuncAddress == nullptr)
 	{
 #ifdef _WIN32
@@ -627,7 +623,10 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 #endif
 	}
 
-	// User passed in extension name and function name
+    /////////////////////////////////////////////////////
+	// User passed in extension name and function name //
+    /////////////////////////////////////////////////////
+
 #ifdef _WIN32
 
 	if (wglGetExtensionsStringEXT)
@@ -702,9 +701,9 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 		return FAILURE;
 
 	if (_toggle == true)
-		glXSwapIntervalEXT((Display*)lWnd.display, (Window)lWnd.window, 1);
+		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 1);
 	else
-		glXSwapIntervalEXT((Display*)lWnd.display, (Window)lWnd.window, 0);
+		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 0);
 
 #elif __APPLE__
 #endif
@@ -911,6 +910,9 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
         }
 
 #elif __APPLE__
+        
+
+        
 #endif
 
 	}

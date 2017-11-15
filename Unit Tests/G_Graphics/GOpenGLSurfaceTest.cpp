@@ -13,9 +13,12 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <string.h>
-//#include <string>
 
 #elif __APPLE__
+
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl3.h>
+
 #endif
 
 
@@ -63,15 +66,6 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
 {
 
-GLint red, green, blue, alpha, depth, stencil;
-
-glGetIntegerv(GL_RED_BITS, &red);
-glGetIntegerv(GL_GREEN_BITS, &green);
-glGetIntegerv(GL_BLUE_BITS, &blue);
-glGetIntegerv(GL_ALPHA_BITS, &alpha);
-glGetIntegerv(GL_DEPTH_BITS, &depth);
-glGetIntegerv(GL_STENCIL_BITS, &stencil);
-
 #ifdef _WIN32
 
 	std::cout << "\n" << "OPENGL INFORMATION" << std::endl;
@@ -81,6 +75,15 @@ glGetIntegerv(GL_STENCIL_BITS, &stencil);
 
 #elif __linux__
 
+    GLint red, green, blue, alpha, depth, stencil;
+    
+    glGetIntegerv(GL_RED_BITS, &red);
+    glGetIntegerv(GL_GREEN_BITS, &green);
+    glGetIntegerv(GL_BLUE_BITS, &blue);
+    glGetIntegerv(GL_ALPHA_BITS, &alpha);
+    glGetIntegerv(GL_DEPTH_BITS, &depth);
+    glGetIntegerv(GL_STENCIL_BITS, &stencil);
+    
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
     //printf("%s %s \n \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
@@ -96,6 +99,10 @@ glGetIntegerv(GL_STENCIL_BITS, &stencil);
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);
 
 #elif __APPLE__
+    
+    printf("%s \n", "OPENGL INFORMATON");
+    printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
+    
 #endif
 }
 
@@ -119,15 +126,31 @@ TEST_CASE("Testing OGLSurface Events")
 
     // Test OGL Functions with current settings.
     glViewport(clientX, clientY, width, height);
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
+    // Test OGL Functions with current settings.
+    glViewport(clientX, clientY, width, height);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    oglSurface->UniversalSwapBuffers();
 #endif
 
 	// Manipulate GWindow and Retest OGL Functions.
-	gWnd_OGL->ResizeWindow(1500, 1000);
+	gWnd_OGL->ResizeWindow(50, 500);
+    
+#ifdef __APPLE__
+    
+    ///////////////////////////////////////////////////////
+    // The Minimize & Maximize Functions are temporarily //
+    // required in order to properly resize the window.  //
+    ///////////////////////////////////////////////////////
+    
+    gWnd_OGL->Minimize();
+    gWnd_OGL->Maximize();
+#endif // __APPLE__
 
 #ifdef _WIN32
 
@@ -137,11 +160,16 @@ TEST_CASE("Testing OGLSurface Events")
 
 #elif __linux__
 
-    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
+    
+    glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    oglSurface->UniversalSwapBuffers();
+    
 #endif
 
 }
