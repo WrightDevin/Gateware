@@ -74,6 +74,7 @@ private:
 	PFNWGLGETEXTENSIONSSTRINGEXTPROC	wglGetExtensionsStringEXT;
 	PFNWGLCREATECONTEXTATTRIBSARBPROC	wglCreateContextAttribsARB;
 	PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+	PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
 
 
 #elif __linux__
@@ -91,11 +92,7 @@ private:
     Window*                 lWindow;
     GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
     XVisualInfo*            vi;
-    //Colormap                cmap;
-    //XSetWindowAttributes    swa;
     GLXContext              OGLXcontext;
-    //XWindowAttributes       gwa;
-    //XEvent                  event;
     LINUX_WINDOW            lWnd;
 
 #elif __APPLE__
@@ -171,13 +168,12 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 #ifdef _WIN32
 
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
+	hdc = GetDC(surfaceWindow);
 	RECT windowRect;
 	GetWindowRect(surfaceWindow, &windowRect);
 	width = windowRect.right - windowRect.left;
 	height = windowRect.bottom - windowRect.top;
-	aspectRatio = width / height;
-
-	hdc = GetDC(surfaceWindow);
+	aspectRatio = (float)width / (float)height;
 
 	PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -186,14 +182,14 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 		PFD_TYPE_RGBA,
 		32,
-		10, 0,
-		10, 0,
-		10, 0,
-		2, 0,
+		8, 0,
+		8, 0,
+		8, 0,
+		8, 0,
 		0,
 		0, 0, 0, 0,
-		24,
-		8,
+		32,
+		0,
 		0,
 		PFD_MAIN_PLANE,
 		0,
@@ -201,77 +197,62 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 	};
 
 	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
-	SetPixelFormat(hdc, pixelFormat, &pfd);
+	bool ret = SetPixelFormat(hdc, pixelFormat, &pfd);
 
 	OGLcontext = wglCreateContext(hdc);
 	wglMakeCurrent(hdc, OGLcontext);
 
-	wglGetExtensionsStringARB =		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-	wglGetExtensionsStringEXT =		(PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
-	wglCreateContextAttribsARB =	(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-	wglSwapIntervalEXT =			(PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+	wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
-	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
-
-	QueryExtensionFunction("WGL_ARB_extensions_string", "wglChoosePixelFormatARB", (void**)&wglChoosePixelFormatARB);
-
-	wglMakeCurrent(NULL, NULL);
-	ReleaseDC(surfaceWindow, hdc);
-	wglDeleteContext(OGLcontext);
 
 	int pixelAttributes[] =
 	{
 		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+		WGL_COLOR_BITS_ARB, 32,
 		WGL_RED_BITS_ARB, 8,
 		WGL_GREEN_BITS_ARB, 8,
 		WGL_BLUE_BITS_ARB, 8,
 		WGL_ALPHA_BITS_ARB, 8,
+		WGL_DEPTH_BITS_ARB, 0,
+		WGL_STENCIL_BITS_ARB, 0,
 		WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-		WGL_SAMPLE_BUFFERS_ARB, GL_FALSE,
 		WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-		0,
+		0, 0
 	};
 
 	if (initOptions & COLOR_10_BIT)
 	{
-		pixelAttributes[5] = 10;
 		pixelAttributes[7] = 10;
 		pixelAttributes[9] = 10;
-		pixelAttributes[11] = 2;
-
-		//GLuint framebuffer;
-		//glGenFramebuffers(1, &framebuffer);
-		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-		//GLuint renderedTexture;
-		//glGenTextures(1, &renderedTexture);
-		//glBindTexture(GL_TEXTURE_2D, renderedTexture);
-
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-		////glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture, 0);
-		//GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-		//glDrawBuffers(1, DrawBuffers);
-
+		pixelAttributes[11] = 10;
+		pixelAttributes[13] = 2;
 	}
 
 	if (initOptions & DEPTH_BUFFER_SUPPORT)
-		pixelAttributes[13] = 32;
+		pixelAttributes[15] = 32;
 
 	if (initOptions & DEPTH_STENCIL_SUPPORT)
 	{
-		pixelAttributes[13] = 24;
-		pixelAttributes[15] = 8;
+		pixelAttributes[15] = 24;
+		pixelAttributes[17] = 8;
 	}
 
 	UINT pixelCount = 0;
 
-	wglChoosePixelFormatARB(hdc, pixelAttributes, NULL, 1, &pixelFormat, &pixelCount);
-	SetPixelFormat(hdc, pixelFormat, &pfd);
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
+	QueryExtensionFunction("WGL_ARB_extensions_string", "wglChoosePixelFormatARB", (void**)&wglChoosePixelFormatARB);
+
+	ret = wglChoosePixelFormatARB(hdc, pixelAttributes, NULL, 1, &pixelFormat, &pixelCount);
+	ret = SetPixelFormat(hdc, pixelFormat, &pfd);
+
+	wglMakeCurrent(NULL, NULL);
+	ReleaseDC(surfaceWindow, hdc);
+	wglDeleteContext(OGLcontext);
 
 	// Create an OpenGL 3.0 Context
 	int contextAttributes[] =
@@ -288,10 +269,66 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 		contextAttributes[5] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 	}
 
-
 	OGLcontext = wglCreateContextAttribsARB(hdc, 0, contextAttributes);
 	wglMakeCurrent(hdc, OGLcontext);
 
+	if (initOptions & DEPTH_BUFFER_SUPPORT)
+		glEnable(GL_DEPTH_TEST);
+
+	if (initOptions & DEPTH_STENCIL_SUPPORT)
+		glEnable(GL_STENCIL_TEST);
+
+	int pfValues[6] = { 0 };
+	int pfQuery[] =
+	{
+		WGL_RED_BITS_ARB,
+		WGL_GREEN_BITS_ARB,
+		WGL_BLUE_BITS_ARB,
+		WGL_ALPHA_BITS_ARB,
+		WGL_DEPTH_BITS_ARB,
+		WGL_STENCIL_BITS_ARB
+	};
+
+	ret = wglGetPixelFormatAttribivARB(hdc, pixelFormat, PFD_MAIN_PLANE, 6, pfQuery, pfValues);
+
+	//////////////////////////////////
+	// CHECK IF INIT FLAGS WERE MET //
+	//////////////////////////////////
+
+	// 10 BIT COLOR //
+	if (initOptions & COLOR_10_BIT)
+	{
+		if (pfValues[0] != 10 &&
+			pfValues[1] != 10 &&
+			pfValues[2] != 10)
+		{
+			std::cout << "\n" << "Error: Could not support 10-Bit Color." << std::endl;
+			return FAILURE;
+		}
+	}
+
+	// DEPTH BUFFER SUPPORT //
+	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	{
+		if (pfValues[4] == 0 || !glIsEnabled(GL_DEPTH_TEST))
+			return FAILURE;
+	}
+
+	// DEPTH STENCIL SUPPORT //
+	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	{
+		if (pfValues[5] == 0 || !glIsEnabled(GL_STENCIL_TEST))
+			return FAILURE;
+	}
+
+	// ES CONTEXT SUPPORT //
+	if (initOptions & OPENGL_ES_SUPPORT)
+	{
+		char* version = (char*)glGetString(GL_VERSION);
+
+		if (strstr(version, "OpenGL ES") == NULL)
+			return FAILURE;
+	}
 
 #elif __linux__
 
@@ -316,7 +353,7 @@ lWindow = (Window*)lWnd.window;
     GLX_GREEN_SIZE, 8,
     GLX_BLUE_SIZE, 8,
     GLX_ALPHA_SIZE, 8,
-    GLX_DEPTH_SIZE, 32,
+    GLX_DEPTH_SIZE, 0,
     GLX_STENCIL_SIZE, 0,
     None
 };
@@ -330,20 +367,17 @@ if (initOptions & COLOR_10_BIT)
 }
 
 if (initOptions & DEPTH_BUFFER_SUPPORT)
-{
-    FBattribs[15] = 24;
-    glEnable(GL_DEPTH_TEST);
-}
+    FBattribs[15] = 32;
 
 if (initOptions & DEPTH_STENCIL_SUPPORT)
 {
+	FBattribs[15] = 24;
     FBattribs[17] = 8;
-    glEnable(GL_STENCIL_TEST);
 }
 
-//////////////////////////////////////////////////////////////////////////
-//              Select the Default Framebuffer Configuration            //
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////
+// Select the Default Framebuffer Configuration //
+//////////////////////////////////////////////////
 
 int fbCount;
 GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
@@ -383,9 +417,9 @@ glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB((const GLub
 glXMakeCurrent((Display*)lWnd.display, 0, 0);
 glXDestroyContext((Display*)lWnd.display, oldContext);
 
-    /////////////////////////
-    // Default 3.0 Context //
-    /////////////////////////
+////////////////////////
+// Create New Context //
+////////////////////////
 
     int contextAttribs[] =
     {
@@ -402,6 +436,60 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 
     OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
     glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext);
+
+	if (initOptions & DEPTH_BUFFER_SUPPORT)
+		glEnable(GL_DEPTH_TEST);
+
+	if (initOptions & DEPTH_STENCIL_SUPPORT)
+		glEnable(GL_STENCIL_TEST);
+
+	//////////////////////////////////
+	// CHECK IF INIT FLAGS WERE MET //
+	//////////////////////////////////
+
+	// 10 BIT COLOR //
+	if (initOptions & COLOR_10_BIT)
+	{
+		GLint red, green, blue;
+		glGetIntegerv(GL_RED_BITS, &red);
+		glGetIntegerv(GL_GREEN_BITS, &green);
+		glGetIntegerv(GL_BLUE_BITS, &blue);
+
+		if (red != 10 &&
+			green != 10 &&
+			blue != 10)
+			return FAILURE;
+
+	}
+
+	// DEPTH BUFFER SUPPORT //
+	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	{
+		GLint depth;
+		glGetIntegerv(GL_DEPTH_BITS, &depth);
+
+		if (depth == 0 || !glIsEnabled(GL_DEPTH_TEST))
+			return FAILURE;
+	}
+
+	// DEPTH STENCIL SUPPORT //
+	if (initOptions && DEPTH_STENCIL_SUPPORT)
+	{
+		GLint stencil;
+		glGetIntegerv(GL_STENCIL_BITS, &stencil);
+
+		if (stencil == 0 || !glIsEnabled(GL_STENCIL_TEST))
+			return FAILURE;
+	}
+
+	// ES CONTEXT SUPPORT //
+	if (initOptions && OPENGL_ES_SUPPORT)
+	{
+		char* version = (char*)glGetString(GL_VERSION);
+
+		if (strstr(version, "OpenGL ES") == NULL)
+			return FAILURE;
+	}
 
 #elif __APPLE__
 

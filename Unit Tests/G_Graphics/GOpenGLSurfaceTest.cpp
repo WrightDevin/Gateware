@@ -76,18 +76,6 @@ glGetIntegerv(GL_STENCIL_BITS, &stencil);
 
 	std::cout << "\n" << "OPENGL INFORMATION" << std::endl;
 	std::cout << "OPENGL VERSION: " << (char*)glGetString(GL_VERSION) << "\n";
-	//std::cout << "OPENGL RENDERER: " << (char*)glGetString(GL_RENDERER) << "\n";
-
-	std::cout << "\n" << "OPENGL: COLOR INFORMATION" << std::endl;
-	//std::cout << "\n" << "STRING TEST: " << (char*)glGetString(GL_RED_INTEGER) << std::endl;
-	std::cout << "RED BITS: " << red << "\n";
-	std::cout << "GREEN BITS: " << green << "\n";
-	std::cout << "BLUE BITS: " << blue << "\n";
-	std::cout << "ALPHA BITS: " << alpha << std::endl;
-
-	std::cout << "\n" << "OPENGL: DEPTH INFORMATION" << std::endl;
-	std::cout << "DEPTH BITS: " << depth << "\n";
-	std::cout << "STENCIL BITS: " << stencil << "\n";
 
 	CHECK(oglSurface->GetContext((void**)&context) == SUCCESS);
 
