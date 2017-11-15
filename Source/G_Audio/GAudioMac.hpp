@@ -13,18 +13,18 @@
 using namespace GW;
 using namespace AUDIO;
 #define G_UINT_MAX 0xffffffff
-std::atomic<unsigned int> AudioCounter;
-std::atomic<unsigned int> SoundCounter;
-std::atomic<unsigned int> MusicCounter;
+
 
 class MacAppAudio;
 class MacAppSound : public GSound
 {
+	std::atomic<unsigned int> SoundCounter;
+
 public:
 	int index = -1;
 	MacAppAudio * audio;
 	bool loops = false;
-
+	MacAppSound();
 	GReturn Init(const char * _path);
 	GReturn SetPCMShader(const char* _data);
 	GReturn SetChannelVolumes(float *_values, int _numChannels);
@@ -49,6 +49,7 @@ public:
 class MacAppMusic : public GMusic
 {
 private:
+	std::atomic<unsigned int> MusicCounter;
     GReturn Stream();
 public:
 	char * myFile;
@@ -86,12 +87,14 @@ public:
 
 class MacAppAudio : public GAudio
 {
+	std::atomic<unsigned int> AudioCounter;
+
 public:
 	const char * myFile;
 	bool loops = false;
 	float maxVolume;
 	int maxChannels;
-	
+	MacAppAudio();
 	GReturn Init(int _numOfOutputs = 2);
 	GReturn CreateSound(const char* _path, GSound** _outSound);
 	GReturn CreateMusicStream(const char* _path, GMusic** _outMusic);
@@ -110,6 +113,9 @@ public:
 	GMacAudio * mac_audio = nullptr;
 #endif
 };
+inline MacAppSound::MacAppSound() : SoundCounter(1)
+{
+}
 //Start of GSound implementation 
 GReturn MacAppSound::Init(const char * _path)
 {
@@ -366,9 +372,8 @@ MacAppSound::~MacAppSound()
 //End of GSound implementation
 
 //Start of GMusic implementation
-MacAppMusic::MacAppMusic()
+MacAppMusic::MacAppMusic() : MusicCounter(1)
 {
-    IncrementCount();
 }
 GReturn MacAppMusic::Init(const char * _path)
 {
@@ -640,6 +645,9 @@ GReturn MacAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outp
 MacAppMusic::~MacAppMusic()
 {
     DecrementCount();
+}
+MacAppAudio::MacAppAudio() : AudioCounter(1)
+{
 }
 //End of GMusic implementation 
 GReturn MacAppAudio::Init(int _numOfOutputs)

@@ -229,10 +229,10 @@ TEST_CASE("Set a quaternion by a vector and a angle.", "[SetByVectorAngleF], [Se
 	SECTION("Float quaternion.", "[SetByVectorAngleF]")
 	{
 		CHECK(G_SUCCESS(QuaternionC->SetByVectorAngleF(vF, radianF, resultF)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.x, 1.0f * sqrtf(2) / 2.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.y, 1.0f * sqrtf(2) / 2.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.z, 1.0f * sqrtf(2) / 2.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.w, sqrtf(2) / 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.x, 1.0f * sqrt(2) / 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.y, 1.0f * sqrt(2) / 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.z, 1.0f * sqrt(2) / 2.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.w, sqrt(2) / 2.0f));
 	}
 	SECTION("Double quaternion.", "[SetByVectorAngleD]")
 	{
@@ -405,7 +405,7 @@ TEST_CASE("Calcuate the magnitude of the quaternion.", "[MagnitudeF], [Magnitude
 
 		//Pass cases
 		CHECK(G_SUCCESS(QuaternionC->MagnitudeF(qF1, resultF)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF, sqrtf(200)));
+		CHECK(G_COMPARISON_STANDARD_F(resultF, sqrt(200)));
 	}
 	SECTION("Double quaternion.", "[MagnitudeD]")
 	{
@@ -435,10 +435,10 @@ TEST_CASE("Normalize the quaternion.", "[NormalizeF], [NormalizeD]")
 
 		//Pass cases
 		CHECK(G_SUCCESS(QuaternionC->NormalizeF(qF1, resultF)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.x, 10.0f / sqrtf(200)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.y,  8.0f / sqrtf(200)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.z,  6.0f / sqrtf(200)));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.w,  0.0f / sqrtf(200)));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.x, 10.0f / sqrt(200)));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.y,  8.0f / sqrt(200)));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.z,  6.0f / sqrt(200)));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.w,  0.0f / sqrt(200)));
 	}
 	SECTION("Double quaternion.", "[NormalizeD]")
 	{

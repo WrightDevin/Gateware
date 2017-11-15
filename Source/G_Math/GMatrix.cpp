@@ -342,9 +342,9 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 	GMATRIXF _m = _matrix;
 
 	float det;
-	float sx = sqrtf(_m.data[0] * _m.data[0] + _m.data[4] * _m.data[4] + _m.data[8] * _m.data[8]);
-	float sy = sqrtf(_m.data[1] * _m.data[1] + _m.data[5] * _m.data[5] + _m.data[9] * _m.data[9]);
-	float sz = sqrtf(_m.data[2] * _m.data[2] + _m.data[6] * _m.data[6] + _m.data[10] * _m.data[10]);
+	float sx = sqrt(_m.data[0] * _m.data[0] + _m.data[4] * _m.data[4] + _m.data[8] * _m.data[8]);
+	float sy = sqrt(_m.data[1] * _m.data[1] + _m.data[5] * _m.data[5] + _m.data[9] * _m.data[9]);
+	float sz = sqrt(_m.data[2] * _m.data[2] + _m.data[6] * _m.data[6] + _m.data[10] * _m.data[10]);
 	DeterminantF(_m, det);
 
 	if (G_COMPARISON_STANDARD_F(det, 0.0f))
@@ -371,7 +371,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 
 	if (trace > G_EPSILON_F)
 	{
-		float s = 0.5f / sqrtf(trace);
+		float s = 0.5f / sqrt(trace);
 		_outQuaternion.x = (Rotation.row3.y - Rotation.row2.z) * s;
 		_outQuaternion.y = (Rotation.row1.z - Rotation.row3.x) * s;
 		_outQuaternion.z = (Rotation.row2.x - Rotation.row1.y) * s;
@@ -381,7 +381,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 	{
 		if (Rotation.row1.x > Rotation.row2.y && Rotation.row1.x > Rotation.row3.z)
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row1.x - Rotation.row2.y - Rotation.row3.z);
+			float s = 0.5f / sqrt(1.0f + Rotation.row1.x - Rotation.row2.y - Rotation.row3.z);
 			_outQuaternion.x = 0.25f / s;
 			_outQuaternion.y = (Rotation.row1.y + Rotation.row2.x) * s;
 			_outQuaternion.z = (Rotation.row1.z + Rotation.row3.x) * s;
@@ -389,7 +389,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 		}
 		else if (Rotation.row2.y > Rotation.row3.z)
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row2.y - Rotation.row1.x - Rotation.row3.z);
+			float s = 0.5f / sqrt(1.0f + Rotation.row2.y - Rotation.row1.x - Rotation.row3.z);
 			_outQuaternion.x = (Rotation.row1.y + Rotation.row2.x) * s;
 			_outQuaternion.y = 0.25f / s;
 			_outQuaternion.z = (Rotation.row2.z + Rotation.row3.y) * s;
@@ -397,7 +397,7 @@ GReturn GMatirxCpp::GetRotationF(GMATRIXF _matrix, GQUATERNIONF & _outQuaternion
 		}
 		else
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row3.z - Rotation.row1.x - Rotation.row2.y);
+			float s = 0.5f / sqrt(1.0f + Rotation.row3.z - Rotation.row1.x - Rotation.row2.y);
 			_outQuaternion.x = (Rotation.row1.z + Rotation.row3.x) * s;
 			_outQuaternion.y = (Rotation.row2.z + Rotation.row3.y) * s;
 			_outQuaternion.z = 0.25f / s;
@@ -421,9 +421,9 @@ GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
 {
 	float det;
 
-	_outVector.x = sqrtf(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
-	_outVector.y = sqrtf(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
-	_outVector.z = sqrtf(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
+	_outVector.x = sqrt(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
+	_outVector.y = sqrt(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
+	_outVector.z = sqrt(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
 	_outVector.w = 0;
 
 	DeterminantF(_matrix, det);
@@ -437,8 +437,8 @@ GReturn GMatirxCpp::GetScaleF(GMATRIXF _matrix, GVECTORF& _outVector)
 
 GReturn GMatirxCpp::RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
 {
-	float c = cosf(_radian);
-	float s = sinf(_radian);
+	float c = cos(_radian);
+	float s = sin(_radian);
 	GMATRIXF Rotation = GIdentityMatrixF;
 	Rotation.data[5] = c;
 	Rotation.data[6] = s;
@@ -452,8 +452,8 @@ GReturn GMatirxCpp::RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 
 GReturn GMatirxCpp::RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
 {
-	float c = cosf(_radian);
-	float s = sinf(_radian);
+	float c = cos(_radian);
+	float s = sin(_radian);
 	GMATRIXF Rotation = GIdentityMatrixF;
 	Rotation.data[0] = c;
 	Rotation.data[2] = -s;
@@ -466,8 +466,8 @@ GReturn GMatirxCpp::RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF & _outM
 
 GReturn GMatirxCpp::RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF & _outMatrix)
 {
-	float c = cosf(_radian);
-	float s = sinf(_radian);
+	float c = cos(_radian);
+	float s = sin(_radian);
 	GMATRIXF Rotation = GIdentityMatrixF;
 	Rotation.data[0] = c;
 	Rotation.data[1] = s;
@@ -504,7 +504,7 @@ GReturn GMatirxCpp::RotationByVectorF(GVECTORF _vector, float _radian, GMATRIXF 
 	float magnitude = x * x + y * y + z * z;
 	if (!G_COMPARISON_STANDARD_F(magnitude, 1))
 	{
-		magnitude = sqrtf(magnitude);
+		magnitude = sqrt(magnitude);
 		if (!G_COMPARISON_STANDARD_F(magnitude, 0))
 		{
 			magnitude = 1.0 / magnitude;
@@ -616,7 +616,7 @@ GReturn GMatirxCpp::LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIX
 	camDir.y = _at.y - _eye.y;
 	camDir.z = _at.z - _eye.z;
 
-	magnitudeZ = sqrtf((camDir.x * camDir.x) + (camDir.y * camDir.y) + (camDir.z * camDir.z));
+	magnitudeZ = sqrt((camDir.x * camDir.x) + (camDir.y * camDir.y) + (camDir.z * camDir.z));
 	if (G_COMPARISON_STANDARD_F(magnitudeZ, 0.0f)) return FAILURE;
 
 
@@ -629,7 +629,7 @@ GReturn GMatirxCpp::LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIX
 	camRight.y = (_up.z * camDir.x) - (_up.x * camDir.z);
 	camRight.z = (_up.x * camDir.y) - (_up.y * camDir.x);
 
-	magnitudeX = sqrtf((camRight.x * camRight.x) + (camRight.y * camRight.y) + (camRight.z * camRight.z));
+	magnitudeX = sqrt((camRight.x * camRight.x) + (camRight.y * camRight.y) + (camRight.z * camRight.z));
 	if (G_COMPARISON_STANDARD_F(magnitudeX, 0.0f)) return FAILURE;
 
 

@@ -159,9 +159,9 @@ GW::GReturn GQuaternionCpp::SetByVectorAngleF(GVECTORF _vector, float _radian, G
 GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion)
 {
 	float det;
-	float sx = sqrtf(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
-	float sy = sqrtf(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
-	float sz = sqrtf(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
+	float sx = sqrt(_matrix.data[0] * _matrix.data[0] + _matrix.data[4] * _matrix.data[4] + _matrix.data[8] * _matrix.data[8]);
+	float sy = sqrt(_matrix.data[1] * _matrix.data[1] + _matrix.data[5] * _matrix.data[5] + _matrix.data[9] * _matrix.data[9]);
+	float sz = sqrt(_matrix.data[2] * _matrix.data[2] + _matrix.data[6] * _matrix.data[6] + _matrix.data[10] * _matrix.data[10]);
 	if (G_COMPARISON_STANDARD_F(sx, 0.0f) || G_COMPARISON_STANDARD_F(sy, 0.0f) || G_COMPARISON_STANDARD_F(sz, 0.0f))
 	{
 		//scale too close to zero, can not decompose rotation
@@ -202,7 +202,7 @@ GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQua
 
 	if (trace > G_EPSILON_F)
 	{
-		float s = 0.5f / sqrtf(trace);
+		float s = 0.5f / sqrt(trace);
 		_outQuaternion.x = (Rotation.row3.y - Rotation.row2.z) * s;
 		_outQuaternion.y = (Rotation.row1.z - Rotation.row3.x) * s;
 		_outQuaternion.z = (Rotation.row2.x - Rotation.row1.y) * s;
@@ -212,7 +212,7 @@ GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQua
 	{
 		if (Rotation.row1.x > Rotation.row2.y && Rotation.row1.x > Rotation.row3.z)
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row1.x - Rotation.row2.y - Rotation.row3.z);
+			float s = 0.5f / sqrt(1.0f + Rotation.row1.x - Rotation.row2.y - Rotation.row3.z);
 			_outQuaternion.x = 0.25f / s;
 			_outQuaternion.y = (Rotation.row1.y + Rotation.row2.x) * s;
 			_outQuaternion.z = (Rotation.row1.z + Rotation.row3.x) * s;
@@ -220,7 +220,7 @@ GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQua
 		}
 		else if (Rotation.row2.y > Rotation.row3.z)
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row2.y - Rotation.row1.x - Rotation.row3.z);
+			float s = 0.5f / sqrt(1.0f + Rotation.row2.y - Rotation.row1.x - Rotation.row3.z);
 			_outQuaternion.x = (Rotation.row1.y + Rotation.row2.x) * s;
 			_outQuaternion.y = 0.25f / s;
 			_outQuaternion.z = (Rotation.row2.z + Rotation.row3.y) * s;
@@ -228,7 +228,7 @@ GW::GReturn GQuaternionCpp::SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQua
 		}
 		else
 		{
-			float s = 0.5f / sqrtf(1.0f + Rotation.row3.z - Rotation.row1.x - Rotation.row2.y);
+			float s = 0.5f / sqrt(1.0f + Rotation.row3.z - Rotation.row1.x - Rotation.row2.y);
 			_outQuaternion.x = (Rotation.row1.z + Rotation.row3.x) * s;
 			_outQuaternion.y = (Rotation.row2.z + Rotation.row3.y) * s;
 			_outQuaternion.z = 0.25f / s;
@@ -281,7 +281,7 @@ GReturn GQuaternionCpp::InverseF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQua
 
 GReturn GQuaternionCpp::MagnitudeF(GQUATERNIONF _quaternion, float& _outMagnitude)
 {
-	_outMagnitude = sqrtf(_quaternion.x * _quaternion.x + _quaternion.y * _quaternion.y + _quaternion.z * _quaternion.z + _quaternion.w * _quaternion.w);
+	_outMagnitude = sqrt(_quaternion.x * _quaternion.x + _quaternion.y * _quaternion.y + _quaternion.z * _quaternion.z + _quaternion.w * _quaternion.w);
 	if (G_COMPARISON_STANDARD_F(_outMagnitude, G_EPSILON_F))
 		return FAILURE;
 

@@ -173,7 +173,7 @@ GReturn GVectorCpp::TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _ou
 
 GReturn GVectorCpp::MagnitudeF(GVECTORF _vector, float& _outMagnitude)
 {
-	_outMagnitude = sqrtf((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
+	_outMagnitude = sqrt((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z) + (_vector.w * _vector.w));
 	if (G_COMPARISON_STANDARD_F(_outMagnitude, 0))
 		return FAILURE;
 	return SUCCESS;
@@ -211,9 +211,9 @@ GReturn GVectorCpp::SplineF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF _vect
 	GVECTORF p3 = _vector4;
 
 	float t0 = 0.0f;
-	float t1 = powf(sqrtf(powf((p1.x - p0.x), 2) + powf((p1.y - p0.y), 2) + powf((p1.z - p0.z), 2)), 0.5f) + t0;
-	float t2 = powf(sqrtf(powf((p2.x - p1.x), 2) + powf((p2.y - p1.y), 2) + powf((p2.z - p1.z), 2)), 0.5f) + t1;
-	float t3 = powf(sqrtf(powf((p3.x - p2.x), 2) + powf((p3.y - p2.y), 2) + powf((p3.z - p2.z), 2)), 0.5f) + t2;
+	float t1 = pow(sqrt(pow((p1.x - p0.x), 2) + pow((p1.y - p0.y), 2) + pow((p1.z - p0.z), 2)), 0.5f) + t0;
+	float t2 = pow(sqrt(pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2) + pow((p2.z - p1.z), 2)), 0.5f) + t1;
+	float t3 = pow(sqrt(pow((p3.x - p2.x), 2) + pow((p3.y - p2.y), 2) + pow((p3.z - p2.z), 2)), 0.5f) + t2;
 
 	GVECTORF A1;
 	GVECTORF A2;
