@@ -88,6 +88,7 @@ private:
 	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
     Window                  root;
+    Window*                 lWindow;
     GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
     XVisualInfo*            vi;
     //Colormap                cmap;
@@ -295,7 +296,7 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 #elif __linux__
 
 gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
-Window* lWindow = (Window*)lWnd.window;
+lWindow = (Window*)lWnd.window;
 
     unsigned int cX, cY, cWidth, cHeight, wX, wY, wWidth, wHeight;
     gWnd->GetClientTopLeft(cX, cY);
@@ -314,8 +315,31 @@ Window* lWindow = (Window*)lWnd.window;
     GLX_RED_SIZE, 8,
     GLX_GREEN_SIZE, 8,
     GLX_BLUE_SIZE, 8,
+    GLX_ALPHA_SIZE, 8,
+    GLX_DEPTH_SIZE, 32,
+    GLX_STENCIL_SIZE, 0,
     None
 };
+
+if (initOptions & COLOR_10_BIT)
+{
+    FBattribs[7] = 10;
+    FBattribs[9] = 10;
+    FBattribs[11] = 10;
+    FBattribs[13] = 2;
+}
+
+if (initOptions & DEPTH_BUFFER_SUPPORT)
+{
+    FBattribs[15] = 24;
+    glEnable(GL_DEPTH_TEST);
+}
+
+if (initOptions & DEPTH_STENCIL_SUPPORT)
+{
+    FBattribs[17] = 8;
+    glEnable(GL_STENCIL_TEST);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //              Select the Default Framebuffer Configuration            //
@@ -325,19 +349,25 @@ int fbCount;
 GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
 XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
 
-Colormap cMap = XCreateColormap((Display*)lWnd.display, *lWindow, vi->visual, AllocNone);
+Colormap cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), vi->visual, AllocNone);
 XSetWindowAttributes swa;
+//swa.colormap = cMap;
 swa.background_pixel = XWhitePixel((Display*)lWnd.display, 0);
 swa.border_pixel = XBlackPixel((Display*)lWnd.display, 0);
-swa.event_mask = StructureNotifyMask | PropertyChangeMask | ExposureMask;
+swa.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
 
-unsigned long valueMask = CWBackPixel | CWEventMask | CWColormap;
+unsigned long valueMask = 0;
+valueMask |= CWBackPixel;
+valueMask |= CWEventMask;
 
-int ret = XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
+//lWindow = XCreateWindow((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), 0, 0, 500, 500, 0,
+//                        vi->depth, InputOutput, vi->visual, valueMask, &swa);
 
-//XStoreName((Display*)lWnd.display, testWindow, "TEST WINDOW");
+//valueMask |= CWColormap;
 
-//XMapWindow((Display*)lWnd.display, testWindow);
+XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
+//XSetWindowColormap((Display*)lWnd.display, lWindow, cMap);
+//XInstallColormap((Display*)lWnd.display, cMap);
 
 GLXContext oldContext = glXCreateContext((Display*)lWnd.display, vi, 0, GL_TRUE);
 
@@ -365,22 +395,13 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
         None
     };
 
-    OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
-    if (!glXMakeCurrent((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), OGLXcontext))
+    if (initOptions & OPENGL_ES_SUPPORT)
     {
-
-        printf("Error!!!!!!!!!!");
+        contextAttribs[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
     }
 
-    glViewport(clientX, clientY, width, height);
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glXSwapBuffers((Display*)lWnd.display, *lWindow);
-
-
-
-
+    OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
+    glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext);
 
 #elif __APPLE__
 
@@ -460,7 +481,7 @@ GReturn GOpenGL::UniversalSwapBuffers()
 
 #elif __linux__
 
-	glXSwapBuffers((Display*)lWnd.display, (Window)lWnd.window);
+	glXSwapBuffers((Display*)lWnd.display, *lWindow);
 
 #elif __APPLE__
 
@@ -821,7 +842,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(0, 0, 0, 0);
+	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT, OPENGL_ES_SUPPORT);
 
 	_gWin->RegisterListener(Surface, 0);
 
