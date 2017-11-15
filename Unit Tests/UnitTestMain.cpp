@@ -30,9 +30,9 @@ extern void Shutdown();
 
 int main(int _argc, char** _argv)
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(25153);
-	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+	//_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 	//Kick off the thread
 	//This thread will initialize and run CATCH
 	workerThread = std::thread(WorkerThread, _argc, _argv);

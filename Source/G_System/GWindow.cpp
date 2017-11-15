@@ -1010,7 +1010,7 @@ GReturn AppWindow::DecrementCount()
 	if (refCount == 0)
 	{
 #ifdef __linux__
-		delete linuxloop;
+		delete linuxLoop;
 #endif // __linux__
 		delete this;
 	}
