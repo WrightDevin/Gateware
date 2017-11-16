@@ -19,7 +19,7 @@ namespace GW
 		{
 
 		public:
-			virtual GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext) = 0;
+			virtual GReturn Initialize(unsigned char _initMask) = 0;
 
 			virtual GReturn GetContext(void** _outContext) = 0;
 

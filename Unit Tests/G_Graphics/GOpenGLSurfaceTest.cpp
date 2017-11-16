@@ -86,7 +86,6 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
     
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
-    //printf("%s %s \n \n", "OPENGL RENDERER: ", (char*)glGetString(GL_RENDERER));
 
     printf("RED BITS: %d \n", red);
     printf("GREEN BITS: %d \n", green);

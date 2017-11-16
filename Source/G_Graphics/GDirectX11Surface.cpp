@@ -44,7 +44,7 @@ public:
 	GDirectX11();
 	virtual ~GDirectX11();
 	void	SetGWindow(GWindow* _window);
-	GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil);
+	GReturn Initialize(unsigned char _initMask);
 	GReturn	GetAspectRatio(float& _outRatio);
 
 	GReturn GetDevice(void** _outDevice);
@@ -77,10 +77,8 @@ void GDirectX11::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil)
+GReturn GDirectX11::Initialize(unsigned char _initMask)
 {
-	unsigned char initOptions = _color10bit | _depthBuffer | _depthStencil;
-
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
 	RECT windowRect;
@@ -109,7 +107,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 	DXGI_SWAP_CHAIN_DESC swapChainStruct;
 	swapChainStruct.BufferCount = 1;
 
-	if (initOptions & _color10bit)
+	if (_initMask & COLOR_10_BIT)
 		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	else
 		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -148,7 +146,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 
 	buffer->Release();
 
-	if (initOptions& DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 	{
 		/////////////////////////////////
 		// Create Depth Buffer Texture //
@@ -161,7 +159,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 		depthTextureDesc.MipLevels = 1;
 		depthTextureDesc.SampleDesc.Count = 1;
 
-		if (initOptions & DEPTH_STENCIL_SUPPORT)
+		if (_initMask & DEPTH_STENCIL_SUPPORT)
 			depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		else
 			depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;		
@@ -175,7 +173,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 		// Create Depth Stencil State (if requested) // 
 		///////////////////////////////////////////////
 
-		if (initOptions & DEPTH_STENCIL_SUPPORT)
+		if (_initMask & DEPTH_STENCIL_SUPPORT)
 		{
 			D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
 			ZeroMemory(&depthStencilStateDesc, sizeof(depthStencilStateDesc));
@@ -209,7 +207,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
-		if (initOptions & DEPTH_STENCIL_SUPPORT)
+		if (_initMask & DEPTH_STENCIL_SUPPORT)
 			depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		else
 			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -230,7 +228,7 @@ GReturn GDirectX11::Initialize(unsigned char _color10bit, unsigned char _depthBu
 	viewport.MaxDepth = 1.0f;
 	gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
-	context->RSSetViewports(1,&viewport);
+	context->RSSetViewports(1, &viewport);
 
 	return SUCCESS;
 }
@@ -499,7 +497,9 @@ GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11
 
 	GDirectX11* Surface = new GDirectX11();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(COLOR_10_BIT, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT);
+
+	unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
+	Surface->Initialize(initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

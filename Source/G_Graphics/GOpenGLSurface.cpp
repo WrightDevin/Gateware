@@ -32,7 +32,6 @@
 #include <OpenGL/gl3.h>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-//#import <GLKit/GLKit.h>
 #import <mach-o/dyld.h>
 #import <dlfcn.h>
 #endif
@@ -57,12 +56,6 @@ private:
 
 	GLint			numExtensions = 0;
 	const char*		glExtensions;
-
-	#ifdef __linux__
-
-	int xerrorhandle(Display* dpy, XErrorEvent* error);
-
-	#endif // __linux__
 
 #ifdef _WIN32
 
@@ -109,7 +102,7 @@ private:
 public:
 	GOpenGL();
 	virtual ~GOpenGL();
-	GReturn Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext);
+	GReturn Initialize(unsigned char _initMask);
 	GReturn	GetContext(void** _outContext);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
@@ -162,11 +155,11 @@ void GOpenGL::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffer, unsigned char _depthStencil, unsigned char _esContext)
+GReturn GOpenGL::Initialize(unsigned char _initMask)
 {
 
     gWnd->OpenWindow();
-	unsigned char initOptions = _color10bit | _depthBuffer | _depthStencil | _esContext;
+	//unsigned char _initMask = _color10bit | _depthBuffer | _depthStencil | _esContext;
 
 #ifdef _WIN32
 
@@ -228,7 +221,7 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 		0, 0
 	};
 
-	if (initOptions & COLOR_10_BIT)
+	if (_initMask & COLOR_10_BIT)
 	{
 		pixelAttributes[7] = 10;
 		pixelAttributes[9] = 10;
@@ -236,10 +229,10 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 		pixelAttributes[13] = 2;
 	}
 
-	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 		pixelAttributes[15] = 32;
 
-	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 	{
 		pixelAttributes[15] = 24;
 		pixelAttributes[17] = 8;
@@ -266,7 +259,7 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 		0
 	};
 
-	if (initOptions & OPENGL_ES_SUPPORT)
+	if (_initMask & OPENGL_ES_SUPPORT)
 	{
 		// Create an OpenGL ES 3.0 Context
 		contextAttributes[5] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
@@ -275,10 +268,10 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 	OGLcontext = wglCreateContextAttribsARB(hdc, 0, contextAttributes);
 	wglMakeCurrent(hdc, OGLcontext);
 
-	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 		glEnable(GL_DEPTH_TEST);
 
-	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 		glEnable(GL_STENCIL_TEST);
 
 	int pfValues[6] = { 0 };
@@ -299,7 +292,7 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 	//////////////////////////////////
 
 	// 10 BIT COLOR //
-	if (initOptions & COLOR_10_BIT)
+	if (_initMask & COLOR_10_BIT)
 	{
 		if (pfValues[0] != 10 &&
 			pfValues[1] != 10 &&
@@ -311,21 +304,21 @@ GReturn GOpenGL::Initialize(unsigned char _color10bit, unsigned char _depthBuffe
 	}
 
 	// DEPTH BUFFER SUPPORT //
-	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 	{
 		if (pfValues[4] == 0 || !glIsEnabled(GL_DEPTH_TEST))
 			return FAILURE;
 	}
 
 	// DEPTH STENCIL SUPPORT //
-	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 	{
 		if (pfValues[5] == 0 || !glIsEnabled(GL_STENCIL_TEST))
 			return FAILURE;
 	}
 
 	// ES CONTEXT SUPPORT //
-	if (initOptions & OPENGL_ES_SUPPORT)
+	if (_initMask & OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
 
@@ -361,7 +354,7 @@ lWindow = (Window*)lWnd.window;
     None
 };
 
-if (initOptions & COLOR_10_BIT)
+if (_initMask & COLOR_10_BIT)
 {
     FBattribs[7] = 10;
     FBattribs[9] = 10;
@@ -369,10 +362,10 @@ if (initOptions & COLOR_10_BIT)
     FBattribs[13] = 2;
 }
 
-if (initOptions & DEPTH_BUFFER_SUPPORT)
+if (_initMask & DEPTH_BUFFER_SUPPORT)
     FBattribs[15] = 32;
 
-if (initOptions & DEPTH_STENCIL_SUPPORT)
+if (_initMask & DEPTH_STENCIL_SUPPORT)
 {
 	FBattribs[15] = 24;
     FBattribs[17] = 8;
@@ -432,7 +425,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
         None
     };
 
-    if (initOptions & OPENGL_ES_SUPPORT)
+    if (_initMask & OPENGL_ES_SUPPORT)
     {
         contextAttribs[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
     }
@@ -440,10 +433,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
     glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext);
 
-	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 		glEnable(GL_DEPTH_TEST);
 
-	if (initOptions & DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 		glEnable(GL_STENCIL_TEST);
 
 	//////////////////////////////////
@@ -451,7 +444,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	//////////////////////////////////
 
 	// 10 BIT COLOR //
-	if (initOptions & COLOR_10_BIT)
+	if (_initMask & COLOR_10_BIT)
 	{
 		GLint red, green, blue;
 		glGetIntegerv(GL_RED_BITS, &red);
@@ -466,7 +459,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	}
 
 	// DEPTH BUFFER SUPPORT //
-	if (initOptions & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
 	{
 		GLint depth;
 		glGetIntegerv(GL_DEPTH_BITS, &depth);
@@ -476,7 +469,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	}
 
 	// DEPTH STENCIL SUPPORT //
-	if (initOptions && DEPTH_STENCIL_SUPPORT)
+	if (_initMask && DEPTH_STENCIL_SUPPORT)
 	{
 		GLint stencil;
 		glGetIntegerv(GL_STENCIL_BITS, &stencil);
@@ -486,7 +479,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	}
 
 	// ES CONTEXT SUPPORT //
-	if (initOptions && OPENGL_ES_SUPPORT)
+	if (_initMask && OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
 
@@ -529,14 +522,14 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     //////////////////////////////////
     
     // 10 BIT COLOR //
-    if (initOptions & COLOR_10_BIT)
+    if (_initMask & COLOR_10_BIT)
         return FAILURE;
     
     // DEPTH BUFFER SUPPORT //
-    if (initOptions & DEPTH_BUFFER_SUPPORT)
+    if (_initMask & DEPTH_BUFFER_SUPPORT)
         pixelAttributes[8] = 32;
     
-    if (initOptions & DEPTH_STENCIL_SUPPORT)
+    if (_initMask & DEPTH_STENCIL_SUPPORT)
     {
         pixelAttributes[8] = 24;
         pixelAttributes[10] = 8;
@@ -553,7 +546,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     [pixelFormat getValues:&depth forAttribute:NSOpenGLPFADepthSize forVirtualScreen:0];
     [pixelFormat getValues:&stencil forAttribute:NSOpenGLPFAStencilSize forVirtualScreen:0];
     
-    if (initOptions & DEPTH_BUFFER_SUPPORT)
+    if (_initMask & DEPTH_BUFFER_SUPPORT)
     {
         glEnable(GL_DEPTH_TEST);
         
@@ -561,7 +554,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
             return FAILURE;
     }
     
-    if (initOptions & DEPTH_STENCIL_SUPPORT)
+    if (_initMask & DEPTH_STENCIL_SUPPORT)
     {
         glEnable(GL_STENCIL_TEST);
         
@@ -1046,7 +1039,9 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, 0, OPENGL_ES_SUPPORT);
+
+	unsigned char initMask = DEPTH_BUFFER_SUPPORT | OPENGL_ES_SUPPORT;
+	Surface->Initialize(initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

@@ -51,7 +51,7 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	else if (tempDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM)
 		format = "10-BIT COLOR (DXGI_FORMAT_R10G10B10A2_UNORM)";
 
-	std::cout << "\n" << "DIRECTX 11 INFORMATION" << "\n" << std::endl;
+	std::cout << "\n" << "DIRECTX 11 INFORMATION" << "\n";
 	std::cout << "COLOR FORMAT: " << format << "\n";
 	std::cout << "DEPTH BUFFER ENABLED: ";
 
