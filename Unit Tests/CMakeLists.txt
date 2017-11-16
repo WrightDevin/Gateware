@@ -132,9 +132,9 @@ G_Audio/GAudioTests.cpp
 
  )
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
-
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
+
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif(UNIX AND NOT APPLE)
 
