@@ -139,7 +139,7 @@ TEST_CASE("Testing OGLSurface Events")
 #endif
 
 	// Manipulate GWindow and Retest OGL Functions.
-	gWnd_OGL->ResizeWindow(50, 500);
+	gWnd_OGL->ResizeWindow(500, 500);
     
 #ifdef __APPLE__
     
@@ -150,6 +150,13 @@ TEST_CASE("Testing OGLSurface Events")
     
     gWnd_OGL->Minimize();
     gWnd_OGL->Maximize();
+    
+    gWnd_OGL->GetClientTopLeft(clientX, clientY);
+    gWnd_OGL->GetClientWidth(width);
+    gWnd_OGL->GetClientHeight(height);
+
+    glViewport(clientX, clientY, width, height);
+    
 #endif // __APPLE__
 
 #ifdef _WIN32

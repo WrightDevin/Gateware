@@ -32,6 +32,9 @@
 #include <OpenGL/gl3.h>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+//#import <GLKit/GLKit.h>
+#import <mach-o/dyld.h>
+#import <dlfcn.h>
 #endif
 
 using namespace GW;
@@ -504,7 +507,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     gWnd->GetClientHeight(viewHeight);
     gWnd->GetX(viewX);
     gWnd->GetY(viewY);
-
+    
     view = [NSView alloc];
     [view initWithFrame:NSMakeRect(viewX, viewY, viewWidth, viewHeight)];
 
@@ -516,17 +519,56 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
         NSOpenGLPFAColorSize, 32,
         NSOpenGLPFAAlphaSize, 8,
-        NSOpenGLPFADepthSize, 32,
+        NSOpenGLPFADepthSize, 0,
+        NSOpenGLPFAStencilSize, 0,
         0,
     };
+    
+    //////////////////////////////////
+    // CHECK IF INIT FLAGS WERE MET //
+    //////////////////////////////////
+    
+    // 10 BIT COLOR //
+    if (initOptions & COLOR_10_BIT)
+        return FAILURE;
+    
+    // DEPTH BUFFER SUPPORT //
+    if (initOptions & DEPTH_BUFFER_SUPPORT)
+        pixelAttributes[8] = 32;
+    
+    if (initOptions & DEPTH_STENCIL_SUPPORT)
+    {
+        pixelAttributes[8] = 24;
+        pixelAttributes[10] = 8;
+    }
 
     NSOpenGLPixelFormat* pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
 
     OGLMcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
     [OGLMcontext makeCurrentContext];
     [OGLMcontext setView:view];
-
-    //gWnd->ProcessWindowEvents();
+    
+    GLint depth, stencil;
+    
+    [pixelFormat getValues:&depth forAttribute:NSOpenGLPFADepthSize forVirtualScreen:0];
+    [pixelFormat getValues:&stencil forAttribute:NSOpenGLPFAStencilSize forVirtualScreen:0];
+    
+    if (initOptions & DEPTH_BUFFER_SUPPORT)
+    {
+        glEnable(GL_DEPTH_TEST);
+        
+        if (!glIsEnabled(GL_DEPTH_TEST) || depth == 0)
+            return FAILURE;
+    }
+    
+    if (initOptions & DEPTH_STENCIL_SUPPORT)
+    {
+        glEnable(GL_STENCIL_TEST);
+        
+        if (!glIsEnabled(GL_STENCIL_TEST) || stencil == 0)
+            return FAILURE;
+    }
+    
     
 #endif
 
@@ -585,7 +627,21 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 		(_funcName != nullptr && _outFuncAddress == nullptr) ||
 		_extension == nullptr)
 		return INVALID_ARGUMENT;
-
+    
+#ifdef __APPLE__
+    
+    static void* funcImage = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+    
+    if (funcImage)
+    {
+        _outFuncAddress = (void**)dlsym(funcImage, _funcName);
+        return SUCCESS;
+    }
+    else
+        return FAILURE;
+    
+#endif
+    
     //////////////////////////////////////////////////////////
 	// User only passed in extension name, without function //
     //////////////////////////////////////////////////////////
@@ -911,6 +967,64 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 
 #elif __APPLE__
         
+        switch (_eventID)
+        {
+            case GW::SYSTEM::NOTIFY:
+                break;
+            case GW::SYSTEM::MINIMIZE:
+                break;
+            case GW::SYSTEM::MAXIMIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::RESIZE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                aspectRatio = maxWidth / maxHeight;
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::MOVE:
+            {
+                unsigned int maxWidth;
+                unsigned int maxHeight;
+                unsigned int currX;
+                unsigned int currY;
+                
+                gWnd->GetWidth(maxWidth);
+                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientTopLeft(currX, currY);
+                
+                glViewport(currX, currY, maxWidth, maxHeight);
+            }
+                break;
+            case GW::SYSTEM::DESTROY:
+            {
+                this->~GOpenGL();
+            }
+                break;
+        }
 
         
 #endif
@@ -932,7 +1046,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
-	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, DEPTH_STENCIL_SUPPORT, OPENGL_ES_SUPPORT);
+	Surface->Initialize(0, DEPTH_BUFFER_SUPPORT, 0, OPENGL_ES_SUPPORT);
 
 	_gWin->RegisterListener(Surface, 0);
 

@@ -1,4 +1,4 @@
-﻿project(LibraryProject)
+project(LibraryProject)
 
 #########################################################################
 
@@ -8,6 +8,7 @@ if(APPLE)
 
 set(COCOA_LIBRARY Cocoa)
 set(OPENGL_LIBRARY OpenGL)
+
 
 message(“Adding .mm files”) 
  
