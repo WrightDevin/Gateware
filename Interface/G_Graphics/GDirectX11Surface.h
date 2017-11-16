@@ -18,7 +18,8 @@ namespace GW
 		{
 
 		public:
-			virtual GReturn Initialize() = 0;
+
+			virtual GReturn Initialize(unsigned char _initMask) = 0;
 
 			virtual GReturn GetDevice(void** _outDevice) = 0;
 
@@ -28,7 +29,9 @@ namespace GW
 
 			virtual GReturn GetRenderTarget(void** _outRenderTarget) = 0;
 
-			virtual float GetAspectRatio() = 0;
+			virtual GReturn GetDepthStencilView(void** _outDepthStencilView) = 0;
+
+			virtual GReturn GetDepthStencilState(void** _outStencilState) = 0;
 
 		};
 

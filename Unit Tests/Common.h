@@ -13,7 +13,7 @@
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
 #include <G_Graphics/GDirectX11Surface.h>
-#include <G_Graphics/GOpenGLESSurface.h>
+#include <G_Graphics/GOpenGLSurface.h>
 #include <G_Math/GVector.h>
 #include <G_Math/GMatrix.h>
 #include <G_Math/GQuaternion.h>
@@ -27,7 +27,7 @@
 #include <../../gateware.git.0/Interface/G_System/GFile.h>
 #include <../../gateware.git.0/Interface/G_System/GWindow.h>
 #include <../../gateware.git.0/Interface/G_Graphics/GDirectX11Surface.h>
-#include <../../gateware.git.0/Interface/G_Graphics/GOpenGLESSurface.h>
+#include <../../gateware.git.0/Interface/G_Graphics/GOpenGLSurface.h>
 #include <../../gateware.git.0/Interface/G_Audio/GAudio.h>
 #include <../../gateware.git.0/Interface/G_Math/GVector.h>
 #include <../../gateware.git.0/Interface/G_Math/GMatrix.h>

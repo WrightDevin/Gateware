@@ -46,7 +46,8 @@ class AppWindow : public GWindow
 private:
 
 #ifdef _WIN32
-	std::atomic<HWND> wndHandle;
+	//std::atomic<HWND> wndHandle;
+	HWND wndHandle;
 #elif __linux__
 	Display * display;
 	Window window;
@@ -140,7 +141,7 @@ public:
 
 	GReturn GetClientTopLeft(unsigned int &_outX, unsigned int &_outY);
 
-	GReturn GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize);
+	GReturn GetWindowHandle(unsigned int _handleSize, void** _outWindowHandle);
 
 	GReturn IsFullscreen(bool& _outIsFullscreen);
 };
@@ -1374,17 +1375,17 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	if (!window)
 		return FAILURE;
 
-	NSRect rect = window.frame;
-	NSRect contentRect = [window contentRectForFrameRect : rect];
+    NSRect rect = window.frame;
+    NSRect contentRect = [window contentRectForFrameRect:rect];
 
-	_outX = contentRect.origin.x;
-	_outY = contentRect.origin.y;
+    _outX = contentRect.origin.x;
+    _outY = contentRect.origin.y;
 
 #endif
 	return SUCCESS;
 }
 
-GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleSize)
+GReturn AppWindow::GetWindowHandle(unsigned int _handleSize, void** _outWindowHandle)
 {
 #ifdef _WIN32
 	if (!wndHandle)
@@ -1423,7 +1424,7 @@ GReturn AppWindow::GetWindowHandle(void* _outWindowHandle, unsigned int _handleS
 		return INVALID_ARGUMENT;
 	}
 
-	_outWindowHandle = (__bridge void*)window; // should test this
+	*_outWindowHandle = window;
 
 	return SUCCESS;
 #endif
