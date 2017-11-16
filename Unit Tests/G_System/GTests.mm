@@ -6,15 +6,10 @@
 #import "../G_System/GLogTest.cpp"
 #import "../G_System/GWindowTests.cpp"
 #import "../G_Audio/GAudioTests.cpp"
-//#import "../G_System/TestListener.cpp"
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
-<<<<<<< HEAD
-#import "../G_Graphics/GOpenGLESSurfaceTest.cpp"
+#import "../G_Graphics/GOpenGLSurfaceTest.cpp"
 #import "../G_Math/GMatrixTest.cpp"
 #import "../G_Math/GQuaternionTest.cpp"
 #import "../G_Math/GVectorTest.cpp"
-=======
-#import "../G_Graphics/GOpenGLSurfaceTest.cpp"
->>>>>>> Reid-GGraphics
 #import "../Common.cpp"
