@@ -1041,6 +1041,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 
 	unsigned char initMask = 0;
 	initMask |= DEPTH_BUFFER_SUPPORT;
+	initMask |= DEPTH_STENCIL_SUPPORT;
 	initMask |= OPENGL_ES_SUPPORT;
 	Surface->Initialize(initMask);
 
