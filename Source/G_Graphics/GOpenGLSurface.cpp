@@ -133,9 +133,6 @@ GOpenGL::GOpenGL()
 
 GOpenGL::~GOpenGL()
 {
-	gWnd->DeregisterListener(this);
-	DecrementCount();
-
 	#ifdef _WIN32
 	#elif __linux__
 
@@ -778,12 +775,16 @@ GReturn GOpenGL::IncrementCount()
 GReturn GOpenGL::DecrementCount()
 {
 	if (refCount == 0)
-	{
-		delete this;
 		return FAILURE;
-	}
 
 	--refCount;
+
+	if (refCount == 0)
+	{
+		gWnd->DeregisterListener(this);
+		delete this;
+	}
+
 
 	return SUCCESS;
 }
@@ -1042,7 +1043,6 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 	unsigned char initMask = 0;
 	initMask |= DEPTH_BUFFER_SUPPORT;
 	initMask |= DEPTH_STENCIL_SUPPORT;
-	initMask |= OPENGL_ES_SUPPORT;
 	Surface->Initialize(initMask);
 
 	_gWin->RegisterListener(Surface, 0);
