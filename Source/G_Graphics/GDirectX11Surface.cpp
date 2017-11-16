@@ -89,7 +89,7 @@ GReturn GDirectX11::Initialize(unsigned char _initMask)
 	GetWindowRect(surfaceWindow,&windowRect);
 	gWnd->GetClientWidth(width);
 	gWnd->GetClientHeight(height);
-	aspectRatio = width / height;
+	aspectRatio = (float)width / (float)height;
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
