@@ -183,6 +183,8 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
+
+	//open the file in binary reading mode
 	binaryFile = fopen(tempDir, "rb");
 
 	if (binaryFile == NULL)
@@ -214,6 +216,8 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
+
+	//open the file in binary writing mode
 	binaryFile = fopen(tempDir, "wb");
 
 	if (binaryFile == NULL)
@@ -248,6 +252,8 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	char tempDir[260];
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
+
+	//open the file in binary appending mode
 	binaryFile = fopen(tempDir, "ab");
 
 	if (binaryFile == NULL)

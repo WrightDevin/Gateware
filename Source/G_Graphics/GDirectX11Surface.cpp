@@ -68,8 +68,12 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
-	gWnd->DeregisterListener(this);
-	DecrementCount();
+	//gWnd->DeregisterListener(this);
+	//DecrementCount();
+	if (device) device->Release();
+	if (context) context->Release();
+	if (rtv) rtv->Release();
+	if (swapChain) swapChain->Release();
 }
 
 void GDirectX11::SetGWindow(GWindow* _window)
@@ -320,12 +324,16 @@ GReturn GDirectX11::IncrementCount()
 GReturn GDirectX11::DecrementCount()
 {
 	if (refCount == 0)
-	{
-		delete this;
 		return FAILURE;
-	}
 
 	--refCount;
+
+	if (refCount == 0)
+	{
+		gWnd->DeregisterListener(this);
+		delete this;
+	}
+
 
 	return SUCCESS;
 }

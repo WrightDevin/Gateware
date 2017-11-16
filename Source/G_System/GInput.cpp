@@ -27,6 +27,7 @@ private:
 	std::thread* inputThread;
 
 #ifdef _WIN32
+
 #elif __linux__
 	SYSTEM::LINUX_WINDOW _linuxWindow;
 #elif __APPPLE__
@@ -222,7 +223,6 @@ GReturn Input::InitializeWindows(void* _data) {
 		if (GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) < 0) {
 
 		}
-
 	}
 
 	//Register the raw input devices.
@@ -242,6 +242,8 @@ GReturn Input::InitializeWindows(void* _data) {
 
 	if (RegisterRawInputDevices(rID, 2, sizeof(rID[0])) == false) {
 	}
+
+
 
 	//Capslock
 	if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
@@ -277,7 +279,7 @@ GReturn Input::InitializeLinux(void* _data) {
 
 #endif
 
-    ///XAutoRepeatOff(_display);
+	///XAutoRepeatOff(_display);
 
 	//Set our thread to open.
 	threadOpen = true;
@@ -292,22 +294,22 @@ GReturn Input::InitializeMac(void* _data) {
 
 #ifdef __APPLE__
 
-    //Need to convert data back into an NSWindow*.
-    NSWindow * currentResponder = ((__bridge NSWindow*)_data);
+	//Need to convert data back into an NSWindow*.
+	NSWindow * currentResponder = ((__bridge NSWindow*)_data);
 
-    //We only want to process the message and pass it on. So if there is already
-    //a responder we set our responders next responder to be the current next responder.
-    [responder setNextResponder:currentResponder.nextResponder];
+	//We only want to process the message and pass it on. So if there is already
+	//a responder we set our responders next responder to be the current next responder.
+	[responder setNextResponder : currentResponder.nextResponder];
 
-    //We then set out responder to the next responder of the window.
-    [currentResponder setNextResponder:responder];
+	//We then set out responder to the next responder of the window.
+	[currentResponder setNextResponder : responder];
 
-    //We also need to make our responder the first responder of the window.
-    [currentResponder makeFirstResponder:responder];
+	//We also need to make our responder the first responder of the window.
+	[currentResponder makeFirstResponder : responder];
 
-    //In order to get mouse button presses we need to set our responder to be
-    //the next responder in the contentView as well.
-    [currentResponder.contentView setNextResponder:responder];
+	//In order to get mouse button presses we need to set our responder to be
+	//the next responder in the contentView as well.
+	[currentResponder.contentView setNextResponder : responder];
 
 
 #endif
@@ -315,10 +317,10 @@ GReturn Input::InitializeMac(void* _data) {
 	return SUCCESS;
 }
 
-GReturn Input::GetState(int _keyCode, float& _outState){
+GReturn Input::GetState(int _keyCode, float& _outState) {
 	if (_keyCode == G_MOUSE_SCROLL_DOWN || _keyCode == G_MOUSE_SCROLL_UP) {
 		return FEATURE_UNSUPPORTED;
-	}	
+	}
 	_outState = (float)n_Keys[_keyCode];
 	return SUCCESS;
 }
@@ -327,8 +329,13 @@ GReturn Input::GetMouseDelta(float& _x, float& _y) {
 
 	_x = _mouseDeltaX;
 	_y = _mouseDeltaY;
+	if (mouseReadCount != mouseWriteCount)
+	{
+		mouseReadCount = mouseWriteCount;
+		return SUCCESS;
+	}
+	return REDUNDANT_OPERATION;
 
-	return SUCCESS;
 }
 
 GReturn Input::GetMousePosition(float& _x, float& _y) {
@@ -352,49 +359,50 @@ void Input::InputThread()
 
 	while (threadOpen)
 	{
-        //Cast the void* _linuxWindow. display to a display pointer to pass to XNextEvent.
+		//Cast the void* _linuxWindow. display to a display pointer to pass to XNextEvent.
 		Display * _display = (Display*)(_linuxWindow.display);
 		char keys_return[32];
-        XQueryKeymap(_display, keys_return);
-        for(unsigned int i = 0; i < 128; i++){
-            _code = Keycodes[i][1];
-            if(keys_return[(i >> 3)] & (1 << (i & 7))){
-                n_Keys[_code] = 1;
-            }else{
-                n_Keys[_code] = 0;
-            }
-        }
+		XQueryKeymap(_display, keys_return);
+		for (unsigned int i = 0; i < 128; i++) {
+			_code = Keycodes[i][1];
+			if (keys_return[(i >> 3)] & (1 << (i & 7))) {
+				n_Keys[_code] = 1;
+			}
+			else {
+				n_Keys[_code] = 0;
+			}
+		}
 
 
-        Window a, b;
-        XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &keyMask);
-        //printf("KeyMask: %d\n", keyMask);
+		Window a, b;
+		XQueryPointer(_display, _window, &a, &b, &_mouseScreenPositionX, &_mouseScreenPositionY, &_mousePositionX, &_mousePositionY, &keyMask);
+		//printf("KeyMask: %d\n", keyMask);
 
-        if(keyMask & Button1Mask){
-            //printf("Left\n");
-            n_Keys[G_BUTTON_LEFT];
+		if (keyMask & Button1Mask) {
+			//printf("Left\n");
+			n_Keys[G_BUTTON_LEFT];
 
-        }
-        if(keyMask & Button3Mask){
-            //printf("Right\n");
-            n_Keys[G_BUTTON_RIGHT];
-        }
+		}
+		if (keyMask & Button3Mask) {
+			//printf("Right\n");
+			n_Keys[G_BUTTON_RIGHT];
+		}
 
-        if(keyMask & Button2Mask){
-            //printf("Middle\n");
-            n_Keys[G_BUTTON_MIDDLE];
-        }
+		if (keyMask & Button2Mask) {
+			//printf("Middle\n");
+			n_Keys[G_BUTTON_MIDDLE];
+		}
 
-	    timespec delay = { 0, 3333333 }; // 300Hz
-	    //while(nanosleep(&delay, &delay)); // Throttle thread to 300Hz.
+		timespec delay = { 0, 3333333 }; // 300Hz
+		//while(nanosleep(&delay, &delay)); // Throttle thread to 300Hz.
 
-        //Set the change in mouse position.
-        _mouseDeltaX = _mousePrevX - _mousePositionX;
-        _mouseDeltaY = _mousePrevY - _mousePositionY;
+		//Set the change in mouse position.
+		_mouseDeltaX = _mousePrevX - _mousePositionX;
+		_mouseDeltaY = _mousePrevY - _mousePositionY;
 
-        //Set the previous mouse position as the current.
-        _mousePrevX = _mousePositionX;
-        _mousePrevY = _mousePositionY;
+		//Set the previous mouse position as the current.
+		_mousePrevX = _mousePositionX;
+		_mousePrevY = _mousePositionY;
 
 
 	}

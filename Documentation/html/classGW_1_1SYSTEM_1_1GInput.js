@@ -1,7 +1,7 @@
 var classGW_1_1SYSTEM_1_1GInput =
 [
-    [ "GetKeyMask", "classGW_1_1SYSTEM_1_1GInput.html#a071a399bc9c400f0cd333958d911c8c2", null ],
+    [ "GetKeyMask", "classGW_1_1SYSTEM_1_1GInput.html#a448ee14346a393286b0dfe1dc61ca93d", null ],
     [ "GetMouseDelta", "classGW_1_1SYSTEM_1_1GInput.html#a775fca7ad71371f369e3ad69fb32603a", null ],
     [ "GetMousePosition", "classGW_1_1SYSTEM_1_1GInput.html#a351eb04ac4a8699f6e4e416860d264b2", null ],
-    [ "GetState", "classGW_1_1SYSTEM_1_1GInput.html#adde23f6e5640e8143e7e7835ee9774ec", null ]
+    [ "GetState", "classGW_1_1SYSTEM_1_1GInput.html#a73d61dd3d6c6751f52267ed7abb03994", null ]
 ];
