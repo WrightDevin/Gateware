@@ -23,6 +23,8 @@ namespace GW
 
 			virtual GReturn GetContext(void** _outContext) = 0;
 
+			virtual GReturn GetAspectRatio(float& _outAspectRatio) = 0;
+
 			virtual GReturn UniversalSwapBuffers() = 0;
 
 			virtual GReturn QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress) = 0;

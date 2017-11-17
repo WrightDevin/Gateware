@@ -50,8 +50,8 @@ private:
 	GWindow*		gWnd;
 	unsigned int	clientX;
 	unsigned int	clientY;
-	float			width;
-	float			height;
+	unsigned int	width;
+	unsigned int	height;
 	float			aspectRatio;
 
 	GLint			numExtensions = 0;
@@ -103,12 +103,12 @@ public:
 	virtual ~GOpenGL();
 	GReturn Initialize(unsigned char _initMask);
 	GReturn	GetContext(void** _outContext);
+	GReturn	GetAspectRatio(float& _outAspectRatio);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
 	GReturn EnableSwapControl(bool& _toggle);
 
 	void	SetGWindow(GWindow* _window);
-	float	GetAspectRatio();
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -155,16 +155,14 @@ GReturn GOpenGL::Initialize(unsigned char _initMask)
 {
 
     gWnd->OpenWindow();
-	//unsigned char _initMask = _color10bit | _depthBuffer | _depthStencil | _esContext;
 
 #ifdef _WIN32
 
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
+	gWnd->GetClientWidth(width);
+	gWnd->GetClientHeight(height);
 	hdc = GetDC(surfaceWindow);
-	RECT windowRect;
-	GetWindowRect(surfaceWindow, &windowRect);
-	width = windowRect.right - windowRect.left;
-	height = windowRect.bottom - windowRect.top;
+
 	aspectRatio = (float)width / (float)height;
 
 	PIXELFORMATDESCRIPTOR pfd =
@@ -583,6 +581,15 @@ GReturn GOpenGL::GetContext(void ** _outContext)
 	return SUCCESS;
 }
 
+GReturn GOpenGL::GetAspectRatio(float& _outAspectRatio)
+{
+
+	_outAspectRatio = aspectRatio;
+
+	return SUCCESS;
+
+}
+
 GReturn GOpenGL::UniversalSwapBuffers()
 {
 #ifdef _WIN32
@@ -603,18 +610,12 @@ GReturn GOpenGL::UniversalSwapBuffers()
 
 }
 
-float GOpenGL::GetAspectRatio()
-{
-	return aspectRatio;
-}
-
 GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress)
 {
 
 	// Invalid Arguments
 	if ((_funcName == nullptr && _outFuncAddress != nullptr) ||
-		(_funcName != nullptr && _outFuncAddress == nullptr) ||
-		_extension == nullptr)
+		(_funcName != nullptr && _outFuncAddress == nullptr))
 		return INVALID_ARGUMENT;
 
 #ifdef __APPLE__
@@ -630,6 +631,35 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
         return FAILURE;
 
 #endif
+
+	//////////////////////////////////////////////////////////
+	// User only passed in function name, without extension //
+	//////////////////////////////////////////////////////////
+
+	if (_extension == nullptr && _funcName != nullptr && _outFuncAddress != nullptr)
+	{
+
+#ifdef _WIN32
+
+		*_outFuncAddress = wglGetProcAddress(_funcName);
+
+		if (*_outFuncAddress == nullptr)
+			return FAILURE;
+
+		return SUCCESS;
+
+#elif __linux__
+
+		_outFuncAddress = (void**)glXGetProcAddress((const GLubyte*)_funcName);
+
+		if (_outFuncAddress == nullptr)
+			return FAILURE;
+
+		return SUCCESS;
+
+#endif
+
+	}
 
     //////////////////////////////////////////////////////////
 	// User only passed in extension name, without function //
@@ -847,20 +877,6 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             case GW::SYSTEM::MINIMIZE:
                 break;
             case GW::SYSTEM::MAXIMIZE:
-            {
-                unsigned int maxWidth;
-                unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
-
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-
-                aspectRatio = maxWidth / maxHeight;
-
-                glViewport(0, 0, maxWidth, maxHeight);
-            }
-                break;
             case GW::SYSTEM::RESIZE:
             {
                 unsigned int maxWidth;
@@ -868,13 +884,13 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int currX;
                 unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
 
-                aspectRatio = maxWidth / maxHeight;
+                aspectRatio = (float)maxWidth / (float)maxHeight;
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::MOVE:
@@ -884,11 +900,11 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int currX;
                 unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::DESTROY:
@@ -907,20 +923,6 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             case GW::SYSTEM::MINIMIZE:
                 break;
             case GW::SYSTEM::MAXIMIZE:
-            {
-                unsigned int maxWidth;
-                unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
-
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-
-                aspectRatio = maxWidth / maxHeight;
-
-                glViewport(0, 0, maxWidth, maxHeight);
-            }
-                break;
             case GW::SYSTEM::RESIZE:
             {
                 unsigned int maxWidth;

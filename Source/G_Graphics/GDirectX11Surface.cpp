@@ -446,11 +446,12 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 				newRTVBuffer->Release();
 
 				D3D11_VIEWPORT viewport;
+				viewport.TopLeftX = 0;
+				viewport.TopLeftY = 0;
 				viewport.Width = width;
 				viewport.Height = height;
 				viewport.MinDepth = 0.0f;
 				viewport.MaxDepth = 1.0f;
-				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
 				context->RSSetViewports(1,&viewport);
 			}
@@ -464,8 +465,8 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 			unsigned int newY;
 			unsigned int currWidth;
 			unsigned int currHeight;
-			gWnd->GetWidth(currWidth);
-			gWnd->GetHeight(currHeight);
+			gWnd->GetClientWidth(currWidth);
+			gWnd->GetClientHeight(currHeight);
 			gWnd->GetClientTopLeft(newX, newY);
 
 			D3D11_VIEWPORT viewport;
@@ -474,8 +475,8 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 			viewport.Height = (float)currHeight;
 			viewport.MinDepth = 0.0f;
 			viewport.MaxDepth = 1.0f;
-			viewport.TopLeftX = (float)newX / viewport.Width;
-			viewport.TopLeftY = (float)newY / viewport.Height;
+			viewport.TopLeftX = 0
+			viewport.TopLeftY = 0;
 
 			context->RSSetViewports(1,&viewport);
 		}
