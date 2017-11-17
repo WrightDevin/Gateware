@@ -21,6 +21,8 @@ namespace GW
 
 			virtual GReturn Initialize(unsigned char _initMask) = 0;
 
+			virtual GReturn GetAspectRatio(float& _outRatio) = 0;
+
 			virtual GReturn GetDevice(void** _outDevice) = 0;
 
 			virtual GReturn GetContext(void** _outContext) = 0;
