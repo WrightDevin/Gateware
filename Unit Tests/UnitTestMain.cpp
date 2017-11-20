@@ -11,7 +11,16 @@
 //#define _CRTDBG_MAO_ALLOC
 
 //Global variables for tests
-std::thread workerThread;
+
+// This workerThread MUST be allocated on the Heapp
+// and NOT the stack because the 'Initialize' and
+// 'Shutdown' functions are being externed. This
+// is currently our assumption and has not been
+// confirmed, but adhering to this rule will
+// prevent errors.
+std::thread *workerThread = nullptr;
+
+
 std::mutex threadLock;
 std::condition_variable conditionalLock;
 bool conditionMet = false;
@@ -35,13 +44,15 @@ int main(int _argc, char** _argv)
 	//_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 	//Kick off the thread
 	//This thread will initialize and run CATCH
-	workerThread = std::thread(WorkerThread, _argc, _argv);
+	workerThread = new std::thread(WorkerThread, _argc, _argv);
 
 	//Initialize the tests
 	Initialize(conditionalLock, conditionMet);
 
 	//Wait for CATCH to finish
-	workerThread.join();
+	workerThread->join();
+    
+    delete workerThread;
 
 	//std::cin.get();
     //Sleep(1000);
