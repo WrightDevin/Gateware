@@ -25,7 +25,7 @@ using namespace GRAPHICS;
 class GDirectX11 : public GDirectX11Surface
 {
 private:
-	// declare all necessary members (platform specific)
+	// declare all necessary members
 	unsigned int refCount;
 
 	GWindow*					gWnd;
@@ -68,8 +68,6 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
-	//gWnd->DeregisterListener(this);
-	//DecrementCount();
 	if (device) device->Release();
 	if (context) context->Release();
 	if (rtv) rtv->Release();
@@ -299,6 +297,9 @@ GReturn GDirectX11::GetDepthStencilState(void** _outStencilState)
 
 GReturn GDirectX11::GetAspectRatio(float& _outRatio)
 {
+	if (!gWnd)
+		return FAILURE;
+
 	_outRatio = aspectRatio;
 
 	return SUCCESS;
@@ -389,16 +390,9 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 
 		switch (_eventID)
 		{
-		case GW::SYSTEM::NOTIFY:
-			break;
-		case GW::SYSTEM::MINIMIZE:
-			break;
 		case GW::SYSTEM::MAXIMIZE:
 		case GW::SYSTEM::RESIZE:
 		{
-
-			/*unsigned int newWidth;
-			unsigned int newHeight;*/
 
 			gWnd->GetClientWidth(width);
 			gWnd->GetClientHeight(height);
