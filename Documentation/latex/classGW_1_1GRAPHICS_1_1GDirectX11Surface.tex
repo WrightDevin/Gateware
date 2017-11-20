@@ -20,8 +20,6 @@ Collaboration diagram for GW\+:\+:G\+R\+A\+P\+H\+I\+CS\+:\+:G\+Direct\+X11\+Surf
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a2986284e5ccd34c1b026552abfb631c7}{Initialize} (unsigned char \+\_\+init\+Mask)=0
-\begin{DoxyCompactList}\small\item\em Initializes and creates the Direct\+X11 Context. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a4ae8372993803025a14a8471835ed231}{Get\+Aspect\+Ratio} (float \&\+\_\+out\+Ratio)=0
 \begin{DoxyCompactList}\small\item\em Returns the aspect ratio for the current window. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a076c4f3a07f79f578185416be449ebd2}{Get\+Device} (void $\ast$$\ast$\+\_\+out\+Device)=0
@@ -33,9 +31,7 @@ virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hy
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a953f4809860408b0e99928ac8b9b6a53}{Get\+Render\+Target} (void $\ast$$\ast$\+\_\+out\+Render\+Target)=0
 \begin{DoxyCompactList}\small\item\em Returns the address of the current I\+D3\+D11\+Render\+Target\+View. \end{DoxyCompactList}\item 
 virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a44937f7b6e85b0b8df3ac6871c4b87a3}{Get\+Depth\+Stencil\+View} (void $\ast$$\ast$\+\_\+out\+Depth\+Stencil\+View)=0
-\begin{DoxyCompactList}\small\item\em Returns the address of the current I\+D3\+D11\+Depth\+Stencil\+View. \end{DoxyCompactList}\item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a4437f479450786a7ef415532cddec703}{Get\+Depth\+Stencil\+State} (void $\ast$$\ast$\+\_\+out\+Stencil\+State)=0
-\begin{DoxyCompactList}\small\item\em Returns the address of the current I\+D3\+D11\+Depth\+Stencil\+State. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Returns the address of the current I\+D3\+D11\+Depth\+Stencil\+View. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -86,30 +82,6 @@ Returns the address of the current I\+D3\+D11\+Device\+Context.
 {\em S\+U\+C\+C\+E\+SS} & A Direct\+X11 contexts exists and was returned. \\
 \hline
 {\em F\+A\+I\+L\+U\+RE} & No context exists to retrieve. \\
-\hline
-\end{DoxyRetVals}
-\mbox{\Hypertarget{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a4437f479450786a7ef415532cddec703}\label{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a4437f479450786a7ef415532cddec703}} 
-\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface@{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface}!Get\+Depth\+Stencil\+State@{Get\+Depth\+Stencil\+State}}
-\index{Get\+Depth\+Stencil\+State@{Get\+Depth\+Stencil\+State}!G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface@{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface}}
-\subsubsection{\texorpdfstring{Get\+Depth\+Stencil\+State()}{GetDepthStencilState()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface\+::\+Get\+Depth\+Stencil\+State (\begin{DoxyParamCaption}\item[{void $\ast$$\ast$}]{\+\_\+out\+Stencil\+State }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
-
-
-
-Returns the address of the current I\+D3\+D11\+Depth\+Stencil\+State. 
-
-A Depth Stencil State will only be created if requested as a special option when the \textquotesingle{}Initialize\textquotesingle{} method is called.
-
-
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt out}  & {\em \+\_\+out\+Depth\+Stencil\+State} & Will contain the address of the depth stencil state.\\
-\hline
-\end{DoxyParams}
-
-\begin{DoxyRetVals}{Return values}
-{\em S\+U\+C\+C\+E\+SS} & A Direct\+X11 depth stencil state exists and was returned. \\
-\hline
-{\em F\+A\+I\+L\+U\+RE} & No depth stencil state exists to retrieve. \\
 \hline
 \end{DoxyRetVals}
 \mbox{\Hypertarget{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a44937f7b6e85b0b8df3ac6871c4b87a3}\label{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a44937f7b6e85b0b8df3ac6871c4b87a3}} 
@@ -200,34 +172,6 @@ Returns the address of the current I\+D\+X\+G\+I\+Swap\+Chain.
 {\em S\+U\+C\+C\+E\+SS} & A Direct\+X11 swap chain exists and was returned. \\
 \hline
 {\em F\+A\+I\+L\+U\+RE} & No swap chain exists to retrieve. \\
-\hline
-\end{DoxyRetVals}
-\mbox{\Hypertarget{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a2986284e5ccd34c1b026552abfb631c7}\label{classGW_1_1GRAPHICS_1_1GDirectX11Surface_a2986284e5ccd34c1b026552abfb631c7}} 
-\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface@{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface}!Initialize@{Initialize}}
-\index{Initialize@{Initialize}!G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface@{G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface}}
-\subsubsection{\texorpdfstring{Initialize()}{Initialize()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+G\+R\+A\+P\+H\+I\+C\+S\+::\+G\+Direct\+X11\+Surface\+::\+Initialize (\begin{DoxyParamCaption}\item[{unsigned char}]{\+\_\+init\+Mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
-
-
-
-Initializes and creates the Direct\+X11 Context. 
-
-This function will open an existing G\+Window and create a Direct\+X11 rendering context that is tied to it.
-
-This function accepts a bit mask that can hold supported \textquotesingle{}G\+Graphics\+Init\+Options\textquotesingle{}, which will be taken into account when creating the context. To ignore this mask, simply pass in 0 when calling this function and the context will be created with default settings.
-
-
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em \+\_\+init\+Mask} & The bit mask that can hold special initialization options.\\
-\hline
-\end{DoxyParams}
-
-\begin{DoxyRetVals}{Return values}
-{\em S\+U\+C\+C\+E\+SS} & A Direct\+X11 context was successfully created (with the requested options, if any). \\
-\hline
-{\em F\+A\+I\+L\+U\+RE} & An existing G\+Window is not present or the context did not created successfully. \\
-\hline
-{\em F\+E\+A\+T\+U\+R\+E\+\_\+\+U\+N\+S\+U\+P\+P\+O\+R\+T\+ED} & A requested initialization option is not supported or could not be applied. \\
 \hline
 \end{DoxyRetVals}
 

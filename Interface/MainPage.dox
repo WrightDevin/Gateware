@@ -1,6 +1,6 @@
 /*! \mainpage Gateware Libraries
 *
-* \copyright Copyright (c) 2016 7thGate Software .LLC
+* \copyright Copyright (c) 2017 7thGate Software .LLC
 * \license Gateware libraries are released under Creative Commons MIT lincense unless noted differently by the library.
 * \version Beta Release
 *
@@ -45,7 +45,62 @@
 * input events, instead of catching raw input. GBufferedInput is directly 
 * derived from GBroadcast, meaning it must have a Listener attached to it 
 * to function. This type of input is more useful in any situation where speed is 
-* not as important, like navigating menus and entering text into fields. 
+* not as important, like navigating menus and entering text into fields.
+* 
+* \subsection APIGWindow GWindow
+* The purpose of GWindow is to create a window and handle it's properties. This
+* library recieves events from the current platform's main event system, adjusts
+* any existing windows accordingly, and broadcasts these events to any registered
+* listeners. Users will have the ability to resize and reconfigure the window,
+* as well as query any size information they may need. 
+*
+* \subsection APIGDirectX11Surface GDirectX11Surface
+* GDirectX11Surface is a library that allows for the automated setup and 
+* initialization of a DirectX11 rendering context. Along with the context,
+* this library can create and manage other DirectX11 resources (upon request)
+* that are useful when performing 3D rendering.
+*
+* \subsection APIGOpenGLSurface GOpenGLSurface
+* GOpenGLSurfaceis a library that allows for the automated setup and 
+* initialization of an OpenGL rendering context. Along with the context,
+* this library can enable different OpenGL functionality (upon request)
+* that may be useful when working on a 3D project.
+*
+* \subsection APIGAudio GAudio
+* GAudio is intended to handle all music and sound. This library
+* creates either a sound or music stream depending on the request.
+* Once created, users will have control of the master volume,
+* individual channel volumes, and can pause/play all sounds
+* and music.
+*
+* \subsection APIGMusic GMusic
+* GMusic is designed specifically to handle music. Once
+* initialized, users can control the output and functions
+* of the current stream. This will allow the users the
+* ability to manipulate the music without having any
+* effect on other sounds.
+*
+* \subsection APIGSound GSound
+* GSound is designed specifically to handle sounds/sound effects. This
+* library functions very similarly to GMusic. Users will have control of
+* the output channels of the sound, the volume, and can pause/play the
+* sound of their choice. As with GMusic, affecting sounds with this library
+* should have no effect on music streams created with GMusic.
+*
+* \subsection APIGQuaternion GQuaternion
+* GQuaternion supplies a convenient set of quaternion functions and macros 
+* that can be useful when performing any calculations that may require
+* quaternion math. 
+*
+* \subsection APIGVector GVector
+* GVector supplies a convenient set of vector functions and macros 
+* that can be useful when performing any calculations that may require
+* vector math. 
+*
+* \subsection APIGMatrix GMatrix
+* GMatrix supplies a convenient set of matrix functions and macros 
+* that can be useful when performing any calculations that may require
+* matrix math.
 *
 * \section Reporting Bug Reporting
 * Each team that Gateware deploys to will designate one team member to be their

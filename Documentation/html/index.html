@@ -84,7 +84,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">Gateware Libraries </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2016 7thGate Software .LLC  Gateware libraries are released under Creative Commons MIT lincense unless noted differently by the library. </dd></dl>
+<div class="textblock"><dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2017 7thGate Software .LLC  Gateware libraries are released under Creative Commons MIT lincense unless noted differently by the library. </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>Beta Release</dd></dl>
 <h1><a class="anchor" id="Install"></a>
 Installation</h1>
@@ -105,6 +105,33 @@ GInput</h2>
 <h2><a class="anchor" id="APIGBufferedInput"></a>
 GBufferedInput</h2>
 <p>GBuffered input provides a similar function to GInput, but implements an event based system that is reacting to platform specific keyboard and mouse input events, instead of catching raw input. GBufferedInput is directly derived from GBroadcast, meaning it must have a Listener attached to it to function. This type of input is more useful in any situation where speed is not as important, like navigating menus and entering text into fields.</p>
+<h2><a class="anchor" id="APIGWindow"></a>
+GWindow</h2>
+<p>The purpose of GWindow is to create a window and handle it's properties. This library recieves events from the current platform's main event system, adjusts any existing windows accordingly, and broadcasts these events to any registered listeners. Users will have the ability to resize and reconfigure the window, as well as query any size information they may need.</p>
+<h2><a class="anchor" id="APIGDirectX11Surface"></a>
+GDirectX11Surface</h2>
+<p>GDirectX11Surface is a library that allows for the automated setup and initialization of a DirectX11 rendering context. Along with the context, this library can create and manage other DirectX11 resources (upon request) that are useful when performing 3D rendering.</p>
+<h2><a class="anchor" id="APIGOpenGLSurface"></a>
+GOpenGLSurface</h2>
+<p>GOpenGLSurfaceis a library that allows for the automated setup and initialization of an OpenGL rendering context. Along with the context, this library can enable different OpenGL functionality (upon request) that may be useful when working on a 3D project.</p>
+<h2><a class="anchor" id="APIGAudio"></a>
+GAudio</h2>
+<p>GAudio is intended to handle all music and sound. This library creates either a sound or music stream depending on the request. Once created, users will have control of the master volume, individual channel volumes, and can pause/play all sounds and music.</p>
+<h2><a class="anchor" id="APIGMusic"></a>
+GMusic</h2>
+<p>GMusic is designed specifically to handle music. Once initialized, users can control the output and functions of the current stream. This will allow the users the ability to manipulate the music without having any effect on other sounds.</p>
+<h2><a class="anchor" id="APIGSound"></a>
+GSound</h2>
+<p>GSound is designed specifically to handle sounds/sound effects. This library functions very similarly to GMusic. Users will have control of the output channels of the sound, the volume, and can pause/play the sound of their choice. As with GMusic, affecting sounds with this library should have no effect on music streams created with GMusic.</p>
+<h2><a class="anchor" id="APIGQuaternion"></a>
+GQuaternion</h2>
+<p>GQuaternion supplies a convenient set of quaternion functions and macros that can be useful when performing any calculations that may require quaternion math.</p>
+<h2><a class="anchor" id="APIGVector"></a>
+GVector</h2>
+<p>GVector supplies a convenient set of vector functions and macros that can be useful when performing any calculations that may require vector math.</p>
+<h2><a class="anchor" id="APIGMatrix"></a>
+GMatrix</h2>
+<p>GMatrix supplies a convenient set of matrix functions and macros that can be useful when performing any calculations that may require matrix math.</p>
 <h1><a class="anchor" id="Reporting"></a>
 Bug Reporting</h1>
 <p>Each team that Gateware deploys to will designate one team member to be their Reporter. The Reporter will post bugs to the Gateware Underdog page on behalf of their team. </p>
