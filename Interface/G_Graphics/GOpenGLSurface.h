@@ -15,7 +15,6 @@ License: MIT
 //! GOpenGLSurface inherits directly from GListener.
 #include "../../Interface/G_Core/GListener.h"
 #include "../../Interface/G_System/GWindow.h"
-#include "../../Interface/G_System/GKeyDefines.h"
 #include "GGraphicsDefines.h"
 
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.

@@ -1,6 +1,7 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLSurface.h"
 #include "../../Source/G_System/GUtility.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>

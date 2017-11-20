@@ -1,6 +1,5 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GDirectX11Surface.h"
-#include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 
 
