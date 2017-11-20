@@ -109,7 +109,7 @@ public:
 	GReturn	GetAspectRatio(float& _outAspectRatio);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
-	GReturn EnableSwapControl(bool& _setSwapControl);
+	GReturn EnableSwapControl(bool _setSwapControl);
 
 	void	SetGWindow(GWindow* _window);
 
@@ -803,7 +803,7 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 
 }
 
-GReturn GOpenGL::EnableSwapControl(bool& _setSwapControl)
+GReturn GOpenGL::EnableSwapControl(bool _setSwapControl)
 {
 
 #if _WIN32

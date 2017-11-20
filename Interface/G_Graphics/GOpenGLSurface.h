@@ -23,10 +23,10 @@ namespace GW
 	//! The namespace to which all Gateware Graphics library interfaces must belong.
 	namespace GRAPHICS
 	{
-		//! Unique Identifier for this interface. {58D21F9F-2BBA-4678-8AB5-E029D2503475}
+		//! Unique Identifier for this interface. {F67B270D-B8DB-46A6-8D30-BFB568EB92F6}
 		static const GUUIID GOpenGLSurfaceUUIID =
 		{ 
-			0x58d21f9f, 0x2bba, 0x4678,{ 0x8a, 0xb5, 0xe0, 0x29, 0xd2, 0x50, 0x34, 0x75 } 
+			0xf67b270d, 0xb8db, 0x46a6,{ 0x8d, 0x30, 0xbf, 0xb5, 0x68, 0xeb, 0x92, 0xf6 } 
 		};
 
 		//! A library used to initialize, create, and manage an OpenGL rendering context.
@@ -95,7 +95,7 @@ namespace GW
 			*   \retval FEATURE_UNSUPPORTED The extension required to use this functionality was not supported.
 			*	\retval FAILURE No valid OpenGL context exists.
 			*/
-			virtual GReturn EnableSwapControl(bool& _setSwapControl) = 0;
+			virtual GReturn EnableSwapControl(bool _setSwapControl) = 0;
 
 		}; // end GOpenGLSurface class
 	
