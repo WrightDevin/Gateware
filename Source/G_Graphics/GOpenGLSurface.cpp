@@ -302,7 +302,7 @@ GReturn GOpenGL::Initialize(unsigned long long _initMask)
 	{
 		if (pfValues[0] != 10 && pfValues[1] != 10 && pfValues[2] != 10)
 			return FEATURE_UNSUPPORTED;
-		
+
 	}
 
 	//////////////////////////
@@ -461,7 +461,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 
 	}
 
-	
+
 	//////////////////////////
 	// DEPTH BUFFER SUPPORT //
 	//////////////////////////
@@ -474,7 +474,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 	}
 
-	
+
 	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
 	///////////////////////////
@@ -487,7 +487,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 	}
 
-	
+
 	////////////////////////
 	// ES CONTEXT SUPPORT //
 	////////////////////////
@@ -533,14 +533,14 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     // CHECK IF INIT FLAGS WERE MET //
     //////////////////////////////////
 
-    
+
 	//////////////////
 	// 10 BIT COLOR //
 	//////////////////
 	if (_initMask & COLOR_10_BIT)
         return FEATURE_UNSUPPORTED;
 
-    
+
 	//////////////////////////
 	// DEPTH BUFFER SUPPORT //
 	//////////////////////////
@@ -639,7 +639,7 @@ GReturn GOpenGL::UniversalSwapBuffers()
 
 #elif __linux__
 
-	if (!lWnd || *lWindow)
+	if (!lWnd.display || !lWnd.window || lWindow == nullptr)
 		return FAILURE;
 
 	glXSwapBuffers((Display*)lWnd.display, *lWindow);
@@ -663,7 +663,7 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 	// Invalid Arguments //
 	///////////////////////
 	if ((_funcName == nullptr && _outFuncAddress != nullptr) ||
-		(_funcName != nullptr && _outFuncAddress == nullptr) || 
+		(_funcName != nullptr && _outFuncAddress == nullptr) ||
 		 _extension == nullptr && _funcName == nullptr)
 		return INVALID_ARGUMENT;
 
@@ -826,7 +826,7 @@ GReturn GOpenGL::EnableSwapControl(bool& _setSwapControl)
 	if (!glXSwapIntervalEXT)
 		return FEATURE_UNSUPPORTED;
 
-	if (!OGLcontext)
+	if (!OGLXcontext)
 		return FAILURE;
 
 	if (_setSwapControl == true)
