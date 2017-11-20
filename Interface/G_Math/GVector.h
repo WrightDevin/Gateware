@@ -62,7 +62,7 @@ namespace GW
 
 			//! Scale the vector
 			/*!
-			*	Scales all elements of the input vector by the specified value 
+			*	Scales all elements of the input vector by the specified value
 			*	and stores the result in the output vector.
 			*
 			*	\param [in]  _vector1		The first vector
@@ -72,7 +72,7 @@ namespace GW
 			*	\retval SUCCESS				The calculation succeed
 			*/
 			virtual GReturn ScaleF(GVECTORF _vector, float _scalar, GVECTORF& _outVector) = 0;
-		
+
 			//! Calculates the dot product of the two vectors
 			/*!
 			*	Calculates the dot product of two specified vectors and stores the result in the output Value.
@@ -87,7 +87,7 @@ namespace GW
 
 			//! Calculates the Cross product of the two vectors which are treated as 2 elements vector 
 			/*!
-			*	Calculates the cross product of two specified vectors which are treated as 2 elements vectors 
+			*	Calculates the cross product of two specified vectors which are treated as 2 elements vectors
 			*	and stores the result in the output value. The input vectors' z and w value will be ignored.
 			*
 			*	\param [in]  _vector1		The first vector
@@ -136,7 +136,7 @@ namespace GW
 			*	\retval SUCCESS				The calculation succeed
 			*/
 			virtual GReturn TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
-			
+
 			//! Computes the magnitude of the specified vector.
 			/*!
 			*	Computes the magnitude of the specified vector,	and stores the result in the output value.
@@ -178,7 +178,7 @@ namespace GW
 			//! Calculate the interpolation on a cuvre which connects two specified 3D vectors
 			/*!
 			*	Calculate the interpolation on a cuvre which connects two specified 3D vectors
-			*	and stores the result in the output quaternion. The component of w 
+			*	and stores the result in the output quaternion. The component of w
 			*	will return 0. The interpolation will happen between the second point
 			*	and thrid point.
 			*
@@ -319,7 +319,7 @@ namespace GW
 			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn NormalizeD(GVECTORD _vector, GVECTORD& _outVector) = 0;
-			
+
 			//! Spherical linear interpolates between two specified vectors
 			/*!
 			*	Spherical linear interpolates between two specified vectors
@@ -337,7 +337,7 @@ namespace GW
 			//! Calculate the interpolation between two specified 3D vectors
 			/*!
 			*	Calculate the interpolation between two specified 3D vectors
-			*	and stores the result in the output quaternion. The component of w 
+			*	and stores the result in the output quaternion. The component of w
 			*	will return 0. The interpolation will happen between the second point
 			*	and thrid point.
 			*
@@ -355,6 +355,16 @@ namespace GW
 
 		}; //! end GVector class
 
+		//! Creates and outputs a new GVector object.
+		/*!
+		*	Creates a new GVector object and store the object in _outVector.
+		*
+		*	\param [out] _outVector				The GVector object
+		*
+		*	\retval SUCCESS						A GVector object was successfully created.
+		*	\retval FAILURE						A GVector object was not created. _outVector will be null.
+		*	\retval INVALID_ARGUMENT			_outVector is nullptr.
+		*/
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGVector(GVector** _outVector);
 
 	};//! end SYSTEM namespace

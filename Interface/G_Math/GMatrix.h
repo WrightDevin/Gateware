@@ -631,7 +631,16 @@ namespace GW
 			
 		}; //! end GMatrix class
 		
-
+		   //! Creates and outputs a new GMatrix object.
+		   /*!
+		   *	Creates a new GVector object and store the object in _outMatrix.
+		   *
+		   *	\param [out] _outMatrix			The GMatrix object
+		   *
+		   *	\retval SUCCESS					A GMatrix object was successfully created.
+		   *	\retval FAILURE					A GMatrix object was not created. _outMatrix will be null.
+		   *	\retval INVALID_ARGUMENT		_outMatrix is nullptr.
+		   */
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGMatrix(GMatrix** _outMatrix);
 	};//! end SYSTEM namespace
 } //! end GW namespace

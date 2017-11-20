@@ -411,6 +411,18 @@ namespace GW
 
 
 		}; //! end GQuaternion class
+
+
+		//! Creates and outputs a new GQuaternion object.
+		/*!
+		*	Creates a new GQuaternion object and store the object in _outQuaternion.
+		*
+		*	\param [out] _outQuaternion		    The GVector object
+		*
+		*	\retval SUCCESS						A GQuaternion object was successfully created.
+		*	\retval FAILURE						A GQuaternion object was not created. _outQuaternion will be null.
+		*	\retval INVALID_ARGUMENT			_outQuaternion is nullptr.
+		*/
 		GATEWARE_EXPORT_IMPLICIT GReturn CreateGQuaternion(GQuaternion** _outQuaternion);
 
 	};//! end SYSTEM namespace
