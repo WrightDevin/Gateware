@@ -34,7 +34,6 @@ private:
 	IDXGISwapChain*				swapChain;
 	ID3D11RenderTargetView*		rtv;
 	ID3D11DepthStencilView*		zBuffer = nullptr;
-	ID3D11DepthStencilState*	stencilState = nullptr;
 	unsigned int				width;
 	unsigned int				height;
 	float						aspectRatio;
@@ -51,7 +50,6 @@ public:
 	GReturn GetSwapchain(void** _outSwapchain);
 	GReturn GetRenderTarget(void** _outRenderTarget);
 	GReturn GetDepthStencilView(void** _outDepthStencilView);
-	GReturn GetDepthStencilState(void** _outStencilState);
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -170,37 +168,6 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 		ID3D11Texture2D* depthBuffer;
 		device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
 
-		///////////////////////////////////////////////
-		// Create Depth Stencil State (if requested) // 
-		///////////////////////////////////////////////
-
-		if (_initMask & DEPTH_STENCIL_SUPPORT)
-		{
-			D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
-			ZeroMemory(&depthStencilStateDesc, sizeof(depthStencilStateDesc));
-
-			depthStencilStateDesc.DepthEnable = true;
-			depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-			depthStencilStateDesc.StencilEnable = true;
-			depthStencilStateDesc.StencilReadMask = 0xFF;
-			depthStencilStateDesc.StencilWriteMask = 0xFF;
-
-			depthStencilStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-			depthStencilStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-			
-			depthStencilStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-			depthStencilStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-			device->CreateDepthStencilState(&depthStencilStateDesc,&stencilState);
-
-		}
-
 		///////////////////////////////
 		// Create Depth Stencil View //
 		///////////////////////////////
@@ -280,16 +247,6 @@ GReturn GDirectX11::GetDepthStencilView(void** _outDepthStencilView)
 		return FAILURE;
 
 	*_outDepthStencilView = zBuffer;
-
-	return SUCCESS;
-}
-
-GReturn GDirectX11::GetDepthStencilState(void** _outStencilState)
-{
-	if (stencilState == nullptr)
-		return FAILURE;
-
-	*_outStencilState = stencilState;
 
 	return SUCCESS;
 }

@@ -109,7 +109,7 @@ public:
 	GReturn	GetAspectRatio(float& _outAspectRatio);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
-	GReturn EnableSwapControl(bool& _toggle);
+	GReturn EnableSwapControl(bool& _setSwapControl);
 
 	void	SetGWindow(GWindow* _window);
 
@@ -803,7 +803,7 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 
 }
 
-GReturn GOpenGL::EnableSwapControl(bool& _toggle)
+GReturn GOpenGL::EnableSwapControl(bool& _setSwapControl)
 {
 
 #if _WIN32
@@ -814,7 +814,7 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 	if (!OGLcontext)
 		return FAILURE;
 
-    if (_toggle == true)
+    if (_setSwapControl == true)
         wglSwapIntervalEXT(1);
     else
         wglSwapIntervalEXT(0);
@@ -829,7 +829,7 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 	if (!OGLcontext)
 		return FAILURE;
 
-	if (_toggle == true)
+	if (_setSwapControl == true)
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 1);
 	else
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 0);
@@ -842,7 +842,7 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 		return FAILURE;
 
 	GLint swapInt;
-	if (_toggle)
+	if (_setSwapControl)
 		swapInt = 1;
 	else
 		swapInt = 0;
@@ -1031,30 +1031,24 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             {
                 unsigned int maxWidth;
                 unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-                gWnd->GetClientTopLeft(currX, currY);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
 
                 aspectRatio = maxWidth / maxHeight;
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::MOVE:
             {
                 unsigned int maxWidth;
                 unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-                gWnd->GetClientTopLeft(currX, currY);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::DESTROY:

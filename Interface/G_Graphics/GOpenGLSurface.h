@@ -7,7 +7,7 @@ Purpose: A Gateware interface initializes an OpenGL rendering surface and manage
 Author: Andre Reid
 Contributors: N/A
 Last Modified: 11/17/2017
-Interface Status: Early Stage Development
+Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -23,10 +23,10 @@ namespace GW
 	//! The namespace to which all Gateware Graphics library interfaces must belong.
 	namespace GRAPHICS
 	{
-		//! Unique Identifier for this interface. {523DD98C-B39B-4843-BBEC-FF19DF8E5CCF}
+		//! Unique Identifier for this interface. {58D21F9F-2BBA-4678-8AB5-E029D2503475}
 		static const GUUIID GOpenGLSurfaceUUIID =
-		{
-			0x523dd98c, 0xb39b, 0x4843,{ 0xbb, 0xec, 0xff, 0x19, 0xdf, 0x8e, 0x5c, 0xcf } 
+		{ 
+			0x58d21f9f, 0x2bba, 0x4678,{ 0x8a, 0xb5, 0xe0, 0x29, 0xd2, 0x50, 0x34, 0x75 } 
 		};
 
 		//! A library used to initialize, create, and manage an OpenGL rendering context.
@@ -42,24 +42,6 @@ namespace GW
 
 		public:
 
-			//! Initializes and creates the OpenGL Context.
-			/*!
-			*	This function will open an existing GWindow and
-			*	create an OpenGL rendering context that is tied
-			*	to it.
-			*
-			*	This function will use the bit mask provided by
-			*	the 'CreateGOpenGLSurface' function, and try
-			*	to initialize the OpenGL context with the
-			*	requested options.
-			*
-			*	\param [in] _initMask The bit mask that can hold special initialization options.
-			*
-			*	\retval SUCCESS An OpenGL context was successfully created (with the requested options, if any).
-			*	\retval FAILURE An existing GWindow is not present or the context did not created successfully.
-			*	\retval FEATURE_UNSUPPORTED A requested initialization option is not supported or could not be applied.
-			*/
-			virtual GReturn Initialize(unsigned long long _initMask) = 0;
 			//! Returns the current OpenGL context.
 			/*!
 			*
@@ -113,7 +95,7 @@ namespace GW
 			*   \retval FEATURE_UNSUPPORTED The extension required to use this functionality was not supported.
 			*	\retval FAILURE No valid OpenGL context exists.
 			*/
-			virtual GReturn EnableSwapControl(bool& _toggle) = 0;
+			virtual GReturn EnableSwapControl(bool& _setSwapControl) = 0;
 
 		}; // end GOpenGLSurface class
 	

@@ -62,13 +62,6 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	else
 		std::cout << "NO" << "\n";
 
-	std::cout << "DEPTH STENCIL ENABLED: ";
-
-	if (dx11Surface->GetDepthStencilState((void**)&stencilState) == SUCCESS)
-		std::cout << "YES" << "\n";
-	else
-		std::cout << "NO" << "\n";
-
 }
 
 TEST_CASE("Testing Window Events.")

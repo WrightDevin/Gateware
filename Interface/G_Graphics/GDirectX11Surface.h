@@ -7,7 +7,7 @@ Purpose: A Gateware interface initializes a DirectX11 rendering surface and mana
 Author: Andre Reid
 Contributors: N/A
 Last Modified: 11/17/2017
-Interface Status: Early Stage Development
+Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
@@ -24,10 +24,10 @@ namespace GW
 	//! The namespace to which all Gateware Graphics library interfaces must belong.
 	namespace GRAPHICS
 	{
-		//! Unique Identifier for this interface. {BF02260E-1C03-4E16-A6F3-7969CDE44F84}
-		static const GUUIID GDirectX11SurfaceUUIID = 
-		{
-			0xbf02260e, 0x1c03, 0x4e16,{ 0xa6, 0xf3, 0x79, 0x69, 0xcd, 0xe4, 0x4f, 0x84 }
+		//! Unique Identifier for this interface. {F787FD1F-6218-422A-B35A-41B4B48B75FC}
+		static const GUUIID GDirectX11SurfaceUUIID =
+		{ 
+			0xf787fd1f, 0x6218, 0x422a,{ 0xb3, 0x5a, 0x41, 0xb4, 0xb4, 0x8b, 0x75, 0xfc } 
 		};
 
 		//! A library used to initialize, create, and manage a DirectX11 rendering context.
@@ -42,24 +42,6 @@ namespace GW
 
 		public:
 
-			//! Initializes and creates the DirectX11 Context.
-			/*!
-			*	This function will open an existing GWindow and
-			*	create a DirectX11 rendering context that is tied
-			*	to it.
-			*
-			*	This function will use the bit mask provided by
-			*	the 'CreateGDirectx11Surface' function, and try
-			*	to initialize the DirectX11 context with the
-			*	requested options.
-			*
-			*	\param [in] _initMask The bit mask that can hold special initialization options.
-			*
-			*	\retval SUCCESS A DirectX11 context was successfully created (with the requested options, if any).
-			*	\retval FAILURE An existing GWindow is not present or the context did not created successfully.
-			*	\retval FEATURE_UNSUPPORTED A requested initialization option is not supported or could not be applied.
-			*/
-			virtual GReturn Initialize(unsigned long long _initMask) = 0;
 			//! Returns the aspect ratio for the current window.
 			/*!
 			*
@@ -116,17 +98,6 @@ namespace GW
 			*   \retval FAILURE No depth stencil view exists to retrieve.
 			*/
 			virtual GReturn GetDepthStencilView(void** _outDepthStencilView) = 0;
-			//! Returns the address of the current ID3D11DepthStencilState.
-			/*!
-			*	A Depth Stencil State will only be created if requested as
-			*	a special option when the 'Initialize' method is called.
-			*
-			*	\param [out] _outDepthStencilState Will contain the address of the depth stencil state.
-			*
-			*	\retval SUCCESS A DirectX11 depth stencil state exists and was returned.
-			*   \retval FAILURE No depth stencil state exists to retrieve.
-			*/
-			virtual GReturn GetDepthStencilState(void** _outStencilState) = 0;
 
 		}; // end GDirectX11Surface class
 
