@@ -5,7 +5,7 @@
 	File: GWindow.h
 	Purpose: A Gateware interface that creates a window and handles its properties.
 	Author: Nic Russell
-	Contributors: ShuoYi Chang
+	Contributors: ShuoYi Chang, Andre Reid
 	Last Modified: 8/21/2017
 	Interface Status: Early Stage Development
 	Copyright: 7thGate Software LLC.

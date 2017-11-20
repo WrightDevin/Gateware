@@ -1,6 +1,7 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GOpenGLSurface.h"
 #include "../../Source/G_System/GUtility.h"
+#include "../../Interface/G_System/GKeyDefines.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,14 +45,16 @@ using namespace GRAPHICS;
 class GOpenGL : public GOpenGLSurface
 {
 private:
-	// declare all necessary members (platform specific)
+	///////////////////////////////////////////////////////
+	// declare all necessary members (platform specific) //
+	///////////////////////////////////////////////////////
 	unsigned int	refCount;
 
 	GWindow*		gWnd;
 	unsigned int	clientX;
 	unsigned int	clientY;
-	float			width;
-	float			height;
+	unsigned int	width;
+	unsigned int	height;
 	float			aspectRatio;
 
 	GLint			numExtensions = 0;
@@ -101,14 +104,14 @@ private:
 public:
 	GOpenGL();
 	virtual ~GOpenGL();
-	GReturn Initialize(unsigned char _initMask);
+	GReturn Initialize(unsigned long long _initMask);
 	GReturn	GetContext(void** _outContext);
+	GReturn	GetAspectRatio(float& _outAspectRatio);
 	GReturn	UniversalSwapBuffers();
 	GReturn	QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress);
-	GReturn EnableSwapControl(bool& _toggle);
+	GReturn EnableSwapControl(bool _setSwapControl);
 
 	void	SetGWindow(GWindow* _window);
-	float	GetAspectRatio();
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -133,9 +136,6 @@ GOpenGL::GOpenGL()
 
 GOpenGL::~GOpenGL()
 {
-	gWnd->DeregisterListener(this);
-	DecrementCount();
-
 	#ifdef _WIN32
 	#elif __linux__
 
@@ -154,20 +154,21 @@ void GOpenGL::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GOpenGL::Initialize(unsigned char _initMask)
+GReturn GOpenGL::Initialize(unsigned long long _initMask)
 {
 
+	if (gWnd == nullptr)
+		return FAILURE;
+
     gWnd->OpenWindow();
-	//unsigned char _initMask = _color10bit | _depthBuffer | _depthStencil | _esContext;
 
 #ifdef _WIN32
 
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
+	gWnd->GetClientWidth(width);
+	gWnd->GetClientHeight(height);
 	hdc = GetDC(surfaceWindow);
-	RECT windowRect;
-	GetWindowRect(surfaceWindow, &windowRect);
-	width = windowRect.right - windowRect.left;
-	height = windowRect.bottom - windowRect.top;
+
 	aspectRatio = (float)width / (float)height;
 
 	PIXELFORMATDESCRIPTOR pfd =
@@ -249,7 +250,9 @@ GReturn GOpenGL::Initialize(unsigned char _initMask)
 	ReleaseDC(surfaceWindow, hdc);
 	wglDeleteContext(OGLcontext);
 
-	// Create an OpenGL 3.0 Context
+	//////////////////////////////////
+	// Create an OpenGL 3.0 Context //
+	//////////////////////////////////
 	int contextAttributes[] =
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -260,7 +263,9 @@ GReturn GOpenGL::Initialize(unsigned char _initMask)
 
 	if (_initMask & OPENGL_ES_SUPPORT)
 	{
-		// Create an OpenGL ES 3.0 Context
+		/////////////////////////////////////
+		// Create an OpenGL ES 3.0 Context //
+		/////////////////////////////////////
 		contextAttributes[5] = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
 	}
 
@@ -290,39 +295,43 @@ GReturn GOpenGL::Initialize(unsigned char _initMask)
 	// CHECK IF INIT FLAGS WERE MET //
 	//////////////////////////////////
 
+	//////////////////
 	// 10 BIT COLOR //
+	//////////////////
 	if (_initMask & COLOR_10_BIT)
 	{
-		if (pfValues[0] != 10 &&
-			pfValues[1] != 10 &&
-			pfValues[2] != 10)
-		{
-			std::cout << "\n" << "Error: Could not support 10-Bit Color." << std::endl;
-			return FAILURE;
-		}
+		if (pfValues[0] != 10 && pfValues[1] != 10 && pfValues[2] != 10)
+			return FEATURE_UNSUPPORTED;
+
 	}
 
+	//////////////////////////
 	// DEPTH BUFFER SUPPORT //
+	//////////////////////////
 	if (_initMask & DEPTH_BUFFER_SUPPORT)
 	{
 		if (pfValues[4] == 0 || !glIsEnabled(GL_DEPTH_TEST))
-			return FAILURE;
+			return FEATURE_UNSUPPORTED;
 	}
 
+	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
+	///////////////////////////
 	if (_initMask & DEPTH_STENCIL_SUPPORT)
 	{
 		if (pfValues[5] == 0 || !glIsEnabled(GL_STENCIL_TEST))
-			return FAILURE;
+			return FEATURE_UNSUPPORTED;
 	}
 
+	////////////////////////
 	// ES CONTEXT SUPPORT //
+	////////////////////////
 	if (_initMask & OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
 
 		if (strstr(version, "OpenGL ES") == NULL)
-			return FAILURE;
+			return FEATURE_UNSUPPORTED;
 	}
 
 #elif __linux__
@@ -380,7 +389,6 @@ XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
 
 Colormap cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), vi->visual, AllocNone);
 XSetWindowAttributes swa;
-//swa.colormap = cMap;
 swa.background_pixel = XWhitePixel((Display*)lWnd.display, 0);
 swa.border_pixel = XBlackPixel((Display*)lWnd.display, 0);
 swa.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
@@ -389,14 +397,8 @@ unsigned long valueMask = 0;
 valueMask |= CWBackPixel;
 valueMask |= CWEventMask;
 
-//lWindow = XCreateWindow((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), 0, 0, 500, 500, 0,
-//                        vi->depth, InputOutput, vi->visual, valueMask, &swa);
-
-//valueMask |= CWColormap;
-
 XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
-//XSetWindowColormap((Display*)lWnd.display, lWindow, cMap);
-//XInstallColormap((Display*)lWnd.display, cMap);
+
 
 GLXContext oldContext = glXCreateContext((Display*)lWnd.display, vi, 0, GL_TRUE);
 
@@ -442,7 +444,9 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	// CHECK IF INIT FLAGS WERE MET //
 	//////////////////////////////////
 
+	//////////////////
 	// 10 BIT COLOR //
+	//////////////////
 	if (_initMask & COLOR_10_BIT)
 	{
 		GLint red, green, blue;
@@ -457,7 +461,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 
 	}
 
+
+	//////////////////////////
 	// DEPTH BUFFER SUPPORT //
+	//////////////////////////
 	if (_initMask & DEPTH_BUFFER_SUPPORT)
 	{
 		GLint depth;
@@ -467,7 +474,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 	}
 
+
+	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
+	///////////////////////////
 	if (_initMask && DEPTH_STENCIL_SUPPORT)
 	{
 		GLint stencil;
@@ -477,7 +487,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 	}
 
+
+	////////////////////////
 	// ES CONTEXT SUPPORT //
+	////////////////////////
 	if (_initMask && OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
@@ -520,14 +533,24 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     // CHECK IF INIT FLAGS WERE MET //
     //////////////////////////////////
 
-    // 10 BIT COLOR //
-    if (_initMask & COLOR_10_BIT)
-        return FAILURE;
 
-    // DEPTH BUFFER SUPPORT //
-    if (_initMask & DEPTH_BUFFER_SUPPORT)
+	//////////////////
+	// 10 BIT COLOR //
+	//////////////////
+	if (_initMask & COLOR_10_BIT)
+        return FEATURE_UNSUPPORTED;
+
+
+	//////////////////////////
+	// DEPTH BUFFER SUPPORT //
+	//////////////////////////
+	if (_initMask & DEPTH_BUFFER_SUPPORT)
         pixelAttributes[8] = 32;
 
+
+	///////////////////////////
+	// DEPTH STENCIL SUPPORT //
+	///////////////////////////
     if (_initMask & DEPTH_STENCIL_SUPPORT)
     {
         pixelAttributes[8] = 24;
@@ -571,13 +594,22 @@ GReturn GOpenGL::GetContext(void ** _outContext)
 {
 #ifdef _WIN32
 
+	if (!OGLcontext)
+		return FAILURE;
+
 	*_outContext = OGLcontext;
 
 #elif __linux__
 
+	if (!OGLXcontext)
+		return FAILURE;
+
     *_outContext = OGLXcontext;
 
 #elif __APPLE__
+
+	if (!OGLMcontext)
+		return FAILURE;
 
     *_outContext = OGLMcontext;
 
@@ -586,17 +618,36 @@ GReturn GOpenGL::GetContext(void ** _outContext)
 	return SUCCESS;
 }
 
+GReturn GOpenGL::GetAspectRatio(float& _outAspectRatio)
+{
+	if (!gWnd)
+		return FAILURE;
+
+	_outAspectRatio = aspectRatio;
+
+	return SUCCESS;
+}
+
 GReturn GOpenGL::UniversalSwapBuffers()
 {
 #ifdef _WIN32
+
+	if (!hdc)
+		return FAILURE;
 
 	SwapBuffers(hdc);
 
 #elif __linux__
 
+	if (!lWnd.display || !lWnd.window || lWindow == nullptr)
+		return FAILURE;
+
 	glXSwapBuffers((Display*)lWnd.display, *lWindow);
 
 #elif __APPLE__
+
+	if (!OGLMcontext)
+		return FAILURE;
 
     [OGLMcontext flushBuffer];
 
@@ -606,18 +657,14 @@ GReturn GOpenGL::UniversalSwapBuffers()
 
 }
 
-float GOpenGL::GetAspectRatio()
-{
-	return aspectRatio;
-}
-
 GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _funcName, void** _outFuncAddress)
 {
-
-	// Invalid Arguments
+	///////////////////////
+	// Invalid Arguments //
+	///////////////////////
 	if ((_funcName == nullptr && _outFuncAddress != nullptr) ||
 		(_funcName != nullptr && _outFuncAddress == nullptr) ||
-		_extension == nullptr)
+		 _extension == nullptr && _funcName == nullptr)
 		return INVALID_ARGUMENT;
 
 #ifdef __APPLE__
@@ -633,6 +680,35 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
         return FAILURE;
 
 #endif
+
+	//////////////////////////////////////////////////////////
+	// User only passed in function name, without extension //
+	//////////////////////////////////////////////////////////
+
+	if (_extension == nullptr && _funcName != nullptr && _outFuncAddress != nullptr)
+	{
+
+#ifdef _WIN32
+
+		*_outFuncAddress = wglGetProcAddress(_funcName);
+
+		if (*_outFuncAddress == nullptr)
+			return FAILURE;
+
+		return SUCCESS;
+
+#elif __linux__
+
+		_outFuncAddress = (void**)glXGetProcAddress((const GLubyte*)_funcName);
+
+		if (_outFuncAddress == nullptr)
+			return FAILURE;
+
+		return SUCCESS;
+
+#endif
+
+	}
 
     //////////////////////////////////////////////////////////
 	// User only passed in extension name, without function //
@@ -667,7 +743,6 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 
         return FAILURE;
 
-#elif __APPLE__
 #endif
 	}
 
@@ -728,15 +803,18 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 
 }
 
-GReturn GOpenGL::EnableSwapControl(bool& _toggle)
+GReturn GOpenGL::EnableSwapControl(bool _setSwapControl)
 {
 
 #if _WIN32
 
     if (!wglSwapIntervalEXT)
-        return FAILURE;
+        return FEATURE_UNSUPPORTED;
 
-    if (_toggle == true)
+	if (!OGLcontext)
+		return FAILURE;
+
+    if (_setSwapControl == true)
         wglSwapIntervalEXT(1);
     else
         wglSwapIntervalEXT(0);
@@ -746,14 +824,33 @@ GReturn GOpenGL::EnableSwapControl(bool& _toggle)
 #elif __linux__
 
 	if (!glXSwapIntervalEXT)
+		return FEATURE_UNSUPPORTED;
+
+	if (!OGLXcontext)
 		return FAILURE;
 
-	if (_toggle == true)
+	if (_setSwapControl == true)
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 1);
 	else
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 0);
 
+	return SUCCESS;
+
 #elif __APPLE__
+
+	if (!OGLMcontext)
+		return FAILURE;
+
+	GLint swapInt;
+	if (_setSwapControl)
+		swapInt = 1;
+	else
+		swapInt = 0;
+
+	[OGLMcontext setValues : &swapInt forParameter : NSOpenGLCPSwapInterval];
+
+	return SUCCESS;
+
 #endif
 
 }
@@ -778,12 +875,16 @@ GReturn GOpenGL::IncrementCount()
 GReturn GOpenGL::DecrementCount()
 {
 	if (refCount == 0)
-	{
-		delete this;
 		return FAILURE;
-	}
 
 	--refCount;
+
+	if (refCount == 0)
+	{
+		gWnd->DeregisterListener(this);
+		delete this;
+	}
+
 
 	return SUCCESS;
 }
@@ -841,25 +942,7 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 
         switch (_eventID)
         {
-            case GW::SYSTEM::NOTIFY:
-                break;
-            case GW::SYSTEM::MINIMIZE:
-                break;
             case GW::SYSTEM::MAXIMIZE:
-            {
-                unsigned int maxWidth;
-                unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
-
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-
-                aspectRatio = maxWidth / maxHeight;
-
-                glViewport(0, 0, maxWidth, maxHeight);
-            }
-                break;
             case GW::SYSTEM::RESIZE:
             {
                 unsigned int maxWidth;
@@ -867,13 +950,13 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int currX;
                 unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
 
-                aspectRatio = maxWidth / maxHeight;
+                aspectRatio = (float)maxWidth / (float)maxHeight;
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::MOVE:
@@ -883,11 +966,11 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 unsigned int currX;
                 unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
                 gWnd->GetClientTopLeft(currX, currY);
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::DESTROY:
@@ -901,25 +984,7 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 
         switch (_eventID)
         {
-            case GW::SYSTEM::NOTIFY:
-                break;
-            case GW::SYSTEM::MINIMIZE:
-                break;
             case GW::SYSTEM::MAXIMIZE:
-            {
-                unsigned int maxWidth;
-                unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
-
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-
-                aspectRatio = maxWidth / maxHeight;
-
-                glViewport(0, 0, maxWidth, maxHeight);
-            }
-                break;
             case GW::SYSTEM::RESIZE:
             {
                 unsigned int maxWidth;
@@ -961,54 +1026,29 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 
         switch (_eventID)
         {
-            case GW::SYSTEM::NOTIFY:
-                break;
-            case GW::SYSTEM::MINIMIZE:
-                break;
             case GW::SYSTEM::MAXIMIZE:
-            {
-                unsigned int maxWidth;
-                unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
-
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-                gWnd->GetClientTopLeft(currX, currY);
-
-                aspectRatio = maxWidth / maxHeight;
-
-                glViewport(currX, currY, maxWidth, maxHeight);
-            }
-                break;
             case GW::SYSTEM::RESIZE:
             {
                 unsigned int maxWidth;
                 unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-                gWnd->GetClientTopLeft(currX, currY);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
 
-                aspectRatio = maxWidth / maxHeight;
+                aspectRatio = (float)maxWidth / (float)maxHeight;
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                //glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::MOVE:
             {
                 unsigned int maxWidth;
                 unsigned int maxHeight;
-                unsigned int currX;
-                unsigned int currY;
 
-                gWnd->GetWidth(maxWidth);
-                gWnd->GetHeight(maxHeight);
-                gWnd->GetClientTopLeft(currX, currY);
+                gWnd->GetClientWidth(maxWidth);
+                gWnd->GetClientHeight(maxHeight);
 
-                glViewport(currX, currY, maxWidth, maxHeight);
+                glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::DESTROY:
@@ -1026,24 +1066,20 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGOpenGLSurface(_gWin, _outSurface);
+	return GW::GRAPHICS::CreateGOpenGLSurface(_gWin, _initMask, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
-	if (_outSurface == nullptr)
+	if (_outSurface == nullptr || _gWin == nullptr)
 		return INVALID_ARGUMENT;
 
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
 
-	unsigned char initMask = 0;
-	initMask |= DEPTH_BUFFER_SUPPORT;
-	initMask |= DEPTH_STENCIL_SUPPORT;
-	initMask |= OPENGL_ES_SUPPORT;
-	Surface->Initialize(initMask);
+	Surface->Initialize(_initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

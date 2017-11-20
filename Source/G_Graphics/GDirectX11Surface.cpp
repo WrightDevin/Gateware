@@ -1,6 +1,5 @@
 #include "../DLL_Export_Symbols.h"
 #include "../../Interface/G_Graphics/GDirectX11Surface.h"
-#include "../../Interface/G_System/GKeyDefines.h"
 #include "../../Source/G_System/GUtility.h"
 
 
@@ -25,7 +24,7 @@ using namespace GRAPHICS;
 class GDirectX11 : public GDirectX11Surface
 {
 private:
-	// declare all necessary members (platform specific)
+	// declare all necessary members
 	unsigned int refCount;
 
 	GWindow*					gWnd;
@@ -35,7 +34,6 @@ private:
 	IDXGISwapChain*				swapChain;
 	ID3D11RenderTargetView*		rtv;
 	ID3D11DepthStencilView*		zBuffer = nullptr;
-	ID3D11DepthStencilState*	stencilState = nullptr;
 	unsigned int				width;
 	unsigned int				height;
 	float						aspectRatio;
@@ -44,7 +42,7 @@ public:
 	GDirectX11();
 	virtual ~GDirectX11();
 	void	SetGWindow(GWindow* _window);
-	GReturn Initialize(unsigned char _initMask);
+	GReturn Initialize(unsigned long long _initMask);
 	GReturn	GetAspectRatio(float& _outRatio);
 
 	GReturn GetDevice(void** _outDevice);
@@ -52,7 +50,6 @@ public:
 	GReturn GetSwapchain(void** _outSwapchain);
 	GReturn GetRenderTarget(void** _outRenderTarget);
 	GReturn GetDepthStencilView(void** _outDepthStencilView);
-	GReturn GetDepthStencilState(void** _outStencilState);
 
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -68,8 +65,6 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
-	//gWnd->DeregisterListener(this);
-	//DecrementCount();
 	if (device) device->Release();
 	if (context) context->Release();
 	if (rtv) rtv->Release();
@@ -81,7 +76,7 @@ void GDirectX11::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GDirectX11::Initialize(unsigned char _initMask)
+GReturn GDirectX11::Initialize(unsigned long long _initMask)
 {
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
@@ -89,7 +84,7 @@ GReturn GDirectX11::Initialize(unsigned char _initMask)
 	GetWindowRect(surfaceWindow,&windowRect);
 	gWnd->GetClientWidth(width);
 	gWnd->GetClientHeight(height);
-	aspectRatio = width / height;
+	aspectRatio = (float)width / (float)height;
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -172,37 +167,6 @@ GReturn GDirectX11::Initialize(unsigned char _initMask)
 
 		ID3D11Texture2D* depthBuffer;
 		device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
-
-		///////////////////////////////////////////////
-		// Create Depth Stencil State (if requested) // 
-		///////////////////////////////////////////////
-
-		if (_initMask & DEPTH_STENCIL_SUPPORT)
-		{
-			D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
-			ZeroMemory(&depthStencilStateDesc, sizeof(depthStencilStateDesc));
-
-			depthStencilStateDesc.DepthEnable = true;
-			depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-			depthStencilStateDesc.StencilEnable = true;
-			depthStencilStateDesc.StencilReadMask = 0xFF;
-			depthStencilStateDesc.StencilWriteMask = 0xFF;
-
-			depthStencilStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-			depthStencilStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-			
-			depthStencilStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-			depthStencilStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-			device->CreateDepthStencilState(&depthStencilStateDesc,&stencilState);
-
-		}
 
 		///////////////////////////////
 		// Create Depth Stencil View //
@@ -287,18 +251,11 @@ GReturn GDirectX11::GetDepthStencilView(void** _outDepthStencilView)
 	return SUCCESS;
 }
 
-GReturn GDirectX11::GetDepthStencilState(void** _outStencilState)
-{
-	if (stencilState == nullptr)
-		return FAILURE;
-
-	*_outStencilState = stencilState;
-
-	return SUCCESS;
-}
-
 GReturn GDirectX11::GetAspectRatio(float& _outRatio)
 {
+	if (!gWnd)
+		return FAILURE;
+
 	_outRatio = aspectRatio;
 
 	return SUCCESS;
@@ -389,16 +346,9 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 
 		switch (_eventID)
 		{
-		case GW::SYSTEM::NOTIFY:
-			break;
-		case GW::SYSTEM::MINIMIZE:
-			break;
 		case GW::SYSTEM::MAXIMIZE:
 		case GW::SYSTEM::RESIZE:
 		{
-
-			/*unsigned int newWidth;
-			unsigned int newHeight;*/
 
 			gWnd->GetClientWidth(width);
 			gWnd->GetClientHeight(height);
@@ -446,11 +396,12 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 				newRTVBuffer->Release();
 
 				D3D11_VIEWPORT viewport;
+				viewport.TopLeftX = 0;
+				viewport.TopLeftY = 0;
 				viewport.Width = width;
 				viewport.Height = height;
 				viewport.MinDepth = 0.0f;
 				viewport.MaxDepth = 1.0f;
-				gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
 
 				context->RSSetViewports(1,&viewport);
 			}
@@ -464,8 +415,8 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 			unsigned int newY;
 			unsigned int currWidth;
 			unsigned int currHeight;
-			gWnd->GetWidth(currWidth);
-			gWnd->GetHeight(currHeight);
+			gWnd->GetClientWidth(currWidth);
+			gWnd->GetClientHeight(currHeight);
 			gWnd->GetClientTopLeft(newX, newY);
 
 			D3D11_VIEWPORT viewport;
@@ -474,8 +425,8 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 			viewport.Height = (float)currHeight;
 			viewport.MinDepth = 0.0f;
 			viewport.MaxDepth = 1.0f;
-			viewport.TopLeftX = (float)newX / viewport.Width;
-			viewport.TopLeftY = (float)newY / viewport.Height;
+			viewport.TopLeftX = 0;
+			viewport.TopLeftY = 0;
 
 			context->RSSetViewports(1,&viewport);
 		}
@@ -492,12 +443,12 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GDirectX11Surface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGDirectX11Surface(_gWin, _outSurface);
+	return GW::GRAPHICS::CreateGDirectX11Surface(_gWin, _initMask, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
+GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GDirectX11Surface** _outSurface)
 {
 
 	if (_outSurface == nullptr)
@@ -506,8 +457,7 @@ GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11
 	GDirectX11* Surface = new GDirectX11();
 	Surface->SetGWindow(_gWin);
 
-	unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
-	Surface->Initialize(initMask);
+	Surface->Initialize(_initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

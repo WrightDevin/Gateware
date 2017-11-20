@@ -152,9 +152,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac80bfaba809d5eb54d6a11b11deddeb7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#ac80bfaba809d5eb54d6a11b11deddeb7">GetClientTopLeft</a> (unsigned int &amp;_outX, unsigned int &amp;_outY)=0</td></tr>
 <tr class="memdesc:ac80bfaba809d5eb54d6a11b11deddeb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the location of the top-left pixel of the opened window's client area.  <a href="#ac80bfaba809d5eb54d6a11b11deddeb7">More...</a><br /></td></tr>
 <tr class="separator:ac80bfaba809d5eb54d6a11b11deddeb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3feaec975b21a8a49a81995d7bbde271"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#a3feaec975b21a8a49a81995d7bbde271">GetWindowHandle</a> (void *_outWindowHandle, unsigned int _handleSize)=0</td></tr>
-<tr class="memdesc:a3feaec975b21a8a49a81995d7bbde271"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the platform specific window handle to the currently opened window.  <a href="#a3feaec975b21a8a49a81995d7bbde271">More...</a><br /></td></tr>
-<tr class="separator:a3feaec975b21a8a49a81995d7bbde271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b73cc2ba9b010745f0f6171dc8b950"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#a71b73cc2ba9b010745f0f6171dc8b950">GetWindowHandle</a> (unsigned int _handleSize, void **_outWindowHandle)=0</td></tr>
+<tr class="memdesc:a71b73cc2ba9b010745f0f6171dc8b950"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the platform specific window handle to the currently opened window.  <a href="#a71b73cc2ba9b010745f0f6171dc8b950">More...</a><br /></td></tr>
+<tr class="separator:a71b73cc2ba9b010745f0f6171dc8b950"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#a28ae1c50fbd7c1c292ed5aa055cae9a7">IsFullscreen</a> (bool &amp;_outIsFullscreen)=0</td></tr>
 <tr class="memdesc:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a bool specifying whether or not the currently opened window is fullscreen.  <a href="#a28ae1c50fbd7c1c292ed5aa055cae9a7">More...</a><br /></td></tr>
 <tr class="separator:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -423,8 +423,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3feaec975b21a8a49a81995d7bbde271"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3feaec975b21a8a49a81995d7bbde271">&#9670;&nbsp;</a></span>GetWindowHandle()</h2>
+<a id="a71b73cc2ba9b010745f0f6171dc8b950"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b73cc2ba9b010745f0f6171dc8b950">&#9670;&nbsp;</a></span>GetWindowHandle()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -435,14 +435,14 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> GW::SYSTEM::GWindow::GetWindowHandle </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>_outWindowHandle</em>, </td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>_handleSize</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>_handleSize</em>&#160;</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>_outWindowHandle</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

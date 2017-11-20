@@ -33,7 +33,9 @@ TEST_CASE("Create GDirectX11Surface Object.", "[CreateGDirectX11Surface]")
 {
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1000, 1000, WINDOWEDBORDERED, &gWnd_DX)));
 
-	CHECK(CreateGDirectX11Surface(gWnd_DX, &dx11Surface) == SUCCESS);
+	unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
+
+	CHECK(CreateGDirectX11Surface(gWnd_DX, initMask, &dx11Surface) == SUCCESS);
 }
 
 TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwapchain]")
@@ -60,13 +62,6 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	else
 		std::cout << "NO" << "\n";
 
-	std::cout << "DEPTH STENCIL ENABLED: ";
-
-	if (dx11Surface->GetDepthStencilState((void**)&stencilState) == SUCCESS)
-		std::cout << "YES" << "\n";
-	else
-		std::cout << "NO" << "\n";
-
 }
 
 TEST_CASE("Testing Window Events.")
@@ -78,6 +73,13 @@ TEST_CASE("Testing Window Events.")
 	// Checking Current Size of Window
 	gWnd_DX->GetClientWidth(testWidth);
 	gWnd_DX->GetClientHeight(testHeight);
+
+	ID3D11RenderTargetView* surfaceRTV = nullptr;
+	float color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	dx11Surface->GetRenderTarget((void**)&surfaceRTV);
+
+	context->ClearRenderTargetView(surfaceRTV, color);
+	swapChain->Present(0, 0);
 
 	// Resizing Window
 	gWnd_DX->ResizeWindow(500, 500);
@@ -102,10 +104,8 @@ TEST_CASE("Testing Window Events.")
 
 		if (context != nullptr)
 		{
-			ID3D11RenderTargetView* surfaceRTV = nullptr;
-			const float color[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-
-			dx11Surface->GetRenderTarget((void**)&surfaceRTV);
+			color[0] = 0.0f;
+			color[1] = 1.0f;
 
 			context->ClearRenderTargetView(surfaceRTV, color);
 			swapChain->Present(0, 0);

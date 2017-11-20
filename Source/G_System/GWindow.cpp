@@ -944,7 +944,8 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return FAILURE;
 
 #elif __APPLE__
-	NSRect rect = window.frame;
+	//NSRect rect = window.frame;
+    NSRect rect = NSMakeRect(xPos, yPos, _width, _height);
 	CGSize newSize;
 	newSize.height = height;
 	newSize.width = width;

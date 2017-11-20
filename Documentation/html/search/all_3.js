@@ -1,7 +1,7 @@
 var searchData=
 [
   ['data',['data',['../structGW_1_1SYSTEM_1_1GBUFFEREDINPUT__EVENT__DATA.html#abe62d14dd92dc136e8ab4f53ee26d794',1,'GW::SYSTEM::GBUFFEREDINPUT_EVENT_DATA']]],
-  ['decrementcount',['DecrementCount',['../classGW_1_1CORE_1_1GInterface.html#a19a368c77ad0aa7f49b5a4f772f173ba',1,'GW::CORE::GInterface']]],
+  ['decrementcount',['DecrementCount',['../classGW_1_1AUDIO_1_1GAudio.html#a9bdc3d4a8668b702db98dde91a0fa423',1,'GW::AUDIO::GAudio::DecrementCount()'],['../classGW_1_1AUDIO_1_1GMusic.html#a1385376fffc42c40f5922b4722d10b5c',1,'GW::AUDIO::GMusic::DecrementCount()'],['../classGW_1_1AUDIO_1_1GSound.html#afa9587ca984fc5ad2d5cdd47c3aebbcb',1,'GW::AUDIO::GSound::DecrementCount()'],['../classGW_1_1CORE_1_1GInterface.html#a19a368c77ad0aa7f49b5a4f772f173ba',1,'GW::CORE::GInterface::DecrementCount()']]],
   ['deregisterlistener',['DeregisterListener',['../classGW_1_1CORE_1_1GBroadcasting.html#afd6b1f41b646c668b1fcce2580681dd5',1,'GW::CORE::GBroadcasting']]],
   ['determinantd',['DeterminantD',['../classGW_1_1MATH_1_1GMatrix.html#ab1b528820ac0476f8f3d9202a3036b8c',1,'GW::MATH::GMatrix']]],
   ['determinantf',['DeterminantF',['../classGW_1_1MATH_1_1GMatrix.html#a8ae14af67e2b099569a4439b7497b37d',1,'GW::MATH::GMatrix']]],
