@@ -43,7 +43,7 @@ public:
 	GDirectX11();
 	virtual ~GDirectX11();
 	void	SetGWindow(GWindow* _window);
-	GReturn Initialize(unsigned char _initMask);
+	GReturn Initialize(unsigned long long _initMask);
 	GReturn	GetAspectRatio(float& _outRatio);
 
 	GReturn GetDevice(void** _outDevice);
@@ -78,7 +78,7 @@ void GDirectX11::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GDirectX11::Initialize(unsigned char _initMask)
+GReturn GDirectX11::Initialize(unsigned long long _initMask)
 {
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
@@ -486,12 +486,12 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GDirectX11Surface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGDirectX11Surface(_gWin, _outSurface);
+	return GW::GRAPHICS::CreateGDirectX11Surface(_gWin, _initMask, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11Surface** _outSurface)
+GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GDirectX11Surface** _outSurface)
 {
 
 	if (_outSurface == nullptr)
@@ -500,8 +500,7 @@ GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, GDirectX11
 	GDirectX11* Surface = new GDirectX11();
 	Surface->SetGWindow(_gWin);
 
-	unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
-	Surface->Initialize(initMask);
+	Surface->Initialize(_initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

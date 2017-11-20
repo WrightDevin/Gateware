@@ -23,7 +23,6 @@ namespace GW
 	//! The namespace to which all Gateware Graphics library interfaces must belong.
 	namespace GRAPHICS
 	{
-
 		//! Unique Identifier for this interface. {523DD98C-B39B-4843-BBEC-FF19DF8E5CCF}
 		static const GUUIID GOpenGLSurfaceUUIID =
 		{
@@ -49,12 +48,10 @@ namespace GW
 			*	create an OpenGL rendering context that is tied
 			*	to it.
 			*
-			*	This function accepts a bit mask that can hold
-			*	supported 'GGraphicsInitOptions', which will
-			*	be taken into account when creating the context.
-			*	To ignore this mask, simply pass in 0 when calling
-			*	this function and the context will be created with
-			*	default settings.
+			*	This function will use the bit mask provided by
+			*	the 'CreateGOpenGLSurface' function, and try
+			*	to initialize the OpenGL context with the
+			*	requested options.
 			*
 			*	\param [in] _initMask The bit mask that can hold special initialization options.
 			*
@@ -62,7 +59,7 @@ namespace GW
 			*	\retval FAILURE An existing GWindow is not present or the context did not created successfully.
 			*	\retval FEATURE_UNSUPPORTED A requested initialization option is not supported or could not be applied.
 			*/
-			virtual GReturn Initialize(unsigned char _initMask) = 0;
+			virtual GReturn Initialize(unsigned long long _initMask) = 0;
 			//! Returns the current OpenGL context.
 			/*!
 			*
@@ -123,17 +120,25 @@ namespace GW
 		   //! Creates and outputs a new GOpenGLSurface object.
 		   /*!
 		   *	Initializes a handle to a GOpenGLSurface object with an existing GWindow.
-		   *	The created GOpenGLSurface object will have its reference count initialized 
+		   *	The created GOpenGLSurface object will have its reference count initialized
 		   *	to one and register as a listener to the provided GWindow object.
 		   *
+		   *	This function accepts a bit mask that can hold
+		   *	supported 'GGraphicsInitOptions', which will
+		   *	be taken into account when creating the context.
+		   *	To ignore this mask, simply pass in 0 when calling
+		   *	this function and the context will be created with
+		   *	default settings.
+		   *
 		   *	\param [in] _gWin A pointer to an existing GWindow object.
+		   *	\param [in] _initMask The bit mask that can hold special initialization options.
 		   *	\param [out] _outSurface Will contain the GOpenGLSurface object if successfully created.
 		   *
-		   *	\retval SUCCESS  GOpenGLSurface was successfully created.
-		   *	\retval FAILURE  GOpenGLSurface was not created. _outSurface will be null.
-		   *	\retval INVALID_ARGUMENT Either one or both arguments are nullptrs.
+		   *	\retval SUCCESS A GOpenGLSurface object was successfully created.
+		   *	\retval FAILURE A GOpenGLSurface object was not created. _outSurface will be null.
+		   *	\retval INVALID_ARGUMENT Either the _gWin, _outSurface or both arguments are nullptrs.
 		   */
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface);
+		GATEWARE_EXPORT_IMPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface);
 	
 	} // end GRAPHICS namespace
 } // end GW namespace

@@ -104,7 +104,7 @@ private:
 public:
 	GOpenGL();
 	virtual ~GOpenGL();
-	GReturn Initialize(unsigned char _initMask);
+	GReturn Initialize(unsigned long long _initMask);
 	GReturn	GetContext(void** _outContext);
 	GReturn	GetAspectRatio(float& _outAspectRatio);
 	GReturn	UniversalSwapBuffers();
@@ -154,7 +154,7 @@ void GOpenGL::SetGWindow(GWindow* _window)
 	gWnd = _window;
 }
 
-GReturn GOpenGL::Initialize(unsigned char _initMask)
+GReturn GOpenGL::Initialize(unsigned long long _initMask)
 {
 
 	if (gWnd == nullptr)
@@ -1072,12 +1072,12 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
 	return SUCCESS;
 }
 
-GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
+GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
-	return GW::GRAPHICS::CreateGOpenGLSurface(_gWin, _outSurface);
+	return GW::GRAPHICS::CreateGOpenGLSurface(_gWin, _initMask, _outSurface);
 }
 
-GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurface** _outSurface)
+GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
 	if (_outSurface == nullptr || _gWin == nullptr)
 		return INVALID_ARGUMENT;
@@ -1085,10 +1085,7 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, GOpenGLSurfac
 	GOpenGL* Surface = new GOpenGL();
 	Surface->SetGWindow(_gWin);
 
-	unsigned char initMask = 0;
-	initMask |= DEPTH_BUFFER_SUPPORT;
-	initMask |= DEPTH_STENCIL_SUPPORT;
-	Surface->Initialize(initMask);
+	Surface->Initialize(_initMask);
 
 	_gWin->RegisterListener(Surface, 0);
 

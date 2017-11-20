@@ -60,7 +60,11 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 {
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 800, 500, WINDOWEDBORDERED, &gWnd_OGL)));
 
-	CHECK(CreateGOpenGLSurface(gWnd_OGL, &oglSurface) == SUCCESS);
+	unsigned long long initMask = 0;
+	initMask |= DEPTH_BUFFER_SUPPORT;
+	initMask |= DEPTH_STENCIL_SUPPORT;
+
+	CHECK(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface) == SUCCESS);
 }
 
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
