@@ -6,7 +6,16 @@ var NAVTREE =
       [ "GLog", "index.html#APIGLog", null ],
       [ "GFile", "index.html#APIGFile", null ],
       [ "GInput", "index.html#APIGInput", null ],
-      [ "GBufferedInput", "index.html#APIGBufferedInput", null ]
+      [ "GBufferedInput", "index.html#APIGBufferedInput", null ],
+      [ "GWindow", "index.html#APIGWindow", null ],
+      [ "GDirectX11Surface", "index.html#APIGDirectX11Surface", null ],
+      [ "GOpenGLSurface", "index.html#APIGOpenGLSurface", null ],
+      [ "GAudio", "index.html#APIGAudio", null ],
+      [ "GMusic", "index.html#APIGMusic", null ],
+      [ "GSound", "index.html#APIGSound", null ],
+      [ "GQuaternion", "index.html#APIGQuaternion", null ],
+      [ "GVector", "index.html#APIGVector", null ],
+      [ "GMatrix", "index.html#APIGMatrix", null ]
     ] ],
     [ "Bug Reporting", "index.html#Reporting", null ],
     [ "Namespaces", null, [
@@ -24,7 +33,7 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -37,7 +46,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "GAudio_8h_source.html",
-"dir_b7263c2df3abed61e1897d5e9e534860.html"
+"files.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
