@@ -1035,9 +1035,9 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
                 gWnd->GetClientWidth(maxWidth);
                 gWnd->GetClientHeight(maxHeight);
 
-                aspectRatio = maxWidth / maxHeight;
+                aspectRatio = (float)maxWidth / (float)maxHeight;
 
-                glViewport(0, 0, maxWidth, maxHeight);
+                //glViewport(0, 0, maxWidth, maxHeight);
             }
                 break;
             case GW::SYSTEM::MOVE:

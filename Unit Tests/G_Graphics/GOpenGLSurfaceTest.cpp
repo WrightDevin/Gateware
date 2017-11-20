@@ -42,8 +42,8 @@ GOpenGLSurface*		oglSurface;
 
 #ifdef _WIN32
 
-HDC*				hdc;
-HGLRC*				context;
+    HDC*                    hdc;
+    HGLRC*                  context;
 
 #elif __linux__
 
@@ -53,6 +53,9 @@ HGLRC*				context;
     LINUX_WINDOW*           lWnd;
 
 #elif __APPLE__
+
+    NSOpenGLContext*        OGLMcontext;
+
 #endif
 
 
@@ -106,6 +109,9 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
     
+    CHECK(oglSurface->GetContext((void**)&OGLMcontext) == SUCCESS);
+
+    
 #endif
 }
 
@@ -142,7 +148,7 @@ TEST_CASE("Testing OGLSurface Events")
 #endif
 
 	// Manipulate GWindow and Retest OGL Functions.
-	gWnd_OGL->ResizeWindow(500, 500);
+	gWnd_OGL->ResizeWindow(100, 400);
     
 #ifdef __APPLE__
     
