@@ -4,6 +4,7 @@
 #include "../Source/G_System/GUtility.h"
 
 #include <atomic> //Thread safety
+#include <cmath>
 
 //The using statements for specifically what we are using.
 using namespace GW;
@@ -305,7 +306,10 @@ GReturn GMatirxCpp::InverseF(GMATRIXF _matrix, GMATRIXF & _outMatrix)
 	float b5 = _m.data[10] * _m.data[15] - _m.data[11] * _m.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-
+	if (G_COMPARISON_STANDARD_F(det,0.0f))
+	{
+		return FAILURE;
+	}
 	_outMatrix.data[0] = _m.data[5] * b5 - _m.data[6] * b4 + _m.data[7] * b3;
 	_outMatrix.data[1] = -_m.data[1] * b5 + _m.data[2] * b4 - _m.data[3] * b3;
 	_outMatrix.data[2] = _m.data[13] * a5 - _m.data[14] * a4 + _m.data[15] * a3;
@@ -507,7 +511,7 @@ GReturn GMatirxCpp::RotationByVectorF(GVECTORF _vector, float _radian, GMATRIXF 
 		magnitude = sqrt(magnitude);
 		if (!G_COMPARISON_STANDARD_F(magnitude, 0))
 		{
-			magnitude = 1.0 / magnitude;
+			magnitude = 1.0f / magnitude;
 			x = x * magnitude;
 			y = y * magnitude;
 			z = z * magnitude;
@@ -830,7 +834,7 @@ GReturn GMatirxCpp::InverseD(GMATRIXD _matrix, GMATRIXD & _outMatrix)
 	double b5 = _m.data[10] * _m.data[15] - _m.data[11] * _m.data[14];
 
 	det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-	if (G_COMPARISON_STANDARD_F(det, 0))
+	if (G_COMPARISON_STANDARD_D(det, 0))
 	{
 		return FAILURE;
 	}
