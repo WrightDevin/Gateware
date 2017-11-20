@@ -4,6 +4,7 @@
 #include "../Source/G_System/GUtility.h"
 
 #include <atomic> //Thread safety
+#include <cmath>
 
 //The using statements for specifically what we are using.
 using namespace GW;

@@ -4,6 +4,7 @@
 #include "../Source/G_System/GUtility.h"
 
 #include <atomic> //Thread safety
+#include <cmath>
 
 //The using statements for specifically what we are using.
 using namespace GW;
@@ -328,8 +329,10 @@ GReturn GQuaternionCpp::SlerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaterni
 {
 	GQUATERNIONF q1;
 	GQUATERNIONF q2;
-	NormalizeF(_quaternion1, q1);
-	NormalizeF(_quaternion2, q2);
+	if (NormalizeF(_quaternion1, q1) != SUCCESS || NormalizeF(_quaternion2, q2) != SUCCESS)
+	{
+		return FAILURE;
+	}
 	float dot;
 	DotF(q1, q2, dot);
 	float theta = acos(dot);
@@ -588,8 +591,10 @@ GReturn GQuaternionCpp::SlerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaterni
 
 	GQUATERNIOND q1;
 	GQUATERNIOND q2;
-	NormalizeD(_quaternion1, q1);
-	NormalizeD(_quaternion2, q2);
+	if (NormalizeD(_quaternion1, q1) != SUCCESS || NormalizeD(_quaternion2, q2) != SUCCESS)
+	{
+		return FAILURE;
+	}
 
 	if (G_COMPARISON_STANDARD_D(_ratio, 0))
 	{

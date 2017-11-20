@@ -5,13 +5,13 @@ File: GVector.h
 Purpose: A Gateware interface that handles all vector functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 9/20/2016
+Last Modified: 9/20/2017
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
 
-//! GMathDefines inherits directly from GMultiThreaded.
+//! GMathDefines inherits directly from GSingleThreaded.
 #include "../G_Core/GSingleThreaded.h"
 #include "GMathDefines.h"
 
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {7A4F0977-2B93-45C4-9FF5-EEDB1D0A3717}
+		//! Unique Identifier for this interface. {22D6C3B1-1150-40AE-83D8-920C8C778937}
 		static const GUUIID GVectorUUIID =
 		{
-			0x7a4f0977, 0x2b93, 0x45c4,{ 0x9f, 0xf5, 0xee, 0xdb, 0x1d, 0xa, 0x37, 0x17 }
+			0x22d6c3b1, 0x1150, 0x40ae,{ 0x83, 0xd8, 0x92, 0xc, 0x8c, 0x77, 0x89, 0x37 }
 		};
 
 		//! Vector functions
@@ -45,8 +45,6 @@ namespace GW
 			*	\param [out] _outVector		The result of addition
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn AddVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
@@ -59,8 +57,6 @@ namespace GW
 			*	\param [out] _outVector		The vector for store the result
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn SubtractVectorF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
@@ -74,8 +70,6 @@ namespace GW
 			*	\param [out] _outVector		The vector for store the result
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn ScaleF(GVECTORF _vector, float _scalar, GVECTORF& _outVector) = 0;
 		
@@ -88,8 +82,6 @@ namespace GW
 			*	\param [out] _outValue		The value of the dot product
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn DotF(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) = 0;
 
@@ -103,8 +95,6 @@ namespace GW
 			*	\param [out] _outValue		The value of 2D vecotrs' cross product
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn CrossVector2F(GVECTORF _vector1, GVECTORF _vector2, float& _outValue) = 0;
 
@@ -118,8 +108,6 @@ namespace GW
 			*	\param [out] _outVector		The vector of 3D vectors' cross product
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn CrossVector3F(GVECTORF _vector1, GVECTORF _vector2, GVECTORF& _outVector) = 0;
 
@@ -133,8 +121,6 @@ namespace GW
 			*	\param [out] _outVector		The result of multiplicataion
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn VectorXMatrixF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
 
@@ -148,8 +134,6 @@ namespace GW
 			*	\param [out] _outVector		The result of the transformation
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn TransformF(GVECTORF _vector, GMATRIXF _matrix, GVECTORF& _outVector) = 0;
 			
@@ -161,7 +145,6 @@ namespace GW
 			*	\param [out] _outValue		The magnitude of the vector
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn MagnitudeF(GVECTORF _vector, float& _outMagnitude) = 0;
@@ -174,7 +157,6 @@ namespace GW
 			*	\param [out] _outVector		The result of the normalization.
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn NormalizeF(GVECTORF _vector, GVECTORF& _outVector) = 0;
@@ -190,8 +172,6 @@ namespace GW
 			*	\param [out] _outVector			The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpF(GVECTORF _vector1, GVECTORF _vector2, float _ratio, GVECTORF& _outVector) = 0;
 
@@ -210,8 +190,6 @@ namespace GW
 			*	\param [out] _outVector			The result of the spline
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SplineF(GVECTORF _vector1, GVECTORF _vector2, GVECTORF _vector3, GVECTORF _vector4, float _ratio, GVECTORF& _outVector) = 0;
 
@@ -226,8 +204,6 @@ namespace GW
 			*	\param [out] _outVector		The result of addition
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn AddVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
@@ -240,8 +216,6 @@ namespace GW
 			*	\param [out] _outVector		The vector for store the result
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn SubtractVectorD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
@@ -255,8 +229,6 @@ namespace GW
 			*	\param [out] _outVector		The vector for store the result
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn ScaleD(GVECTORD _vector, double _scalar, GVECTORD& _outVector) = 0;
 
@@ -269,8 +241,6 @@ namespace GW
 			*	\param [out] _outValue		The value of the dot product
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn DotD(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
 
@@ -284,8 +254,6 @@ namespace GW
 			*	\param [out] _outValue		The value of 2D vecotrs' cross product
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn CrossVector2D(GVECTORD _vector1, GVECTORD _vector2, double& _outValue) = 0;
 
@@ -299,8 +267,6 @@ namespace GW
 			*	\param [out] _outVector		The result of multiplicataion
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn CrossVector3D(GVECTORD _vector1, GVECTORD _vector2, GVECTORD& _outVector) = 0;
 
@@ -314,8 +280,6 @@ namespace GW
 			*	\param [out] _outVector		The result of multiplicataion
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn VectorXMatrixD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
 
@@ -329,8 +293,6 @@ namespace GW
 			*	\param [out] _outVector		The result of the transformation
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn TransformD(GVECTORD _vector, GMATRIXD _matrix, GVECTORD& _outVector) = 0;
 
@@ -342,7 +304,6 @@ namespace GW
 			*	\param [out] _outValue		The magnitude of the vector
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn MagnitudeD(GVECTORD _vector, double& _outMagnitude) = 0;
@@ -355,7 +316,6 @@ namespace GW
 			*	\param [out] _outVector		The result of the normalization.
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid vector was passed in
 			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn NormalizeD(GVECTORD _vector, GVECTORD& _outVector) = 0;
@@ -371,8 +331,6 @@ namespace GW
 			*	\param [out] _outVector			The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vecotr was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpD(GVECTORD _vector1, GVECTORD _vector2, double _ratio, GVECTORD& _outVector) = 0;
 
@@ -391,8 +349,6 @@ namespace GW
 			*	\param [out] _outVector			The result of the spline
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SplineD(GVECTORD _vector1, GVECTORD _vector2, GVECTORD _vector3, GVECTORD _vector4, double _ratio, GVECTORD& _outVector) = 0;
 

@@ -11,7 +11,7 @@ Copyright: 7thGate Software LLC.
 License: MIT
 */
 
-//! GMathDefines inherits directly from GMultiThreaded.
+//! GMathDefines inherits directly from GSingleThreaded.
 #include "../G_Core/GSingleThreaded.h"
 #include "GMathDefines.h"
 
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {AD401F3B-74D3-4C20-BF82-BA450077DB8C}
+		//! Unique Identifier for this interface. {3CCA5FD9-63AA-48C1-8C67-36C6869A6AFF}
 		static const GUUIID GMatrixUUIID =
 		{
-			0xad401f3b, 0x74d3, 0x4c20,{ 0xbf, 0x82, 0xba, 0x45, 0x0, 0x77, 0xdb, 0x8c }
+			0x3cca5fd9, 0x63aa, 0x48c1,{ 0x8c, 0x67, 0x36, 0xc6, 0x86, 0x9a, 0x6a, 0xff }
 		};
 
 		//! Matrix functions
@@ -45,8 +45,6 @@ namespace GW
 			*	\param [out] _outVector		The result of addition
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn AddMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF& _outMatrix) = 0;
 			
@@ -59,8 +57,6 @@ namespace GW
 			*	\param [out] _outVector		The result of subtraction
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn SubtractMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF& _outMatrix) = 0;
 			
@@ -73,8 +69,6 @@ namespace GW
 			*	\param [out] _outVector		The result of Multiplication
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn MultiplyMatrixF(GMATRIXF _matrix1, GMATRIXF _matrix2, GMATRIXF& _outMatrix) = 0;
 			
@@ -89,8 +83,6 @@ namespace GW
 			*	\param [out] _outVector		The result of multiplicataion
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix or vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn VectorXMatrixF(GMATRIXF _matrix, GVECTORF _vector, GVECTORF& _outVector) = 0;
 			
@@ -102,8 +94,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the convert
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ConvertQuaternionF(GQUATERNIONF _quaternion, GMATRIXF& _outMatrix) = 0;
 
@@ -116,8 +106,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MultiplyNumF(GMATRIXF _matrix, float _scalar, GMATRIXF& _outMatrix) = 0;
 
@@ -129,8 +117,6 @@ namespace GW
 			*	\param [out] _outValue			The result of the determinant
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn DeterminantF(GMATRIXF _matrix, float& _outValue) = 0;
 
@@ -142,8 +128,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the transpose
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn TransposeF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
 
@@ -155,7 +139,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the inverse
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn InverseF(GMATRIXF _matrix, GMATRIXF& _outMatrix) = 0;
@@ -167,8 +150,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn IdentityF(GMATRIXF& _outMatrix) = 0;
 
@@ -181,7 +162,6 @@ namespace GW
 			*	\param [out] _quaternion		The quaternion of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn GetRotationF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
@@ -195,8 +175,6 @@ namespace GW
 			*	\param [out] _outMatrix			The translation matirx of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn GetTranslationF(GMATRIXF _matrix, GVECTORF& _outMatrix) = 0;
 
@@ -209,8 +187,6 @@ namespace GW
 			*	\param [out] _outMatrix			The scaling matirx of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn GetScaleF(GMATRIXF _matrix, GVECTORF& _outMatrix) = 0;
 
@@ -225,8 +201,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationXF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
@@ -241,8 +215,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationYF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
@@ -257,8 +229,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationZF(GMATRIXF _matrix, float _radian, GMATRIXF& _outMatrix) = 0;
 
@@ -274,8 +244,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn RotationYawPitchRollF(float _yaw, float _pitch, float _roll, GMATRIXF& _outMatrix) = 0;
 			
@@ -289,7 +257,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn RotationByVectorF(GVECTORF _vector, float _radian, GMATRIXF& _outMatrix) = 0;
@@ -305,8 +272,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the trasnlation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatrix) = 0;
 
@@ -320,8 +285,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn  ScalingF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF& _outMatirx) = 0;
 
@@ -336,8 +299,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn  LerpF(GMATRIXF _matrix1, GMATRIXF _matrix2, float _ratio, GMATRIXF& _outMatrix) = 0;
 
@@ -352,7 +313,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the projection matrix
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn ProjectionLHF(float _fovY, float _aspect, float _zn, float _zf, GMATRIXF& _outMatrix) = 0;
@@ -367,7 +327,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the look-at matrix
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn LookAtLHF(GVECTORF _eye, GVECTORF _at, GVECTORF _up, GMATRIXF& _outMatrix) = 0;
@@ -384,8 +343,6 @@ namespace GW
 			*	\param [out] _outVector		The result of addition
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn  AddMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD& _outMatrix) = 0;
 			
@@ -398,8 +355,6 @@ namespace GW
 			*	\param [out] _outVector		The result of subtraction
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn  SubtractMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD& _outMatrix) = 0;
 
@@ -412,8 +367,6 @@ namespace GW
 			*	\param [out] _outVector		The result of Multiplication
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn  MultiplyMatrixD(GMATRIXD _matrix1, GMATRIXD _matrix2, GMATRIXD& _outMatrix) = 0;
 		
@@ -429,8 +382,6 @@ namespace GW
 			*	\param [out] _outVector		The result of multiplicataion
 			*
 			*	\retval SUCCESS				The calculation succeed
-			*	\retval INVALID_ARGUMENT	An invalid matrix or vector was passed in
-			*	\retval FAILURE				The calculation failed
 			*/
 			virtual GReturn VectorXMatrixD(GMATRIXD _matrix, GVECTORD _vector, GVECTORD& _outVector) = 0;
 
@@ -442,8 +393,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the convert
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ConvertQuaternionD(GQUATERNIOND _quaternion, GMATRIXD& _outMatrix) = 0;
 
@@ -456,8 +405,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MultiplyNumD(GMATRIXD _matrix, double _scalar, GMATRIXD& _outMatrix) = 0;
 
@@ -469,8 +416,6 @@ namespace GW
 			*	\param [out] _outValue			The result of the determinant
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn DeterminantD(GMATRIXD _matrix, double& _outValue) = 0;
 
@@ -482,8 +427,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the transpose
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn TransposeD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
 
@@ -495,7 +438,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the inverse
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn InverseD(GMATRIXD _matrix, GMATRIXD& _outMatrix) = 0;
@@ -507,8 +449,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn IdentityD(GMATRIXD& _outMatrix) = 0;
 
@@ -521,7 +461,6 @@ namespace GW
 			*	\param [out] _quaternion		The quaternion of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn GetRotationD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
@@ -534,9 +473,7 @@ namespace GW
 			*	\param [in]  _matrix			The specified matrix
 			*	\param [out] _outMatrix			The translation matirx of the specified matirx
 			*
-			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
+			*	\retval SUCCESS					The calculation succee
 			*/
 			virtual GReturn GetTranslationD(GMATRIXD _matrix, GVECTORD& _outMatrix) = 0;
 
@@ -549,8 +486,6 @@ namespace GW
 			*	\param [out] _outMatrix			The scaling matirx of the specified matirx
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn GetScaleD(GMATRIXD _matrix, GVECTORD& _outMatrix) = 0;
 
@@ -565,8 +500,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationXD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
 
@@ -581,8 +514,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationYD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
 
@@ -597,8 +528,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn RotationZD(GMATRIXD _matrix, double _radian, GMATRIXD& _outMatrix) = 0;
 
@@ -614,8 +543,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn RotationYawPitchRollD(double _yaw, double _pitch, double _roll, GMATRIXD& _outMatrix) = 0;
 
@@ -629,8 +556,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the rotation
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn RotationByVectorD(GVECTORD _vector, double _radian, GMATRIXD& _outMatrix) = 0;
 
@@ -645,7 +570,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the trasnlation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) = 0;
@@ -660,8 +584,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn  ScalingD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD& _outMatrix) = 0;
 
@@ -676,8 +598,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn  LerpD(GMATRIXD _matrix1, GMATRIXD _matrix2, double _ratio, GMATRIXD& _outMatrix) = 0;
 
@@ -692,8 +612,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the projection matrix
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
-			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn ProjectionLHD(double _fovY, double _aspect, double _zn, double _zf, GMATRIXD& _outMatrix) = 0;
 			
@@ -707,7 +625,6 @@ namespace GW
 			*	\param [out] _outMatrix			The result of the look-at matrix
 			*
 			*	\retval SUCCESS					The building succeed
-			*	\retval INVALID_ARGUMENT		An invalid matrix was passed in
 			*	\retval FAILURE					The building failed
 			*/
 			virtual GReturn LookAtLHD(GVECTORD _eye, GVECTORD _at, GVECTORD _up, GMATRIXD& _outMatrix) = 0;

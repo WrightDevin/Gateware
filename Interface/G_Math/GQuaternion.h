@@ -5,13 +5,13 @@ File: GQuaternion.h
 Purpose: A Gateware interface that handles quaternion functions.
 Author: Shuo-Yi Chang
 Contributors: N/A
-Last Modified: 8/30/2016
+Last Modified: 8/30/2017
 Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
 
-//! GMathDefines inherits directly from GMultiThreaded.
+//! GMathDefines inherits directly from GSingleThreaded.
 #include "../G_Core/GSingleThreaded.h"
 #include "GMathDefines.h"
 
@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all math library interface must belong.
 	namespace MATH
 	{
-		//! Unique Identifier for this interface. {1B42F04F-5A3F-40C5-A506-479768629014}
+		//! Unique Identifier for this interface. {50AAB369-EDFD-4D04-953B-7CDF7162BDC0}
 		static const GUUIID GQuaternionUUIID =
 		{
-			0x1b42f04f, 0x5a3f, 0x40c5,{ 0xa5, 0x6, 0x47, 0x97, 0x68, 0x62, 0x90, 0x14 }
+			0x50aab369, 0xedfd, 0x4d04,{ 0x95, 0x3b, 0x7c, 0xdf, 0x71, 0x62, 0xbd, 0xc0 }
 		};
 
 		//! Quaternion functions
@@ -46,8 +46,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the addition
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn AddQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
@@ -60,8 +58,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the subtraction
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SubtractQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
@@ -74,8 +70,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the multiplication
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MultiplyQuaternionF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GQUATERNIONF& _outQuaternion) = 0;
 
@@ -88,8 +82,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ScaleF(GQUATERNIONF _quaternion, float _scalar, GQUATERNIONF& _outQuaternion) = 0;
 			
@@ -102,8 +94,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SetByVectorAngleF(GVECTORF _vector, float _radian, GQUATERNIONF& _outQuaternion) = 0;
 			
@@ -116,7 +106,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the rotation of matrix
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SetByMatrixF(GMATRIXF _matrix, GQUATERNIONF& _outQuaternion) = 0;
@@ -130,8 +119,6 @@ namespace GW
 			*	\param [out] _outValue			The value of the dot product
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn DotF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float& _outValue) = 0;
 			
@@ -144,8 +131,6 @@ namespace GW
 			*	\param [out] _outVector			The vector of the corss product
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn CrossF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, GVECTORF& _outVector) = 0;
 			
@@ -157,8 +142,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the conjugate
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ConjugateF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
 
@@ -170,7 +153,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the inverse
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn InverseF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
@@ -183,7 +165,6 @@ namespace GW
 			*	\param [out] _outMagnitude		The result of the Calculation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MagnitudeF(GQUATERNIONF _quaternion, float& _outMagnitude) = 0;
@@ -196,7 +177,6 @@ namespace GW
 			*	\param [out] _outMagnitude		The result of the normalization
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn NormalizeF(GQUATERNIONF _quaternion, GQUATERNIONF& _outQuaternion) = 0;
@@ -208,8 +188,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn IdentityF(GQUATERNIONF& _outQuaternion) = 0;
 
@@ -224,8 +202,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
 			
@@ -240,7 +216,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SlerpF(GQUATERNIONF _quaternion1, GQUATERNIONF _quaternion2, float _ratio, GQUATERNIONF& _outQuaternion) = 0;
@@ -258,8 +233,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the addition
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn AddQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -272,8 +245,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the subtraction
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SubtractQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -286,8 +257,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the multiplication
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MultiplyQuaternionD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -300,8 +269,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the scaling
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ScaleD(GQUATERNIOND _quaternion, double _scalar, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -314,8 +281,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the rotation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SetByVectorAngleD(GVECTORD _vector, double _radain, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -328,7 +293,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the rotation of matrix
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SetByMatrixD(GMATRIXD _matrix, GQUATERNIOND& _outQuaternion) = 0;
@@ -342,8 +306,6 @@ namespace GW
 			*	\param [out] _outValue			The value of the dot product
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn DotD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, double& _outQuaternion) = 0;
 
@@ -356,8 +318,6 @@ namespace GW
 			*	\param [out] _outVector			The vector of the corss product
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid vector was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn CrossD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, GVECTORD& _outVector) = 0;
 
@@ -369,8 +329,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the conjugate
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn ConjugateD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -382,7 +340,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the inverse
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn InverseD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
@@ -395,7 +352,6 @@ namespace GW
 			*	\param [out] _outMagnitude		The result of the Calculation
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn MagnitudeD(GQUATERNIOND _quaternion, double& _outMagnitude) = 0;
@@ -408,7 +364,6 @@ namespace GW
 			*	\param [out] _outMagnitude		The result of the normalization
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn NormalizeD(GQUATERNIOND _quaternion, GQUATERNIOND& _outQuaternion) = 0;
@@ -420,8 +375,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the identity
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn IdentityD(GQUATERNIOND& _outQuaternion) = 0;
 
@@ -436,8 +389,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
-			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn LerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, float _ratio, GQUATERNIOND& _outQuaternion) = 0;
 
@@ -452,7 +403,6 @@ namespace GW
 			*	\param [out] _outQuaternion		The result of the lerp
 			*
 			*	\retval SUCCESS					The calculation succeed
-			*	\retval INVALID_ARGUMENT		An invalid quaternion was passed in
 			*	\retval FAILURE					The calculation failed
 			*/
 			virtual GReturn SlerpD(GQUATERNIOND _quaternion1, GQUATERNIOND _quaternion2, double _ratio, GQUATERNIOND& _outQuaternion) = 0;
