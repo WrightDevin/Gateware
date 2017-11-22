@@ -25,7 +25,7 @@ class GDirectX11 : public GDirectX11Surface
 {
 private:
 	// declare all necessary members
-	unsigned int refCount;
+	std::atomic<unsigned int> refCount = 1;
 
 	GWindow*					gWnd;
 	HWND						surfaceWindow;
@@ -65,15 +65,19 @@ GDirectX11::GDirectX11()
 
 GDirectX11::~GDirectX11()
 {
+	if (gWnd) gWnd->DecrementCount(); // no longer using this
+
 	if (device) device->Release();
 	if (context) context->Release();
 	if (rtv) rtv->Release();
+	if (zBuffer) zBuffer->Release();
 	if (swapChain) swapChain->Release();
 }
 
 void GDirectX11::SetGWindow(GWindow* _window)
 {
 	gWnd = _window;
+	_window->IncrementCount(); // always increase the refrence count if you hold on to a pointer! Don't forget to Decrement when done!
 }
 
 GReturn GDirectX11::Initialize(unsigned long long _initMask)
@@ -97,10 +101,10 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 		D3D_FEATURE_LEVEL_9_1
 	};
 
-	D3D11_CREATE_DEVICE_FLAG deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED;
+	D3D11_CREATE_DEVICE_FLAG deviceFlag = D3D11_CREATE_DEVICE_FLAG(0);
 
 #ifdef _DEBUG
-	deviceFlag = D3D11_CREATE_DEVICE_DEBUG;
+	deviceFlag = D3D11_CREATE_DEVICE_FLAG(deviceFlag | D3D11_CREATE_DEVICE_DEBUG);
 #endif
 
 	DXGI_SWAP_CHAIN_DESC swapChainStruct;
@@ -180,7 +184,7 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 		else
 			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 
-		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
 		depthBuffer->Release();
 	}
@@ -207,6 +211,7 @@ GReturn GDirectX11::GetDevice(void** _outDevice)
 		return FAILURE;
 
 	*_outDevice = device;
+	device->AddRef();
 
 	return SUCCESS;
 }
@@ -217,6 +222,7 @@ GReturn GDirectX11::GetContext(void** _outContext)
 		return FAILURE;
 
 	*_outContext = context;
+	context->AddRef();
 
 	return SUCCESS;
 }
@@ -227,6 +233,7 @@ GReturn GDirectX11::GetSwapchain(void** _outSwapchain)
 		return FAILURE;
 
 	*_outSwapchain = swapChain;
+	swapChain->AddRef();
 
 	return SUCCESS;
 }
@@ -237,6 +244,7 @@ GReturn GDirectX11::GetRenderTarget(void** _outRenderTarget)
 		return FAILURE;
 
 	*_outRenderTarget = rtv;
+	rtv->AddRef();
 
 	return SUCCESS;
 }
@@ -247,6 +255,7 @@ GReturn GDirectX11::GetDepthStencilView(void** _outDepthStencilView)
 		return FAILURE;
 
 	*_outDepthStencilView = zBuffer;
+	zBuffer->AddRef();
 
 	return SUCCESS;
 }
@@ -287,7 +296,11 @@ GReturn GDirectX11::DecrementCount()
 
 	if (refCount == 0)
 	{
-		gWnd->DeregisterListener(this);
+		// This too will cause a recursive break in the listener list BAD IDEA!
+		// This class really needs to stop with the internal listening, or we need better add/removal patterns in broadcasters.
+		//if(gWnd)
+		//	gWnd->DeregisterListener(this);
+		
 		delete this;
 	}
 
@@ -300,19 +313,7 @@ GReturn GDirectX11::RequestInterface(const GUUIID& _interfaceID, void** _outputI
 	if (_outputInterface == nullptr)
 		return INVALID_ARGUMENT;
 
-	if (_interfaceID == GWindowUUIID)
-	{
-		GWindow* convert = reinterpret_cast<GWindow*>(this);
-		convert->IncrementCount();
-		(*_outputInterface) = convert;
-	}
-	else if (_interfaceID == GBroadcastingUUIID)
-	{
-		GBroadcasting* convert = reinterpret_cast<GBroadcasting*>(this);
-		convert->IncrementCount();
-		(*_outputInterface) = convert;
-	}
-	else if (_interfaceID == GMultiThreadedUUIID)
+	if (_interfaceID == GMultiThreadedUUIID)
 	{
 		GMultiThreaded* convert = reinterpret_cast<GMultiThreaded*>(this);
 		convert->IncrementCount();
@@ -338,6 +339,9 @@ GReturn GDirectX11::RequestInterface(const GUUIID& _interfaceID, void** _outputI
 
 GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID, void * _eventData, unsigned int _dataSize)
 {
+	// if our internal window is null we shouldn't even be in here
+	if (gWnd == nullptr)
+		return FAILURE;
 
 	if (_senderInerface == GWindowUUIID)
 	{
@@ -371,6 +375,7 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 					return FAILURE;
 
 				result = device->CreateRenderTargetView(newRTVBuffer, NULL,&rtv);
+				newRTVBuffer->Release();
 
 				if (result != S_OK)
 					return FAILURE;
@@ -384,17 +389,20 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 				depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
 				depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-				ID3D11Texture2D* depthBuffer;
-				device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
+				if (zBuffer)
+				{
+					zBuffer->Release();
+					ID3D11Texture2D* depthBuffer;
+					device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
 
-				D3D11_DEPTH_STENCIL_VIEW_DESC newDSVdesc;
-				ZeroMemory(&newDSVdesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-				newDSVdesc.Format = DXGI_FORMAT_D32_FLOAT;
-				newDSVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-				device->CreateDepthStencilView(depthBuffer,&newDSVdesc,&zBuffer);
-
-				newRTVBuffer->Release();
-
+					D3D11_DEPTH_STENCIL_VIEW_DESC newDSVdesc;
+					ZeroMemory(&newDSVdesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+					newDSVdesc.Format = DXGI_FORMAT_D32_FLOAT;
+					newDSVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+					device->CreateDepthStencilView(depthBuffer, &newDSVdesc, &zBuffer);
+					depthBuffer->Release();
+				}
+				
 				D3D11_VIEWPORT viewport;
 				viewport.TopLeftX = 0;
 				viewport.TopLeftY = 0;
@@ -433,7 +441,19 @@ GReturn GDirectX11::OnEvent(const GUUIID& _senderInerface, unsigned int _eventID
 			break;
 		case GW::SYSTEM::DESTROY:
 		{
-			this->~GDirectX11();
+			// No No No No No! Why was this here?
+			//this->~GDirectX11();
+			
+			// NO NO NO NO! This will cause a resource error since we are in the middle of iterating the same list!!!
+			// This can be fixed by either using add/remove quques internally for broadcasters or forcing Regiter/DeRegister to always be external.(leaning toward quqeues)
+			// Currently the use of a single mutex will cause a dead lock in this situation!
+			// *NOPE-->>>* Instead we should stop listening to the window and deregister ourselves since it is going away.
+			//gWnd->DeregisterListener(this); // this will cause all kind of problems without fixes to GWindow & GBufferedInput
+			
+			// Seriously.... just let go of your handle to GWindow, otherwise it cannot delete itself. *CORRECT*
+			gWnd->DecrementCount(); // release our hold on GWindow
+			gWnd = nullptr; // pointer is no longer valid
+
 		}
 			break;
 		}
@@ -450,8 +470,10 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGDirectX11Surface(SYSTEM::GWindow* _gWin,
 
 GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GDirectX11Surface** _outSurface)
 {
-
 	if (_outSurface == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (_gWin == nullptr)
 		return INVALID_ARGUMENT;
 
 	GDirectX11* Surface = new GDirectX11();
@@ -460,7 +482,7 @@ GReturn GW::GRAPHICS::CreateGDirectX11Surface(SYSTEM::GWindow* _gWin, unsigned l
 	Surface->Initialize(_initMask);
 
 	_gWin->RegisterListener(Surface, 0);
-
+	
 	if (Surface == nullptr)
 		return FAILURE;
 

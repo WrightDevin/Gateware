@@ -86,6 +86,14 @@ GReturn BufferedInput::DecrementCount() {
 
 	if (referenceCount == 0) {
 
+		//Release handles to any listeners that remain (releases handles)
+		mutex.lock();
+		std::map<GListener*, unsigned long long>::iterator iter = _listeners.begin();
+		for (; iter != _listeners.end(); ++iter)
+			iter->first->DecrementCount(); // free handle
+		_listeners.clear(); // dump all invalid pointers
+		mutex.unlock();
+
 #ifdef __linux__
 		threadOpen = false;
 		inputThread->join();
@@ -145,7 +153,7 @@ GReturn BufferedInput::RegisterListener(GListener* _addListener, unsigned long l
 	}
 
 	_listeners[_addListener] = _eventMask;
-	IncrementCount();
+	_addListener->IncrementCount();
 
 	mutex.unlock();
 
@@ -161,9 +169,9 @@ GReturn BufferedInput::DeregisterListener(GListener* _removeListener) {
 	mutex.lock();
 	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
 	if (iter != _listeners.end()) {
+		iter->first->DecrementCount();
 		_listeners.erase(iter);
 		mutex.unlock();
-		DecrementCount();
 	}
 	else {
 		mutex.unlock();

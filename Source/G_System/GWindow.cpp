@@ -1011,6 +1011,14 @@ GReturn AppWindow::DecrementCount()
 
 	if (refCount == 0)
 	{
+		//Release handles to any listeners that remain (releases handles)
+		refMutex.lock();
+		std::map<GListener*, unsigned long long>::iterator iter = listeners.begin();
+		for (; iter != listeners.end(); ++iter)
+			iter->first->DecrementCount(); // free handle, don't call Deregister as that would be bad
+		listeners.clear(); // dump all invalid pointers
+		refMutex.unlock();
+
 #ifdef __linux__
 		delete linuxLoop;
 #endif // __linux__
@@ -1091,7 +1099,7 @@ GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long 
 	}
 
 	listeners[_addListener] = _eventMask;
-	IncrementCount();
+	_addListener->IncrementCount();
 
 	refMutex.unlock();
 
@@ -1108,9 +1116,9 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 	std::map<GListener*, unsigned long long>::const_iterator iter = listeners.find(_removeListener);
 	if (iter != listeners.end()) {
+		iter->first->DecrementCount();
 		listeners.erase(iter);
 		refMutex.unlock();
-		DecrementCount();
 	}
 	else {
 		refMutex.unlock();
