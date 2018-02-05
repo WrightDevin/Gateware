@@ -108,6 +108,7 @@ GReturn GW::SYSTEM::CreateGInput(void* _windowHandle, unsigned int _handleSize, 
 
 Input::Input() {
 	referenceCount = 1;
+	inputThread = nullptr;
 }
 
 Input::~Input() {
