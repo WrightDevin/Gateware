@@ -260,6 +260,10 @@ GReturn Input::InitializeWindows(void* _data) {
 	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
 		TURNON_BIT(keyMask, G_MASK_SCROLL_LOCK);
 	}
+
+	//Free Memory
+	free(pRawInputDeviceList);
+
 #endif
 
 	return SUCCESS;

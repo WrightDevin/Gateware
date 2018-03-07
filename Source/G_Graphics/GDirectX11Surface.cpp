@@ -82,6 +82,14 @@ void GDirectX11::SetGWindow(GWindow* _window)
 
 GReturn GDirectX11::Initialize(unsigned long long _initMask)
 {
+	//Check if valid _initMask was passed in
+	unsigned long long allowed = ~(COLOR_10_BIT | DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT | DIRECT2D_SUPPORT);
+	if (allowed & _initMask)
+	{
+		return FEATURE_UNSUPPORTED;
+	}
+
+
 	gWnd->OpenWindow();
 	gWnd->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
 	RECT windowRect;
@@ -112,6 +120,8 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 
 	if (_initMask & COLOR_10_BIT)
 		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+	else if(_initMask & DIRECT2D_SUPPORT)				
+		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;	
 	else
 		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 

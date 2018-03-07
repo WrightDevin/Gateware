@@ -119,7 +119,16 @@ namespace { // nameless namespace to isolate below test vars
 
 TEST_CASE("Create GDirectX11Surface Object.", "[CreateGDirectX11Surface]")
 {
-	unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
+	//unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
+
+	unsigned long long initMask = 0;
+	//initMask |= COLOR_10_BIT;
+	initMask |= DEPTH_BUFFER_SUPPORT;
+	initMask |= DEPTH_STENCIL_SUPPORT;
+	//initMask |= OPENGL_ES_SUPPORT;
+	//initMask |= DIRECT2D_SUPPORT;
+
+
 
 	CHECK(CreateGDirectX11Surface(gWnd_DX, initMask, &dx11Surface) == SUCCESS);
 }
@@ -138,6 +147,8 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 		format = "8-BIT COLOR (DXGI_FORMAT_R8G8B8A8_UNORM)";
 	else if (tempDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM)
 		format = "10-BIT COLOR (DXGI_FORMAT_R10G10B10A2_UNORM)";
+	else if (tempDesc.BufferDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM)	
+		format = "DIRECT2D SUPPORT (DXGI_FORMAT_B8G8R8A8_UNORM)";
 
 	std::cout << "\n" << "DIRECTX 11 INFORMATION" << "\n";
 	std::cout << "COLOR FORMAT: " << format << "\n";

@@ -156,6 +156,12 @@ void GOpenGL::SetGWindow(GWindow* _window)
 
 GReturn GOpenGL::Initialize(unsigned long long _initMask)
 {
+	//Check if valid _initMask was passed in
+	unsigned long long allowed = ~(COLOR_10_BIT | DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT | OPENGL_ES_SUPPORT);
+	if (allowed & _initMask)
+	{
+		return FEATURE_UNSUPPORTED;
+	}
 
 	if (gWnd == nullptr)
 		return FAILURE;
@@ -332,6 +338,14 @@ GReturn GOpenGL::Initialize(unsigned long long _initMask)
 
 		if (strstr(version, "OpenGL ES") == NULL)
 			return FEATURE_UNSUPPORTED;
+	}
+
+	//////////////////////
+	// DIRECT2D SUPPORT //
+	//////////////////////
+	if (_initMask & DIRECT2D_SUPPORT)							  
+	{											  
+		return FEATURE_UNSUPPORTED;						  
 	}
 
 #elif __linux__

@@ -1,6 +1,15 @@
 #include "../Unit Tests/Common.h"
 
 #include <thread>
+
+#ifdef _DEBUG
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
+#endif // _DEBUG
+
+
+//
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -11,13 +20,20 @@
 //Globals needed for all test cases
 GW::SYSTEM::GInput* input = nullptr;
 
-/*
+
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GInput *GInput_specific = nullptr;
 GW::CORE::GInterface *GInput_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
+#ifdef _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	// this function call will set a breakpoint at the location of a leaked block
+	// set the parameter to the identifier for a leaked block
+	//	_CrtSetBreakAlloc();
+#endif // _DEBUG
+
 	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
@@ -93,7 +109,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 }
 
 // Custom Unit Tests specific to this interface follow..
-*/
+
 
 /*
 TEST_CASE("CreateGInput Tests", "[CreateGInput]")
