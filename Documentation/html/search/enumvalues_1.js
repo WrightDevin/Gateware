@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['keypressed',['KEYPRESSED',['../namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcbaf8bb58b0791c2d5d33b224213327f960',1,'GW::SYSTEM']]],
-  ['keyreleased',['KEYRELEASED',['../namespaceGW_1_1SYSTEM.html#a309fd3a92512dd2bfa8065d99c0d7fcbabb708a216e7e8ef33cc542e6def7a688',1,'GW::SYSTEM']]]
+  ['depth_5fbuffer_5fsupport',['DEPTH_BUFFER_SUPPORT',['../namespaceGW_1_1GRAPHICS.html#afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a',1,'GW::GRAPHICS']]],
+  ['depth_5fstencil_5fsupport',['DEPTH_STENCIL_SUPPORT',['../namespaceGW_1_1GRAPHICS.html#afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452',1,'GW::GRAPHICS']]],
+  ['direct2d_5fsupport',['DIRECT2D_SUPPORT',['../namespaceGW_1_1GRAPHICS.html#afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc',1,'GW::GRAPHICS']]]
 ];

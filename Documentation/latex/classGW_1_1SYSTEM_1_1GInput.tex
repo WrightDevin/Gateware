@@ -20,13 +20,13 @@ Collaboration diagram for GW\+:\+:S\+Y\+S\+T\+EM\+:\+:G\+Input\+:
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GInput_a73d61dd3d6c6751f52267ed7abb03994}{Get\+State} (int \+\_\+key\+Code, float \&\+\_\+out\+State)=0
+virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{classGW_1_1SYSTEM_1_1GInput_a73d61dd3d6c6751f52267ed7abb03994}{Get\+State}} (int \+\_\+key\+Code, float \&\+\_\+out\+State)=0
 \begin{DoxyCompactList}\small\item\em Get the current state of any key. \end{DoxyCompactList}\item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GInput_a775fca7ad71371f369e3ad69fb32603a}{Get\+Mouse\+Delta} (float \&\+\_\+x, float \&\+\_\+y)=0
+virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{classGW_1_1SYSTEM_1_1GInput_a775fca7ad71371f369e3ad69fb32603a}{Get\+Mouse\+Delta}} (float \&\+\_\+x, float \&\+\_\+y)=0
 \begin{DoxyCompactList}\small\item\em Get the change in mouse position. \end{DoxyCompactList}\item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GInput_a351eb04ac4a8699f6e4e416860d264b2}{Get\+Mouse\+Position} (float \&\+\_\+x, float \&\+\_\+y)=0
+virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{classGW_1_1SYSTEM_1_1GInput_a351eb04ac4a8699f6e4e416860d264b2}{Get\+Mouse\+Position}} (float \&\+\_\+x, float \&\+\_\+y)=0
 \begin{DoxyCompactList}\small\item\em Get the most recent mouse position. \end{DoxyCompactList}\item 
-virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} \hyperlink{classGW_1_1SYSTEM_1_1GInput_a448ee14346a393286b0dfe1dc61ca93d}{Get\+Key\+Mask} (unsigned int \&\+\_\+out\+Key\+Mask)=0
+virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} \mbox{\hyperlink{classGW_1_1SYSTEM_1_1GInput_a448ee14346a393286b0dfe1dc61ca93d}{Get\+Key\+Mask}} (unsigned int \&\+\_\+out\+Key\+Mask)=0
 \begin{DoxyCompactList}\small\item\em Get the key mask. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -40,13 +40,14 @@ The single thread input library is used for high speed game input. You can use t
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}!Get\+Key\+Mask@{Get\+Key\+Mask}}
 \index{Get\+Key\+Mask@{Get\+Key\+Mask}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}}
 \subsubsection{\texorpdfstring{Get\+Key\+Mask()}{GetKeyMask()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Key\+Mask (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Key\+Mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Key\+Mask (\begin{DoxyParamCaption}\item[{unsigned int \&}]{\+\_\+out\+Key\+Mask }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 
 
 Get the key mask. 
 
-The key mask lets the input object know which of the functions below are active by manipulating individual bits of an unsigned int. Values for G\+\_\+\+M\+A\+SK can be found in G\+Key\+Defines.
+The key mask lets the input object know which of the functions below are ~\newline
+active by manipulating individual bits of an unsigned int. Values for G\+\_\+\+M\+A\+SK can be found in G\+Key\+Defines.
 
 
 \begin{DoxyRetVals}{Return values}
@@ -57,7 +58,7 @@ The key mask lets the input object know which of the functions below are active 
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}!Get\+Mouse\+Delta@{Get\+Mouse\+Delta}}
 \index{Get\+Mouse\+Delta@{Get\+Mouse\+Delta}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}}
 \subsubsection{\texorpdfstring{Get\+Mouse\+Delta()}{GetMouseDelta()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Mouse\+Delta (\begin{DoxyParamCaption}\item[{float \&}]{\+\_\+x,  }\item[{float \&}]{\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Mouse\+Delta (\begin{DoxyParamCaption}\item[{float \&}]{\+\_\+x,  }\item[{float \&}]{\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 
 
@@ -79,7 +80,7 @@ Get the change in mouse position.
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}!Get\+Mouse\+Position@{Get\+Mouse\+Position}}
 \index{Get\+Mouse\+Position@{Get\+Mouse\+Position}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}}
 \subsubsection{\texorpdfstring{Get\+Mouse\+Position()}{GetMousePosition()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Mouse\+Position (\begin{DoxyParamCaption}\item[{float \&}]{\+\_\+x,  }\item[{float \&}]{\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+Mouse\+Position (\begin{DoxyParamCaption}\item[{float \&}]{\+\_\+x,  }\item[{float \&}]{\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 
 
@@ -101,7 +102,7 @@ Get the most recent mouse position.
 \index{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}!Get\+State@{Get\+State}}
 \index{Get\+State@{Get\+State}!G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input@{G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input}}
 \subsubsection{\texorpdfstring{Get\+State()}{GetState()}}
-{\footnotesize\ttfamily virtual \hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+State (\begin{DoxyParamCaption}\item[{int}]{\+\_\+key\+Code,  }\item[{float \&}]{\+\_\+out\+State }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{namespaceGW_a67a839e3df7ea8a5c5686613a7a3de21}{G\+Return}} G\+W\+::\+S\+Y\+S\+T\+E\+M\+::\+G\+Input\+::\+Get\+State (\begin{DoxyParamCaption}\item[{int}]{\+\_\+key\+Code,  }\item[{float \&}]{\+\_\+out\+State }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
 
 
