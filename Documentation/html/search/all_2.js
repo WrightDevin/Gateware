@@ -2,6 +2,7 @@ var searchData=
 [
   ['changewindowstyle',['ChangeWindowStyle',['../classGW_1_1SYSTEM_1_1GWindow.html#a21533c58e920d347c377ebdaa6d2b76f',1,'GW::SYSTEM::GWindow']]],
   ['closefile',['CloseFile',['../classGW_1_1SYSTEM_1_1GFile.html#ae661d107c461145bb095dcfc76519f54',1,'GW::SYSTEM::GFile']]],
+  ['color_5f10_5fbit',['COLOR_10_BIT',['../namespaceGW_1_1GRAPHICS.html#afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15',1,'GW::GRAPHICS']]],
   ['conjugated',['ConjugateD',['../classGW_1_1MATH_1_1GQuaternion.html#af15dde55d52feeb62a3193353529b63c',1,'GW::MATH::GQuaternion']]],
   ['conjugatef',['ConjugateF',['../classGW_1_1MATH_1_1GQuaternion.html#adc0da83f5c6011f45195ae98a3f1fa8d',1,'GW::MATH::GQuaternion']]],
   ['convertquaterniond',['ConvertQuaternionD',['../classGW_1_1MATH_1_1GMatrix.html#a602c82afc9b9f55c10d6a61da54dcb6c',1,'GW::MATH::GMatrix']]],

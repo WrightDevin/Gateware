@@ -1,6 +1,8 @@
 #include "../Unit Tests/Common.h"
 
 #pragma comment (lib, "D3D11.lib")
+#pragma comment (lib, "D2D1.lib")
+#include <d2d1.h>
 #include <d3d11.h>
 #include <iostream>
 
@@ -119,14 +121,12 @@ namespace { // nameless namespace to isolate below test vars
 
 TEST_CASE("Create GDirectX11Surface Object.", "[CreateGDirectX11Surface]")
 {
-	//unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
-
 	unsigned long long initMask = 0;
 	//initMask |= COLOR_10_BIT;
 	initMask |= DEPTH_BUFFER_SUPPORT;
 	initMask |= DEPTH_STENCIL_SUPPORT;
 	//initMask |= OPENGL_ES_SUPPORT;
-	//initMask |= DIRECT2D_SUPPORT;
+	initMask |= DIRECT2D_SUPPORT;
 
 
 
@@ -138,6 +138,7 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 	CHECK(dx11Surface->GetDevice((void**)&device) == SUCCESS);
 	CHECK(dx11Surface->GetContext((void**)&context) == SUCCESS);
 	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);
+	//CHECK(dx11Surface->GetFactory((void**)&factory) == SUCCESS);		
 
 	DXGI_SWAP_CHAIN_DESC tempDesc;
 	swapChain->GetDesc(&tempDesc);
@@ -160,6 +161,59 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 		std::cout << "NO" << "\n";
 	// release DX handles as soon as we no longer need them
 	zBuffer->Release();
+}
+
+TEST_CASE("Direct2D Support", "[GetFactory], [GetHwndRenderTarget]")
+{
+	DXGI_SWAP_CHAIN_DESC tempDesc;
+	swapChain->GetDesc(&tempDesc);
+
+	if (tempDesc.BufferDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM)
+	{
+		HWND surfaceWindow;
+		gWnd_DX->OpenWindow();
+		gWnd_DX->GetWindowHandle(sizeof(HWND), (void**)&surfaceWindow);
+		RECT windowRect;
+		GetWindowRect(surfaceWindow, &windowRect);
+
+		ID2D1Factory* factory;
+
+		HRESULT hr = D2D1CreateFactory(
+			D2D1_FACTORY_TYPE_MULTI_THREADED,
+			&factory
+		);
+		std::cout << "Factory Created \n";
+
+		ID2D1HwndRenderTarget*	hrt;
+
+		hr = factory->CreateHwndRenderTarget(
+			D2D1::RenderTargetProperties(),
+			D2D1::HwndRenderTargetProperties(
+				surfaceWindow, D2D1::SizeU(windowRect.right, windowRect.bottom)),
+			&hrt);
+		std::cout << "HwndRenderTarget Created \n";
+
+
+		D2D1::ColorF clear = D2D1::ColorF::CornflowerBlue;
+		D2D1::ColorF red = D2D1::ColorF::Red;
+
+
+		hrt->BeginDraw();
+		hrt->Clear(clear);
+
+		ID2D1SolidColorBrush* brush;
+		hrt->CreateSolidColorBrush(red, &brush);
+
+		hrt->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(300.0f, 300.0f), 100.0f, 100.0f), brush, 5.0f);
+
+		hrt->EndDraw();
+
+		if (hrt) hrt->Release();
+		if (brush) brush->Release();
+		if (factory) factory->Release();
+
+	}
+
 }
 
 TEST_CASE("Testing Window Events.")
@@ -229,3 +283,6 @@ TEST_CASE("Testing Window Events.")
 	// Release GWindow!!! (otherwise our count will not fully decrease!)
 	REQUIRE(G_SUCCESS(gWnd_DX->DecrementCount()));
 }
+
+
+

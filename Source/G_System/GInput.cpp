@@ -30,7 +30,7 @@ private:
 
 #elif __linux__
 	SYSTEM::LINUX_WINDOW _linuxWindow;
-#elif __APPPLE__
+#elif __APPLE__
 
 #endif
 

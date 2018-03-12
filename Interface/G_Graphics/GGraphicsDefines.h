@@ -21,11 +21,11 @@ namespace GW
 		//! GGraphicsInitOptions holds the special options that can be requested when initializing a GGraphics surface.
 		enum GGraphicsInitOptions
 		{
-			COLOR_10_BIT			= 0x01, //! Require high dynamic range (HDR) color format
-			DEPTH_BUFFER_SUPPORT	= 0x02, //! Require Z-Buffer support
-			DEPTH_STENCIL_SUPPORT	= 0X04, //! Require Z-Buffer to contain an 8-bit stencil buffer
-			OPENGL_ES_SUPPORT		= 0x08, //! Require OpenGL to support for mobile platforms
-			DIRECT2D_SUPPORT		= 0x10  //! Require BGRA surface support for DirectX11
+			COLOR_10_BIT			= 0x01, /*!< Require high dynamic range (HDR) color format */
+			DEPTH_BUFFER_SUPPORT	= 0x02, /*!< Require Z-Buffer support */
+			DEPTH_STENCIL_SUPPORT	= 0X04, /*!< Require Z-Buffer to contain an 8-bit stencil buffer */
+			OPENGL_ES_SUPPORT		= 0x08, /*!< Require OpenGL to support for mobile platforms */
+			DIRECT2D_SUPPORT		= 0x10  /*!< Require BGRA surface support for DirectX11 */
 		};
 	}
 }

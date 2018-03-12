@@ -16,7 +16,7 @@ class \mbox{\hyperlink{classGW_1_1GRAPHICS_1_1GOpenGLSurface}{G\+Open\+G\+L\+Sur
 \begin{DoxyCompactItemize}
 \item 
 enum \mbox{\hyperlink{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85b}{G\+Graphics\+Init\+Options}} \{ \newline
-{\bfseries C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT} = 0x01, 
+\mbox{\hyperlink{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}} = 0x01, 
 \mbox{\hyperlink{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0x02, 
 \mbox{\hyperlink{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0\+X04, 
 \mbox{\hyperlink{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}} = 0x08, 
@@ -48,20 +48,24 @@ The namespace to which all Gateware Graphics library interfaces must belong.
 G\+Graphics\+Init\+Options holds the special options that can be requested when initializing a G\+Graphics surface. 
 
 \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT@{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT@{C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT}}}\mbox{\Hypertarget{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}\label{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba955a3a5f0ed41c744182916c5bf68e15}} 
+C\+O\+L\+O\+R\+\_\+10\+\_\+\+B\+IT&Require high dynamic range (H\+DR) color format \\
+\hline
+
 \raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}\label{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba1bade4c85d55718f2b27dcc38c332a3a}} 
-D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT&Require high dynamic range (H\+DR) color format. \\
+D\+E\+P\+T\+H\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer support \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}\label{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bacac34b90e4af450189dd5e824cbbd452}} 
-D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer support. \\
+D\+E\+P\+T\+H\+\_\+\+S\+T\+E\+N\+C\+I\+L\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer to contain an 8-\/bit stencil buffer \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT@{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT@{O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}\label{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85bae59cf357d12d379a206c08211dedc57f}} 
-O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT&Require Z-\/\+Buffer to contain an 8-\/bit stencil buffer. \\
+O\+P\+E\+N\+G\+L\+\_\+\+E\+S\+\_\+\+S\+U\+P\+P\+O\+RT&Require Open\+GL to support for mobile platforms \\
 \hline
 
 \raisebox{\heightof{T}}[0pt][0pt]{\index{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT}!G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}}\index{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS@{G\+W\+::\+G\+R\+A\+P\+H\+I\+CS}!D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT@{D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT}}}\mbox{\Hypertarget{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc}\label{namespaceGW_1_1GRAPHICS_afbd9d6f65375744d2338ce060d42c85ba9c847baaca0bdcb897b2332cc8d3b5dc}} 
-D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT&Require Open\+GL to support for mobile platforms. \\
+D\+I\+R\+E\+C\+T2\+D\+\_\+\+S\+U\+P\+P\+O\+RT&Require B\+G\+RA surface support for Direct\+X11 \\
 \hline
 
 \end{DoxyEnumFields}

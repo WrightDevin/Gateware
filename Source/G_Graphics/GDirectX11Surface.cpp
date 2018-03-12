@@ -7,6 +7,8 @@
 #ifdef _WIN32
 
 #pragma comment (lib, "D3D11.lib")
+#pragma comment (lib, "D2D1.lib")
+#include <d2d1.h>
 #include <d3d11.h>
 #include <atomic>
 #include <mutex>
@@ -28,7 +30,7 @@ private:
 	std::atomic<unsigned int> refCount = 1;
 
 	GWindow*					gWnd;
-	HWND						surfaceWindow;
+	HWND						surfaceWindow;		
 	ID3D11Device*				device;
 	ID3D11DeviceContext*		context;
 	IDXGISwapChain*				swapChain;
@@ -115,103 +117,109 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 	deviceFlag = D3D11_CREATE_DEVICE_FLAG(deviceFlag | D3D11_CREATE_DEVICE_DEBUG);
 #endif
 
-	DXGI_SWAP_CHAIN_DESC swapChainStruct;
-	swapChainStruct.BufferCount = 1;
-
-	if (_initMask & COLOR_10_BIT)
-		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
-	else if(_initMask & DIRECT2D_SUPPORT)				
-		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;	
-	else
-		swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-	swapChainStruct.BufferDesc.Width = width;
-	swapChainStruct.BufferDesc.Height = height;
-	ZeroMemory(&swapChainStruct.BufferDesc.RefreshRate, sizeof(swapChainStruct.BufferDesc.RefreshRate));
-	ZeroMemory(&swapChainStruct.BufferDesc.Scaling, sizeof(swapChainStruct.BufferDesc.Scaling));
-	ZeroMemory(&swapChainStruct.BufferDesc.ScanlineOrdering, sizeof(swapChainStruct.BufferDesc.ScanlineOrdering));
-	swapChainStruct.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainStruct.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	swapChainStruct.OutputWindow = surfaceWindow;
-	swapChainStruct.Windowed = true;
-	swapChainStruct.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainStruct.SampleDesc.Count = 1;
-	swapChainStruct.SampleDesc.Quality = 0;
-
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(
-		NULL,
-		D3D_DRIVER_TYPE_HARDWARE,
-		NULL,
-		deviceFlag,
-		featureLevels,
-		ARRAYSIZE(featureLevels),
-		D3D11_SDK_VERSION,
-		&swapChainStruct,
-		&swapChain,
-		&device,
-		nullptr,
-		&context
-	);	
-
-	ID3D11Resource* buffer;
-	swapChain->GetBuffer(0, __uuidof(buffer), reinterpret_cast<void**>(&buffer));
-	device->CreateRenderTargetView(buffer, NULL,&rtv);
-
-	buffer->Release();
-
-	if (_initMask & DEPTH_BUFFER_SUPPORT)
+	if (_initMask & DIRECT2D_SUPPORT)
 	{
-		/////////////////////////////////
-		// Create Depth Buffer Texture //
-		/////////////////////////////////
-
-		D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
-		depthTextureDesc.Width = width;
-		depthTextureDesc.Height = height;
-		depthTextureDesc.ArraySize = 1;
-		depthTextureDesc.MipLevels = 1;
-		depthTextureDesc.SampleDesc.Count = 1;
-
-		if (_initMask & DEPTH_STENCIL_SUPPORT)
-			depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		else
-			depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;		
-		
-		depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-		ID3D11Texture2D* depthBuffer;
-		device->CreateTexture2D(&depthTextureDesc, NULL,&depthBuffer);
-
-		///////////////////////////////
-		// Create Depth Stencil View //
-		///////////////////////////////
-
-		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-		ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-		if (_initMask & DEPTH_STENCIL_SUPPORT)
-			depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		else
-			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-
-		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
-		depthBuffer->Release();
+		deviceFlag = D3D11_CREATE_DEVICE_FLAG(deviceFlag | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
 	}
 
-	/////////////////////////
-	// Initialize Viewport //
-	/////////////////////////
 
-	D3D11_VIEWPORT viewport;
-	viewport.Width = width;
-	viewport.Height = height;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+		DXGI_SWAP_CHAIN_DESC swapChainStruct;
+		swapChainStruct.BufferCount = 1;
 
-	context->RSSetViewports(1, &viewport);
+		if (_initMask & COLOR_10_BIT)
+			swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		else if (_initMask & DIRECT2D_SUPPORT)
+			swapChainStruct.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		else
+			swapChainStruct.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
+		swapChainStruct.BufferDesc.Width = width;
+		swapChainStruct.BufferDesc.Height = height;
+		ZeroMemory(&swapChainStruct.BufferDesc.RefreshRate, sizeof(swapChainStruct.BufferDesc.RefreshRate));
+		ZeroMemory(&swapChainStruct.BufferDesc.Scaling, sizeof(swapChainStruct.BufferDesc.Scaling));
+		ZeroMemory(&swapChainStruct.BufferDesc.ScanlineOrdering, sizeof(swapChainStruct.BufferDesc.ScanlineOrdering));
+		swapChainStruct.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapChainStruct.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		swapChainStruct.OutputWindow = surfaceWindow;
+		swapChainStruct.Windowed = true;
+		swapChainStruct.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapChainStruct.SampleDesc.Count = 1;
+		swapChainStruct.SampleDesc.Quality = 0;
+
+		HRESULT hr = D3D11CreateDeviceAndSwapChain(
+			NULL,
+			D3D_DRIVER_TYPE_HARDWARE,
+			NULL,
+			deviceFlag,
+			featureLevels,
+			ARRAYSIZE(featureLevels),
+			D3D11_SDK_VERSION,
+			&swapChainStruct,
+			&swapChain,
+			&device,
+			nullptr,
+			&context
+		);
+
+		ID3D11Resource* buffer;
+		swapChain->GetBuffer(0, __uuidof(buffer), reinterpret_cast<void**>(&buffer));
+		device->CreateRenderTargetView(buffer, NULL, &rtv);
+
+		buffer->Release();
+
+		if (_initMask & DEPTH_BUFFER_SUPPORT)
+		{
+			/////////////////////////////////
+			// Create Depth Buffer Texture //
+			/////////////////////////////////
+
+			D3D11_TEXTURE2D_DESC depthTextureDesc = { 0 };
+			depthTextureDesc.Width = width;
+			depthTextureDesc.Height = height;
+			depthTextureDesc.ArraySize = 1;
+			depthTextureDesc.MipLevels = 1;
+			depthTextureDesc.SampleDesc.Count = 1;
+
+			if (_initMask & DEPTH_STENCIL_SUPPORT)
+				depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			else
+				depthTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
+
+			depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+			ID3D11Texture2D* depthBuffer;
+			device->CreateTexture2D(&depthTextureDesc, NULL, &depthBuffer);
+
+			///////////////////////////////
+			// Create Depth Stencil View //
+			///////////////////////////////
+
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+			ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+
+			if (_initMask & DEPTH_STENCIL_SUPPORT)
+				depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			else
+				depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+
+			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			hr = device->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &zBuffer);
+			depthBuffer->Release();
+		}
+
+		/////////////////////////
+		// Initialize Viewport //
+		/////////////////////////
+
+		D3D11_VIEWPORT viewport;
+		viewport.Width = width;
+		viewport.Height = height;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		gWnd->GetClientTopLeft((unsigned int&)viewport.TopLeftX, (unsigned int&)viewport.TopLeftY);
+
+		context->RSSetViewports(1, &viewport);
+	
 	return SUCCESS;
 }
 

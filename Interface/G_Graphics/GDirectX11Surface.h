@@ -98,7 +98,6 @@ namespace GW
 			*   \retval FAILURE No depth stencil view exists to retrieve.
 			*/
 			virtual GReturn GetDepthStencilView(void** _outDepthStencilView) = 0;
-
 		}; // end GDirectX11Surface class
 
 		   //! Creates and outputs a new GDirectX11Surface object.
