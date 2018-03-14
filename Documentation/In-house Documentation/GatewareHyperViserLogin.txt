@@ -1,4 +1,0 @@
-VSphere Client Remote
-IP: 10.10.31.107
-Username: root
-Password: fu115ai1
