@@ -100,6 +100,7 @@ TEST_CASE("Creating a GLog.", "[CreateGLog]")
 	REQUIRE(GW::SYSTEM::CreateGLogCustom(m_testFile, nullptr) == GW::INVALID_ARGUMENT);
 	REQUIRE(GW::SYSTEM::CreateGLogCustom(m_testFile, &m_log) == GW::INVALID_ARGUMENT);
 
+
 	//Pass cases
 #ifdef WIN32
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGLog("./DONOTDELETE.txt", &m_log)));
@@ -126,7 +127,7 @@ TEST_CASE("Creating a GLog.", "[CreateGLog]")
 }
 
 //Testing logging
-/*
+
 TEST_CASE("Testing logging functions", "[Log], [LogCategorized]")
 {
 	//Fail cases
@@ -152,4 +153,4 @@ TEST_CASE("Testing logging functions", "[Log], [LogCategorized]")
 	m_log->DecrementCount();
 	m_testFile->DecrementCount();
 }
-*/
+

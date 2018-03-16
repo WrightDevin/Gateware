@@ -48,7 +48,7 @@ private:
 	///////////////////////////////////////////////////////
 	// declare all necessary members (platform specific) //
 	///////////////////////////////////////////////////////
-	unsigned int	refCount;
+	std::atomic<unsigned int>	refCount = 1;
 
 	GWindow*		gWnd;
 	unsigned int	clientX;
@@ -147,11 +147,14 @@ GOpenGL::~GOpenGL()
 	#elif __APPLE__
 	#endif
 
+	if (gWnd) gWnd->DecrementCount();
+
 }
 
 void GOpenGL::SetGWindow(GWindow* _window)
 {
 	gWnd = _window;
+	_window->IncrementCount(); // always increase the refrence count if you hold on to a pointer! Don't forget to Decrement when done!
 }
 
 GReturn GOpenGL::Initialize(unsigned long long _initMask)

@@ -2,6 +2,13 @@
 #include <thread>
 #include <condition_variable>
 
+#ifdef _DEBUG
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
+#endif  _DEBUG
+
+
 #ifdef _WIN32
 
 	HWND window = nullptr;
@@ -31,6 +38,13 @@
 
 	void Initialize(std::condition_variable& condition, bool& conditionMet)
 	{
+#		ifdef _DEBUG
+		//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+		// this function call will set a breakpoint at the location of a leaked block
+		// set the parameter to the identifier for a leaked block
+		//	_CrtSetBreakAlloc();
+		#endif  //_DEBUG
+
 		//We will do our platform specific window creation here....
 		//Note: Window create starts an event loop. This event loop will block.
 		//CATCH Runs on a seperate thread though and we will notify it to start

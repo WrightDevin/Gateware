@@ -67,7 +67,7 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 	//initMask |= COLOR_10_BIT;
 	initMask |= DEPTH_BUFFER_SUPPORT;//
 	initMask |= DEPTH_STENCIL_SUPPORT;//
-	//initMask |= OPENGL_ES_SUPPORT;
+	initMask |= OPENGL_ES_SUPPORT;
 	//initMask |= DIRECT2D_SUPPORT;
 
 	CHECK(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface) == SUCCESS);
@@ -176,6 +176,13 @@ TEST_CASE("Testing OGLSurface Events")
     glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
+
+	//Release memory
+	gWnd_OGL->DecrementCount();
+	oglSurface->DecrementCount();
+	oglSurface->DecrementCount();
+
+	
 
 #elif __linux__
 

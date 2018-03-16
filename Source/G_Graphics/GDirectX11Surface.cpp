@@ -68,7 +68,7 @@ GDirectX11::GDirectX11()
 GDirectX11::~GDirectX11()
 {
 	if (gWnd) gWnd->DecrementCount(); // no longer using this
-
+	
 	if (device) device->Release();
 	if (context) context->Release();
 	if (rtv) rtv->Release();
@@ -317,7 +317,7 @@ GReturn GDirectX11::DecrementCount()
 		// This too will cause a recursive break in the listener list BAD IDEA!
 		// This class really needs to stop with the internal listening, or we need better add/removal patterns in broadcasters.
 		//if(gWnd)
-		//	gWnd->DeregisterListener(this);
+			//gWnd->DeregisterListener(this);
 		
 		delete this;
 	}

@@ -406,7 +406,10 @@ GW::GReturn GW::SYSTEM::CreateGLog(const char* const _fileName, GLog** _outLog)
 	//Init the log file.
 	GW::GReturn rv = logFile->Init(_fileName);
 	if (G_FAIL(rv))
+	{
+		delete logFile;
 		return rv;
+	}
 
 	//Store new log file in passed in pointer.
 	(*_outLog) = logFile;
@@ -435,7 +438,10 @@ GW::GReturn GW::SYSTEM::CreateGLogCustom(GFile* _file, GLog** _outLog)
 	//Init the log file.
 	GW::GReturn rv = logFile->Init(_file);
 	if (G_FAIL(rv))
+	{
+		delete logFile;
 		return rv;
+	}
 
 	//Store new log file in passed in pointer.
 	(*_outLog) = logFile;

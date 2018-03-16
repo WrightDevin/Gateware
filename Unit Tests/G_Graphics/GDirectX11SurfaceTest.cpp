@@ -40,7 +40,7 @@ namespace { // nameless namespace to isolate below test vars
 	{
 		// GWindow Required to test
 		unsigned char initMask = DEPTH_BUFFER_SUPPORT | DEPTH_STENCIL_SUPPORT;
-		REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1000, 1000, WINDOWEDBORDERED, &gWnd_DX)));
+		//REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1000, 1000, WINDOWEDBORDERED, &gWnd_DX)));
 
 		// CATCH WARNING!!! 
 		// Any variables declared here will be REPLICATED to EACH SECTION.
@@ -51,6 +51,8 @@ namespace { // nameless namespace to isolate below test vars
 		// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
 		SECTION("Creation Tests", "[CreateGDirectX11Surface]")
 		{
+			REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 1000, 1000, WINDOWEDBORDERED, &gWnd_DX)));
+
 			CHECK(GW::GRAPHICS::CreateGDirectX11Surface(nullptr, 0, &specific) == GW::INVALID_ARGUMENT);
 			CHECK(GW::GRAPHICS::CreateGDirectX11Surface(gWnd_DX, 0, 0) == GW::INVALID_ARGUMENT);
 			// TODO: Add additonal Creation parameter testing here as nessasary.
@@ -119,6 +121,7 @@ namespace { // nameless namespace to isolate below test vars
 
 }// end nameless namespace for standard test battery
 
+
 TEST_CASE("Create GDirectX11Surface Object.", "[CreateGDirectX11Surface]")
 {
 	unsigned long long initMask = 0;
@@ -137,8 +140,7 @@ TEST_CASE("Querying DXSurface Information.", "[GetDevice], [GetContext], [GetSwa
 {
 	CHECK(dx11Surface->GetDevice((void**)&device) == SUCCESS);
 	CHECK(dx11Surface->GetContext((void**)&context) == SUCCESS);
-	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);
-	//CHECK(dx11Surface->GetFactory((void**)&factory) == SUCCESS);		
+	CHECK(dx11Surface->GetSwapchain((void**)&swapChain) == SUCCESS);		
 
 	DXGI_SWAP_CHAIN_DESC tempDesc;
 	swapChain->GetDesc(&tempDesc);
@@ -278,11 +280,24 @@ TEST_CASE("Testing Window Events.")
 	device->Release();
 	swapChain->Release();
 
-	// Release our surface
-	REQUIRE(G_SUCCESS(dx11Surface->DecrementCount()));
+
 	// Release GWindow!!! (otherwise our count will not fully decrease!)
-	REQUIRE(G_SUCCESS(gWnd_DX->DecrementCount()));
+	unsigned int Count = 0;
+	gWnd_DX->GetCount(Count);
+	for (size_t i = 0; i < Count-1; i++)
+	{
+		REQUIRE(G_SUCCESS(gWnd_DX->DecrementCount()));
+	}
+
+	// Release Surfaces
+	dx11Surface->GetCount(Count);
+	for (size_t i = 0; i < Count; i++)
+	{
+		REQUIRE(G_SUCCESS(dx11Surface->DecrementCount()));
+	}
+
 }
+
 
 
 
