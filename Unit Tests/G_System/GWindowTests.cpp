@@ -198,8 +198,8 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	LINUX_WINDOW* l_unopenedWindow =new LINUX_WINDOW();
 	unsigned int l_windowSize = sizeof(LINUX_WINDOW);
 #elif __APPLE__
-	NSWindow* m_appWindow = [NSWindow alloc];
-	NSWindow* m_unopenedWindow = [NSWindow alloc];
+    NSWindow* m_appWindow; // = [NSWindow alloc];
+    NSWindow* m_unopenedWindow; // = [NSWindow alloc];
 	unsigned int m_windowSize = sizeof(NSWindow*);
 #endif
 
@@ -252,8 +252,8 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
     REQUIRE(appWindowIsFullscreen == true);
 	REQUIRE(G_SUCCESS(appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow)));
     //delete m_appWindow;
-    [m_appWindow release];
-    [m_unopenedWindow release];
+    //[m_appWindow release];
+    //[m_unopenedWindow release];
 
 #endif
 

@@ -661,6 +661,7 @@ GReturn MacAppAudio::Init(int _numOfOutputs)
 #if __APPLE__
     mac_audio = [GMacAudio alloc];
     [mac_audio Init];
+    [mac_audio autorelease];
 #endif
 	return result;
 }

@@ -48,8 +48,6 @@ private:
 	///////////////////////////////////////////////////////
 	// declare all necessary members (platform specific) //
 	///////////////////////////////////////////////////////
-	std::atomic<unsigned int>	refCount = 1;
-
 	GWindow*		gWnd;
 	unsigned int	clientX;
 	unsigned int	clientY;
@@ -62,9 +60,10 @@ private:
 
 #ifdef _WIN32
 
-	HWND surfaceWindow;
-    HDC				hdc;
-	HGLRC			OGLcontext;
+    std::atomic<unsigned int>	refCount = 1;
+	HWND                        surfaceWindow;
+    HDC                         hdc;
+	HGLRC                       OGLcontext;
 
 	/////////////////////////////////////////////////////////
 	//				 WGL FUNCTION POINTERS				   //
@@ -87,17 +86,18 @@ private:
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
 	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
-    Window                  root;
-    Window*                 lWindow;
-    GLint                   attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
-    GLXContext              OGLXcontext;
-    LINUX_WINDOW            lWnd;
+    std::atomic<unsigned int>	refCount = 1;
+    Window                      root;
+    Window*                     lWindow;
+    GLint                       attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
+    GLXContext                  OGLXcontext;
+    LINUX_WINDOW                lWnd;
 
 #elif __APPLE__
-
-    NSOpenGLContext* OGLMcontext;
-    NSWindow*        nsWnd;
-    NSView*          view;
+    std::atomic<unsigned int>	refCount;
+    NSOpenGLContext*            OGLMcontext;
+    NSWindow*                   nsWnd;
+    NSView*                     view;
 
 #endif
 

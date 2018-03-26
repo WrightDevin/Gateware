@@ -451,11 +451,15 @@
     
     if(myAudio.isRunning)
     {
+        [ActiveMusic autorelease];
+        [ActiveSounds autorelease];
         return true;
    
     }
     else
     {
+        [ActiveMusic release];
+        [ActiveSounds release];
         return false;
     }
 }
