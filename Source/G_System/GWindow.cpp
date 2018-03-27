@@ -361,13 +361,16 @@ GReturn AppWindow::OpenWindow()
 		[window toggleFullScreen : nil];
 		FlushMacEventLoop();
 	}
+    [pool drain];    
+        
 	} );
 
+    
+    
 	if ([window isVisible])
 		return SUCCESS;
 	else
 		return FAILURE;
-
 #endif
 
 }

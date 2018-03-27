@@ -688,12 +688,14 @@ GReturn MacAppAudio::CreateSound(const char* _path, GSound** _outSound)
     [mac_audio->myAudio attachNode:snd->mac_snd->mySound];
     [mac_audio->myAudio connect:snd->mac_snd->mySound to:mac_audio->myAudio.mainMixerNode format:snd->mac_snd->myBuffer.format];
     [mac_audio->ActiveSounds addObject:snd->mac_snd];
+    
 #endif
     //	activeSounds.push_back(snd);
 	snd->audio = this;
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
 	{
+        
 		return result;
 	}
 

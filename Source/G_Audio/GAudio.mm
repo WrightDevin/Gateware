@@ -433,13 +433,12 @@
 
 -(bool) Init
 {
-
     bool result = false;
     NSError *err;
-   myAudio = [[AVAudioEngine alloc]init];
+    myAudio = [[AVAudioEngine alloc]init];
     inputNode = [[AVAudioPlayerNode alloc] init];
-    ActiveMusic = [[NSMutableArray alloc] init];
-    ActiveSounds = [[NSMutableArray alloc] init];
+    ActiveMusic = [[[NSMutableArray alloc] init]  autorelease];
+    ActiveSounds = [[[NSMutableArray alloc] init] autorelease];
     [myAudio attachNode:inputNode];
        [myAudio connect:inputNode to:myAudio.mainMixerNode format:[inputNode outputFormatForBus:0]];
 
@@ -451,15 +450,12 @@
     
     if(myAudio.isRunning)
     {
-        [ActiveMusic autorelease];
-        [ActiveSounds autorelease];
+        
         return true;
-   
     }
     else
     {
-        [ActiveMusic release];
-        [ActiveSounds release];
+        
         return false;
     }
 }
