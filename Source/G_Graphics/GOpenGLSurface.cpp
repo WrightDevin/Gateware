@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <atomic>
 
 #ifdef _WIN32
 
@@ -86,7 +87,7 @@ private:
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
 	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
-    std::atomic<unsigned int>	refCount = 1;
+    std::atomic<unsigned int>	refCount;
     Window                      root;
     Window*                     lWindow;
     GLint                       attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
@@ -346,9 +347,9 @@ GReturn GOpenGL::Initialize(unsigned long long _initMask)
 	//////////////////////
 	// DIRECT2D SUPPORT //
 	//////////////////////
-	if (_initMask & DIRECT2D_SUPPORT)							  
-	{											  
-		return FEATURE_UNSUPPORTED;						  
+	if (_initMask & DIRECT2D_SUPPORT)
+	{
+		return FEATURE_UNSUPPORTED;
 	}
 
 #elif __linux__

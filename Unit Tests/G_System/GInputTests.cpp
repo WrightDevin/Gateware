@@ -45,7 +45,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 	{
 		CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
-		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(window), &GInput_specific)));
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)&windowL, sizeof(windowL), &GInput_specific)));
 		REQUIRE(GInput_specific != nullptr);
 	}
 	// The following tests can be copied verbatim as they are completly GInput_generic for all interfaces
