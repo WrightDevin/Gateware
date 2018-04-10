@@ -121,7 +121,7 @@ public:
 	GReturn OnEvent(const GUUIID& _senderInterface, unsigned int _eventID, void* _eventData, unsigned int _dataSize);
 };
 
-GOpenGL::GOpenGL()
+GOpenGL::GOpenGL() : refCount(1)
 {
 #ifdef _WIN32
 

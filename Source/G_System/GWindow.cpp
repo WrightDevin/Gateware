@@ -361,12 +361,12 @@ GReturn AppWindow::OpenWindow()
 		[window toggleFullScreen : nil];
 		FlushMacEventLoop();
 	}
-    [pool drain];    
-        
+    [pool drain];
+
 	} );
 
-    
-    
+
+
 	if ([window isVisible])
 		return SUCCESS;
 	else
@@ -1476,7 +1476,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 		&actual_format_return,
 		&nitems_return, &bytes_after_return, &prop_return);
 
-	Atom vProp = ((Atom *)prop_return)[0];
+    Atom vProp = ((Atom *)prop_return)[0];
 	Atom hProp = ((Atom *)prop_return)[1];
 
     if(result != Success)
