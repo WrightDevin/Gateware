@@ -140,7 +140,11 @@ GReturn Input::DecrementCount() {
 	if (referenceCount == 0) {
 
         threadOpen = false;
-        inputThread->join();
+
+#ifdef __linux__
+		inputThread->join();
+#endif // __linux__
+
 		delete inputThread;
 		delete this;
 

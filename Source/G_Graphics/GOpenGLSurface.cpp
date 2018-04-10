@@ -49,6 +49,7 @@ private:
 	///////////////////////////////////////////////////////
 	// declare all necessary members (platform specific) //
 	///////////////////////////////////////////////////////
+	std::atomic<unsigned int>	refCount;
 	GWindow*		gWnd;
 	unsigned int	clientX;
 	unsigned int	clientY;
@@ -61,7 +62,6 @@ private:
 
 #ifdef _WIN32
 
-    std::atomic<unsigned int>	refCount = 1;
 	HWND                        surfaceWindow;
     HDC                         hdc;
 	HGLRC                       OGLcontext;
@@ -87,7 +87,6 @@ private:
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
 	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
-    std::atomic<unsigned int>	refCount;
     Window                      root;
     Window*                     lWindow;
     GLint                       attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
@@ -95,7 +94,6 @@ private:
     LINUX_WINDOW                lWnd;
 
 #elif __APPLE__
-    std::atomic<unsigned int>	refCount;
     NSOpenGLContext*            OGLMcontext;
     NSWindow*                   nsWnd;
     NSView*                     view;
