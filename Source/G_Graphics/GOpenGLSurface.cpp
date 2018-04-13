@@ -348,9 +348,9 @@ GReturn GOpenGL::Initialize(unsigned long long _initMask)
 	//////////////////////
 	// DIRECT2D SUPPORT //
 	//////////////////////
-	if (_initMask & DIRECT2D_SUPPORT)							  
-	{											  
-		return FEATURE_UNSUPPORTED;						  
+	if (_initMask & DIRECT2D_SUPPORT)
+	{
+		return FEATURE_UNSUPPORTED;
 	}
 
 #elif __linux__

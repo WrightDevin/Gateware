@@ -136,7 +136,7 @@ GReturn Input::DecrementCount() {
 	if (referenceCount == 0)
 		return FAILURE;
 	referenceCount -= 1;
-	
+
 	if (referenceCount == 0) {
         
 #ifdef __linux__
@@ -145,6 +145,7 @@ GReturn Input::DecrementCount() {
 #endif
 		delete inputThread;
 		delete this;
+
 	}
 
 	return SUCCESS;
@@ -279,9 +280,11 @@ GReturn Input::InitializeLinux(void* _data) {
 #ifdef __linux__
 	//Copy data into a LINUX_WINDOW(void * display, void * window) structure.
 	memcpy(&_linuxWindow, _data, sizeof(SYSTEM::LINUX_WINDOW));
-	Display * _display;
+	Display* _display;
+
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
 	_display = (Display*)(_linuxWindow.display);
+
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
 	//memcpy(&_window, _linuxWindow.window, sizeof(_window));
     _window = (Window)(_linuxWindow.window);
