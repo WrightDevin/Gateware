@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <atomic>
 
 #ifdef _WIN32
 
@@ -48,6 +49,7 @@ private:
 	///////////////////////////////////////////////////////
 	// declare all necessary members (platform specific) //
 	///////////////////////////////////////////////////////
+    std::atomic<unsigned int>	refCount;
 	GWindow*		gWnd;
 	unsigned int	clientX;
 	unsigned int	clientY;
@@ -60,7 +62,7 @@ private:
 
 #ifdef _WIN32
 
-    std::atomic<unsigned int>	refCount = 1;
+    //std::atomic<unsigned int>	refCount = 1;
 	HWND                        surfaceWindow;
     HDC                         hdc;
 	HGLRC                       OGLcontext;
@@ -86,7 +88,7 @@ private:
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
 	PFNGLXSWAPINTERVALEXTPROC		  glXSwapIntervalEXT;
 
-    std::atomic<unsigned int>	refCount = 1;
+    //std::atomic<unsigned int>	refCount = 1;
     Window                      root;
     Window*                     lWindow;
     GLint                       attributes[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
@@ -94,7 +96,7 @@ private:
     LINUX_WINDOW                lWnd;
 
 #elif __APPLE__
-    std::atomic<unsigned int>	refCount;
+    //std::atomic<unsigned int>	refCount;
     NSOpenGLContext*            OGLMcontext;
     NSWindow*                   nsWnd;
     NSView*                     view;
@@ -120,7 +122,7 @@ public:
 	GReturn OnEvent(const GUUIID& _senderInterface, unsigned int _eventID, void* _eventData, unsigned int _dataSize);
 };
 
-GOpenGL::GOpenGL()
+GOpenGL::GOpenGL() : refCount(1)
 {
 #ifdef _WIN32
 

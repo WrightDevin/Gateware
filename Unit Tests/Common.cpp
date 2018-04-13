@@ -29,7 +29,7 @@
 	}
 
 #elif __linux__
-    GW::SYSTEM::LINUX_WINDOW* window = new GW::SYSTEM::LINUX_WINDOW();
+    GW::SYSTEM::LINUX_WINDOW window //= new GW::SYSTEM::LINUX_WINDOW();
 
 	Window mainWindow;
 	Display* display = nullptr;
@@ -123,6 +123,9 @@
 		//We make sure the window will encompass the whole screen
 		mainWindow = XCreateSimpleWindow(display, RootWindow(display, 0), 10, 10, 1920, 1080, 1, BlackPixel(display, 0), WhitePixel(display, 0));
 		
+        window.display = (void*)display;
+        window.window = (void*)mainWindow;
+        
 		XStoreName(display, mainWindow, "Gateware");
 
 		XMapWindow(display, mainWindow);

@@ -54,7 +54,7 @@
 #elif __linux__
 	#include <X11/Xlib.h>
 
-	extern GW::SYSTEM::LINUX_WINDOW* window;
+	extern GW::SYSTEM::LINUX_WINDOW window;
 
 	extern Window mainWindow;
 	extern Display* display;

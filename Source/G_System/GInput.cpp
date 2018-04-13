@@ -138,6 +138,11 @@ GReturn Input::DecrementCount() {
 	referenceCount -= 1;
 	
 	if (referenceCount == 0) {
+        
+#ifdef __linux__
+        threadOpen = false;
+        inputThread->join();
+#endif
 		delete inputThread;
 		delete this;
 	}
@@ -278,7 +283,8 @@ GReturn Input::InitializeLinux(void* _data) {
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
 	_display = (Display*)(_linuxWindow.display);
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
-	memcpy(&_window, _linuxWindow.window, sizeof(_window));
+	//memcpy(&_window, _linuxWindow.window, sizeof(_window));
+    _window = (Window)(_linuxWindow.window);
 	//Select the type of Input events we wish to recieve.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 

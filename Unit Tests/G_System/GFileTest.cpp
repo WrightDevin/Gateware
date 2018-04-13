@@ -139,6 +139,8 @@ TEST_CASE("Directory handling.", "[SetCurrentWorkingDirectory], [GetCurrentWorki
 		CHECK(file->GetCurrentWorkingDirectory(nullptr, 1) == GW::INVALID_ARGUMENT);
 		CHECK(file->GetCurrentWorkingDirectory(&directoryBuffer[0], 0) == GW::INVALID_ARGUMENT);
 
+        std::cout << "Current Directory: " << directoryBuffer << "\n";
+        
 		//Pass cases
 		REQUIRE(G_SUCCESS(file->GetCurrentWorkingDirectory(directoryBuffer, 260)));
 	}
