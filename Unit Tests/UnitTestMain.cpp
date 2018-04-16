@@ -60,7 +60,6 @@ int main(int _argc, char** _argv)
 
 	//Wait for CATCH to finish
 	workerThread->join();
-
     delete workerThread;
 
 	//std::cin.get();
