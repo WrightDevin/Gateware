@@ -111,7 +111,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 // Custom Unit Tests specific to this interface follow..
 
 
-/*
+
 TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 {
 	//Check that these cases fail appropriately
@@ -191,3 +191,12 @@ TEST_CASE("GInput Key/Button Up Tests")
 
 }
 */
+
+TEST_CASE("GInput DecrementCount" "[DecrementCount]")
+{
+	unsigned int refCount = 0;
+	input->GetCount(refCount);
+	CHECK(refCount == 1);
+	input->DecrementCount();
+	
+}
