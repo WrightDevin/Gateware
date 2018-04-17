@@ -336,3 +336,4 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	appWindow->DecrementCount();
 	unopenedWindow->DecrementCount();
 }
+

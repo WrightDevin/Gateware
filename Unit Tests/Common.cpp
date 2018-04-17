@@ -310,7 +310,7 @@
 		key[14].ki.wScan = static_cast<WORD>(MapVirtualKeyEx(VK_MBUTTON, MAPVK_VK_TO_VSC, GetKeyboardLayout(0)));
 		key[14].ki.dwFlags = _flags;
 
-
+		
 		//Send the inputs
 		SendInput(15, &key[0], sizeof(INPUT));
 

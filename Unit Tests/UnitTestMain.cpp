@@ -47,7 +47,7 @@ int main(int _argc, char** _argv)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(3493);
+	//_CrtSetBreakAlloc(22618);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 #endif // DEBUG
 

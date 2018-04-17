@@ -143,6 +143,10 @@ GReturn Input::DecrementCount() {
         threadOpen = false;
         inputThread->join();
 #endif
+#ifdef _WIN32
+		//Sets the WinProc back. (Fixes the StackOverFlow bug)
+		SetWindowLongPtr((HWND)hWnd, GWLP_WNDPROC, (LONG_PTR)_userWinProc);
+#endif
 		delete inputThread;
 		delete this;
 
@@ -181,7 +185,9 @@ GReturn Input::RequestInterface(const GUUIID& _interfaceID, void** _outputInterf
 
 GReturn Input::InitializeWindows(void* _data) {
 #ifdef _WIN32
-	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+
+	hWnd = _data;
+	_userWinProc = SetWindowLongPtr((HWND)hWnd, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 

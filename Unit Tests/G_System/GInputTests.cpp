@@ -130,7 +130,7 @@ TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 }
 
 //Commented out becasue of known linux bug
-
+/*
 TEST_CASE("GInput Key/Button Down Tests")
 {
 	//Send the simulated input
@@ -141,6 +141,7 @@ TEST_CASE("GInput Key/Button Down Tests")
 #endif
 	//Check the value of our stored keys
 	GW::GReturn errorCode;
+	
 	//Check the number keys 1, 2, 3, 4
 	CHECK(input->GetState(G_KEY_1, &errorCode) == 1);
 	CHECK(input->GetState(G_KEY_2, &errorCode) == 1);

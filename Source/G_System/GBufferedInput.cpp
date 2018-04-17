@@ -26,6 +26,7 @@ private:
 	std::mutex mutex;
 
 #ifdef _WIN32
+	HWND hWnd;
 #elif __linux__
 	LINUX_WINDOW _linuxWindow;
 #elif __APPLE__
@@ -99,7 +100,12 @@ GReturn BufferedInput::DecrementCount() {
 		inputThread->join();
 		delete inputThread;
 #endif
+#ifdef _WIN32
+		//Sets the WinProc back. (Fixes the StackOverFlow bug)
+		SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)_userWinProc);
+#endif
 		delete this;
+
 	}
 
 	return SUCCESS;
@@ -231,7 +237,8 @@ GReturn BufferedInput::InitializeWindows(void* _data) {
 #ifdef _WIN32
 
 	keyMask = 0;
-	_userWinProc = SetWindowLongPtr((HWND)_data, GWLP_WNDPROC, (LONG_PTR)GWinProc);
+	hWnd = (HWND)_data;
+	_userWinProc = SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)GWinProc);
 
 	if (_userWinProc == NULL) {
 		//The user has not setup a windows proc prior to this point.
@@ -317,6 +324,10 @@ GReturn BufferedInput::InitializeWindows(void* _data) {
 	if ((GetKeyState(VK_SCROLL) & 0x0001) != 0) {
 		TURNON_BIT(keyMask, G_MASK_SCROLL_LOCK);
 	}
+
+	//Free Memory
+	free(pRawInputDeviceList);
+
 #endif
 
 
