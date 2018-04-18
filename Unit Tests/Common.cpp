@@ -6,7 +6,7 @@
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
-#endif  _DEBUG
+#endif // _DEBUG
 
 
 #ifdef _WIN32
@@ -29,7 +29,7 @@
 	}
 
 #elif __linux__
-    GW::SYSTEM::LINUX_WINDOW window //= new GW::SYSTEM::LINUX_WINDOW();
+    GW::SYSTEM::LINUX_WINDOW window; //= new GW::SYSTEM::LINUX_WINDOW();
 
 	Window mainWindow;
 	Display* display = nullptr;
@@ -116,16 +116,17 @@
 		//=================================================================================
 		//LINUX
 		//=================================================================================
-		XKeyEvent event;
+		//XKeyEvent event;
+
 
 		display = XOpenDisplay(NULL);
 
 		//We make sure the window will encompass the whole screen
 		mainWindow = XCreateSimpleWindow(display, RootWindow(display, 0), 10, 10, 1920, 1080, 1, BlackPixel(display, 0), WhitePixel(display, 0));
-		
+
         window.display = (void*)display;
         window.window = (void*)mainWindow;
-        
+
 		XStoreName(display, mainWindow, "Gateware");
 
 		XMapWindow(display, mainWindow);
@@ -310,7 +311,7 @@
 		key[14].ki.wScan = static_cast<WORD>(MapVirtualKeyEx(VK_MBUTTON, MAPVK_VK_TO_VSC, GetKeyboardLayout(0)));
 		key[14].ki.dwFlags = _flags;
 
-		
+
 		//Send the inputs
 		SendInput(15, &key[0], sizeof(INPUT));
 

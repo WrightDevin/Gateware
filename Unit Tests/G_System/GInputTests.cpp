@@ -45,7 +45,12 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 	{
 		CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
+		#ifdef __linux__
+		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)&window, sizeof(window), &GInput_specific)));
+		#endif
+		#if defined(_WIN32) || defined(__APPLE__)
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(window), &GInput_specific)));
+		#endif
 		REQUIRE(GInput_specific != nullptr);
 	}
 	// The following tests can be copied verbatim as they are completly GInput_generic for all interfaces
@@ -119,12 +124,16 @@ TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 	CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, &input) == GW::INVALID_ARGUMENT);
 
 #ifdef __linux__
-	window->window = (void*)&mainWindow;
-	window->display = (void*)display;
+	//window.window = (void*)&mainWindow;
+	//window.display = (void*)display;
+	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)&window, sizeof(window), &input)));
 #endif
 
+#if defined(_WIN32) || defined(__APPLE__)
 	//The following cases should pass
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(window), &input)));
+#endif
+
 
 	REQUIRE(input != nullptr);
 }
@@ -141,7 +150,7 @@ TEST_CASE("GInput Key/Button Down Tests")
 #endif
 	//Check the value of our stored keys
 	GW::GReturn errorCode;
-	
+
 	//Check the number keys 1, 2, 3, 4
 	CHECK(input->GetState(G_KEY_1, &errorCode) == 1);
 	CHECK(input->GetState(G_KEY_2, &errorCode) == 1);
@@ -198,5 +207,6 @@ TEST_CASE("GInput DecrementCount" "[DecrementCount]")
 	input->GetCount(refCount);
 	CHECK(refCount == 1);
 	input->DecrementCount();
-	
+
 }
+

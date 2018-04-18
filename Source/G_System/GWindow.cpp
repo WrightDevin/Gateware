@@ -1462,7 +1462,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	xMax = scr->width;
 	yMax = scr->height;
 	//borderHeight = scr->mheight;
-	Atom actual_type_return, actual_type_return2;
+	Atom actual_type_return; // actual_type_return2;
 	int actual_format_return;
 	unsigned long nitems_return;
 	unsigned long   bytes_after_return;

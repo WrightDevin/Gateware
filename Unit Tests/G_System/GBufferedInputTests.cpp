@@ -34,10 +34,14 @@ TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestI
 		CHECK(GW::SYSTEM::CreateGBufferedInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
 #ifdef __linux__
-        window->window = (void*)&mainWindow;
-        window->display = (void*)display;
-#endif // __linux__
-		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)window, sizeof(window), &GBufferedInput_specific)));
+      //  window.window = (void*)&mainWindow;
+      //  window.display = (void*)display;
+        REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)&window, sizeof(window), &GBufferedInput_specific)));
+#endif
+
+#if defined(_WIN32) || defined(__APPLE__)
+        REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)window, sizeof(window), &GBufferedInput_specific)));
+#endif
 		REQUIRE(GBufferedInput_specific != nullptr);
 	}
 	// The following tests can be copied verbatim as they are completly GBufferedInput_generic for all interfaces
@@ -103,10 +107,10 @@ TEST_CASE("GBufferedInput core test battery", "[CreateGBufferedInput], [RequestI
 // Custom Unit Tests specific to this interface follow..
 
 
-#ifndef __linux__
+
 TEST_CASE("CreateGBufferedInput Tests", "[CreateGBufferedInput]")
 {
-	
+
 	//Check that these cases fail appropriately
 	CHECK(GW::SYSTEM::CreateGBufferedInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 	CHECK(GW::SYSTEM::CreateGBufferedInput(nullptr, 0, &bufferedInput) == GW::INVALID_ARGUMENT);
@@ -114,21 +118,23 @@ TEST_CASE("CreateGBufferedInput Tests", "[CreateGBufferedInput]")
 	//If linux then we need to fill out a structure
 	//I named the structure window for less branching
 #ifdef __linux__
-	window->window = (void*)&mainWindow;
-	window->display = (void*)display;
+	//window.window = (void*)&mainWindow;
+	//window.display = (void*)display;
+    REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)&window, sizeof(window), &bufferedInput)));
 #endif
-
+#if defined(_WIN32) || defined(__APPLE__)
 	//The following cases should pass
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGBufferedInput((void*)window, sizeof(window), &bufferedInput)));
-    //usleep(10000000); // Why was this here?
+#endif
+
 	REQUIRE(bufferedInput != nullptr);
-	
+
 
 }
 
 TEST_CASE("GBufferedInput Register Listeners.", "[RegisterListener]")
 {
-	
+
 	//Create our new test listener
 	listener = new GBufferedInputTestListener();
 
@@ -137,14 +143,16 @@ TEST_CASE("GBufferedInput Register Listeners.", "[RegisterListener]")
 
 	//The following case should pass
 	REQUIRE(G_SUCCESS(bufferedInput->RegisterListener(listener, 0)));
-	
+
 }
 
 //Input cases are commented out becasue of known linux bug
 /*
+#ifdef _WIN32 || __APPLE__
+
 TEST_CASE("GBufferedInput Testing Key/Button Down Events")
 {
-	
+
 	//Send the simulated input
 #ifdef _WIN32
 	SimulateInput(KEYEVENTF_SCANCODE);
@@ -177,12 +185,12 @@ TEST_CASE("GBufferedInput Testing Key/Button Down Events")
 	CHECK(keys[1] == true); // Right Key
 	CHECK(keys[2] == true); // Up Key
 	CHECK(keys[3] == true); // Down Key
-	
+
 }
 
 TEST_CASE("GBufferedInput Testing Key/Button Up Events")
 {
-	
+
 	//Send the simulated input
 #ifdef _WIN32
 	SimulateInput(KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP);
@@ -211,13 +219,14 @@ TEST_CASE("GBufferedInput Testing Key/Button Up Events")
 	CHECK(keys[1] == false); // Right Key
 	CHECK(keys[2] == false); // Up Key
 	CHECK(keys[3] == false); // Down Key
-	
+
 }
+#endif _WIN32 || __APPLE__
 */
 
 TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")
 {
-	
+
 	unsigned int refCount = 0;
 
 	//Check that this case fails appropriately
@@ -231,7 +240,7 @@ TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")
 
 	listener->DecrementCount();
 	bufferedInput->DecrementCount();
-	
+
 }
-#endif
+
 

@@ -109,6 +109,8 @@ GReturn GW::SYSTEM::CreateGInput(void* _windowHandle, unsigned int _handleSize, 
 Input::Input() {
 	referenceCount = 1;
 	inputThread = nullptr;
+	threadOpen = false;
+	hWnd = nullptr;
 }
 
 Input::~Input() {
@@ -138,7 +140,7 @@ GReturn Input::DecrementCount() {
 	referenceCount -= 1;
 
 	if (referenceCount == 0) {
-        
+
 #ifdef __linux__
         threadOpen = false;
         inputThread->join();
@@ -294,6 +296,7 @@ GReturn Input::InitializeLinux(void* _data) {
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
 	//memcpy(&_window, _linuxWindow.window, sizeof(_window));
     _window = (Window)(_linuxWindow.window);
+
 	//Select the type of Input events we wish to recieve.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 

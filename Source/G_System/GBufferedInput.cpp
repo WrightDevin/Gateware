@@ -57,6 +57,8 @@ public:
 
 BufferedInput::BufferedInput() {
 	referenceCount = 1;
+	threadOpen = false;
+	inputThread = nullptr;
 }
 
 BufferedInput::~BufferedInput() {
@@ -202,7 +204,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGBufferedInput(void* _windowHandle, unsig
 
 	// This is NOT a recursive call, this is a call to the actual C++ name mangled version below.
 	return GW::SYSTEM::CreateGBufferedInput(_windowHandle, handleSize, _outPointer);
-	
+
 }
 
 GReturn GW::SYSTEM::CreateGBufferedInput(void* _windowHandle, unsigned int _handleSize, GBufferedInput** _outPointer) {
@@ -341,10 +343,14 @@ GReturn BufferedInput::InitializeLinux(void* _data) {
 	//Copy _data into a LINUX_WINDOW(void * display, void * window) structure.
     memcpy(&_linuxWindow, _data, sizeof(LINUX_WINDOW));
     Display* _display;
+
 	//Cast the void* _linuxWindow.display to a display pointer to pass to XSelectInput.
     _display = (Display *)(_linuxWindow.display);
+
 	//Copy void* _linuxWindow.window into a Window class to pass to XSelectInput.
-    memcpy(&_window, _linuxWindow.window, sizeof(_window));
+    //memcpy(&_window, _linuxWindow.window, sizeof(_window));
+    _window = (Window)(_linuxWindow.window);
+
 	//Select the type of Input events we wish to receive.
 	//XSelectInput(_display, _window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | LockMask | ControlMask | ShiftMask);
 #endif
