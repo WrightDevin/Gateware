@@ -119,7 +119,7 @@ GReturn GDirectX11::Initialize(unsigned long long _initMask)
 
 	if (_initMask & DIRECT2D_SUPPORT)
 	{
-		deviceFlag = D3D11_CREATE_DEVICE_FLAG(deviceFlag | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
+		deviceFlag = D3D11_CREATE_DEVICE_FLAG(deviceFlag | D3D11_CREATE_DEVICE_BGRA_SUPPORT); // | D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
 	}
 
 
