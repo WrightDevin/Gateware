@@ -334,6 +334,7 @@ TEST_CASE("Initialize Audio", "[Init]")
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->Init(numOfOutputs)));
 	checkReturned = FAILURE;
 }
+
 TEST_CASE("Creating Sound.", "[CreateSound]")
 {
 	// Fail cases
@@ -405,6 +406,7 @@ TEST_CASE("Pausing test sound", "[Pause]")
  sleep(1);
 #endif
 }
+
 TEST_CASE("Resuming test sound", "[Resume]")
 {
 	// Fail cases
@@ -454,6 +456,7 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 #endif
 	checkReturned = FAILURE;
 }
+
 TEST_CASE("Setting test sound volume", "[SetVolume]")
 {
 	// Fail cases
@@ -462,15 +465,17 @@ TEST_CASE("Setting test sound volume", "[SetVolume]")
 	REQUIRE(G_SUCCESS(checkReturned = testSound->SetVolume(0.5)));
 	checkReturned = FAILURE;
 }
+
 TEST_CASE("Stop test sound", "[StopSound]")
 {
 	// Fail cases
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
-       REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
+    REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
 	checkReturned = FAILURE;
 }
+/*
 //////////////////////////
 //Following test case is if future developer gets PCM shader working
 /////////////////////////
@@ -733,7 +738,7 @@ TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 	testSound->DecrementCount();
 	testSound2->DecrementCount();
 	testAudio->DecrementCount();
-	
+
 	testAudio = nullptr;
 	testMusic = nullptr;
 	testMusic2 = nullptr;
@@ -741,3 +746,4 @@ TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 	testSound2 = nullptr;
 
 }
+*/

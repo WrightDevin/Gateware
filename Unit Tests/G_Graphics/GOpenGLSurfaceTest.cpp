@@ -86,14 +86,14 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 #elif __linux__
 
     GLint red, green, blue, alpha, depth, stencil;
-    
+
     glGetIntegerv(GL_RED_BITS, &red);
     glGetIntegerv(GL_GREEN_BITS, &green);
     glGetIntegerv(GL_BLUE_BITS, &blue);
     glGetIntegerv(GL_ALPHA_BITS, &alpha);
     glGetIntegerv(GL_DEPTH_BITS, &depth);
     glGetIntegerv(GL_STENCIL_BITS, &stencil);
-    
+
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
 
@@ -108,13 +108,13 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 	CHECK(oglSurface->GetContext((void**)&OGLcontext) == SUCCESS);
 
 #elif __APPLE__
-    
+
     printf("%s \n", "OPENGL INFORMATON");
     printf("%s %s \n", "OPENGL VERSION: ", (char*)glGetString(GL_VERSION));
-    
+
     CHECK(oglSurface->GetContext((void**)&OGLMcontext) == SUCCESS);
 
-    
+
 #endif
 }
 
@@ -152,23 +152,23 @@ TEST_CASE("Testing OGLSurface Events")
 
 	// Manipulate GWindow and Retest OGL Functions.
 	gWnd_OGL->ResizeWindow(100, 400);
-    
+
 #ifdef __APPLE__
-    
+
     ///////////////////////////////////////////////////////
     // The Minimize & Maximize Functions are temporarily //
     // required in order to properly resize the window.  //
     ///////////////////////////////////////////////////////
-    
+
     gWnd_OGL->Minimize();
     gWnd_OGL->Maximize();
-    
+
     gWnd_OGL->GetClientTopLeft(clientX, clientY);
     gWnd_OGL->GetClientWidth(width);
     gWnd_OGL->GetClientHeight(height);
 
     glViewport(clientX, clientY, width, height);
-    
+
 #endif // __APPLE__
 
 #ifdef _WIN32
@@ -182,7 +182,7 @@ TEST_CASE("Testing OGLSurface Events")
 	oglSurface->DecrementCount();
 	oglSurface->DecrementCount();
 
-	
+
 
 #elif __linux__
 
@@ -191,11 +191,12 @@ TEST_CASE("Testing OGLSurface Events")
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
-    
+
     glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     oglSurface->UniversalSwapBuffers();
-    
+
 #endif
 
 }
+

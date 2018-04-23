@@ -833,10 +833,9 @@ time_t prevT = time(nullptr) -1;
         isPaused = false;
         bool writeSizeWasZero = false;
 
-
+        std::cout << "START of StreamSound()'s 1st while(true)" << '\n';
         while(true)
         {
-
             if(stopFlag == true)
             {
                 pa_stream_cancel_write((myStream));
@@ -881,12 +880,15 @@ time_t prevT = time(nullptr) -1;
 
         }
         }
+        std::cout << "END of StreamSound()'s 1st while(true)" << '\n';
     if(stopFlag == false)
     {
 
-
+        std::cout << "START of StreamSound()'s 2nd while(true)" << '\n';
         while(true)
         {
+            std::this_thread::yield();
+            //std::cout << "START of StreamSound()'s 2nd while(true)" << '\n';
             if(myCallback.didFinish == 1)
             {
             isPlaying = false;
@@ -896,6 +898,7 @@ time_t prevT = time(nullptr) -1;
 
 
         }
+        std::cout << "END of StreamSound()'s 2nd while(true)" << '\n';
     }
     return theResult;
 }
@@ -990,7 +993,9 @@ GReturn LinuxAppSound::StopSound()
     if(stopFlag != true)
        {
     stopFlag = true;
+    std::cout << "START of streamThread's join()" << '\n';
     streamThread->join();
+    std::cout << "END of streamThread's join()" << '\n';
 
     delete streamThread;
     streamThread = nullptr;

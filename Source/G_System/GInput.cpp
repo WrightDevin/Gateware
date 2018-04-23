@@ -302,8 +302,6 @@ GReturn Input::InitializeLinux(void* _data) {
 
 #endif
 
-	///XAutoRepeatOff(_display);
-
 	//Set our thread to open.
 	threadOpen = true;
 	//Create the Linux Input thread.
@@ -382,11 +380,13 @@ void Input::InputThread()
 
 	while (threadOpen)
 	{
+
 		//Cast the void* _linuxWindow. display to a display pointer to pass to XNextEvent.
 		Display * _display = (Display*)(_linuxWindow.display);
 		char keys_return[32];
 		XQueryKeymap(_display, keys_return);
-		for (unsigned int i = 0; i < 128; i++) {
+
+		for (unsigned int i = 0; i < 127; i++) {
 			_code = Keycodes[i][1];
 			if (keys_return[(i >> 3)] & (1 << (i & 7))) {
 				n_Keys[_code] = 1;

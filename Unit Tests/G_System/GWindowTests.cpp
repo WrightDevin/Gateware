@@ -22,7 +22,7 @@ GW::CORE::GInterface *GWindow_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GWindow core test battery", "[CreateGWindow], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -81,7 +81,7 @@ TEST_CASE("GWindow core test battery", "[CreateGWindow], [RequestInterface], [In
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GWindow_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GWindow is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GWindow_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GWindow_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GWindow IS multithreaded
 										// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));

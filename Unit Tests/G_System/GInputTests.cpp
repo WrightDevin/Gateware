@@ -24,6 +24,7 @@ GW::SYSTEM::GInput* input = nullptr;
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GInput *GInput_specific = nullptr;
 GW::CORE::GInterface *GInput_generic = nullptr;
+
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
@@ -43,6 +44,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
 	SECTION("Creation Tests", "[CreateGInput]")
 	{
+
 		CHECK(GW::SYSTEM::CreateGInput(nullptr, 0, nullptr) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
 		#ifdef __linux__
@@ -52,10 +54,12 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGInput((void*)window, sizeof(window), &GInput_specific)));
 		#endif
 		REQUIRE(GInput_specific != nullptr);
+
 	}
 	// The following tests can be copied verbatim as they are completly GInput_generic for all interfaces
 	SECTION("Interface Request Tests", "[RequestInterface]")
 	{
+
 		CHECK(GInput_specific->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
 		CHECK(GInput_specific->RequestInterface(notAnValidInterface, (void**)&GInput_generic) == GW::INTERFACE_UNSUPPORTED);
 		CHECK(GInput_generic == nullptr); // should not have changed yet
@@ -63,10 +67,12 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		REQUIRE(GInput_generic != nullptr);
 		// memory addresses should match
 		REQUIRE(reinterpret_cast<std::uintptr_t>(GInput_generic) == reinterpret_cast<std::uintptr_t>(GInput_specific));
+
 	}
 	// Test reference counting behavior
 	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
 	{
+
 		REQUIRE(G_SUCCESS(GInput_specific->GetCount(countS)));
 		REQUIRE(G_SUCCESS(GInput_generic->GetCount(countG)));
 		CHECK(countS == countG);
@@ -84,10 +90,12 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		GInput_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
 		GInput_generic->GetCount(countG);
 		REQUIRE(countG == 1); // should be last remaining handle
+
 	}
 	// Finally test interface Forward Compatibilty
 	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
 	{
+
 		CHECK(GInput_generic->RequestInterface(notAnValidInterface, nullptr) == GW::INVALID_ARGUMENT);
 		CHECK(GInput_generic->RequestInterface(notAnValidInterface, (void**)&GInput_specific) == GW::INTERFACE_UNSUPPORTED);
 		CHECK(GInput_specific == nullptr); // should not have changed yet
@@ -109,6 +117,7 @@ TEST_CASE("GInput core test battery", "[CreateGInput], [RequestInterface], [Incr
 		GInput_generic->GetCount(countG);
 		REQUIRE(countG == 1); // should be last remaining handle (again)
 		REQUIRE(G_SUCCESS(GInput_generic->DecrementCount())); // 0
+
 	}
 	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
 }
@@ -137,6 +146,7 @@ TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 
 	REQUIRE(input != nullptr);
 }
+
 
 //Commented out becasue of known linux bug
 /*
@@ -209,4 +219,5 @@ TEST_CASE("GInput DecrementCount" "[DecrementCount]")
 	input->DecrementCount();
 
 }
+
 

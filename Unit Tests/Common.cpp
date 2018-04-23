@@ -31,7 +31,7 @@
 #elif __linux__
     GW::SYSTEM::LINUX_WINDOW window; //= new GW::SYSTEM::LINUX_WINDOW();
 
-	Window mainWindow;
+	Window mainWindow = NULL;
 	Display* display = nullptr;
 
 #endif
@@ -139,7 +139,6 @@
 
 		while (true)
 		{
-
 		}
 
 	#elif __APPLE__
@@ -316,84 +315,85 @@
 		SendInput(15, &key[0], sizeof(INPUT));
 
 #elif __linux__
+int r = 0;
 		if (_flags)
 		{
 			//Numbers
-			system("xdotool search --name Gateware keydown 1");
+			r = system("xdotool search --name Gateware keydown 1");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown 2");
+			r =system("xdotool search --name Gateware keydown 2");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown 3");
+			r = system("xdotool search --name Gateware keydown 3");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown 4");
+			r = system("xdotool search --name Gateware keydown 4");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 			//Letters
-			system("xdotool search --name Gateware keydown A");
+			r = system("xdotool search --name Gateware keydown A");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown S");
+			r = system("xdotool search --name Gateware keydown S");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown D");
+			r = system("xdotool search --name Gateware keydown D");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown W");
+			r = system("xdotool search --name Gateware keydown W");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 			//Arrow keys
-			system("xdotool search --name Gateware keydown Left");
+			r = system("xdotool search --name Gateware keydown Left");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown Right");
+			r = system("xdotool search --name Gateware keydown Right");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown Up");
+			r = system("xdotool search --name Gateware keydown Up");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keydown Down");
+			r = system("xdotool search --name Gateware keydown Down");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 		}
 		else
 		{
-			system("xdotool search --name Gateware keyup 1");
+			r = system("xdotool search --name Gateware keyup 1");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup 2");
+			r = system("xdotool search --name Gateware keyup 2");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup 3");
+			r = system("xdotool search --name Gateware keyup 3");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup 4");
+			r = system("xdotool search --name Gateware keyup 4");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 			//Letters
-			system("xdotool search --name Gateware keyup A");
+			r = system("xdotool search --name Gateware keyup A");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup S");
+			r = system("xdotool search --name Gateware keyup S");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup D");
+			r = system("xdotool search --name Gateware keyup D");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup W");
+			r = system("xdotool search --name Gateware keyup W");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup Left");
+			r = system("xdotool search --name Gateware keyup Left");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup Right");
+			r = system("xdotool search --name Gateware keyup Right");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup Up");
+			r = system("xdotool search --name Gateware keyup Up");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-			system("xdotool search --name Gateware keyup Down");
+			r = system("xdotool search --name Gateware keyup Down");
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 		}
