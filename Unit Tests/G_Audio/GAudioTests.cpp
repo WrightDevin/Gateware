@@ -475,7 +475,7 @@ TEST_CASE("Stop test sound", "[StopSound]")
     REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
 	checkReturned = FAILURE;
 }
-/*
+
 //////////////////////////
 //Following test case is if future developer gets PCM shader working
 /////////////////////////
@@ -746,4 +746,4 @@ TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 	testSound2 = nullptr;
 
 }
-*/
+
