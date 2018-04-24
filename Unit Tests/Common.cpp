@@ -219,7 +219,7 @@
 		INPUT key[15];
 		ZeroMemory(&key, sizeof(INPUT) * 15);//Zero the structure.
 
-											 //Key 1
+		//Key 1
 		key[0].type = INPUT_KEYBOARD;
 		key[0].ki.dwExtraInfo = GetMessageExtraInfo();
 		key[0].ki.wScan = static_cast<WORD>(MapVirtualKeyEx(0x31, MAPVK_VK_TO_VSC, GetKeyboardLayout(0)));

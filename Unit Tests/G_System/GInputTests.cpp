@@ -159,25 +159,60 @@ TEST_CASE("GInput Key/Button Down Tests")
     SimulateInput(true);
 #endif
 	//Check the value of our stored keys
-	GW::GReturn errorCode;
+	//GW::GReturn errorCode;
 
-	//Check the number keys 1, 2, 3, 4
-	CHECK(input->GetState(G_KEY_1, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_2, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_3, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_4, &errorCode) == 1);
+	float outState = 0.1f;
+	//std::this_thread::yield();
+
+	//Check the number keys 1, 2, 3, 4,
+	input->GetState(G_KEY_1, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_2, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_3, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_4, outState);
+	CHECK(outState == 1.0f);
 
 	//Check the letters A, S, D, W
-	CHECK(input->GetState(G_KEY_A, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_S, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_D, &errorCode) == 1);
-	CHECK(input->GetState(G_KEY_W, &errorCode) == 1);
+	input->GetState(G_KEY_A, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_S, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_D, outState);
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_W, outState);
+	CHECK(outState == 1.0f);
 
 	//Check the arrow keys Left, Right, Up, Down
-	CHECK(input->GetState(G_KEY_LEFT, &errorCode) == 1); // Left Key
-	CHECK(input->GetState(G_KEY_RIGHT, &errorCode) == 1); // Right Key
-	CHECK(input->GetState(G_KEY_UP, &errorCode) == 1); // Up Key
-	CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 1); // Down Key
+	input->GetState(G_KEY_LEFT,	outState); // Left Key
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_RIGHT,outState); // Right Key
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_UP,	outState); // Up Key
+	CHECK(outState == 1.0f);
+	input->GetState(G_KEY_DOWN,	outState); // Down Key
+	CHECK(outState == 1.0f);
+
+
+	//The commented-out code below caused build errors on Window's Side
+	//Check the number keys 1, 2, 3, 4
+	//CHECK(input->GetState(G_KEY_1, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_2, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_3, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_4, &errorCode) == 1);
+
+	//Check the letters A, S, D, W
+	//CHECK(input->GetState(G_KEY_A, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_S, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_D, &errorCode) == 1);
+	//CHECK(input->GetState(G_KEY_W, &errorCode) == 1);
+
+	//Check the arrow keys Left, Right, Up, Down
+	//CHECK(input->GetState(G_KEY_LEFT, &errorCode) == 1); // Left Key
+	//CHECK(input->GetState(G_KEY_RIGHT, &errorCode) == 1); // Right Key
+	//CHECK(input->GetState(G_KEY_UP, &errorCode) == 1); // Up Key
+	//CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 1); // Down Key
 }
 
 TEST_CASE("GInput Key/Button Up Tests")
@@ -189,24 +224,58 @@ TEST_CASE("GInput Key/Button Up Tests")
     SimulateInput(false);
 #endif
 	//Check the value of our stored keys
-	GW::GReturn errorCode;
-	//Check the number keys 1, 2, 3, 4
-	CHECK(input->GetState(G_KEY_1, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_2, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_3, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_4, &errorCode) == 0);
+	//GW::GReturn errorCode;
+	float outState = 0.1f;
+	//std::this_thread::yield();
+
+	//Check the number keys 1, 2, 3, 4,
+	input->GetState(G_KEY_1, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_2, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_3, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_4, outState);
+	CHECK(outState == 0.0f);
 
 	//Check the letters A, S, D, W
-	CHECK(input->GetState(G_KEY_A, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_S, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_D, &errorCode) == 0);
-	CHECK(input->GetState(G_KEY_W, &errorCode) == 0);
+	input->GetState(G_KEY_A, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_S, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_D, outState);
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_W, outState);
+	CHECK(outState == 0.0f);
 
 	//Check the arrow keys Left, Right, Up, Down
-	CHECK(input->GetState(G_KEY_LEFT, &errorCode) == 0); // Left Key
-	CHECK(input->GetState(G_KEY_RIGHT, &errorCode) == 0); // Right Key
-	CHECK(input->GetState(G_KEY_UP, &errorCode) == 0); // Up Key
-	CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 0); // Down Key
+	input->GetState(G_KEY_LEFT,	outState); // Left Key
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_RIGHT,outState); // Right Key
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_UP,	outState); // Up Key
+	CHECK(outState == 0.0f);
+	input->GetState(G_KEY_DOWN, outState); // Down Key
+	CHECK(outState == 0.0f);
+
+	//The commented-out code below caused build errors on Window's Side
+	////Check the number keys 1, 2, 3, 4
+	//CHECK(input->GetState(G_KEY_1, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_2, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_3, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_4, &errorCode) == 0);
+
+	////Check the letters A, S, D, W
+	//CHECK(input->GetState(G_KEY_A, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_S, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_D, &errorCode) == 0);
+	//CHECK(input->GetState(G_KEY_W, &errorCode) == 0);
+
+	////Check the arrow keys Left, Right, Up, Down
+	//CHECK(input->GetState(G_KEY_LEFT, &errorCode) == 0); // Left Key
+	//CHECK(input->GetState(G_KEY_RIGHT, &errorCode) == 0); // Right Key
+	//CHECK(input->GetState(G_KEY_UP, &errorCode) == 0); // Up Key
+	//CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 0); // Down Key
 
 }
 */

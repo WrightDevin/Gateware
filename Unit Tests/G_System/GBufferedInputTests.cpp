@@ -147,7 +147,7 @@ TEST_CASE("GBufferedInput Register Listeners.", "[RegisterListener]")
 }
 
 //Input cases are commented out becasue of known linux bug
-/*
+
 #ifdef _WIN32 || __APPLE__
 
 TEST_CASE("GBufferedInput Testing Key/Button Down Events")
@@ -222,7 +222,7 @@ TEST_CASE("GBufferedInput Testing Key/Button Up Events")
 
 }
 #endif _WIN32 || __APPLE__
-*/
+
 
 TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")
 {
