@@ -149,7 +149,7 @@ TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 
 
 //Commented out becasue of known linux bug
-/*
+#ifdef _WIN32 || __APPLE__
 TEST_CASE("GInput Key/Button Down Tests")
 {
 	//Send the simulated input
@@ -162,7 +162,7 @@ TEST_CASE("GInput Key/Button Down Tests")
 	//GW::GReturn errorCode;
 
 	float outState = 0.1f;
-	//std::this_thread::yield();
+	std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
 	//Check the number keys 1, 2, 3, 4,
 	input->GetState(G_KEY_1, outState);
@@ -226,7 +226,7 @@ TEST_CASE("GInput Key/Button Up Tests")
 	//Check the value of our stored keys
 	//GW::GReturn errorCode;
 	float outState = 0.1f;
-	//std::this_thread::yield();
+	std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
 	//Check the number keys 1, 2, 3, 4,
 	input->GetState(G_KEY_1, outState);
@@ -278,7 +278,7 @@ TEST_CASE("GInput Key/Button Up Tests")
 	//CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 0); // Down Key
 
 }
-*/
+#endif	
 
 TEST_CASE("GInput DecrementCount" "[DecrementCount]")
 {
