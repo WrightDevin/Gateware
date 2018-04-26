@@ -149,7 +149,7 @@ TEST_CASE("CreateGInput Tests", "[CreateGInput]")
 
 
 //Commented out becasue of known linux bug
-#ifdef _WIN32 || __APPLE__
+#if defined(_WIN32) || defined(__APPLE__)
 TEST_CASE("GInput Key/Button Down Tests")
 {
 	//Send the simulated input

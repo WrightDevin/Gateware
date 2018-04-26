@@ -31,7 +31,7 @@ private:
 #elif __linux__
 	SYSTEM::LINUX_WINDOW _linuxWindow;
 #elif __APPLE__
-
+    NSWindow * currentResponder;
 #endif
 
 public:
@@ -149,6 +149,10 @@ GReturn Input::DecrementCount() {
 		//Sets the WinProc back. (Fixes the StackOverFlow bug)
 		SetWindowLongPtr((HWND)hWnd, GWLP_WNDPROC, (LONG_PTR)_userWinProc);
 #endif
+#ifdef __APPLE__
+        [currentResponder setNextResponder:nil];
+#endif
+        
 		delete inputThread;
 		delete this;
 
@@ -316,8 +320,9 @@ GReturn Input::InitializeMac(void* _data) {
 #ifdef __APPLE__
 
 	//Need to convert data back into an NSWindow*.
-	NSWindow * currentResponder = ((__bridge NSWindow*)_data);
-
+	//NSWindow * currentResponder = ((__bridge NSWindow*)_data);
+    currentResponder = ((__bridge NSWindow*)_data);
+    
 	//We only want to process the message and pass it on. So if there is already
 	//a responder we set our responders next responder to be the current next responder.
 	[responder setNextResponder : currentResponder.nextResponder];
