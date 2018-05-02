@@ -204,7 +204,7 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 #endif
 
 	appWindow->IsFullscreen(appWindowIsFullscreen);
-
+    CHECK(appWindowIsFullscreen == false);
 	// Fail cases
 	CHECK(G_FAIL(appWindow->GetWidth(appWindowWidth) == INVALID_ARGUMENT));
 	CHECK(G_FAIL(unopenedWindow->GetHeight(unopenedWindowHeight)));
@@ -224,9 +224,9 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 
 	// Resize windows for pass tests
 	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
-
-
 	REQUIRE(G_SUCCESS(appWindow->IsFullscreen(appWindowIsFullscreen)));
+	//CHECK(appWindowIsFullscreen == true); //Commented-out do to known linux isFullscreen() bug.
+
 	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->GetHeight(appWindowHeight)));
 	REQUIRE(G_SUCCESS(appWindow->GetWidth(appWindowWidth)));

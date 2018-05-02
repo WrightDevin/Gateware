@@ -17,7 +17,7 @@ GW::CORE::GInterface *GMatrix_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GMatrix core test battery", "[CreateGMatrix], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -74,9 +74,9 @@ TEST_CASE("GMatrix core test battery", "[CreateGMatrix], [RequestInterface], [In
 		CHECK(GMatrix_specific != nullptr); // GMatrix_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_SUCCESS(GMatrix_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		REQUIRE(G_SUCCESS(GMatrix_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3
 		CHECK(singleSupport != nullptr); // GMatrix IS singlethreaded
-		REQUIRE(G_FAIL(GMatrix_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); 
+		REQUIRE(G_FAIL(GMatrix_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
 		CHECK(multiSupport == nullptr); // GMatrix is NOT multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(singleSupport->GetCount(countS)));
@@ -1031,7 +1031,7 @@ TEST_CASE("Lerp between two matrices.", "[LerpF], [LerpD]")
 
 TEST_CASE("Free MatrixC", "[DecrementCount]")
 {
-	
+
 	REQUIRE(G_SUCCESS(MatrixC->DecrementCount()));
 }
 

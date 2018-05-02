@@ -15,7 +15,7 @@ GW::CORE::GInterface *GLog_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GLog core test battery", "[CreateGLog], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -74,7 +74,7 @@ TEST_CASE("GLog core test battery", "[CreateGLog], [RequestInterface], [Incremen
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GLog_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GLog is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GLog_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(GLog_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GLog IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));

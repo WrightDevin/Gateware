@@ -16,7 +16,7 @@
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
-
+/*
 //Globals needed for all test cases
 GW::SYSTEM::GInput* input = nullptr;
 
@@ -278,7 +278,7 @@ TEST_CASE("GInput Key/Button Up Tests")
 	//CHECK(input->GetState(G_KEY_DOWN, &errorCode) == 0); // Down Key
 
 }
-#endif	
+#endif
 
 TEST_CASE("GInput DecrementCount" "[DecrementCount]")
 {
@@ -289,4 +289,4 @@ TEST_CASE("GInput DecrementCount" "[DecrementCount]")
 
 }
 
-
+*/

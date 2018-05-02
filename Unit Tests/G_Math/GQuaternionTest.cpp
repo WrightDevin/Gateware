@@ -16,7 +16,7 @@ GW::CORE::GInterface *GQuaternion_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GQuaternion core test battery", "[CreateGQuaternion], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -73,7 +73,7 @@ TEST_CASE("GQuaternion core test battery", "[CreateGQuaternion], [RequestInterfa
 		CHECK(GQuaternion_specific != nullptr); // GQuaternion_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_SUCCESS(GQuaternion_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		REQUIRE(G_SUCCESS(GQuaternion_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3
 		CHECK(singleSupport != nullptr); // GQuaternion IS singlethreaded
 		REQUIRE(G_FAIL(GQuaternion_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
 		CHECK(multiSupport == nullptr); // GQuaternion is NOT multithreaded
@@ -534,7 +534,7 @@ TEST_CASE("Calcuate the slerp of the quaternion.", "[SlerpF], [SlerpD]")
 		CHECK(G_COMPARISON_STANDARD_D(resultD.w, 0.8164965809277259));
 	}
 
-	
+
 }
 
 TEST_CASE("Free QuaternionC", "[DecrementCount]")

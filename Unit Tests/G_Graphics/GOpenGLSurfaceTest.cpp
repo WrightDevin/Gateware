@@ -30,7 +30,7 @@
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
-
+/*
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
@@ -199,4 +199,4 @@ TEST_CASE("Testing OGLSurface Events")
 #endif
 
 }
-
+*/

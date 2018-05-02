@@ -231,7 +231,11 @@ GReturn AppWindow::OpenWindow()
 		return FAILURE;
 
 #elif __linux__
-	XInitThreads();
+	int status = XInitThreads();
+
+	if(status == 0)
+        return FAILURE;
+
 	if (window)
 		return REDUNDANT_OPERATION;
 
@@ -258,6 +262,7 @@ GReturn AppWindow::OpenWindow()
 	//valueMask |= CWColormap;
 
 	// set rect hints
+	memset(&rect, 0, sizeof(rect));
 	rect.flags = PSize | PPosition;
 
 	x = xPos;
@@ -286,7 +291,8 @@ GReturn AppWindow::OpenWindow()
 
 	if (XMapWindow(display, window))
 	{
-		XSync(display, 0);
+		//XSync(display, 0);
+		XFlush(display);
 		prop_type = XInternAtom(display, "_NET_WM_STATE", False);
 		prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
 		prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
@@ -413,7 +419,7 @@ GReturn AppWindow::ProcessWindowEvents()
 
 #elif __linux__
 	XFlush(display);
-	XSync(display, 0);
+	//XSync(display, 0);
 
 #elif __APPLE__
 	dispatch_sync(dispatch_get_main_queue(), ^{
@@ -481,8 +487,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		if (!stat)
 			return FAILURE;
 
-		XSync(display, 0);
-
+		//XSync(display, 0);
+        memset(&hint, 0, sizeof(hint));
 		hint.flags = 2;
 		hint.decorations = 5;
 
@@ -509,7 +515,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			return FAILURE;
 
 		sleep(1);
-		XSync(display, 0);
+		XFlush(display);
+		//XSync(display, 0);
 
 		return SUCCESS;
 #elif __APPLE__
@@ -603,7 +610,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			return FAILURE;
 
 		sleep(1);
-		XSync(display, 0);
+		XFlush(display);
+		//XSync(display, 0);
 
 		return SUCCESS;
 
@@ -681,7 +689,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
 			return FAILURE;
 
-		XSync(display, 0);
+		//XSync(display, 0);
+		XFlush(display);
 
 		return SUCCESS;
 
@@ -759,7 +768,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
 			return FAILURE;
 
-		XSync(display, 0);
+		XFlush(display);
+		//XSync(display, 0);
 		return SUCCESS;
 
 #elif __APPLE__
@@ -892,7 +902,8 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 #elif __linux__
 	if (XMoveWindow(display, window, xPos, yPos))
 	{
-		XSync(display, 0);
+	    XFlush(display);
+		//XSync(display, 0);
 		return SUCCESS;
 	}
 	else
@@ -940,7 +951,8 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 #elif __linux__
 	if (XResizeWindow(display, window, width, height))
 	{
-		XSync(display, 0);
+	    XFlush(display);
+		//XSync(display, 0);
 		return SUCCESS;
 	}
 	else
@@ -1152,7 +1164,8 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
@@ -1185,7 +1198,8 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
@@ -1221,7 +1235,8 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 	{
@@ -1262,7 +1277,8 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 	{
@@ -1302,7 +1318,8 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
@@ -1337,7 +1354,8 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
@@ -1375,7 +1393,8 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XSync(display, 0);
+	XFlush(display);
+	//XSync(display, 0);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
@@ -1461,34 +1480,52 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	Screen* scr = DefaultScreenOfDisplay(display);
 	xMax = scr->width;
 	yMax = scr->height;
-	//borderHeight = scr->mheight;
-	Atom actual_type_return; // actual_type_return2;
-	int actual_format_return;
-	unsigned long nitems_return;
-	unsigned long   bytes_after_return;
-	unsigned char * prop_return = NULL;
+	//Atom actual_type_return;
+	//int actual_format_return;
+	//unsigned long   nitems_return;
+	//unsigned long   bytes_after_return;
+	//unsigned char * prop_return = NULL;
 
-	int result = XGetWindowProperty(display, window, prop_type, 0L,
-		sizeof(Atom),
-		False,
-		AnyPropertyType,
-		&actual_type_return,
-		&actual_format_return,
-		&nitems_return, &bytes_after_return, &prop_return);
+	//int result = XGetWindowProperty(
+    //    display,
+    //    window,
+    //    prop_type,
+    //    0L,
+	//	sizeof(Atom),
+	//	False,
+	//	AnyPropertyType,
+	//	&actual_type_return,
+	//	&actual_format_return,
+	//	&nitems_return,
+    //    &bytes_after_return,
+    //    &prop_return);
 
-    Atom vProp = ((Atom *)prop_return)[0];
-	Atom hProp = ((Atom *)prop_return)[1];
 
-    if(result != Success)
-    {
-        char temp[1024];
-        XGetErrorText(display, result, temp, 1024);
-        return FAILURE;
-    }
-	if (hProp == prop_hMax && vProp == prop_vMax)
-		_outIsFullscreen = true;
-	else
-		_outIsFullscreen = false;
+   // Atom vProp = ((Atom *)prop_return)[0];
+	//Atom hProp = ((Atom *)prop_return)[1];
+
+   // if(result != Success)
+   // {
+   //     char temp[1024];
+   //     XGetErrorText(display, result, temp, 1024);
+   //     return FAILURE;
+   // }
+	//if (hProp == prop_hMax && vProp == prop_vMax)
+	//	_outIsFullscreen = true;
+	//else
+	//	_outIsFullscreen = false;
+
+	//Testing using XGetWindowAttributes for checking if full screen
+    XWindowAttributes temp;
+    XGetWindowAttributes(display, window, &temp);
+    int tempBW = temp.border_width;
+    int tempW = temp.width + tempBW;
+    int tempH = temp.height + tempBW;
+
+    if(tempW == prop_hMax && tempH == prop_vMax)
+        _outIsFullscreen = true;
+    else
+        _outIsFullscreen = false;
 
 	return SUCCESS;
 

@@ -16,7 +16,7 @@ GW::CORE::GInterface *GVector_generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GVector core test battery", "[CreateGVector], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
@@ -73,7 +73,7 @@ TEST_CASE("GVector core test battery", "[CreateGVector], [RequestInterface], [In
 		CHECK(GVector_specific != nullptr); // GVector_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_SUCCESS(GVector_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3 
+		REQUIRE(G_SUCCESS(GVector_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));// 3
 		CHECK(singleSupport != nullptr); // GVector IS singlethreaded
 		REQUIRE(G_FAIL(GVector_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport)));
 		CHECK(multiSupport == nullptr); // GVector is NOT multithreaded
@@ -432,7 +432,7 @@ TEST_CASE("Spline between two vectors.", "[SlerpF], [SlerpD]")
 
 	float ratioF = 0.5f;
 	double ratioD = 0.5;
-	
+
 	SECTION("Float vector.", "[SlerpF]")
 	{
 		CHECK(G_SUCCESS(VectorC->SplineF(vF1, vF2, vF3, vF4, ratioF, resultF)));
