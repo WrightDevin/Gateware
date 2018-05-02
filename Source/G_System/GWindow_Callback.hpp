@@ -165,6 +165,7 @@ namespace
 
 		while (true)
 		{
+		    propRet = nullptr;
             XNextEvent(_display, &event);
 			switch (event.type)
 			{
@@ -173,7 +174,7 @@ namespace
                 status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
                                         false, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &propRet);
 
-                    if(status == Success && propRet)
+                    if(status == Success && propRet && nitems > 0)
                     {
                         prop = ((Atom *)propRet)[0];
                         XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
@@ -207,6 +208,7 @@ namespace
                         }
 
                     }
+                    XFree(propRet);
                     break;
                 }
             case DestroyNotify:
@@ -230,9 +232,11 @@ namespace
                 }
 
 			}
+       // if(propRet != nullptr)
+           // XFree(&propRet);
         //sleep(0);
 		}
-		XFree(&propRet);
+
 
 
     }
