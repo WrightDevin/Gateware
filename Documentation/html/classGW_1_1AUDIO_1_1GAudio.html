@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gateware Libraries
-   &#160;<span id="projectnumber">R4C</span>
+   &#160;<span id="projectnumber">R4E</span>
    </div>
    <div id="projectbrief">Beta Build</div>
   </td>
@@ -571,6 +571,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Sets Master Volume for all sounds and music for specifc speakers. </p>
 <p>The amount of values in _values that will be used is based on _numChannels. After setting this, created sounds and music will check if their current volumes are higher than passed in values and will set them to the new master volumes if they are above. If you attempt to set the volume of an output your hardware does not support, it will be ignored.</p>
+<p>Channels: Supports up to 6 channels AKA 5.1 Audio: INDEX[0] = Left, INDEX[1] = Right, INDEX[2] = Front Center, INDEX[3] = LFE, INDEX[4] = Rear Left, INDEX[5] = Rear Right,</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">_values</td><td>The output volumes to be set. </td></tr>
