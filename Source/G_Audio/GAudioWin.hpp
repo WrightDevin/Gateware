@@ -1,3 +1,9 @@
+#ifdef WIN32
+	#ifdef _MSC_VER >= 1700
+	#pragma comment(lib, "xaudio2.lib")
+	#endif
+#endif
+
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../DLL_Export_Symbols.h"
 
