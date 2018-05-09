@@ -2074,6 +2074,9 @@ GReturn PlatformGetAudio(GAudio ** _outAudio)
     if (result == INVALID_ARGUMENT)
         return result;
 
+	//Initalize GAudio's maxVolumn
+	audio->maxVolume = 1.0f;
+
     *_outAudio = audio;
     result = SUCCESS;
     return result;

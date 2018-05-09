@@ -50,6 +50,14 @@ namespace GW
 			* If you attempt to set the volume of an output your hardware does not support, it will be ignored.
 			* If you attempt to set a volume higher that GAudio's master volume, it will be set to the master volume without an error message.
 			*
+			*	Channels: Supports up to 6 channels AKA 5.1 Audio: 
+			*	INDEX[0] = Left, 
+			*	INDEX[1] = Right, 
+			*	INDEX[2] = Front Center, 
+			*	INDEX[3] = LFE, 
+			*	INDEX[4] = Rear Left, 
+			*	INDEX[5] = Rear Right, 
+			*
 			*	\param [in] _values The output volumes to be set.
 			*	\param [in] _numChannels The number of channels affected.
 			*

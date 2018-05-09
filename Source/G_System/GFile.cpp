@@ -480,7 +480,6 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #ifdef _WIN32
 	//Convert the UTF8 delimeter to UTF16.
 	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
-
 		//Read the information.
 		getline(file, outString, *delimiter);
 
