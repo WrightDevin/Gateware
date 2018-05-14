@@ -463,13 +463,23 @@ TEST_CASE("Setting test sound volume", "[SetVolume]")
 	checkReturned = FAILURE;
 }
 
-TEST_CASE("Pausing & Stopping test sound", "[Pause], [StopSound]") 
+TEST_CASE("Pausing & Stopping test sound", "[Pause], [StopSound]")
 {
+    REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
 	checkReturned = FAILURE;
-	Sleep(1);
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
 	checkReturned = FAILURE;
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 
 }
 
@@ -479,7 +489,7 @@ TEST_CASE("Stop test sound", "[StopSound]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
-       REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
+    REQUIRE(G_SUCCESS(checkReturned = testSound2->StopSound()));
 	checkReturned = FAILURE;
 }
 //////////////////////////
@@ -526,9 +536,8 @@ TEST_CASE("Playing test music", "[Playmusic]")
 {
     REQUIRE(testMusic != nullptr);
     REQUIRE(testMusic2 != nullptr);
+
 	// Pass cases
-
-
   	REQUIRE(G_SUCCESS(checkReturned = testMusic->StreamStart()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StreamStart()));
 #ifdef WIN32
@@ -574,6 +583,7 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	checkReturned = FAILURE;
 
 }
+
 TEST_CASE("Setting test music volume", "[SetVolume]")
 {   REQUIRE(testMusic != nullptr);
   // REQUIRE(testMusic2 != nullptr);
@@ -654,13 +664,14 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 #endif
 
 }
-////TEST_CASE("Editing test music PCM", "[EditPCM]")
-////{
-////	const char* testdata = nullptr;
-////	// Pass cases
-////	REQUIRE(G_SUCCESS(testMusic->SetPCMShader(testdata)));
-////}
-//
+
+//TEST_CASE("Editing test music PCM", "[EditPCM]")
+//{
+//	const char* testdata = nullptr;
+//	// Pass cases
+//	REQUIRE(G_SUCCESS(testMusic->SetPCMShader(testdata)));
+//}
+
 //Last of Audio Tests
 TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 {
@@ -721,17 +732,33 @@ TEST_CASE("Pausing & Stopping test music", "[Pause], [Stopmusic]")
 {
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
-	Sleep(1);
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
-	Sleep(1);
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
-	Sleep(1);
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 	//Start Stream again
-	testMusic->StreamStart(true);
+	#ifdef WIN32
+    testMusic->StreamStart(true);
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
-	Sleep(2000); //The Two testMusics shouldn't be playing
+  	Sleep(2000);
+    #else
+    sleep(1); //The Two testMusics shouldn't be playing
+    #endif
 }
 
 TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
@@ -747,6 +774,7 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 #endif
 
 }
+
 TEST_CASE("Stopping all sounds and music.", "[StopAll]")
 {
 
@@ -758,7 +786,7 @@ TEST_CASE("Stopping all sounds and music.", "[StopAll]")
 	testSound->DecrementCount();
 	testSound2->DecrementCount();
 	testAudio->DecrementCount();
-	
+
 	testAudio = nullptr;
 	testMusic = nullptr;
 	testMusic2 = nullptr;

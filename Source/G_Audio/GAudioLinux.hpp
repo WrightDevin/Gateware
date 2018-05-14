@@ -843,43 +843,43 @@ time_t prevT = time(nullptr) -1;
 
                 break;
             }
-        if(isPaused != true)
-        {
-
-
-            if(time(nullptr) != prevT)
-            {
-                prevT = time(nullptr);
-            }
-
-             state =  pa_stream_get_state(myStream);
-
-         if(PA_STREAM_READY == state)
+            if(isPaused != true)
             {
 
-                const size_t writeableSize = pa_stream_writable_size(myStream);
-                const size_t sizeRemain = myFile.myBuffer.byteSize - playBackPt;
-                const size_t writeSize = (sizeRemain < writeableSize ? sizeRemain : writeableSize);
 
-                if(writeSize > 0)
+                if(time(nullptr) != prevT)
                 {
-
-                    pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
-                    playBackPt +=writeSize;
-
+                    prevT = time(nullptr);
                 }
-                else if (writeableSize > 0 &&myCallback.didFinish != 1)
+
+                state =  pa_stream_get_state(myStream);
+
+            if(PA_STREAM_READY == state)
                 {
+
+                    const size_t writeableSize = pa_stream_writable_size(myStream);
+                    const size_t sizeRemain = myFile.myBuffer.byteSize - playBackPt;
+                    const size_t writeSize = (sizeRemain < writeableSize ? sizeRemain : writeableSize);
+
+                    if(writeSize > 0)
+                    {
+
+                        pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
+                        playBackPt +=writeSize;
+
+                    }
+                    else if (writeableSize > 0 && myCallback.didFinish != 1)
+                    {
                       myCallback.myOperation = pa_stream_drain(myStream,myCallback.cbSucceed,&myCallback);
 
                        break;
+                    }
+
+
                 }
 
 
             }
-
-
-        }
         }
     if(stopFlag == false)
     {
@@ -910,6 +910,7 @@ GReturn LinuxAppSound::Play()
 if (!isPlaying)
     {
         stopFlag = false;
+        isPlaying = true;
         streamThread = new std::thread(&LinuxAppSound::StreamSound, this);
         result = SUCCESS;
     }
@@ -934,6 +935,7 @@ GReturn LinuxAppSound::Pause()
 
         if(value == 0)
         {
+            ////if the stream is resumed then lets pause it
              pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
 
         }
@@ -959,11 +961,12 @@ GReturn LinuxAppSound::Resume()
     TJCALLBACK myCallback;
     if(!isPlaying)
     {
-        int value = pa_stream_is_corked(myStream);
+        int value = pa_stream_is_corked(myStream); ////1 = paused, 0 = resumed
 
 
         if(value == 1)
         {
+            ////if the stream is paused then lets resume it
              pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
 
         }
@@ -984,8 +987,15 @@ GReturn LinuxAppSound::StopSound()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-   if (streamThread != nullptr)
+
+if (streamThread != nullptr)
   {
+
+    if(isPaused == true)
+    {
+       // isPlaying = false;
+
+    }
 
     if(stopFlag != true)
        {
@@ -1563,11 +1573,12 @@ GReturn LinuxAppMusic::StreamStart(bool _loop)
 if (!isPlaying)
     {
 	loops = _loop;
-        stopFlag = false;
+    stopFlag = false;
 
-
-      streamThread = new std::thread(&LinuxAppMusic::StreamMusic,this);
-        result = SUCCESS;
+    isPlaying = true;
+    isPaused = false;
+    streamThread = new std::thread(&LinuxAppMusic::StreamMusic,this);
+    result = SUCCESS;
     }
 
 

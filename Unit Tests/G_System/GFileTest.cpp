@@ -26,12 +26,12 @@ GW::CORE::GInterface *generic = nullptr;
 // CORE GINTERFACE TEST BATTERY. ALL GATEWARE INTERFACES MUST BE ABLE TO PASS THESE TESTS.
 TEST_CASE("GFile core test battery", "[CreateGFile], [RequestInterface], [IncrementCount], [DecrementCount], [GetCount]")
 {
-	// CATCH WARNING!!! 
+	// CATCH WARNING!!!
 	// Any variables declared here will be REPLICATED to EACH SECTION.
 	// If you need connectivity between sections your variables will need to be global or static.
 	unsigned int countS = 0, countG = 0;
 	const GW::GUUIID notAnValidInterface = { 0, };
-	
+
 	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
 	SECTION("Creation Tests", "[CreateGFile]")
 	{
@@ -49,7 +49,7 @@ TEST_CASE("GFile core test battery", "[CreateGFile], [RequestInterface], [Increm
 		REQUIRE(G_SUCCESS(specific->RequestInterface(GW::CORE::GInterfaceUUIID, (void**)&generic)));
 		REQUIRE(generic != nullptr);
 		// memory addresses should match
-		REQUIRE(reinterpret_cast<std::uintptr_t>(generic) == reinterpret_cast<std::uintptr_t>(specific)); 
+		REQUIRE(reinterpret_cast<std::uintptr_t>(generic) == reinterpret_cast<std::uintptr_t>(specific));
 	}
 	// Test reference counting behavior
 	SECTION("Reference Counting Tests", "[GetCount], [IncrementCount], [DecrementCount]")
@@ -83,9 +83,9 @@ TEST_CASE("GFile core test battery", "[CreateGFile], [RequestInterface], [Increm
 		CHECK(specific != nullptr); // specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
-		REQUIRE(G_FAIL(generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport))); 
+		REQUIRE(G_FAIL(generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GFile is NOT singlethreaded
-		REQUIRE(G_SUCCESS(generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3 
+		REQUIRE(G_SUCCESS(generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
 		CHECK(multiSupport != nullptr); // GFile IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
@@ -272,10 +272,10 @@ TEST_CASE("Text file testing.", "[OpenTextWrite], [WriteLine], [AppendTextWrite]
 		char buffer[260];// Same size as directoryBuffer
 		//char buffer[10];// TESTING
 
-		
+
 		//Pass cases.
 		REQUIRE(G_SUCCESS(file->ReadLine(buffer, 260, '\n')));
-		//REQUIRE(G_SUCCESS(file->ReadLine(buffer, 10, '\n')));//TESTING
+		//REQUIRE(G_SUCCESS(file->ReadLine(buffer, 10, 'F')));//TESTING
 
 
 

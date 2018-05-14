@@ -25,6 +25,8 @@
 //Apple and Linux includes.
 #include <dirent.h>  //Directory handling.
 #include <sys/stat.h>  //File stats.
+#include <string.h>
+#include <cstring>
 
 #define DIR_SEPERATOR '/'
 
@@ -191,7 +193,7 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
-	
+
 	//Set mode to read
 	mode = ios::in;
 
@@ -206,6 +208,9 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	//If the file failed to open the function fails.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+    //Set mode to read
+	mode = ios::in;
 #endif
 	return GW::SUCCESS;
 }
@@ -246,6 +251,9 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+    //Set mode to write
+	mode = ios::out;
 #endif
 	return GW::SUCCESS;
 }
@@ -520,7 +528,7 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #ifdef _WIN32
 	//Convert the UTF8 delimeter to UTF16.
 	const wchar_t delimiter = *G_TO_UTF16(_delimiter).c_str();
-	
+
 	//Read the information.
 	getline(file, outString, delimiter);
 
@@ -534,9 +542,14 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
 	strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
 #else
-	//Copy the data over to the out parameter.
-	//strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+
+#ifdef _WIN32
+    //Copy the data over to the out parameter.
 	strncpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str(), _TRUNCATE);
+#endif // _WIN32
+	//Copy the data over to the out parameter.
+	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+
 #endif
 
 	lock.unlock();
