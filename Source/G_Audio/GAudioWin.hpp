@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _WIN32
 	#ifdef _MSC_VER >= 1700
 	#pragma comment(lib, "xaudio2.lib")
 	#endif
