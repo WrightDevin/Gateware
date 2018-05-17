@@ -7,14 +7,14 @@
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
-
+/*
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
 
 //Global variables needed for all GBufferedInput Test Cases
 GW::SYSTEM::GBufferedInput* bufferedInput = nullptr; //Our buffered input object
 GW::CORE::GListener* listener = nullptr; //Our listener object
-/*
+
 // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
 GW::SYSTEM::GBufferedInput *GBufferedInput_specific = nullptr;
 GW::CORE::GInterface *GBufferedInput_generic = nullptr;
