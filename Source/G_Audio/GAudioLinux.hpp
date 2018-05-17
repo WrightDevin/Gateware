@@ -364,6 +364,7 @@ public:
 	atomic<bool> isPaused;
 	float volume = -1.0f;
 	bool stopFlag = false;
+	TJCALLBACK myCallback; // TESTING
 
 	LinuxAppAudio * audio = nullptr;
 	WAVE_FILE myFile;
@@ -563,8 +564,9 @@ static bool WaitForConnectionEstablished(pa_mainloop * mainLoop, pa_context * aC
 time_t timeLimit = time(NULL) + timeOut;
     while(timeLimit >= time (NULL))
     {
-
-
+        //Get the state of the context,
+        //return true if the connection is ready
+        //return false if timed out
         if(PA_CONTEXT_READY == pa_context_get_state(aContext))
         {
         return true;
@@ -821,7 +823,7 @@ GReturn LinuxAppSound::StreamSound()
 {
     GReturn theResult = SUCCESS;
 
-TJCALLBACK myCallback;
+//TJCALLBACK myCallback;
 myCallback.streamOperationSucceed = FinishedDrain;
 myCallback.cbSucceed = myCallback.streamOperationSucceed;
 const time_t t0 = time(nullptr);
@@ -840,19 +842,17 @@ time_t prevT = time(nullptr) -1;
             if(stopFlag == true)
             {
                 pa_stream_cancel_write((myStream));
-
                 break;
             }
             if(isPaused != true)
             {
-
-
                 if(time(nullptr) != prevT)
                 {
                     prevT = time(nullptr);
                 }
 
                 state =  pa_stream_get_state(myStream);
+                //std::cout << "my current state: " << state << "\n"; //TESTING
 
             if(PA_STREAM_READY == state)
                 {
@@ -863,6 +863,8 @@ time_t prevT = time(nullptr) -1;
 
                     if(writeSize > 0)
                     {
+                       // void* dataPTR = myFile.myBuffer.bytes + playBackPt; //TESTING
+                       // pa_stream_begin_write(myStream, &dataPTR, (size_t*)writeSize); //TESTING
 
                         pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
                         playBackPt +=writeSize;
@@ -911,6 +913,7 @@ if (!isPlaying)
     {
         stopFlag = false;
         isPlaying = true;
+        isPaused = false;
         streamThread = new std::thread(&LinuxAppSound::StreamSound, this);
         result = SUCCESS;
     }
@@ -927,7 +930,7 @@ GReturn LinuxAppSound::Pause()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-    TJCALLBACK myCallback;
+    //TJCALLBACK myCallback;
     if(isPlaying)
     {
         int value = pa_stream_is_corked(myStream);// 1 = paused, 0 = resumed
@@ -935,12 +938,14 @@ GReturn LinuxAppSound::Pause()
 
         if(value == 0)
         {
-            ////if the stream is resumed then lets pause it
-             pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback );
+            //if the stream is resumed then lets pause it
+             myCallback.myOperation = pa_stream_cork(myStream, 1, myCallback.cbSucceed,&myCallback ); //pause
 
         }
+
             isPaused = true;
             isPlaying = false;
+
 
     }
     if (!isPaused)
@@ -958,20 +963,20 @@ GReturn LinuxAppSound::Resume()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-    TJCALLBACK myCallback;
+   // TJCALLBACK myCallback;
     if(!isPlaying)
     {
-        int value = pa_stream_is_corked(myStream); ////1 = paused, 0 = resumed
+        int value = pa_stream_is_corked(myStream); //1 = paused, 0 = resumed
 
 
         if(value == 1)
         {
-            ////if the stream is paused then lets resume it
-             pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
+            //if the stream is paused then lets resume it
+             myCallback.myOperation = pa_stream_cork(myStream, 0, myCallback.cbSucceed,&myCallback );
 
         }
            isPaused = false;
-            isPlaying = true;
+           isPlaying = true;
     }
     if (isPaused)
     {
@@ -990,12 +995,6 @@ GReturn LinuxAppSound::StopSound()
 
 if (streamThread != nullptr)
   {
-
-    if(isPaused == true)
-    {
-       // isPlaying = false;
-
-    }
 
     if(stopFlag != true)
        {

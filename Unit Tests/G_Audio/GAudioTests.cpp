@@ -378,10 +378,11 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 	// Pass cases
 
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
+    //REQUIRE(G_SUCCESS(checkReturned = testSound->Pause())); //TESTING
 #ifdef WIN32
   	Sleep(1);
 #else
- sleep(1);
+ //sleep(1); //the sleep is a higher duration than the sound itself. Uncomment if you want to hear the sound
 #endif
 
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
@@ -392,17 +393,19 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 
 TEST_CASE("Pausing test sound", "[Pause]")
 {
-
-	// Fail cases
-	//CHECK(testSound->Pause() == INVALID_ARGUMENT);
-
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
-	checkReturned = FAILURE;
-	#ifdef WIN32
-  	Sleep(1);
+#ifdef WIN32
+Sleep(1);
 #else
- sleep(1);
+ sleep(1); //TestSound 2 should be the only sound playing
+#endif
+	REQUIRE(G_SUCCESS(checkReturned = testSound2->Pause()));
+	checkReturned = FAILURE;
+#ifdef WIN32
+Sleep(1);
+#else
+ sleep(1); //Should be no audio playing
 #endif
 }
 TEST_CASE("Resuming test sound", "[Resume]")
@@ -411,11 +414,12 @@ TEST_CASE("Resuming test sound", "[Resume]")
 	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound2->Resume()));
 	checkReturned = FAILURE;
 #ifdef WIN32
 Sleep(1);
 #else
- sleep(1);
+ sleep(2); //Should hear audio playing
 #endif
 }
 
@@ -465,7 +469,6 @@ TEST_CASE("Setting test sound volume", "[SetVolume]")
 
 TEST_CASE("Pausing & Stopping test sound", "[Pause], [StopSound]")
 {
-    REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
 	checkReturned = FAILURE;
 	#ifdef WIN32
@@ -751,13 +754,12 @@ TEST_CASE("Pausing & Stopping test music", "[Pause], [Stopmusic]")
     #else
     sleep(1);
     #endif
+
 	//Start Stream again
 	#ifdef WIN32
     testMusic->StreamStart(true);
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
   	Sleep(2000);
-    #else
-    sleep(1); //The Two testMusics shouldn't be playing
     #endif
 }
 
