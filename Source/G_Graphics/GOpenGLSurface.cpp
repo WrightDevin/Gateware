@@ -518,6 +518,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 	}
 
+	//Clean Memory
+	XFree(vi);
+	XFree(fbc);
+
 #elif __APPLE__
 
     gWnd->GetWindowHandle(sizeof(NSWindow*), (void**)&nsWnd);

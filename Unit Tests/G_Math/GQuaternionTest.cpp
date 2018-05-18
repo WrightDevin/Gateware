@@ -1,6 +1,6 @@
 #include "../Common.h"
 
-
+/*
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES.
 
@@ -542,3 +542,4 @@ TEST_CASE("Free QuaternionC", "[DecrementCount]")
 
 	REQUIRE(G_SUCCESS(QuaternionC->DecrementCount()));
 }
+*/

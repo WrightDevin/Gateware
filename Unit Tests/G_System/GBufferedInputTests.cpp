@@ -1,9 +1,9 @@
-/*
+
 #include "../Unit Tests/Common.h"
 #include "GBufferedInputTestListener.h"
 
 #include <thread>
-
+/*
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -221,7 +221,7 @@ TEST_CASE("GBufferedInput Testing Key/Button Up Events")
 	CHECK(keys[3] == false); // Down Key
 
 }
-#endif _WIN32 || __APPLE__
+#endif //_WIN32 || __APPLE__
 
 
 TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")

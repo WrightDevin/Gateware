@@ -17,7 +17,7 @@ using namespace GW;
 using namespace AUDIO;
 
 // Global variables needed for all Test Cases.
-/*
+
 GAudio * testAudio = nullptr;
 GSound * testSound = nullptr;
 GSound * testSound2 = nullptr;
@@ -746,4 +746,4 @@ TEST_CASE("Stopping all sounds and music.", "[Stopll]")
 	testSound2 = nullptr;
 
 }
-*/
+

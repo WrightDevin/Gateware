@@ -10,7 +10,7 @@
 using namespace GW;
 using namespace SYSTEM;
 using namespace CORE;
-
+/*
 // Global variables needed for all Test Cases.
 GWindow* appWindow = nullptr; // Our window object.
 GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
@@ -337,3 +337,4 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	unopenedWindow->DecrementCount();
 }
 
+*/

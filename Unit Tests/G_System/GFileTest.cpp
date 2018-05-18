@@ -13,7 +13,7 @@
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
-
+/*
 //Globals used for all test cases.
 GW::SYSTEM::GFile* file = nullptr;
 char directoryBuffer[260]; //Same size as MAX_PATH MACRO
@@ -357,3 +357,4 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 	//Finished with the file so decrement the count and release it
 	file->DecrementCount();
 }
+*/

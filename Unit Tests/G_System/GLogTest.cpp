@@ -3,7 +3,7 @@
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES
-
+/*
 //Globals used for all test cases
 GW::SYSTEM::GLog* m_log;
 GW::SYSTEM::GFile* m_testFile; //Required for one of the create functions
@@ -153,4 +153,4 @@ TEST_CASE("Testing logging functions", "[Log], [LogCategorized]")
 	m_log->DecrementCount();
 	m_testFile->DecrementCount();
 }
-
+*/
