@@ -1,7 +1,7 @@
 #include "GWindowTestListener.h"
 #include "../Unit Tests/Common.h"
 #include <cstring>
-/*
+
 //Used to test the broadcasting of GWindow
 int windowTestValue = 0;
 
@@ -84,4 +84,4 @@ GW::GReturn GWindowTestListener::GetWindowTestValue(int& _outWindowTestValue)
 	_outWindowTestValue = windowTestValue;
 	return GW::SUCCESS;
 }
-*/
+

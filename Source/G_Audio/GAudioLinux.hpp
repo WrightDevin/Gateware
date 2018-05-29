@@ -118,6 +118,7 @@ FILE * someWaveFile = NULL;
 someWaveFile = fopen(path, "r");
    if(someWaveFile == NULL)
    {
+       std::cout << "\n\n someWaveFile == NULL \n";
        return 1;
    }
     if(someWaveFile != NULL)
@@ -129,6 +130,7 @@ someWaveFile = fopen(path, "r");
             if(dwRead!= 4)
             {
                 result = -1;
+                std::cout << "\n\n dwRead != 4 \n";
                 break;
             }
             bytesRead += dwRead;
@@ -137,6 +139,7 @@ someWaveFile = fopen(path, "r");
             if(dwRead!= 4)
             {
                result = -1;
+               std::cout << "\n\n dwRead2 != 4 \n";
                 break;
             }
             bytesRead += dwRead;
@@ -152,6 +155,7 @@ someWaveFile = fopen(path, "r");
                     if(dwRead!= 4)
                     {
                         result = -1;
+                         std::cout << "\n\n dwRead3 != 4 \n";
                         break;
                     }
                 bytesRead += dwRead;
@@ -164,6 +168,7 @@ someWaveFile = fopen(path, "r");
                     if(dwRead!= 4)
                     {
                         result = -1;
+                         std::cout << "\n\n dwRead4 != 4 \n";
                         break;
                     }
                     bytesRead += dwRead;
@@ -176,6 +181,7 @@ someWaveFile = fopen(path, "r");
                   if(dwRead!= dwChunkDataSize)
                     {
                         result = -1;
+                         std::cout << "\n\n dwRead != dwChunkDataSize \n";
                         break;
                     }
                     bytesRead += dwRead;
@@ -351,6 +357,56 @@ void CreateCharFromConstChar(char ** myChar, const char * theConstChar, int size
 	*myChar = testChar;
 }
 
+void OnStateChange(pa_context *_c, void* _data)
+{
+    pa_context_state_t state;
+    std::atomic<int> *pa_ready = (std::atomic<int>*)_data;
+
+   // std::cout << "\n\n IN ONSTATECHANGE FUNCTION \n\n";
+    state = pa_context_get_state(_c);
+
+       switch(state)
+       {
+       case PA_CONTEXT_UNCONNECTED:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_UNCONNECTED \n\n";
+            break;
+        }
+        case PA_CONTEXT_CONNECTING:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_CONNECTING \n\n";
+            break;
+        }
+        case PA_CONTEXT_AUTHORIZING:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_AUTHORIZING \n\n";
+            break;
+        }
+        case PA_CONTEXT_SETTING_NAME:
+        {
+           // std::cout << "\n\n PA_CONTEXT_SETTING_NAME \n\n";
+            break;
+        }
+        case PA_CONTEXT_FAILED:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_FAILED \n\n";
+            *pa_ready = 2;
+            break;
+        }
+        case PA_CONTEXT_TERMINATED:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_TERMINATED \n\n";
+            *pa_ready = 2;
+            break;
+        }
+        case PA_CONTEXT_READY:
+        {
+          //  std::cout << "\n\n PA_CONTEXT_READY \n\n";
+            *pa_ready = 1;
+            break;
+        }
+       }
+}
 
 class LinuxAppAudio;
 class LinuxAppSound : public GSound
@@ -365,6 +421,7 @@ public:
 	float volume = -1.0f;
 	bool stopFlag = false;
 	TJCALLBACK theCallback;
+    atomic<int> pa_ready;
 
 	LinuxAppAudio * audio = nullptr;
 	WAVE_FILE myFile;
@@ -375,7 +432,7 @@ public:
     pa_channel_map * myMap = nullptr;
     pa_stream * myStream = nullptr;
     pa_mainloop * myMainLoop;
-     pa_context * myContext = nullptr;
+    pa_context * myContext = nullptr;
     pa_cvolume vol;
     pa_sample_format myPulseFormat;
 
@@ -417,6 +474,7 @@ public:
 	float volume = -1.0f;
 	bool stopFlag = false;
 	TJCALLBACK theCallback;
+    atomic<int> pa_ready;
 
      atomic<TJState> myState;
     LinuxAppAudio * audio = nullptr;
@@ -429,8 +487,8 @@ public:
 	pa_stream * myStream = nullptr;
     pa_sample_format myPulseFormat;
     pa_mainloop * myMainLoop;
-     pa_context * myContext = nullptr;
-
+    pa_context * myContext = nullptr;
+    pa_cvolume vol;
 
 
     LinuxAppMusic();
@@ -562,15 +620,29 @@ void RunMainLoop(pa_mainloop * myMainLoop)
 }
 static bool WaitForConnectionEstablished(pa_mainloop * mainLoop, pa_context * aContext, time_t timeOut)
 {
+
+//Currently not being used
+//Currently we are using a callback function from pusleAudio to determine when the context's state changes.
 time_t timeLimit = time(NULL) + timeOut;
+//std::cout << "\n\n IN WAITFORCONNECTION FUNCTION \n\n";
+
+
+
     while(timeLimit >= time (NULL))
     {
+       // sleep(1);
+        //std::cout << "\n\n" << " Current Context: " << pa_context_get_state(aContext) << "\n\n";
+       // std::this_thread::yield();
+
+
         if(PA_CONTEXT_READY == pa_context_get_state(aContext))
         {
         return true;
         }
+
     }
 
+   // std::cout << "\n\n DONE WAITING \n\n";
     return false;
 }
 GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myContext)
@@ -602,33 +674,74 @@ LinuxAppSound::LinuxAppSound() : SoundCounter(1){}
 GReturn LinuxAppSound::Init()
 {
     GReturn result = GReturn::FAILURE;
+   // std::cout << "\n IN SOUND INIT()  \n\n";
+
     if(audio == nullptr)
+    {
+      //  std::cout << "\n AUDIO == NULLPTR \n";
         return result;
+    }
+
      result = REDUNDANT_OPERATION;
     if(myStream != nullptr)
+    {
+      //  std::cout << "\n MYSTREAM == NULLPTR \n";
         return result;
+    }
     if(myMap != nullptr)
+    {
+      //  std::cout << "\n MYMAP == NULLPTR \n";
         return result;
+    }
+
     result = createMainLoopAndContext(&myMainLoop,&myContext);
     if(result != SUCCESS)
+    {
+      //  std::cout << "\n RESULT != SUCCESS \n";
         return result;
+    }
+
     result = FAILURE;
     if(myMainLoop == nullptr)
+    {
+      //  std::cout << "\n MYMAINLOOP == NULLPTR \n";
         return result;
+    }
     if(myContext == nullptr)
+    {
+      //  std::cout << "\n MYCONTEXT == NULLPTR \n";
         return result;
+    }
 
+    //This thread iterates the mainloop.
+   // std::cout << "\n\n BEFORE THREAD \n\n";
+   // loopThread = new std::thread(RunMainLoop, myMainLoop);
+   // std::cout << "\n\n PASSED THROUGH THREAD \n\n";
+    pa_ready = 0;
+  //  std::cout << "\n\n BEFORE PA_CONTEXT_CONNECT \n\n";
+    pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
+  //  std::cout << "\n\n PASSED THROUGH PA_CONTEXT_CONNECT \n\n";
 
+    pa_context_set_state_callback(myContext, OnStateChange, &pa_ready);
+
+    //Had to move this thread creation below the pa_context_connect()
+    //so it starts searching for the contexts state at the start of the mainloop thread loop.
+    //Instead of somewhere random within it.
     loopThread = new std::thread(RunMainLoop, myMainLoop);
+  //  bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 120);
+  while(pa_ready == 0)
+   {
+      // pa_mainloop_iterate(myMainLoop, 1, NULL);
+      std::this_thread::yield();
 
-  pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
-    bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 5);
-    if(connected)
+   }
+    if(pa_ready == 1)
     {
         result = SUCCESS;
     }
     else
     {
+       // std::cout << "\n NOT CONNECTED \n";
         return result;
     }
      result = FAILURE;
@@ -653,16 +766,23 @@ GReturn LinuxAppSound::Init()
     myMap = new pa_channel_map();
     myMap = pa_channel_map_init_extend(myMap, mySampleSpec.channels,PA_CHANNEL_MAP_DEFAULT);
     if(myMap == nullptr)
+    {
+       // std::cout << "\n MYMAP == NULLPTR 2 \n";
         return result;
-
+    }
 
     myStream = pa_stream_new(myContext,"Sound",&mySampleSpec,nullptr);
     if(myStream == nullptr)
+    {
+       // std::cout << "\n MYSTREAM == NULLPTR \n";
         return result;
+    }
+
     int pcheck = pa_stream_connect_playback(myStream,NULL,NULL,(pa_stream_flags_t)0,NULL,NULL);
 
     if(pa_stream_get_context(myStream) != myContext)
     {
+       //  std::cout << "\n CONTEXT MISMATCH \n";
         return result;
     }
     isPlaying = false;
@@ -679,22 +799,63 @@ GReturn LinuxAppSound::SetPCMShader(const char* _data)
 }
 GReturn LinuxAppSound::SetChannelVolumes(float * _values, int _numChannels)
 {
+//Sets the current volume channels to the values passed in.
+//_values = volume values from 0 -> 1.0
+//_numChannels = the size of _values data by index
+//Loops from index 0 -> index _numChannels
+
      GReturn result = INVALID_ARGUMENT;
-  if (_numChannels <= 0)
+
+    if (_numChannels <= 0)
         return result;
     if (audio == nullptr)
         return result;
-
     if (_values == nullptr)
         return result;
-        pa_volume_t * newValues = new pa_volume_t[_numChannels];
-          for (int i = 0; i < _numChannels; i++)
+
+    result = FAILURE;
+
+    vol.channels = _numChannels;
+
+    for (int i = 0; i < _numChannels; i++)
+    {
+        //Make sure the passed in values are not over the maxVolume if yes, then set it to the maxVolume.
+            if (_values[i] > audio->maxVolume)
+            {
+                _values[i] = audio->maxVolume;
+            }
+
+        //Convert a linear factor to a volume value.
+            vol.values[i] =   pa_sw_volume_from_linear(_values[i]);
+    }
+
+    //TJCALLBACK theCallback;
+    theCallback.contextOperationSucceed = FinishedContextGeneral;
+    theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
+
+    //Returns the sink resp. source output index this stream is identified in the server with
+    uint32_t index = pa_stream_get_index(myStream);
+
+    //Set the volume of a sink input stream. And catch the returned operation in theCallback struct to let the rest of the system know whats going on
+    theCallback.myOperation = pa_context_set_sink_input_volume(myContext, index, &vol, theCallback.cbContextSucceed, &theCallback);
+
+    pa_operation_unref(theCallback.myOperation);
+
+    result = SUCCESS;
+    return result;
+
+
+
+
+    /*
+    pa_volume_t * newValues = new pa_volume_t[_numChannels];
+
+    for (int i = 0; i < _numChannels; i++)
     {
          newValues[i] = 0;
     }
     pa_cvolume theVolume;
     theVolume.channels = _numChannels;
-
     result = FAILURE;
 
     for (int i = 0; i < _numChannels; i++)
@@ -719,15 +880,20 @@ GReturn LinuxAppSound::SetChannelVolumes(float * _values, int _numChannels)
 
     result = SUCCESS;
     return result;
+  */
 }
 GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChannels)
 {
+    //Checks the current volumns are higher than the passed in values and will set them
+    //to the new master volumns if they are above.
+
     GReturn result = GReturn::FAILURE;
+    bool didChange = false;
+
     if (_numChannels <= 0)
         return result;
     if (audio == nullptr)
         return result;
-
     if (_values == nullptr)
         return result;
 
@@ -735,6 +901,35 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
     result = GetSoundSourceChannels(currentChannels);
     if (result != SUCCESS)
         return result;
+
+    float *newValues = new float[_numChannels]; //Used to be passed into the SetChannelVolumns()
+
+    //Loop through the number of channels you want to check against.
+    for(int i = 0; i < _numChannels; i++)
+    {
+        if(vol.values[i] > _values[i])
+        {
+            //If current volumn is greater than passed in volumn, set it to the passed in volumn.
+            vol.values[i] = _values[i];
+            newValues[i] = _values[i];
+            didChange = true;
+        }
+        else
+        {
+            //Fill out float array with the current volumn values.
+            newValues[i] = vol.values[i];
+        }
+    }
+
+    if(didChange == true)
+    {
+        SetChannelVolumes(newValues, currentChannels);
+    }
+
+    //Free any memory that is used
+    delete[] newValues;
+
+    /*
     float * currentValues = new float[currentChannels];
 
     if (currentValues == nullptr)
@@ -743,18 +938,12 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
     bool didChange = false;
     for (int i = 0; i < _numChannels; i++)
     {
-
+        if (currentValues[i] > _values[i])
         {
-            if (currentValues[i] > _values[i])
-            {
-                currentValues[i] = _values[i];
-                didChange = true;
-            }
+           currentValues[i] = _values[i];
+            didChange = true;
         }
     }
-
-
-
     if (didChange == true)
     {
     float * newVals = new float[currentChannels];
@@ -763,10 +952,10 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float * _values, int _numChanne
         newVals[i] = _values[i];
     }
     SetChannelVolumes(newVals,currentChannels);
-   // delete newVals;
-    delete[] currentValues;
-    delete[] newVals;
+    delete newVals;
     }
+*/
+
 result = SUCCESS;
     return result;
 }
@@ -794,13 +983,63 @@ GReturn LinuxAppSound::GetSoundOutputChannels(unsigned int & returnedChannelNum)
 }
 GReturn LinuxAppSound::SetVolume(float _newVolume)
 {
+    //Sets all channels volume to the passed in value.
     GReturn result = INVALID_ARGUMENT;
+
+    if(_newVolume < 0.0f)
+        return result;
+    if(audio == nullptr)
+        return result;
+
+    result = SUCCESS;
+
+    theCallback.contextOperationSucceed = FinishedContextGeneral;
+    theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
+
+    //Make sure the passed in value is not over the maxVolume if yes, then set it to the maxVolume.
+    if(_newVolume > audio->maxVolume)
+    {
+        _newVolume = audio->maxVolume;
+    }
+
+     unsigned int channelNum = 0;
+    result = GetSoundSourceChannels(channelNum);
+
+     if(result!= SUCCESS)
+        return result;
+
+     vol.channels = channelNum;
+
+   for(int i = 0; i < channelNum; i++)
+   {
+        //Convert a linear factor to a volume value.
+       vol.values[i] = pa_sw_volume_from_linear(_newVolume);
+   }
+
+    //Returns the sink resp. source output index this stream is identified in the server with
+    uint32_t index = pa_stream_get_index(myStream);
+
+    //Set the volume of a sink input stream. And catch the returned operation in theCallback struct to let the rest of the system know whats going on
+   theCallback.myOperation = pa_context_set_sink_volume_by_index(myContext,index,&vol,theCallback.cbContextSucceed, &theCallback);
+
+   pa_operation_unref(theCallback.myOperation);
+
+    return result;
+
+
+
+    /*
+    GReturn result = INVALID_ARGUMENT;
+
     if (_newVolume < 0.0f)
         return result;
+
     result = SUCCESS;
+
     if (audio == nullptr)
         return result;
-   TJCALLBACK theCallback;
+
+   //TJCALLBACK theCallback;
     theCallback.contextOperationSucceed = FinishedContextGeneral;
     theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
     if (_newVolume > audio->maxVolume)
@@ -808,17 +1047,20 @@ GReturn LinuxAppSound::SetVolume(float _newVolume)
         _newVolume = audio->maxVolume;
     }
     unsigned int channelNum = 0;
-     pa_cvolume theVolume;
-     result = GetSoundSourceChannels(channelNum);
+    pa_cvolume theVolume;
+    result = GetSoundSourceChannels(channelNum);
+
      if(result!= SUCCESS)
         return result;
+
      theVolume.channels = channelNum;
 
-    uint32_t index2 = pa_stream_get_index(myStream);
-    pa_context_set_sink_volume_by_index(myContext,index2,&theVolume,theCallback.cbContextSucceed, &theCallback);
+    uint32_t index = pa_stream_get_index(myStream);
+    pa_context_set_sink_volume_by_index(myContext,index,&theVolume,theCallback.cbContextSucceed, &theCallback);
 
 
     return result;
+    */
 }
 GReturn LinuxAppSound::StreamSound()
 {
@@ -869,10 +1111,12 @@ time_t prevT = time(nullptr) -1;
                     playBackPt +=writeSize;
 
                 }
-                else if (writeableSize > 0 &&theCallback.didFinish != 1)
+                else if (writeableSize > 0 && theCallback.didFinish != 1)
                 {
-                   // delete theCallback.myOperation;
+                      //delete theCallback.myOperation;
                       theCallback.myOperation = pa_stream_drain(myStream,theCallback.cbSucceed,&theCallback);
+
+                      pa_operation_unref(theCallback.myOperation);
 
                        break;
                 }
@@ -1012,6 +1256,7 @@ pa_stream_unref(myStream);
 pa_context_disconnect(myContext);
 pa_context_unref(myContext);
 pa_mainloop_free(myMainLoop);
+//pa_operation_unref(theCallback.myOperation);
 }
 GReturn LinuxAppSound::isSoundPlaying(bool & _returnedBool)
 {
@@ -1104,10 +1349,10 @@ LinuxAppMusic::LinuxAppMusic() : MusicCounter(1){}
 GReturn LinuxAppMusic::Init()
 {
 GReturn result = GReturn::INVALID_ARGUMENT;
-std::cout << "\n IN INIT()  \n\n";
+//std::cout << "\n IN MUSIC INIT()  \n\n";
     if(audio == nullptr)
     {
-        std::cout << "\n AUDIO == NULLPTR \n";
+       // std::cout << "\n AUDIO == NULLPTR \n";
         return result;
     }
 
@@ -1116,13 +1361,13 @@ std::cout << "\n IN INIT()  \n\n";
 
     if(myStream != nullptr)
        {
-           std::cout << "\n MYSTREAM == NULLPTR \n";
+          // std::cout << "\n MYSTREAM == NULLPTR \n";
            return result;
        }
 
     if(myMap != nullptr)
     {
-        std::cout << "\n MYMAP == NULLPTR \n";
+       // std::cout << "\n MYMAP == NULLPTR \n";
         return result;
     }
 
@@ -1130,7 +1375,7 @@ std::cout << "\n IN INIT()  \n\n";
 
     if(result != SUCCESS)
     {
-        std::cout << "\n RESULT != SUCCESS \n";
+       // std::cout << "\n RESULT != SUCCESS \n";
         return result;
     }
 
@@ -1138,26 +1383,45 @@ std::cout << "\n IN INIT()  \n\n";
 
     if(myMainLoop == nullptr)
     {
-        std::cout << "\n MYMAINLOOP == NULLPTR \n";
+       // std::cout << "\n MYMAINLOOP == NULLPTR \n";
         return result;
     }
 
     if(myContext == nullptr)
     {
-        std::cout << "\n MYCONTEXT == NULLPTR \n";
+       // std::cout << "\n MYCONTEXT == NULLPTR \n";
         return result;
     }
 
-   loopThread = new std::thread(RunMainLoop, myMainLoop);
-   pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
-   bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 45);
-    if(connected)
+     //This thread iterates the mainloop.
+   // std::cout << "\n\n BEFORE THREAD \n\n";
+  //  loopThread = new std::thread(RunMainLoop, myMainLoop);
+ //   std::cout << "\n\n PASSED THROUGH THREAD \n\n";
+    pa_ready = 0;
+   // std::cout << "\n\n BEFORE PA_CONTEXT_CONNECT \n\n";
+    pa_context_connect(myContext, NULL, (pa_context_flags_t)0,NULL);
+  //  std::cout << "\n\n PASSED THROUGH PA_CONTEXT_CONNECT \n\n";
+
+    pa_context_set_state_callback(myContext, OnStateChange, &pa_ready);
+
+      //Had to move this thread creation below the pa_context_connect()
+    //so it starts searching for the contexts state at the start of the mainloop thread loop.
+    //Instead of somewhere random within it.
+    loopThread = new std::thread(RunMainLoop, myMainLoop);
+  //  bool connected = WaitForConnectionEstablished(myMainLoop, myContext, 120);
+  while(pa_ready == 0)
+   {
+      // pa_mainloop_iterate(myMainLoop, 1, NULL);
+      std::this_thread::yield();
+
+   }
+    if(pa_ready == 1)
     {
         result = SUCCESS;
     }
     else
     {
-        std::cout << "\n NOT CONNECTED \n";
+      //  std::cout << "\n NOT CONNECTED \n";
         return result;
     }
      result = FAILURE;
@@ -1183,28 +1447,29 @@ std::cout << "\n IN INIT()  \n\n";
     myMap = pa_channel_map_init_extend(myMap, mySampleSpec.channels,PA_CHANNEL_MAP_WAVEEX);
     if(myMap == nullptr)
     {
-        std::cout << "\n MYMAP == NULLPTR 2 \n";
+       // std::cout << "\n MYMAP == NULLPTR 2 \n";
         return result;
     }
 
-    myBuffers[0].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
-     myBuffers[1].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
-      myBuffers[2].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
+        myBuffers[0].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
+        myBuffers[1].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
+        myBuffers[2].bytes = new uint8_t[STREAMING_BUFFER_SIZE];
 
- myBuffers[0].byteSize = fileSize;
- myBuffers[1].byteSize = fileSize;
- myBuffers[2].byteSize = fileSize;
+        myBuffers[0].byteSize = fileSize;
+        myBuffers[1].byteSize = fileSize;
+        myBuffers[2].byteSize = fileSize;
+
     myStream = pa_stream_new(myContext,"Music",&mySampleSpec,nullptr);
     if(myStream == nullptr)
     {
-        std::cout << "\n MYSTREAM == NULLPTR \n";
+       // std::cout << "\n MYSTREAM == NULLPTR \n";
         return result;
     }
     int pcheck = pa_stream_connect_playback(myStream,NULL,NULL,(pa_stream_flags_t)0,NULL,NULL);
      pa_stream_state_t state =  pa_stream_get_state(myStream);
     if(pa_stream_get_context(myStream) != myContext)
     {
-        std::cout << "\n CONTEXT MISMATCH \n";
+      //  std::cout << "\n CONTEXT MISMATCH \n";
         return result;
     }
     isPlaying = false;
@@ -1219,51 +1484,103 @@ GReturn LinuxAppMusic::SetPCMShader(const char* _data)
 }
 GReturn LinuxAppMusic::SetChannelVolumes(float * _values, int _numChannels)
 {
-    GReturn result = INVALID_ARGUMENT;
+//Sets the current volume channels to the values passed in.
+//_values = volume values from 0 -> 1.0
+//_numChannels = the size of _values data by index
+
+     GReturn result = INVALID_ARGUMENT;
+
     if (_numChannels <= 0)
         return result;
     if (audio == nullptr)
         return result;
-
     if (_values == nullptr)
         return result;
-        pa_volume_t * newValues = new pa_volume_t[_numChannels];
-          for (int i = 0; i < _numChannels; i++)
-    {
-         newValues[i] = 0;
-    }
-        pa_cvolume theVolume;
-    theVolume.channels = _numChannels;
 
     result = FAILURE;
 
+    vol.channels = _numChannels;
+
     for (int i = 0; i < _numChannels; i++)
     {
+        //Make sure the passed in values are not over the maxVolume if yes, then set it to the maxVolume.
             if (_values[i] > audio->maxVolume)
             {
                 _values[i] = audio->maxVolume;
             }
-            newValues[i] =   pa_sw_volume_from_linear(_values[i]);
-            theVolume.values[i] = newValues[i];
+
+        //Convert a linear factor to a volume value.
+            vol.values[i] =   pa_sw_volume_from_linear(_values[i]);
     }
 
     //TJCALLBACK theCallback;
     theCallback.contextOperationSucceed = FinishedContextGeneral;
     theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
-    uint32_t index = pa_stream_get_device_index(myStream);
-     uint32_t index2 = pa_stream_get_index(myStream);
-     pa_context_set_sink_input_volume(myContext,index2,&theVolume, theCallback.cbContextSucceed, &theCallback);
 
-   // delete newValues;
-    delete[] newValues;
+    //Returns the sink resp. source output index this stream is identified in the server with
+    uint32_t index = pa_stream_get_index(myStream);
+
+    //Set the volume of a sink input stream. And catch the returned operation in theCallback struct to let the rest of the system know whats going on
+    theCallback.myOperation = pa_context_set_sink_input_volume(myContext,index,&vol, theCallback.cbContextSucceed, &theCallback);
+
+    pa_operation_unref(theCallback.myOperation);
 
     result = SUCCESS;
     return result;
 
+
+
+
+    //GReturn result = INVALID_ARGUMENT;
+    //if (_numChannels <= 0)
+    //    return result;
+   // if (audio == nullptr)
+   //     return result;
+
+  //  if (_values == nullptr)
+  //      return result;
+
+  //  pa_volume_t * newValues = new pa_volume_t[_numChannels];
+
+  //  for (int i = 0; i < _numChannels; i++)
+ //   {
+  //       newValues[i] = 0;
+  //  }
+ //   pa_cvolume theVolume;
+ //   theVolume.channels = _numChannels;
+ //   result = FAILURE;
+
+ //   for (int i = 0; i < _numChannels; i++)
+   // {
+ //           if (_values[i] > audio->maxVolume)
+  //          {
+   //             _values[i] = audio->maxVolume;
+   //         }
+  //          newValues[i] =   pa_sw_volume_from_linear(_values[i]);
+  //          theVolume.values[i] = newValues[i];
+ //   }
+
+    //TJCALLBACK theCallback;
+ //   theCallback.contextOperationSucceed = FinishedContextGeneral;
+ //   theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
+ //   uint32_t index = pa_stream_get_device_index(myStream);
+//     uint32_t index2 = pa_stream_get_index(myStream);
+ //    pa_context_set_sink_input_volume(myContext,index2,&theVolume, theCallback.cbContextSucceed, &theCallback);
+
+   // delete newValues;
+//    delete[] newValues;
+
+ //   result = SUCCESS;
+ //   return result;
+
 }
 GReturn LinuxAppMusic::CheckChannelVolumes(const float * _values, int _numChannels)
 {
+    //Checks the current volumns are higher than the passed in values and will set them
+    //to the new master volumns if they are above.
     GReturn result = GReturn::INVALID_ARGUMENT;
+    bool didChange = false;
+
     if (_numChannels <= 0)
         return result;
     if (audio == nullptr)
@@ -1277,38 +1594,60 @@ GReturn LinuxAppMusic::CheckChannelVolumes(const float * _values, int _numChanne
     result = GetStreamSourceChannels(currentChannels);
     if (result != SUCCESS)
         return result;
-    float * currentValues = new float [currentChannels];
 
-    if (currentValues == nullptr)
-        return result;
+ float *newValues = new float[_numChannels]; //Used to be passed into the SetChannelVolumns()
 
-    bool didChange = false;
-    for (int i = 0; i < _numChannels; i++)
+    //Loop through the number of channels you want to check against.
+    for(int i = 0; i < _numChannels; i++)
     {
-        //try
+        if(vol.values[i] > _values[i])
         {
-            if (currentValues[i] > _values[i])
-            {
-                currentValues[i] = _values[i];
-                didChange = true;
-            }
+            //If current volumn is greater than passed in volumn, set it to the passed in volumn.
+            vol.values[i] = _values[i];
+            newValues[i] = _values[i];
+            didChange = true;
         }
-
-
+        else
+        {
+            //Fill out float array with the current volumn values.
+            newValues[i] = vol.values[i];
+        }
     }
 
-   if (didChange == true)
+    if(didChange == true)
     {
-    float * newVals = new float[currentChannels];
-    for (int i = 0; i < _numChannels; i++)
-    {
-        newVals[i] = _values[i];
+        SetChannelVolumes(newValues, currentChannels);
     }
-    SetChannelVolumes(newVals,currentChannels);
+
+    //Free any memory that is used
+    delete[] newValues;
+
+   // float * currentValues = new float [currentChannels];
+
+  //  if (currentValues == nullptr)
+  //      return result;
+
+  //  bool didChange = false;
+  //  for (int i = 0; i < _numChannels; i++)
+  //  {
+  //          if (currentValues[i] > _values[i])
+  //          {
+  //              currentValues[i] = _values[i];
+  //              didChange = true;
+  //          }
+   // }
+  // if (didChange == true)
+  //  {
+  //  float * newVals = new float[currentChannels];
+  //  for (int i = 0; i < _numChannels; i++)
+ //   {
+  //      newVals[i] = _values[i];
+ //   }
+ //   SetChannelVolumes(newVals,currentChannels);
    // delete newVals;
-    delete[] currentValues;
-    delete[] newVals;
-    }
+  //  }
+
+
 result = SUCCESS;
     return result;
 }
@@ -1346,6 +1685,52 @@ GReturn LinuxAppMusic::GetStreamOutputChannels(unsigned int & returnedChannelNum
 }
 GReturn LinuxAppMusic::SetVolume(float _newVolume)
 {
+    //Sets all channels volume to the passed in value.
+    GReturn result = INVALID_ARGUMENT;
+
+    if(_newVolume < 0.0f)
+        return result;
+    if(audio == nullptr)
+        return result;
+
+    result = SUCCESS;
+
+    theCallback.contextOperationSucceed = FinishedContextGeneral;
+    theCallback.cbContextSucceed = theCallback.contextOperationSucceed;
+
+    //Make sure the passed in value is not over the maxVolume if yes, then set it to the maxVolume.
+    if(_newVolume > audio->maxVolume)
+    {
+        _newVolume = audio->maxVolume;
+    }
+
+     unsigned int channelNum = 0;
+    result = GetStreamSourceChannels(channelNum);
+
+     if(result!= SUCCESS)
+        return result;
+
+     vol.channels = channelNum;
+
+   for(int i = 0; i < channelNum; i++)
+   {
+        //Convert a linear factor to a volume value.
+       vol.values[i] = pa_sw_volume_from_linear(_newVolume);
+   }
+
+    //Returns the sink resp. source output index this stream is identified in the server with
+    uint32_t index = pa_stream_get_index(myStream);
+
+    //Set the volume of a sink input stream. And catch the returned operation in theCallback struct to let the rest of the system know whats going on
+   theCallback.myOperation = pa_context_set_sink_volume_by_index(myContext,index,&vol,theCallback.cbContextSucceed, &theCallback);
+
+   pa_operation_unref(theCallback.myOperation);
+
+    return result;
+
+
+
+    /*
     GReturn result = FAILURE;
     if (audio == nullptr)
         return result;
@@ -1377,6 +1762,7 @@ GReturn LinuxAppMusic::SetVolume(float _newVolume)
 
     result = SUCCESS;
     return result;
+    */
 }
 GReturn LinuxAppMusic::StreamMusic()
 {
@@ -1799,6 +2185,7 @@ GReturn LinuxAppAudio::CreateSound(const char* _path, GSound** _outSound)
 
     if (snd == nullptr)
     {
+       // std::cout << "\n\n" << " msc = new LinuxAppSound() didn't work" << "\n";
         result = FAILURE;
         return result;
     }
@@ -1806,6 +2193,7 @@ GReturn LinuxAppAudio::CreateSound(const char* _path, GSound** _outSound)
     int check = LoadWav(_path,snd->myFile);
     if(check != 0)
     {
+       // std::cout << "\n\n" << " check != 0" << "\n";
         if(result > 0)
         {
             result = INVALID_ARGUMENT;
@@ -1820,6 +2208,7 @@ GReturn LinuxAppAudio::CreateSound(const char* _path, GSound** _outSound)
     result = snd->Init();
     if(result != SUCCESS)
     {
+       // std::cout << "\n\n" << " snd->Init() failed" << "\n";
         return result;
     }
     activeSounds.push_back(snd);
@@ -1841,14 +2230,14 @@ GReturn LinuxAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 
     if (msc == nullptr)
     {
-        std::cout << "\n" << "msc = new LinuxAppMusic() didn't work" << "\n";
+        //std::cout << "\n\n" << "msc = new LinuxAppMusic() didn't work" << "\n";
         result = FAILURE;
         return result;
     }
     int check = LoadWavFormatOnly(_path,msc->myPCMFormat, msc->fileSize);
     if(check != 0)
     {
-        std::cout << "\n" << "LoadWavFormatOnly didn't work" << "\n";
+       // std::cout << "\n\n" << "LoadWavFormatOnly didn't work" << "\n";
         if(result > 0)
         {
             result = INVALID_ARGUMENT;
@@ -1867,7 +2256,7 @@ GReturn LinuxAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
     result = msc->Init();
     if (result != SUCCESS)
     {
-        std::cout << "\n" << "msc->init() didn't work" << "\n";
+       // std::cout << "\n\n" << " msc->init() didn't work" << "\n";
         return result;
     }
     result = SUCCESS;
@@ -1897,12 +2286,36 @@ GReturn LinuxAppAudio::SetMasterVolume(float _value)
 }
 GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numChannels)
 {
+ GReturn result = INVALID_ARGUMENT;
 
-    GReturn result = INVALID_ARGUMENT;
     if (_values == nullptr)
         return result;
     if (_numChannels < 0)
         return result;
+
+    result = FAILURE;
+
+    for (int i = 0; i < activeSounds.size(); i++)
+    {
+        result = activeSounds[i]->CheckChannelVolumes(_values, _numChannels);
+    }
+    for (int i = 0; i < activeMusic.size(); i++)
+    {
+        result = activeMusic[i]->CheckChannelVolumes(_values, _numChannels);
+    }
+
+    return result;
+
+
+
+/*
+    GReturn result = INVALID_ARGUMENT;
+
+    if (_values == nullptr)
+        return result;
+    if (_numChannels < 0)
+        return result;
+
     result = FAILURE;
     unsigned int theirChannels;
     for (int i = 0; i < activeSounds.size(); i++)
@@ -1938,6 +2351,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float * _values, int _numCh
     }
 
     return result;
+    */
 }
 GReturn LinuxAppAudio::PauseAll()
 {

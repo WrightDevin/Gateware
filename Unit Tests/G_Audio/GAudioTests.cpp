@@ -403,7 +403,7 @@ TEST_CASE("Pausing test sound", "[Pause]")
 	#ifdef WIN32
   	Sleep(1);
 #else
- sleep(1);
+ //sleep(1);
 #endif
 }
 
@@ -430,15 +430,22 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 
 	float * testvolumes = atestVolume;
 
-	REQUIRE(G_SUCCESS(checkReturned = testSound2->SetChannelVolumes(testvolumes, 6)));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 6)));
+	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
+
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
 
 	atestVolume[0] = 0.5f;
 	// Fail cases
 	CHECK(testSound->SetChannelVolumes(nullptr, 0) == INVALID_ARGUMENT);
 
 	// Pass cases
-	REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 6)));
-	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound2->SetChannelVolumes(testvolumes, 6)));
+
 #ifdef WIN32
 
 	for (int k = 1; k < numOfOutputs; k++)

@@ -3,7 +3,7 @@
 #include <cstring>
 
 //GListener Overrides
-/*
+
 bool keys[256]; //Will be used to keep track of rather keys were pressed or released
 
 				//Used to keep track of what the library says my mouse position is
@@ -179,4 +179,4 @@ GW::GReturn GBufferedInputTestListener::RequestInterface(const GW::GUUIID& _inte
 	//NOT IMPLEMENTED
 	return GW::SUCCESS;
 }
-*/
+
