@@ -406,7 +406,7 @@ Sleep(1);
 #ifdef WIN32
 Sleep(1);
 #else
- sleep(1); //Should be no audio playing
+ sleep(1); //Should be no audio playing for 1 second.
 #endif
 }
 
