@@ -421,7 +421,7 @@ TEST_CASE("Resuming test sound", "[Resume]")
 #ifdef WIN32
 Sleep(1);
 #else
- sleep(2); //Should hear audio playing
+ sleep(1); //Should hear audio playing
 #endif
 }
 

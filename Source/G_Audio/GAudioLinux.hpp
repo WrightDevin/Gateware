@@ -648,21 +648,26 @@ time_t timeLimit = time(NULL) + timeOut;
 GReturn createMainLoopAndContext(pa_mainloop ** myMainLoop, pa_context ** myContext)
 {
     GReturn result = FAILURE;
+    *myMainLoop = nullptr;
+    *myContext = nullptr;
+
     pa_mainloop * newLoop = pa_mainloop_new();
 
     if(NULL == newLoop)
     {
         return result;
     }
+
+    *myMainLoop = newLoop;
     pa_context * newContext = pa_context_new(pa_mainloop_get_api(newLoop),"StartAudio");
+   *myContext = newContext;
 
     if(NULL == newContext)
     {
         return result;
     }
     result = SUCCESS;
-        *myMainLoop = newLoop;
-        *myContext = newContext;
+
 
 
   return result;
@@ -1156,7 +1161,7 @@ GReturn LinuxAppSound::Play()
 if (!isPlaying)
     {
         stopFlag = false;
-        isPlaying = true;
+       // isPlaying = true;
         isPaused = false;
         streamThread = new std::thread(&LinuxAppSound::StreamSound, this);
         result = SUCCESS;
@@ -1183,7 +1188,7 @@ GReturn LinuxAppSound::Pause()
         if(value == 0)
         {
             theCallback.myOperation =  pa_stream_cork(myStream, 1, theCallback.cbSucceed,&theCallback );
-
+            pa_operation_unref(theCallback.myOperation);
         }
 
             isPaused = true;
@@ -1215,7 +1220,7 @@ GReturn LinuxAppSound::Resume()
         if(value == 1)
         {
              theCallback.myOperation = pa_stream_cork(myStream, 0, theCallback.cbSucceed,&theCallback );
-
+             pa_operation_unref(theCallback.myOperation);
         }
            isPaused = false;
            isPlaying = true;
