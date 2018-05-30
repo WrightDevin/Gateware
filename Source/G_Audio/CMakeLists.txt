@@ -4,10 +4,14 @@ message(“Adding .cpp files”)
 
 add_library (GAudio GAudio.cpp ${HEADER_FILES})
 add_library (GAudio_DLL SHARED GAudio.cpp ${HEADER_FILES} )
+
+if(NOT _MSVC)
 target_link_libraries(GAudio xaudio2)
 target_link_libraries(GAudio_DLL xaudio2)
+endif(NOT _MSVC)
 
 endif(WIN32)
+
 if(UNIX AND NOT APPLE)
 message(“Adding .cpp files”)
 

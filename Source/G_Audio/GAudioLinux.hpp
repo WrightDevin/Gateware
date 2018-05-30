@@ -1083,32 +1083,32 @@ time_t prevT = time(nullptr) -1;
             if(stopFlag == true)
             {
                 pa_stream_cancel_write((myStream));
-
                 break;
             }
-        if(isPaused != true)
-        {
-
-
-            if(time(nullptr) != prevT)
+            if(isPaused != true)
             {
-                prevT = time(nullptr);
-            }
+                if(time(nullptr) != prevT)
+                {
+                    prevT = time(nullptr);
+                }
 
-             state =  pa_stream_get_state(myStream);
+                state =  pa_stream_get_state(myStream);
+                //std::cout << "my current state: " << state << "\n"; //TESTING
 
-         if(PA_STREAM_READY == state)
-            {
-
-                const size_t writeableSize = pa_stream_writable_size(myStream);
-                const size_t sizeRemain = myFile.myBuffer.byteSize - playBackPt;
-                const size_t writeSize = (sizeRemain < writeableSize ? sizeRemain : writeableSize);
-
-                if(writeSize > 0)
+            if(PA_STREAM_READY == state)
                 {
 
-                    pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
-                    playBackPt +=writeSize;
+                    const size_t writeableSize = pa_stream_writable_size(myStream);
+                    const size_t sizeRemain = myFile.myBuffer.byteSize - playBackPt;
+                    const size_t writeSize = (sizeRemain < writeableSize ? sizeRemain : writeableSize);
+
+                    if(writeSize > 0)
+                    {
+                       // void* dataPTR = myFile.myBuffer.bytes + playBackPt; //TESTING
+                       // pa_stream_begin_write(myStream, &dataPTR, (size_t*)writeSize); //TESTING
+
+                        pa_stream_write(myStream, myFile.myBuffer.bytes + playBackPt , writeSize,nullptr, 0, PA_SEEK_RELATIVE);
+                        playBackPt +=writeSize;
 
                 }
                 else if (writeableSize > 0 && theCallback.didFinish != 1)
@@ -1119,13 +1119,13 @@ time_t prevT = time(nullptr) -1;
                       pa_operation_unref(theCallback.myOperation);
 
                        break;
+                    }
+
+
                 }
 
 
             }
-
-
-        }
         }
     if(stopFlag == false)
     {
@@ -1156,6 +1156,8 @@ GReturn LinuxAppSound::Play()
 if (!isPlaying)
     {
         stopFlag = false;
+        isPlaying = true;
+        isPaused = false;
         streamThread = new std::thread(&LinuxAppSound::StreamSound, this);
         result = SUCCESS;
     }
@@ -1183,8 +1185,10 @@ GReturn LinuxAppSound::Pause()
             theCallback.myOperation =  pa_stream_cork(myStream, 1, theCallback.cbSucceed,&theCallback );
 
         }
+
             isPaused = true;
             isPlaying = false;
+
 
     }
     if (!isPaused)
@@ -1205,7 +1209,7 @@ GReturn LinuxAppSound::Resume()
    // TJCALLBACK myCallback;
     if(!isPlaying)
     {
-        int value = pa_stream_is_corked(myStream);
+        int value = pa_stream_is_corked(myStream); //1 = paused, 0 = resumed
 
 
         if(value == 1)
@@ -1214,7 +1218,7 @@ GReturn LinuxAppSound::Resume()
 
         }
            isPaused = false;
-            isPlaying = true;
+           isPlaying = true;
     }
     if (isPaused)
     {
@@ -1230,7 +1234,8 @@ GReturn LinuxAppSound::StopSound()
     GReturn result = GReturn::FAILURE;
     if (audio == nullptr)
         return result;
-   if (streamThread != nullptr)
+
+if (streamThread != nullptr)
   {
 
     if(stopFlag != true)
@@ -1993,11 +1998,12 @@ GReturn LinuxAppMusic::StreamStart(bool _loop)
 if (!isPlaying)
     {
 	loops = _loop;
-        stopFlag = false;
+    stopFlag = false;
 
-
-      streamThread = new std::thread(&LinuxAppMusic::StreamMusic,this);
-        result = SUCCESS;
+    isPlaying = true;
+    isPaused = false;
+    streamThread = new std::thread(&LinuxAppMusic::StreamMusic,this);
+    result = SUCCESS;
     }
 
 
@@ -2534,6 +2540,9 @@ GReturn PlatformGetAudio(GAudio ** _outAudio)
 
     if (result == INVALID_ARGUMENT)
         return result;
+
+	//Initalize GAudio's maxVolumn
+	audio->maxVolume = 1.0f;
 
     *_outAudio = audio;
     result = SUCCESS;

@@ -110,6 +110,14 @@ namespace GW
 			* After setting this, created sounds and music will check if their current volumes are higher than passed in values and will set them to the new master volumes if they are above.
 			* If you attempt to set the volume of an output your hardware does not support, it will be ignored.
 			*
+			*	Channels: Supports up to 6 channels AKA 5.1 Audio: 
+			*	INDEX[0] = Left, 
+			*	INDEX[1] = Right, 
+			*	INDEX[2] = Front Center, 
+			*	INDEX[3] = LFE, 
+			*	INDEX[4] = Rear Left, 
+			*	INDEX[5] = Rear Right, 
+			*
 			*	\param [in] _values The output volumes to be set.
 			*	\param [in] _numChannels The number of channels affected.
 			*

@@ -379,10 +379,11 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 	// Pass cases
 
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
+    //REQUIRE(G_SUCCESS(checkReturned = testSound->Pause())); //TESTING
 #ifdef WIN32
   	Sleep(1);
 #else
- sleep(1);
+ //sleep(1); //the sleep is a higher duration than the sound itself. Uncomment if you want to hear the sound
 #endif
 
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
@@ -393,17 +394,19 @@ TEST_CASE("Playing test sound", "[PlaySound]")
 
 TEST_CASE("Pausing test sound", "[Pause]")
 {
-
-	// Fail cases
-	//CHECK(testSound->Pause() == INVALID_ARGUMENT);
-
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
-	checkReturned = FAILURE;
-	#ifdef WIN32
-  	Sleep(1);
+#ifdef WIN32
+Sleep(1);
 #else
- //sleep(1);
+ sleep(1); //TestSound 2 should be the only sound playing
+#endif
+	REQUIRE(G_SUCCESS(checkReturned = testSound2->Pause()));
+	checkReturned = FAILURE;
+#ifdef WIN32
+Sleep(1);
+#else
+ sleep(1); //Should be no audio playing
 #endif
 }
 
@@ -413,11 +416,12 @@ TEST_CASE("Resuming test sound", "[Resume]")
 	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
+	REQUIRE(G_SUCCESS(checkReturned = testSound2->Resume()));
 	checkReturned = FAILURE;
 #ifdef WIN32
 Sleep(1);
 #else
- sleep(1);
+ sleep(2); //Should hear audio playing
 #endif
 }
 
@@ -471,6 +475,25 @@ TEST_CASE("Setting test sound volume", "[SetVolume]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->SetVolume(0.5)));
 	checkReturned = FAILURE;
+}
+
+TEST_CASE("Pausing & Stopping test sound", "[Pause], [StopSound]")
+{
+	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
+	checkReturned = FAILURE;
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
+	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
+	checkReturned = FAILURE;
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
+
 }
 
 TEST_CASE("Stop test sound", "[StopSound]")
@@ -527,11 +550,8 @@ TEST_CASE("Playing test music", "[Playmusic]")
 {
     REQUIRE(testMusic != nullptr);
     REQUIRE(testMusic2 != nullptr);
-	// Fail cases
-	// CHECK(testmusic->Playmusic() == INVALID_ARGUMENT);
+
 	// Pass cases
-
-
   	REQUIRE(G_SUCCESS(checkReturned = testMusic->StreamStart()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StreamStart()));
 #ifdef WIN32
@@ -577,6 +597,7 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	checkReturned = FAILURE;
 
 }
+
 TEST_CASE("Setting test music volume", "[SetVolume]")
 {   REQUIRE(testMusic != nullptr);
   // REQUIRE(testMusic2 != nullptr);
@@ -646,8 +667,6 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 {
     REQUIRE(testMusic != nullptr);
     REQUIRE(testMusic2 != nullptr);
-	// Fail cases
-	//CHECK(testmusic->Resume() == INVALID_ARGUMENT);
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
@@ -659,6 +678,7 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 #endif
 
 }
+
 //TEST_CASE("Editing test music PCM", "[EditPCM]")
 //{
 //	const char* testdata = nullptr;
@@ -721,6 +741,39 @@ TEST_CASE("Setting master channel volumes", "[SetMasterChannelVolumes]")
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->SetMasterChannelVolumes(testvolumes, 6)));
 	checkReturned = FAILURE;
 }
+
+TEST_CASE("Pausing & Stopping test music", "[Pause], [Stopmusic]")
+{
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
+	#ifdef WIN32
+  	Sleep(1);
+    #else
+    sleep(1);
+    #endif
+
+	//Start Stream again
+	#ifdef WIN32
+    testMusic->StreamStart(true);
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
+  	Sleep(2000);
+    #endif
+}
+
 TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 {
 
@@ -728,13 +781,14 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->ResumeAll()));
 	checkReturned = FAILURE;
 #ifdef WIN32
-  	Sleep(1);
+  	Sleep(2000); //Should play some audio before it hits the StopAll().
 #else
  sleep(1);
 #endif
 
 }
-TEST_CASE("Stopping all sounds and music.", "[Stopll]")
+
+TEST_CASE("Stopping all sounds and music.", "[StopAll]")
 {
 
 	// Pass cases

@@ -272,9 +272,15 @@ TEST_CASE("Text file testing.", "[OpenTextWrite], [WriteLine], [AppendTextWrite]
 	SECTION("Read in from text file.", "[Readline]")
 	{
 		char buffer[260];// Same size as directoryBuffer
+		//char buffer[10];// TESTING
+
 
 		//Pass cases.
 		REQUIRE(G_SUCCESS(file->ReadLine(buffer, 260, '\n')));
+		//REQUIRE(G_SUCCESS(file->ReadLine(buffer, 10, 'F')));//TESTING
+
+
+
 
 		REQUIRE(strcmp(buffer, directoryBuffer) == 0);
 

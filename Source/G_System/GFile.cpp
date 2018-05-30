@@ -25,6 +25,8 @@
 //Apple and Linux includes.
 #include <dirent.h>  //Directory handling.
 #include <sys/stat.h>  //File stats.
+#include <string.h>
+#include <cstring>
 
 #define DIR_SEPERATOR '/'
 
@@ -78,6 +80,8 @@ class FileIO : public GW::SYSTEM::GFile
 	atomic<unsigned int> dirSize;  //A cached directory size for faster fetching.
 
 	atomic<unsigned int> refCount;  //Reference counter.
+
+	atomic<unsigned int> mode; //Used to track what open mode the file is in
 
 	mutex lock; //Read/Write lock.
 
@@ -190,6 +194,9 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
+	//Set mode to read
+	mode = ios::in;
+
 #elif defined(__APPLE__) || defined(__linux__)
 	//Ensure a file is not already open.
 	if (file.is_open())
@@ -201,6 +208,9 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	//If the file failed to open the function fails.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+    //Set mode to read
+	mode = ios::in;
 #endif
 	return GW::SUCCESS;
 }
@@ -223,6 +233,9 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
+	//Set mode to write
+	mode = ios::out;
+
 #elif defined(__APPLE__) || defined(__linux__)
 	//Check for invalid arguments.
 	if (_file == nullptr)
@@ -238,6 +251,9 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+    //Set mode to write
+	mode = ios::out;
 #endif
 	return GW::SUCCESS;
 }
@@ -259,6 +275,9 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	if (binaryFile == NULL)
 		return GW::FILE_NOT_FOUND;
 
+	//Set mode to write
+	mode = ios::out;
+
 #elif defined(__APPLE__) || defined(__linux__)
 	//Close the current file if there is one.
 	if (file.is_open())
@@ -270,6 +289,10 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	//If file failed to open we fail.
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+	//Set mode to write
+	mode = ios::out;
+
 #endif
 	return GW::SUCCESS;
 }
@@ -289,6 +312,9 @@ GW::GReturn FileIO::OpenTextRead(const char* const _file)
 
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
+
+	//Set mode to read
+	mode = ios::in;
 
 #if defined(_WIN32)
 	//If we are on windows we need to handle the file BOM.
@@ -324,6 +350,9 @@ GW::GReturn FileIO::OpenTextWrite(const char* const _file)
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
 
+	//Set mode to write
+	mode = ios::out;
+
 	//Need to write the BOM if we are _WIN32.
 #if defined(_WIN32)
 	//If we are on windows we need to handle the file BOM.
@@ -358,6 +387,9 @@ GW::GReturn FileIO::AppendTextWrite(const char* const _file)
 	if (!file.is_open())
 		return GW::FILE_NOT_FOUND;
 
+	//Set mode to write
+	mode = ios::out;
+
 	return GW::SUCCESS;
 }
 
@@ -369,6 +401,10 @@ GW::GReturn FileIO::Write(const char* const _inData, unsigned int _numBytes)
 
 	//Ensure a file is open.
 	if (!file.is_open() && binaryFile == NULL)
+		return GW::FAILURE;
+
+	//Make sure the file is opened for writing
+	if (mode != ios::out)
 		return GW::FAILURE;
 
 	//Lock the write operations.
@@ -406,6 +442,10 @@ GW::GReturn FileIO::Read(char* _outData, unsigned int _numBytes)
 		return GW::FAILURE;
 	}
 
+	//Make sure the file is opened for reading
+	if (mode != ios::in)
+		return GW::FAILURE;
+
 	//Lock the read operations.
 	lock.lock();
 
@@ -436,6 +476,10 @@ GW::GReturn FileIO::WriteLine(const char* const _inData)
 
 	//Ensure a file is open.
 	if (!file.is_open())
+		return GW::FAILURE;
+
+	//Make sure the file is opened for writing
+	if (mode != ios::out)
 		return GW::FAILURE;
 
 	//Transfer the data to a string. #defines make it so the
@@ -471,6 +515,10 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 	if (!file.is_open())
 		return GW::FAILURE;
 
+	//Make sure the file is opened for reading
+	if (mode != ios::in)
+		return GW::FAILURE;
+
 	//The string to be read into.
 	string outString;
 
@@ -479,10 +527,10 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 
 #ifdef _WIN32
 	//Convert the UTF8 delimeter to UTF16.
-	const wchar_t* delimiter = G_TO_UTF16(_delimiter).c_str();
+	const wchar_t delimiter = *G_TO_UTF16(_delimiter).c_str();
 
-		//Read the information.
-		getline(file, outString, *delimiter);
+	//Read the information.
+	getline(file, outString, delimiter);
 
 
 #elif defined(__APPLE__) || defined(__linux__)
@@ -494,8 +542,14 @@ GW::GReturn FileIO::ReadLine(char* _outData, unsigned int _outDataSize, char _de
 #if defined(TARGET_OS_IOS) || defined(TARGET_OS_SIMULATOR)
 	strlcpy(_outData, G_TO_UTF8(outString).c_str(), _outDataSize);
 #else
+
+#ifdef _WIN32
+    //Copy the data over to the out parameter.
+	strncpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str(), _TRUNCATE);
+#endif // _WIN32
 	//Copy the data over to the out parameter.
 	strcpy_s(_outData, _outDataSize, G_TO_UTF8(outString).c_str());
+
 #endif
 
 	lock.unlock();

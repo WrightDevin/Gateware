@@ -1,3 +1,9 @@
+#ifdef _WIN32
+	#ifdef _MSC_VER >= 1700
+	#pragma comment(lib, "xaudio2.lib")
+	#endif
+#endif
+
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../DLL_Export_Symbols.h"
 
@@ -8,6 +14,8 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 using namespace GW;
 using namespace AUDIO;
@@ -158,6 +166,129 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 	}
 
 
+	return theResult;
+}
+HRESULT FindStreamData(HANDLE _file, unsigned long & _outDataChunk, OVERLAPPED & _overLab)
+{
+	//Assumes that the file is opened.
+
+	HRESULT theResult = S_OK;
+	WAVEFORMATEXTENSIBLE myWFX;
+
+	if (INVALID_HANDLE_VALUE == _file)
+		return HRESULT_FROM_WIN32(GetLastError());
+
+	if (INVALID_SET_FILE_POINTER == SetFilePointer(_file, 0, NULL, FILE_BEGIN))
+		return HRESULT_FROM_WIN32(GetLastError());
+
+
+	int result = 0; //zero is good
+	unsigned long dwChunktype = 0;
+	unsigned long dwChunkDataSize = 0;
+	unsigned long dwRiffDataSize = 0;
+	unsigned long dwFileType = 0;
+	unsigned long bytesRead = 0;
+
+	unsigned long dwIsWave = 0;
+	unsigned long throwAwayValue = 0;
+	bool foundAudioData = false;
+
+	while (result == 0 && foundAudioData == false)
+	{
+		unsigned long dwRead;
+		ReadFile(_file, &dwChunktype, 4, &dwRead, NULL);
+		if (dwRead != 4)
+		{
+			result = -1;
+			break;
+		}
+		bytesRead += dwRead;
+
+		ReadFile(_file, &dwChunkDataSize, 4, &dwRead, NULL);
+		if (dwRead != 4)
+		{
+			result = -2;
+			break;
+		}
+		bytesRead += dwRead;
+
+			switch (dwChunktype)
+			{
+			case fourRIFFcc:
+			{
+				dwRiffDataSize = dwChunkDataSize;
+				dwChunkDataSize = 4;
+				ReadFile(_file, &dwFileType, 4, &dwRead, NULL);
+				if (dwRead != 4)
+				{
+					result = -3;
+					break;
+				}
+				if (dwFileType != fourWAVEcc)
+				{
+					result = -3;
+					break;
+				}
+				bytesRead += dwRead;
+				break;
+			}
+			case fourWAVEcc:
+			{
+				ReadFile(_file, &dwIsWave, 4, &dwRead, NULL);
+				if (dwRead != 4)
+				{
+					result = -4;
+					break;
+				}
+				bytesRead += dwRead;
+
+				break;
+			}
+			case fourFMTcc:
+			{
+				ReadFile(_file, &myWFX, dwChunkDataSize, &dwRead, NULL);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -5;
+					break;
+				}
+				bytesRead += dwRead;
+
+				break;
+			}
+			case fourDATAcc:
+			{
+				//Found the Audio data
+				_outDataChunk = dwChunkDataSize;		//contains size of the audio buffer in bytes
+				_overLab.Offset = bytesRead;			//Sets the overlab to where we are
+				foundAudioData = true;					//We found the data now to exit the function
+				break;
+			}
+			default:
+			{
+				ReadFile(_file, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
+				if (dwRead != dwChunkDataSize)
+				{
+					result = -7;
+				}
+				bytesRead += dwRead;
+				break;
+			}
+
+			}
+
+		if (bytesRead - 8 >= dwRiffDataSize)//excludes the first 8 byte header information
+		{
+
+			break;
+		}
+	}
+
+	//If there was a result error OR no Audio data was found return S_FALSE
+	if (result < 0 || foundAudioData == false)
+	{
+		theResult = S_FALSE;
+	}
 	return theResult;
 }
 HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BUFFER & myAudioBuffer)
@@ -404,9 +535,9 @@ class WindowAppSound : public GSound
 
 public:
 	int index = -1;
-	bool loops = false;
-	bool isPlaying = false;
-	bool isPaused = false;
+	std::atomic_bool loops = false;
+	std::atomic_bool isPlaying = false;
+	std::atomic_bool isPaused = false;
 	float volume = 1.0f;
 
 	WindowAppAudio * audio;
@@ -445,11 +576,13 @@ private:
 public:
 	char * myFile;
 	int index = -1;
-	bool loops = false;
-	bool isPlaying = false;
-	bool isPaused = false;
-	bool stopFlag = false;
+	std::atomic_bool loops = false;
+	std::atomic_bool isPlaying = false;
+	std::atomic_bool isPaused = false;
+	std::atomic_bool stopFlag = false;
 	float volume = 1.0f;
+	std::mutex mtx;
+	std::condition_variable cv;
 
 	WindowAppAudio * audio;
 	IXAudio2SourceVoice * mySourceVoice = nullptr;
@@ -517,6 +650,7 @@ public:
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
 {
 	WindowAppSound * sndUser = nullptr;
+	WindowAppMusic * mscUser = nullptr;
 	HANDLE hBufferEndEvent;
 	HANDLE hstreamEndEvent;
 	StreamingVoiceContext() :
@@ -529,7 +663,12 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 	virtual ~StreamingVoiceContext() { CloseHandle(hBufferEndEvent); CloseHandle(hstreamEndEvent);}
 	void STDMETHODCALLTYPE OnBufferEnd(void*)
 	{
+		if (mscUser != nullptr && mscUser->isPlaying == false && mscUser->mySourceVoice != nullptr)
+		{
+			mscUser->mySourceVoice->FlushSourceBuffers();
+		}
 		SetEvent(hBufferEndEvent);
+		
 	
 	}
 	void STDMETHODCALLTYPE OnVoiceProcessingPassStart(UINT32) {  }
@@ -1177,16 +1316,25 @@ GReturn WindowAppMusic::Stream()
 		theResult = HRESULT_FROM_WIN32(GetLastError());
 
 
-	DWORD ptrPosition = SetFilePointer(theFile, 0, NULL, FILE_CURRENT);
+	//DWORD ptrPosition = SetFilePointer(theFile, 0, NULL, FILE_CURRENT);
 		
-
 	int CurrentDiskReadBuffer = 0;
 	DWORD CurrentPosition = 0;
-	DWORD cbWaveSize = GetFileSize(theFile, 0);
+	DWORD cbWaveSize = 0; //GetFileSize(theFile, 0);
+
+	
+	FindStreamData(theFile, cbWaveSize, overlap);
+
+	//TESTING (POPPING DOESN'T GO AWAY)
+	//SetFilePointer(theFile, STREAMING_BUFFER_SIZE, NULL, FILE_CURRENT);
+
+	//TESTING (POPPING GOES AWAY)
+	//DWORD tst = 0;
+	//ReadFile(theFile, buffers[CurrentDiskReadBuffer], STREAMING_BUFFER_SIZE, &tst, &overlap);
+	//overlap.Offset += 44;//min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
 
 	while (CurrentPosition < cbWaveSize && stopFlag == false)
 	{
-	
 		if (!isPaused)
 		{
 			DWORD dwRead;
@@ -1205,7 +1353,6 @@ GReturn WindowAppMusic::Stream()
 
 			while (mySourceVoice->GetState(&state), state.BuffersQueued >= MAX_BUFFER_COUNT - 1)
 			{
-
 				WaitForSingleObject(myContext->hBufferEndEvent, INFINITE);
 			}
 
@@ -1222,11 +1369,10 @@ GReturn WindowAppMusic::Stream()
 			}
 			*/
 
-			XAUDIO2_BUFFER buf = { 0 };
-			buf.AudioBytes = cbValid;
-			buf.pAudioData = buffers[CurrentDiskReadBuffer];
-
 			
+				XAUDIO2_BUFFER buf = { 0 };
+				buf.AudioBytes = cbValid;
+				buf.pAudioData = buffers[CurrentDiskReadBuffer];
 
 			if (CurrentPosition >= cbWaveSize && !loops)
 			{
@@ -1344,6 +1490,7 @@ GReturn WindowAppMusic::ResumeStream()
 		isPlaying = true;
 		isPaused = false;
 	}
+
 	result = SUCCESS;
 	return result;
 }
@@ -1356,9 +1503,14 @@ GReturn WindowAppMusic::StopStream()
 		return result;
 
 	HRESULT theResult = S_OK;
-	
 	stopFlag = true;
-	
+
+
+	if (isPaused == true)
+	{
+		isPlaying = false;
+		theResult = mySourceVoice->FlushSourceBuffers();
+	}
 	//For simplicity, if the stream has not been created then stopping should not cause a fatal error
 
 	if (streamThread != nullptr)
@@ -1610,7 +1762,7 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 		result = FAILURE;
 		return result;
 	}
-
+	msc->myContext->mscUser = msc;
 	result = msc->Init();
 	if (result != SUCCESS)
 	{
@@ -1866,6 +2018,9 @@ GReturn PlatformGetAudio(GAudio ** _outAudio)
 
 	if (result == INVALID_ARGUMENT)
 		return result;
+
+	//initalize Gaudio's maxVolumn, The user can change this using the SetMasterVolumn() func.
+	audio->maxVolume = 1.0f;
 
 	*_outAudio = audio;
 
