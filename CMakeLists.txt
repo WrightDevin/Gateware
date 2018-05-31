@@ -1,10 +1,18 @@
-#CMAKE TEXT FILE FOR THE CREATION OF THE PROJECT THAT CREATES STATIC/DYNAMIC LIBRARIES
+﻿#CMAKE TEXT FILE FOR THE CREATION OF THE PROJECT THAT CREATES STATIC/DYNAMIC LIBRARIES
 cmake_minimum_required(VERSION 3.5)
 SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "0")
 SET(VERSION_PATCH "0")
 SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+###################################################################################################################################Create Version.h
+
+configure_file (  
+  "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/Interface/VersionInfo.h"  
+  )  
+   
 
 
 ###################################################################################################################################WINDOWS
