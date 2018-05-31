@@ -239,3 +239,6 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
+
+# Auto-Generated VersionInfo file
+Interface/VersionInfo.h
