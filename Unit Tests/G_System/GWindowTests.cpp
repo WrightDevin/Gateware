@@ -15,7 +15,7 @@ using namespace CORE;
 // Global variables needed for all Test Cases.
 GWindow* appWindow = nullptr; // Our window object.
 GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
-GWindow* tstWindow = nullptr; //Our 2nd window object. 
+GWindow* tstWindow = nullptr; //Our 2nd window object.
 GWindowTestListener* windowListener = nullptr; // Our listener object.
 
 											   // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
@@ -332,7 +332,7 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	check to work. Its a known task to change it from the style enum to excude the minimize and put it on its own
 	WindowState enum or variable.
 	*/
-		
+
 	GWindowInputEvents curEvent;
 
 	//Calls Init, which should set the init event to DESTORY.
@@ -346,9 +346,11 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::NOTIFY);
 
+	#ifndef __linux__ //With Known Linux window bug where you have to click on the windows to have it run through the tests, conflict with these unit tests.
 	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
+
 
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
@@ -387,11 +389,18 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 
 #elif __linux__
 	//TODO add linux destroy window
+    LINUX_WINDOW* l_appWindow = new LINUX_WINDOW();
+    unsigned int l_windowSize = sizeof(LINUX_WINDOW);
+
+	REQUIRE(G_SUCCESS(tstWindow->GetWindowHandle(l_windowSize, (void**)l_appWindow)));
+    XDestroyWindow((Display*)l_appWindow->display, (Window)l_appWindow->window);
+
+    delete l_appWindow;
 
 #endif
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::DESTROY); //Destroy will be called if the user closes the window or the window is destroyied.
-
+#endif // __linux__
 
 }
 

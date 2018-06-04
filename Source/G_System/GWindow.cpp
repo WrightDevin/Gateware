@@ -281,6 +281,8 @@ GReturn AppWindow::OpenWindow()
 
 	XStoreName(display, window, "BasicWindowApp");
 
+	LastEvent = GWindowInputEvents::NOTIFY;
+
 
 	if (style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
 	{
@@ -421,8 +423,8 @@ GReturn AppWindow::ProcessWindowEvents()
 
 
 #elif __linux__
-	XFlush(display);
-	//XSync(display, 0);
+	//XFlush(display);
+	XSync(display, 0);
 
 #elif __APPLE__
 	dispatch_sync(dispatch_get_main_queue(), ^{

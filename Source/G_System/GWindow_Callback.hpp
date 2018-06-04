@@ -151,7 +151,7 @@ namespace
 #ifdef __linux__
     void LinuxWndProc(Display * _display, Window _window)
     {
-        Atom propType = 0; Atom propHidden = 0; Atom propFull = 0; Atom prop = 0;
+        Atom propType = 0; Atom propHidden = 0; Atom propFull = 0; Atom prop = 0; Atom propClose = 0;
         unsigned char * propRet = NULL;
 		XEvent event;
 		GWINDOW_EVENT_DATA eventStruct;
@@ -170,6 +170,7 @@ namespace
         propType = XInternAtom(_display, "_NET_WM_STATE", true);
         propHidden = XInternAtom(_display, "_NET_WM_STATE_HIDDEN", true);
         propFull = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", true);
+        propClose = XInternAtom(_display, "_NET_WM_ACTION_CLOSE", true);
 
         Atom actual_type = 0;
         unsigned long nitems = 0;
@@ -193,16 +194,37 @@ namespace
                         XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
                         if(prop == propHidden)
-                            eventFlag = MINIMIZE;
+                        {
+                             eventFlag = MINIMIZE;
+                             LastEvent = GWindowInputEvents::MINIMIZE;
+                        }
+
 
                         else if(prop == 301 || prop == 302)
+                        {
                             eventFlag = MAXIMIZE;
+                            LastEvent = GWindowInputEvents::MAXIMIZE;
+                        }
 
                         else if(prevX != x || prevY != y)
+                        {
                             eventFlag = MOVE;
+                            LastEvent = GWindowInputEvents::MOVE;
+                        }
+
 
                         else if(prevHeight != height || prevWidth != width)
+                        {
                             eventFlag = RESIZE;
+                            LastEvent = GWindowInputEvents::RESIZE;
+                        }
+
+                        else if(prop == propClose)
+                        {
+                            eventFlag = DESTROY;
+                            LastEvent = GWindowInputEvents::DESTROY;
+                        }
+
 
                         eventStruct.eventFlags = eventFlag;
                         eventStruct.width = width;
@@ -227,6 +249,8 @@ namespace
             case DestroyNotify:
                 {
                 XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+
+                LastEvent = GWindowInputEvents::DESTROY;
 
                 eventStruct.eventFlags = DESTROY;
                 eventStruct.width = width;
