@@ -144,6 +144,8 @@ public:
 	GReturn GetWindowHandle(unsigned int _handleSize, void** _outWindowHandle);
 
 	GReturn IsFullscreen(bool& _outIsFullscreen);
+
+	GReturn GetLastEvent(GWindowInputEvents& _LastEvent);
 };
 
 AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), style(FULLSCREENBORDERED)
@@ -217,6 +219,7 @@ GReturn AppWindow::OpenWindow()
 		}
 		else
 		{
+			LastEvent = GWindowInputEvents::NOTIFY;
 			return SUCCESS;
 		}
 
@@ -862,14 +865,12 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 
 	else
 	{
-#ifdef __APPLE__
-
-#endif
 		width = _width;
 		height = _height;
 		xPos = _x;
 		yPos = _y;
 		style = _style;
+		LastEvent = GWindowInputEvents::DESTROY;
 	}
 
 	//display = nullptr;
@@ -1545,6 +1546,18 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 		_outIsFullscreen = false;
 
 	return SUCCESS;
+}
+
+GReturn AppWindow::GetLastEvent(GWindowInputEvents& _LastEvent)
+{
+	//Checks our LastEvent and sees if its a valid event.
+	if (LastEvent < 0 || LastEvent > GWindowInputEvents::DESTROY)
+		return FAILURE;
+
+	_LastEvent = LastEvent;
+
+	return SUCCESS;
+
 }
 
 

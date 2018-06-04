@@ -1,6 +1,7 @@
 #include "../Unit Tests/Common.h"
 //#include "GWindowTestListener.h"
 #include "GWindowTestListener.h"
+#include <iostream>
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -14,6 +15,7 @@ using namespace CORE;
 // Global variables needed for all Test Cases.
 GWindow* appWindow = nullptr; // Our window object.
 GWindow* unopenedWindow = nullptr; // Window object that doesn't get opened to test for redundant operations.
+GWindow* tstWindow = nullptr; //Our 2nd window object. 
 GWindowTestListener* windowListener = nullptr; // Our listener object.
 
 											   // ALL DEVELOPERS!!! USE THIS AS AN EXAMPLE OF HOW TO DO CORE GINTERFACE TESTING!!!
@@ -224,6 +226,8 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 
 	// Resize windows for pass tests
 	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
+	//REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERLESS)));
+
 	REQUIRE(G_SUCCESS(appWindow->IsFullscreen(appWindowIsFullscreen)));
 	//CHECK(appWindowIsFullscreen == true); //Commented-out do to known linux isFullscreen() bug.
 
@@ -319,6 +323,79 @@ TEST_CASE("Sending events to listeners.", "")
 	REQUIRE(windowTestValue == 1);
 }
 
+TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
+{
+	/*
+	The following code is slightly modified to pass the unit tests.
+	The reason is when you call the minimize() it changes the style of the window which affects the
+	checks for Resize and Maximize. Changing the style to something other than minimize allows the maximize
+	check to work. Its a known task to change it from the style enum to excude the minimize and put it on its own
+	WindowState enum or variable.
+	*/
+		
+	GWindowInputEvents curEvent;
+
+	//Calls Init, which should set the init event to DESTORY.
+	REQUIRE(G_SUCCESS(CreateGWindow(300, 300, 300, 300, WINDOWEDBORDERED, &tstWindow)));
+	REQUIRE(tstWindow != nullptr);
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::DESTROY);
+
+	//Calls OpenWindow, the last event should be NOTIFY if the style is not MINIMIZE in the CreateGWindow().
+	REQUIRE(G_SUCCESS(tstWindow->OpenWindow()));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::NOTIFY);
+
+	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
+
+	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::RESIZE); //Resizes the currently opened window to the native maximum resolution
+
+	REQUIRE(G_SUCCESS(tstWindow->ResizeWindow(700,700)));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::RESIZE);
+
+	REQUIRE(G_SUCCESS(tstWindow->MoveWindow(0, 0)));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::MOVE); //Move while fullscreen/maximize won't call the move event. inside will call maximize last.
+
+	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(WINDOWEDBORDERED)));
+	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Have to set the style to something else rather than minimize to have the maximize event be called
+
+	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
+
+	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Changing the WindowStyle to any Fullscreen calls the maximize.
+
+#ifdef _WIN32
+	std::atomic<HWND> appWindowHandle;
+	unsigned int windowHandleSize = sizeof(HWND);
+	tstWindow->GetWindowHandle(windowHandleSize, (void**)&appWindowHandle);
+
+	DestroyWindow(appWindowHandle);
+
+#elif __APPLE__
+	//TODO add apple destroy window
+
+#elif __linux__
+	//TODO add linux destroy window
+
+#endif
+	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+	REQUIRE(curEvent == GWindowInputEvents::DESTROY); //Destroy will be called if the user closes the window or the window is destroyied.
+
+
+}
+
+
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 {
 	unsigned int refCount = 0;
@@ -335,6 +412,7 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	windowListener->DecrementCount();
 	appWindow->DecrementCount();
 	unopenedWindow->DecrementCount();
+	tstWindow->DecrementCount();
 }
 
 

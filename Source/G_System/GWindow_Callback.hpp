@@ -21,6 +21,7 @@ using namespace SYSTEM;
 namespace
 {
     // GWindow global variables.
+	GWindowInputEvents LastEvent;
 
     //! Map of Listeners to send event information to.
     std::map<GListener *, unsigned long long> listeners;
@@ -51,24 +52,29 @@ namespace
 			case SIZE_MAXIMIZED:
 			{
 				eventStruct.eventFlags = MAXIMIZE;
+				LastEvent = GWindowInputEvents::MAXIMIZE;
 			}
 			break;
 
 			case SIZE_MINIMIZED:
 			{
 				eventStruct.eventFlags = MINIMIZE;
+				LastEvent = GWindowInputEvents::MINIMIZE;
 			}
 			break;
 
 			case SIZE_RESTORED:
 			{
 				eventStruct.eventFlags = RESIZE;
+				LastEvent = GWindowInputEvents::RESIZE;
+
 			}
 			break;
 			}
 
 			if (eventStruct.eventFlags != -1)
 			{
+
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
@@ -91,6 +97,8 @@ namespace
 			eventStruct.windowX = (int)LOWORD(lp);
 			eventStruct.windowY = (int)HIWORD(lp);
 
+			LastEvent = GWindowInputEvents::MOVE;
+
 			if (eventStruct.eventFlags != -1)
 			{
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
@@ -99,7 +107,6 @@ namespace
 			}
 		}
 		break;
-
 		case WM_CLOSE:
 		{
 			GWINDOW_EVENT_DATA eventStruct;
@@ -114,15 +121,21 @@ namespace
 			eventStruct.windowX = windowRect.left;
 			eventStruct.windowY = windowRect.top;
 
+			LastEvent = GWindowInputEvents::DESTROY;
+
 			if (eventStruct.eventFlags != -1)
 			{
+
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 			}
 		}
 		break;
-
+		case WM_DESTROY:
+		{
+			LastEvent = GWindowInputEvents::DESTROY;
+		}
 		default:
 		{
             Sleep(0);

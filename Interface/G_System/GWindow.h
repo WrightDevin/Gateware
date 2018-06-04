@@ -260,6 +260,16 @@ namespace GW
 			*/
 			virtual GReturn IsFullscreen(bool& _outIsFullscreen) = 0;
 
+			//! Returns the last input event that has happened to the window.
+			/*!
+			*	\param [out] GWindowInputEvent you pass-in will be updated to the lastest event that was called. 
+			*	
+			*	\retval FAILURE The Gateware's internal event tracker wasn't a valid event.
+			*	\retval SUCCESS The function run successfully and out-param is filled out.
+			*
+			*/
+			virtual GReturn GetLastEvent(GWindowInputEvents& _LastEvent) = 0;
+
 		}; // end GWindow class
 
 		   //! Creates and outputs a new GWindow object.
