@@ -2,8 +2,11 @@
 cmake_minimum_required(VERSION 3.5)
 SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "0")
-SET(VERSION_PATCH "0")
-SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+SET(VERSION_PATCH "a")
+
+#Set GATEWARE_VERSION_STRING
+SET(VERSION "GATEWARE v.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ###################################################################################################################################Create Version.h
@@ -22,12 +25,15 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+#Set GATEWARE_VERSION_STRING_LONG 
+SET(VERSION_LONG "${VERSION} ${GIT_BRANCH} [${GIT_COMMIT_HASH}]")
+
 add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
 add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 configure_file (  
-  "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt"  
-  "${CMAKE_CURRENT_SOURCE_DIR}/Interface/VersionInfo.h"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/Interface/G_Version.h"  
   )  
 
 ###################################################################################################################################WINDOWS
