@@ -346,6 +346,8 @@ GReturn AppWindow::OpenWindow()
 		defer : NO];
 
 	[window setTitle : @"SampleCocoaWindow"];
+        
+    LastEvent = GWindowInputEvents::NOTIFY;
 
 	//[window autorelease];
 

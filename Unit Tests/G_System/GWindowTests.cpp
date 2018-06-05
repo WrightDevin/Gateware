@@ -347,12 +347,21 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(curEvent == GWindowInputEvents::NOTIFY);
 
 	#ifndef __linux__ //With Known Linux window bug where you have to click on the windows to have it run through the tests, conflict with these unit tests.
+#ifdef __APPLE__
+    sleep(1);
+#endif __APPLE__
 	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
+#ifdef __APPLE__
+    sleep(1);
+#endif __APPLE__
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
 
 
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
+#ifdef __APPLE__
+    sleep(1);
+#endif __APPLE__
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::RESIZE); //Resizes the currently opened window to the native maximum resolution
 
@@ -360,7 +369,8 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::RESIZE);
 
-	REQUIRE(G_SUCCESS(tstWindow->MoveWindow(0, 0)));
+#ifndef __APPLE__
+    REQUIRE(G_SUCCESS(tstWindow->MoveWindow(0, 0)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::MOVE); //Move while fullscreen/maximize won't call the move event. inside will call maximize last.
 
@@ -376,7 +386,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Changing the WindowStyle to any Fullscreen calls the maximize.
+#endif
 
+//Testing the Close event by destroying the window.
 #ifdef _WIN32
 	std::atomic<HWND> appWindowHandle;
 	unsigned int windowHandleSize = sizeof(HWND);
@@ -386,6 +398,13 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 
 #elif __APPLE__
 	//TODO add apple destroy window
+    NSWindow* m_appWindow;
+    unsigned int m_windowSize = sizeof(NSWindow*);
+    
+    appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
+    
+    [m_appWindow close];
+    
 
 #elif __linux__
 	//TODO add linux destroy window

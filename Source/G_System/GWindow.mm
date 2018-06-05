@@ -74,7 +74,11 @@
 
 -(NSSize) windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
 {
+    //Tells the delegate that the window is being resized (whether by the user or through one of the setFrame...methods
+    //other than setFrame:display)
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = frameSize.height;
@@ -93,9 +97,12 @@
 
 -(void) windowDidResize:(NSNotification *)notification
 {
+    //Tells the delegate that the window been resized
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = window.frame.size.height;
@@ -111,9 +118,12 @@
 
 -(void) windowDidMove:(NSNotification *)notification
 {
+    //Tells the delegate that the window has moved.
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::MOVE;
     
     eventData.eventFlags = MOVE;
     eventData.height = window.frame.size.height;
@@ -129,9 +139,12 @@
 
 -(void) windowDidMiniaturize:(NSNotification *)notification
 {
+    //Tells the delegate that the window has been minimized.
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::MINIMIZE;
     
     eventData.eventFlags = MINIMIZE;
     eventData.height = window.frame.size.height;
@@ -147,9 +160,12 @@
 
 -(void) windowDidDeminiaturize:(NSNotification *)notification
 {
+    //Tells the delegate that the window has been deminimized.
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = window.frame.size.height;
@@ -164,9 +180,12 @@
 
 -(void) windowDidEnterFullScreen:(NSNotification *)notification
 {
+    //The window has entered full-screen mode.
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::MAXIMIZE;
     
     eventData.eventFlags = MAXIMIZE;
     eventData.height = window.frame.size.height;
@@ -182,9 +201,12 @@
 
 -(void) windowWillClose:(NSNotification *)notification
 {
+    //Tells the delegate that the window is about to close.
     NSWindow* window = notification.object;
     
     GWINDOW_EVENT_DATA eventData;
+    
+    LastEvent = GWindowInputEvents::DESTROY;
     
     eventData.eventFlags = DESTROY;
     eventData.height = window.frame.size.height;
