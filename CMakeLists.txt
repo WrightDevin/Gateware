@@ -9,9 +9,9 @@ string(REGEX MATCH [0-9]+ VERSION_MAJOR ${GATEWARE_MAJOR})
 file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_MINOR OFFSET 30)
 string(REGEX MATCH [0-9]+ VERSION_MINOR ${GATEWARE_MINOR})
 
-file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_PATCH OFFSET 40)
-string(REGEX MATCH "PATCH [A-z]+" VERSION_PATCH ${GATEWARE_PATCH})
-string(REGEX MATCH "[A-z]+" VERSION_PATCH ${VERSION_PATCH})
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_PATCH OFFSET 50)
+string(REGEX MATCH "[A-z]+" VERSION_PATCH ${GATEWARE_PATCH})
+
 ###################################################################################################################################Create Version.h
 
 execute_process(
@@ -30,8 +30,8 @@ execute_process(
 )
 
 #Set GATEWARE_VERSION_STRING_LONG  &  GATEWARE_VERSION_STRING_LONG 
-SET(VERSION "GATEWARE v.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
-SET(VERSION_LONG "${VERSION} ${GIT_BRANCH} [${GIT_COMMIT_HASH}]")
+SET(VERSION "Gateware v${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_PATCH}")
+SET(VERSION_LONG "${VERSION} (${GIT_BRANCH}) [${GIT_COMMIT_HASH}]")
 
 add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
 add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")

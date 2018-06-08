@@ -58,17 +58,17 @@ GOpenGLSurface*		oglSurface;
 
 #endif
 
-
-TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
+// Note: OGL Tests could certainly be a bit more through...
+TEST_CASE("Create GOpenGLSurface Object.", "[GOpenGLSurface]")
 {
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 800, 500, WINDOWEDBORDERED, &gWnd_OGL)));
 
 	unsigned long long initMask = 0;
-	//initMask |= COLOR_10_BIT;
 	initMask |= DEPTH_BUFFER_SUPPORT;//
 	initMask |= DEPTH_STENCIL_SUPPORT;//
-	initMask |= OPENGL_ES_SUPPORT;
-	//initMask |= DIRECT2D_SUPPORT;
+	//initMask |= OPENGL_ES_SUPPORT; // NOT EVERY DRIVER MAY SUPPORT THIS
+	//initMask |= COLOR_10_BIT; // OR THIS
+	//initMask |= DIRECT2D_SUPPORT; // THIS DEFINITELY SHOULD NOT BE SUPPORTED
 
 	CHECK(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface) == SUCCESS);
 }
