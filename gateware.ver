@@ -1,23 +1,3 @@
-/*********************************************************************************
-//Version Information:
-//
-*********************************************************************************/
-#ifndef G_VERSION_H
-#define G_VERSION_H
-
-#define GATEWARE_MAJOR "@VERSION_MAJOR@"  
-
-#define GATEWARE_MINOR "@VERSION_MINOR@" 
-
-#define GATEWARE_PATCH "@VERSION_PATCH@"
-  
-#define GATEWARE_BRANCH "@GIT_BRANCH@"
-
-#define GATEWARE_COMMIT_HASH "@GIT_COMMIT_HASH@"
-
-#define GATEWARE_VERSION_STRING "@VERSION@"
-
-#define GATEWARE_VERSION_STRING_LONG "@VERSION_LONG@"
- 
-
-#endif
+GATEWARE_MAJOR 01
+GATEWARE_MINOR 02
+GATEWARE_PATCH Beta

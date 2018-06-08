@@ -1,15 +1,19 @@
 ﻿#CMAKE TEXT FILE FOR THE CREATION OF THE PROJECT THAT CREATES STATIC/DYNAMIC LIBRARIES
 cmake_minimum_required(VERSION 3.5)
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "0")
-SET(VERSION_PATCH "a")
 
-#Set GATEWARE_VERSION_STRING
-SET(VERSION "GATEWARE v.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+###################################################################################################################################Get Version Info from gateware.ver
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_MAJOR OFFSET 15 LIMIT 5)
+string(REGEX MATCH [0-9]+ VERSION_MAJOR ${GATEWARE_MAJOR})
 
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_MINOR OFFSET 30)
+string(REGEX MATCH [0-9]+ VERSION_MINOR ${GATEWARE_MINOR})
+
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_PATCH OFFSET 40)
+string(REGEX MATCH "PATCH [A-z]+" VERSION_PATCH ${GATEWARE_PATCH})
+string(REGEX MATCH "[A-z]+" VERSION_PATCH ${VERSION_PATCH})
 ###################################################################################################################################Create Version.h
+
 execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -25,15 +29,16 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-#Set GATEWARE_VERSION_STRING_LONG 
+#Set GATEWARE_VERSION_STRING_LONG  &  GATEWARE_VERSION_STRING_LONG 
+SET(VERSION "GATEWARE v.${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 SET(VERSION_LONG "${VERSION} ${GIT_BRANCH} [${GIT_COMMIT_HASH}]")
 
 add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
 add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 configure_file (  
-  "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver"  
-  "${CMAKE_CURRENT_SOURCE_DIR}/Interface/G_Version.h"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Version.format"  
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/GVersion.hpp"  
   )  
 
 ###################################################################################################################################WINDOWS

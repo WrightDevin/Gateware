@@ -241,4 +241,4 @@ FakesAssemblies/
 _Pvt_Extensions
 
 # Auto-Generated VersionInfo file
-Interface/G_Version.h
+Source/GVersion.hpp
