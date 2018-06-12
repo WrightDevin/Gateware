@@ -245,7 +245,12 @@ GReturn AppWindow::OpenWindow()
 	XSetWindowAttributes attributes;
 	unsigned long valueMask = 0;
 	XSizeHints rect;
+
 	display = XOpenDisplay(NULL);
+	//XSynchronize(display, 0);
+
+    XLockDisplay(display);
+
 	int screen = DefaultScreen(display);
 	int depth = DefaultDepth(display, screen);
 	int x, y;
@@ -253,7 +258,7 @@ GReturn AppWindow::OpenWindow()
 
 	attributes.background_pixel = XWhitePixel(display, 0);
 	attributes.border_pixel = XBlackPixel(display, 0);
-	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask;
+	attributes.event_mask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | StructureNotifyMask;
 
 	//XVisualInfo vinfo;
 	//XMatchVisualInfo(display, screen, depth, InputOutput, &vinfo);
@@ -276,9 +281,12 @@ GReturn AppWindow::OpenWindow()
 	window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
 		depth, InputOutput, CopyFromParent, valueMask, &attributes);
 
+    XUnlockDisplay(display);
+
 	if (!window)
 		return FAILURE;
 
+    XLockDisplay(display);
 	XStoreName(display, window, "BasicWindowApp");
 
 	LastEvent = GWindowInputEvents::NOTIFY;
@@ -286,8 +294,8 @@ GReturn AppWindow::OpenWindow()
 
 	if (style == WINDOWEDBORDERLESS || style == FULLSCREENBORDERLESS)
 	{
-		hint.flags = 2;
-		hint.decorations = 0;
+		hint.flags = 2; //2
+		hint.decorations = 0; //0
 
 		XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5);
 	}
@@ -296,8 +304,8 @@ GReturn AppWindow::OpenWindow()
 
 	if (XMapWindow(display, window))
 	{
-		//XSync(display, 0);
-		XFlush(display);
+		XSync(display, 0);
+		//XFlush(display);
 		prop_type = XInternAtom(display, "_NET_WM_STATE", False);
 		prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
 		prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
@@ -311,11 +319,15 @@ GReturn AppWindow::OpenWindow()
 
 		linuxLoop->detach();
 
+		XUnlockDisplay(display);
 		return SUCCESS;
 	}
 
 	else
+    {
+        XUnlockDisplay(display);
 		return FAILURE;
+    }
 
 #elif __APPLE__
 
@@ -346,7 +358,7 @@ GReturn AppWindow::OpenWindow()
 		defer : NO];
 
 	[window setTitle : @"SampleCocoaWindow"];
-        
+
     LastEvent = GWindowInputEvents::NOTIFY;
 
 	//[window autorelease];
@@ -425,6 +437,7 @@ GReturn AppWindow::ProcessWindowEvents()
 
 
 #elif __linux__
+    //sleep(1);
 	//XFlush(display);
 	XSync(display, 0);
 
@@ -474,6 +487,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		return SUCCESS;
 #elif __linux__
+
+        //XLockDisplay(display);
 		int x = xPos, y = yPos;
 		unsigned int w = width, h = height;
 
@@ -489,6 +504,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
 			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
 		sleep(1);
+		//XSync(display,0);
 		XFlush(display);
 
 		if (!stat)
@@ -524,6 +540,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		sleep(1);
 		XFlush(display);
 		//XSync(display, 0);
+		//XUnlockDisplay(display);
 
 		return SUCCESS;
 #elif __APPLE__
@@ -574,6 +591,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		int x = xPos, y = yPos;
 		unsigned int w = width, h = height;
 
+		//XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -587,6 +605,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
 		sleep(1);
 		XFlush(display);
+		//XSync(display, 0);
 
 		if (!stat)
 			return FAILURE;
@@ -619,6 +638,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		sleep(1);
 		XFlush(display);
 		//XSync(display, 0);
+		//XUnlockDisplay(display);
 
 		return SUCCESS;
 
@@ -670,7 +690,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __linux__
-
+        //XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -698,7 +718,31 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		//XSync(display, 0);
 		XFlush(display);
+/*
+        XMapWindow(display,window);
 
+        //Create an event "message" to pass to the server letting it know you Resized the window.
+        XFlush(display);
+
+		//Tells the server what events to look for with these masks.
+		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
+
+
+		//Fill the correct Event structure for the action you performed on the window to update the server side.
+		XEvent eventStruct;
+		memset(&eventStruct, 0, sizeof eventStruct);
+        eventStruct.type = MapNotify; //You are changing window mapping that a Map msg.
+        eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
+        eventStruct.xmap.display = display;
+        eventStruct.xmap.window = window;
+
+        //Send event to server and wait a bit so it can receive it.
+		XSendEvent(display, window, false, eventMask, &eventStruct);
+		sleep(1);
+		XFlush(display);
+*/
+
+       // XUnlockDisplay(display);
 		return SUCCESS;
 
 #elif __APPLE__
@@ -749,7 +793,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		return SUCCESS;
 #elif __linux__
-
+        //XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -777,6 +821,31 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		XFlush(display);
 		//XSync(display, 0);
+/*
+        XMapWindow(display,window);
+
+        //Create an event "message" to pass to the server letting it know you Resized the window.
+        XFlush(display);
+
+		//Tells the server what events to look for with these masks.
+		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
+
+
+		//Fill the correct Event structure for the action you performed on the window to update the server side.
+		XEvent eventStruct;
+		memset(&eventStruct, 0, sizeof eventStruct);
+        eventStruct.type = MapNotify; //You are changing window mapping that a Map msg.
+        eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
+        eventStruct.xmap.display = display;
+        eventStruct.xmap.window = window;
+
+        //Send event to server and wait a bit so it can receive it.
+		XSendEvent(display, window, false, eventMask, &eventStruct);
+		sleep(1);
+		XFlush(display);
+*/
+
+        //XUnlockDisplay(display);
 		return SUCCESS;
 
 #elif __APPLE__
@@ -820,11 +889,15 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 #elif __linux__
 
+        //XLockDisplay(display);
 		if (!XIconifyWindow(display, window, DefaultScreen(display)))
-			return FAILURE;
-
+        {
+             //XUnlockDisplay(display);
+            return FAILURE;
+        }
 		else
 		{
+		    XUnlockDisplay(display);
 			XFlush(display);
 			return SUCCESS;
 		}
@@ -905,14 +978,41 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	else
 		return SUCCESS;
 #elif __linux__
+
+    XLockDisplay(display);
 	if (XMoveWindow(display, window, xPos, yPos))
 	{
-	    XFlush(display);
-		//XSync(display, 0);
+	    //Create an event "message" to pass to the server letting it know you Moved the window.
+	    //XFlush(display);
+
+	    //Tells the server what events to look for with these masks.
+		unsigned int eventMask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | SubstructureRedirectMask;
+
+		//Fill the correct Event structure for the action you performed on the window to update the server side.
+		XEvent eventStruct;
+		memset(&eventStruct, 0, sizeof eventStruct);
+	    eventStruct.type = ConfigureNotify; //You are changing window position that a config msg.
+        eventStruct.xconfigure.x = xPos;
+        eventStruct.xconfigure.y = yPos;
+        eventStruct.xconfigure.width = width;
+        eventStruct.xconfigure.height = height;
+        eventStruct.xconfigure.display = display;
+        eventStruct.xconfigure.window = window;
+        eventStruct.xconfigure.send_event = true; //True = that you are going to use XSendEvent to let the server know
+
+        //Send event to server and wait a bit so it can receive it.
+		XSendEvent(display, window, 0, eventMask, &eventStruct);
+		sleep(1);
+		XFlush(display);
+
+		XUnlockDisplay(display);
 		return SUCCESS;
 	}
 	else
+    {
+        XUnlockDisplay(display);
 		return FAILURE;
+    }
 
 #elif __APPLE__
 	NSRect rect = window.frame;
@@ -943,9 +1043,11 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return FAILURE;
 #endif
 
+
 	GReturn Gret = InitWindow(xPos, yPos, _width, _height, style);
 	if (Gret != SUCCESS)
 		return Gret;
+
 
 #ifdef _WIN32
 	BOOL Winret = SetWindowPos(wndHandle, nullptr, xPos, yPos, width, height, SWP_SHOWWINDOW);
@@ -954,14 +1056,43 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	else
 		return SUCCESS;
 #elif __linux__
+
+XLockDisplay(display);
 	if (XResizeWindow(display, window, width, height))
 	{
-	    XFlush(display);
-		//XSync(display, 0);
+        //Create an event "message" to pass to the server letting it know you Resized the window.
+	    //XFlush(display);
+
+		//Tells the server what events to look for with these masks.
+		unsigned int eventMask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | SubstructureRedirectMask;
+
+
+		//Fill the correct Event structure for the action you performed on the window to update the server side.
+		XEvent eventStruct;
+		memset(&eventStruct, 0, sizeof eventStruct);
+        eventStruct.type = ConfigureNotify; //You are changing window size that a config msg.
+        eventStruct.xconfigure.x = xPos;
+        eventStruct.xconfigure.y = yPos;
+        eventStruct.xconfigure.width = width;
+        eventStruct.xconfigure.height = height;
+        eventStruct.xconfigure.display = display;
+        eventStruct.xconfigure.window = window;
+        eventStruct.xconfigure.send_event = true; //True = that you are going to use XSendEvent to let the server know
+
+        //Send event to server and wait a bit so it can receive it.
+		XSendEvent(display, window, false, eventMask, &eventStruct);
+		sleep(1);
+		XFlush(display);
+
+        XUnlockDisplay(display);
 		return SUCCESS;
 	}
 	else
+    {
+        XUnlockDisplay(display);
 		return FAILURE;
+    }
+
 
 #elif __APPLE__
 	//NSRect rect = window.frame;
@@ -1165,17 +1296,26 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 #elif __linux__
 	if (!display)
 		return FAILURE;
+
+
 	Window root;
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+	//XFlush(display);
 	//XSync(display, 0);
+
+	XLockDisplay(display);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
 
-	_outWidth = w;
+    XUnlockDisplay(display);
+
+		printf(" \n\n  width \n\n");
+	_outWidth = w + bord; //client's width plus the border.
+	//XFlush(display);
+	//XSync(display, 0);
 
 #elif __APPLE__
 	if (!window)
@@ -1203,13 +1343,20 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+	//XFlush(display);
 	//XSync(display, 0);
+
+	XLockDisplay(display);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
 
-	_outHeight = h + bord;
+    XUnlockDisplay(display);
+
+		printf(" \n\n height \n\n");
+	_outHeight = h + bord; //Client's height plus border.
+	//XFlush(display);
+	//XSync(display, 0);
 
 #elif __APPLE__
 	if (!window)
@@ -1237,19 +1384,41 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 		return FAILURE;
 
 	Window root;
-	int x, y;
+	int x, y, screenNum;
 	unsigned int w, h, bord, depth;
+	//XWindowAttributes windowAttr;
 
-	XFlush(display);
+	//screenNum = DefaultScreen(display);
+
+	//sleep(1);
+	//XFlush(display);
 	//XSync(display, 0);
+	//if(XPending(display) > 1)
+       // XFlush(display);
+	//XGetWindowAttributes(display, RootWindow(display,screenNum), &windowAttr);
 
-	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-	{
-		_outClientWidth = w;
-		return SUCCESS;
-	}
-	else
-		return FAILURE;
+	//XMapWindow(display, window);
+	//XMapRaised(display, window);
+
+	XLockDisplay(display);
+
+	//if (!XGetGeometry(display, RootWindow(display, screenNum), &root, &x, &y, &w, &h, &bord, &depth))
+    if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        return FAILURE;
+
+    XUnlockDisplay(display);
+    //_outClientWidth = DisplayWidth(display, screenNum);
+
+    printf(" \n\n c width \n\n");
+
+    //_outClientWidth = windowAttr.width;
+    _outClientWidth = w; //The width filled out is the client's width.
+
+   // sleep(1);
+    //XFlush(display);
+   // XSync(display, 0);
+    return SUCCESS;
+
 
 #elif __APPLE__
 	if (!window)
@@ -1282,16 +1451,30 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+    //int screenNum = DefaultScreen(display);
+
+	//sleep(1);
+	//XFlush(display);
 	//XSync(display, 0);
 
-	if (XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-	{
-		_outClientHeight = h;
-		return SUCCESS;
-	}
-	else
+	//XMapWindow(display, window);
+
+	XLockDisplay(display);
+
+	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
+
+    XUnlockDisplay(display);
+
+    //_outClientHeight = DisplayHeight(display,screenNum);
+
+		printf(" \n\n c height \n\n");
+    _outClientHeight = h; //The width filled out is the client's width.
+
+   // sleep(1);
+    //XFlush(display);
+  //XSync(display, 0);
+    return SUCCESS;
 
 #elif __APPLE__
 	if (!window)
@@ -1323,12 +1506,19 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+	//XFlush(display);
 	//XSync(display, 0);
+
+	XLockDisplay(display);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
 
+    XUnlockDisplay(display);
+
+		printf(" \n\n x \n\n");
+
+   // XSync(display, 0);
 	_outX = x;
 
 #elif __APPLE__
@@ -1359,12 +1549,19 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+	//XFlush(display);
 	//XSync(display, 0);
+
+	XLockDisplay(display);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
 
+    XUnlockDisplay(display);
+
+    //XSync(display, 0);
+
+		printf(" \n\n y \n\n");
 	_outY = y;
 
 #elif __APPLE__
@@ -1398,14 +1595,29 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XFlush(display);
+
+	//sleep(1);
+	//XFlush(display);
 	//XSync(display, 0);
+
+	//XMapWindow(display, window);
+
+	XLockDisplay(display);
 
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
 
+    XUnlockDisplay(display);
+
+    printf(" \n\n c topleft \n\n");
+
+     //XSync(display, 0);
 	_outX = x;
 	_outY = y + bord;
+
+	//sleep(1);
+	//XFlush(display);
+
 
 #elif __APPLE__
 	if (!window)

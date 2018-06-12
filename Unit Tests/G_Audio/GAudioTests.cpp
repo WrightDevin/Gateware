@@ -4,7 +4,7 @@
 #elif __linux__
 #include <unistd.h>
 #endif
-
+/*
 
 
 ///=============================================================================
@@ -314,7 +314,6 @@ TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 //Starting Audio Tests, some can't be tested until sound/music starts playing
 TEST_CASE("Create GAudio.", "[CreateGAudio]")
 {
-
 	// Fail cases
 	CHECK(GW::AUDIO::CreateGAudio(nullptr));
 
@@ -808,3 +807,4 @@ TEST_CASE("Stopping all sounds and music.", "[StopAll]")
 
 }
 
+*/
