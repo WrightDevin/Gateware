@@ -179,6 +179,7 @@ namespace
 
 		while (true)
 		{
+		    //std::this_thread::yield();
 		    propRet = nullptr;
 
 		    //Also flushes the request buffer if xlib's queue does not contain an event and waits for an event to arrive from server connection

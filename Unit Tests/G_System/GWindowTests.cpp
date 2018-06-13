@@ -275,6 +275,7 @@ TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], 
     Causes the app to hang until you click a window.
     This is bc the function calls XGetGeometry() (the location of the hang)
     */
+
 	unsigned int appWindowClientWidth = 0;
 	unsigned int appWindowClientHeight = 0;
 	unsigned int appWindowClientPosX = 0;

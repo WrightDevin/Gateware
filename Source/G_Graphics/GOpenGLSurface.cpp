@@ -359,6 +359,17 @@ gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
 lWindow = (Window*)lWnd.window;
 
     unsigned int cX, cY, cWidth, cHeight, wX, wY, wWidth, wHeight;
+    /*
+    cX = 10;
+    cY = 10;
+    cWidth = 500;
+    cHeight = 500;
+    wX = 10;
+    wY = 10;
+    wWidth = 500;
+    wHeight = 500;
+    */
+
     gWnd->GetClientTopLeft(cX, cY);
     gWnd->GetClientWidth(cWidth);
     gWnd->GetClientHeight(cHeight);
@@ -366,6 +377,7 @@ lWindow = (Window*)lWnd.window;
     gWnd->GetY(wY);
     gWnd->GetWidth(wWidth);
     gWnd->GetHeight(wHeight);
+
 
     static int FBattribs[] =
 {
@@ -401,10 +413,15 @@ if (_initMask & DEPTH_STENCIL_SUPPORT)
 //////////////////////////////////////////////////
 // Select the Default Framebuffer Configuration //
 //////////////////////////////////////////////////
-
+printf("\n\n All Get Functions Passed \n\n");
 int fbCount;
-GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
-XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
+//GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
+GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), 0, &fbCount);
+printf("\n\n GLXFBConfig \n\n");
+
+//XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
+XVisualInfo* vi = glXChooseVisual((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs);
+printf("\n\n VisualInfo \n\n");
 
 Colormap cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), vi->visual, AllocNone);
 XSetWindowAttributes swa;
@@ -417,8 +434,6 @@ valueMask |= CWBackPixel;
 valueMask |= CWEventMask;
 
 XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
-
-
 GLXContext oldContext = glXCreateContext((Display*)lWnd.display, vi, 0, GL_TRUE);
 
 /////////////////////////

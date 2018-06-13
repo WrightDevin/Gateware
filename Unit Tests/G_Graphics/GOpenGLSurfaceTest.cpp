@@ -120,7 +120,6 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 
 TEST_CASE("Testing OGLSurface Events")
 {
-
 	unsigned int clientX, clientY, width, height;
 	gWnd_OGL->GetClientTopLeft(clientX, clientY);
 	gWnd_OGL->GetWidth(width);
