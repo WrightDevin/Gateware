@@ -315,6 +315,9 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Fail case
 	windowListener->GetWindowTestValue(windowTestValue);
+	#ifdef __linux__
+	sleep(0.1);
+	#endif // __linux__
 	CHECK(windowTestValue == 1);
 
 #ifdef _WIN32
@@ -331,6 +334,9 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Pass case
 	windowListener->GetWindowTestValue(windowTestValue);
+    #ifdef __linux__
+	sleep(0.1);
+	#endif // __linux__
 	REQUIRE(windowTestValue == 1);
 }
 
@@ -343,7 +349,7 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	check to work. Its a known task to change it from the style enum to excude the minimize and put it on its own
 	WindowState enum or variable.
     */
-/*
+
 	GWindowInputEvents curEvent;
 
 	//Calls Init, which should set the init event to DESTORY.
@@ -366,35 +372,35 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
     sleep(1);
 #endif __APPLE__
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
+	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
 
 
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
 	REQUIRE(G_SUCCESS(tstWindow->ResizeWindow(700,700)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::RESIZE);
+	REQUIRE(curEvent == GWindowInputEvents::RESIZE);
 
 #ifndef __APPLE__
     REQUIRE(G_SUCCESS(tstWindow->MoveWindow(500, 500)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::MOVE); //Move while fullscreen/maximize won't call the move event. inside will call maximize last.
+	REQUIRE(curEvent == GWindowInputEvents::MOVE); //Move while fullscreen/maximize won't call the move event. inside will call maximize last.
 
 	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(WINDOWEDBORDERED)));
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Have to set the style to something else rather than minimize to have the maximize event be called
+	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Have to set the style to something else rather than minimize to have the maximize event be called
 
 	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
+	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
 
 	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Changing the WindowStyle to any Fullscreen calls the maximize.
+	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Changing the WindowStyle to any Fullscreen calls the maximize.
 #endif
 
 //#endif // __linux__
-//Testing the Close event by destroying the window.
+//Testing the Close event by destroying the window. Replace if a GWindow windowShutdown function exists.
 #ifdef _WIN32
 	std::atomic<HWND> appWindowHandle;
 	unsigned int windowHandleSize = sizeof(HWND);
@@ -418,11 +424,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
     unsigned int l_windowSize = sizeof(LINUX_WINDOW);
 
 	REQUIRE(G_SUCCESS(tstWindow->GetWindowHandle(l_windowSize, (void**)l_appWindow)));
-    //XSync((Display*)l_appWindow->display, 0);
-    XFlush((Display*)l_appWindow->display);
-    //XSetCloseDownMode((Display*)l_appWindow->display, DestroyAll);
+	//XDestroyWindow((Display*)l_appWindow->display, (Window)l_appWindow->window);
     XCloseDisplay((Display*)l_appWindow->display);
-    //XDestroyWindow((Display*)l_appWindow->display, (Window)l_appWindow->window);
+
 
 
     delete l_appWindow;
@@ -430,9 +434,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 
 #endif
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::DESTROY); //Destroy will be called if the user closes the window or the window is destroyied.
+	//REQUIRE(curEvent == GWindowInputEvents::DESTROY);
 
-*/
+
 }
 
 
@@ -452,7 +456,7 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	windowListener->DecrementCount();
 	appWindow->DecrementCount();
 	unopenedWindow->DecrementCount();
-	//tstWindow->DecrementCount();
+	tstWindow->DecrementCount();
 }
 
 

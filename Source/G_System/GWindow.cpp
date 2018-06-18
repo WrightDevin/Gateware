@@ -88,6 +88,7 @@ private:
 	std::atomic<int> height;
 
 	GWindowStyle style;
+	GWindowInputEvents LastEvent;
 
 	std::mutex refMutex;
 
@@ -247,7 +248,7 @@ GReturn AppWindow::OpenWindow()
 	XSizeHints rect;
 
 	display = XOpenDisplay(NULL);
-	//XSynchronize(display, 0);
+	XLockDisplay(display);
 
 	int screen = DefaultScreen(display);
 	int depth = DefaultDepth(display, screen);
@@ -281,6 +282,7 @@ GReturn AppWindow::OpenWindow()
 
 	if (!window)
     {
+        XUnlockDisplay(display);
 		return FAILURE;
     }
 
@@ -313,6 +315,7 @@ GReturn AppWindow::OpenWindow()
 		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
 		linuxLoop = new std::thread(LinuxWndProc, display, window);
+        XUnlockDisplay(display);
 
 		linuxLoop->detach();
 		return SUCCESS;
@@ -320,6 +323,7 @@ GReturn AppWindow::OpenWindow()
 
 	else
     {
+        XUnlockDisplay(display);
 		return FAILURE;
     }
 
@@ -482,7 +486,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 #elif __linux__
 
-       // XLockDisplay(display);
+        XLockDisplay(display);
 		int x = xPos, y = yPos;
 		unsigned int w = width, h = height;
 
@@ -503,7 +507,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!stat)
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -514,13 +518,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!XMoveResizeWindow(display, window, x, y, w, h))
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
 		if (!XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5))
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -539,16 +543,12 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
 		if (!stat)
         {
-           // XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
-		//sleep(1);
 		//XFlush(display);
-		//XSync(display, 0);
-		//XUnlockDisplay(display);
-        //std::this_thread::yield();
-
+		XUnlockDisplay(display);
 		return SUCCESS;
 #elif __APPLE__
 		if ([window isMiniaturized])
@@ -598,7 +598,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		int x = xPos, y = yPos;
 		unsigned int w = width, h = height;
 
-		//XLockDisplay(display);
+		XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -616,7 +616,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!stat)
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -625,13 +625,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5))
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
 		if (!XMoveResizeWindow(display, window, x, y, w, h))
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -650,15 +650,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
 		if (!stat)
         {
-            //XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
-		//sleep(1);
 		//XFlush(display);
 		//XSync(display, 0);
-		//XUnlockDisplay(display);
-        //std::this_thread::yield();
+		XUnlockDisplay(display);
 		return SUCCESS;
 
 #elif __APPLE__
@@ -706,10 +704,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		else
 			ShowWindow(wndHandle, SW_MAXIMIZE);
 
+        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __linux__
-        //XLockDisplay(display);
+        XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -721,12 +720,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
 		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
 			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
-		//sleep(1);
-		//XFlush(display);
 
 		if (!stat)
         {
-           // XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -737,13 +734,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
         {
-           // XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
 		//XSync(display, 0);
 		//XFlush(display);
-/*
+
         XMapWindow(display,window);
 
         //Create an event "message" to pass to the server letting it know you Resized the window.
@@ -765,10 +762,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		XSendEvent(display, window, false, eventMask, &eventStruct);
 		//sleep(1);
 		//XFlush(display);
-*/
 
-       // XUnlockDisplay(display);
-        //std::this_thread::yield();
+
+        XUnlockDisplay(display);
+        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -792,6 +789,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (window)
 		{
+		    LastEvent = GWindowInputEvents::MAXIMIZE;
 			return SUCCESS;
 		}
 
@@ -817,9 +815,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		else
 			ShowWindow(wndHandle, SW_MAXIMIZE);
 
+        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 #elif __linux__
-        //XLockDisplay(display);
+        XLockDisplay(display);
 		XClientMessageEvent ev;
 		memset(&ev, 0, sizeof ev);
 		ev.type = ClientMessage;
@@ -831,12 +830,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
 		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
 			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
-		//sleep(1);
-		//XFlush(display);
 
 		if (!stat)
         {
-          //  XUnlockDisplay(display);
+            XUnlockDisplay(display);
 			return FAILURE;
         }
 
@@ -847,13 +844,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
         {
-          //  XUnlockDisplay(display);
+           XUnlockDisplay(display);
 			return FAILURE;
         }
 
 		//XFlush(display);
 		//XSync(display, 0);
-/*
+
         XMapWindow(display,window);
 
         //Create an event "message" to pass to the server letting it know you Resized the window.
@@ -875,10 +872,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		XSendEvent(display, window, false, eventMask, &eventStruct);
 		//sleep(1);
 		//XFlush(display);
-*/
 
-       // XUnlockDisplay(display);
-        //std::this_thread::yield();
+
+        XUnlockDisplay(display);
+        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -902,6 +899,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (window)
 		{
+		    LastEvent = GWindowInputEvents::MAXIMIZE;
 			return SUCCESS;
 		}
 
@@ -918,20 +916,20 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		RECT windowRect = { xPos, yPos, width, height };
 		GetWindowRect(wndHandle, &windowRect);
-
+        LastEvent = GWindowInputEvents::MINIMIZE;
 		return SUCCESS;
 #elif __linux__
 
-        //XLockDisplay(display);
+        XLockDisplay(display);
 		if (!XIconifyWindow(display, window, DefaultScreen(display)))
         {
-           //  XUnlockDisplay(display);
+            XUnlockDisplay(display);
             return FAILURE;
         }
 		else
 		{
-		   // XUnlockDisplay(display);
-			//XFlush(display);
+		    XUnlockDisplay(display);
+            LastEvent = GWindowInputEvents::MINIMIZE;
 			return SUCCESS;
 		}
 
@@ -955,6 +953,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if ([window isMiniaturized])
 		{
+            LastEvent = GWindowInputEvents::MINIMIZE;
 			return SUCCESS;
 		}
 
@@ -964,8 +963,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	}
 	break;
 	}
-
-	//std::this_thread::yield();
 	return SUCCESS;
 }
 
@@ -1010,15 +1007,16 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	if (Winret == 0)
 		return FAILURE;
 	else
+    {
+        LastEvent = GWindowInputEvents::MOVE;
 		return SUCCESS;
+    }
 #elif __linux__
 
-    //XLockDisplay(display);;
+    XLockDisplay(display);;
 	if (XMoveWindow(display, window, xPos, yPos))
 	{
 	    //Create an event "message" to pass to the server letting it know you Moved the window.
-	    //XFlush(display);
-        //std::this_thread::yield();
 
 	    //Tells the server what events to look for with these masks.
 		unsigned int eventMask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | SubstructureRedirectMask;
@@ -1040,12 +1038,14 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		//sleep(1);
 		//XFlush(display);
 
-		//XUnlockDisplay(display);
+		XUnlockDisplay(display);
+		//std::this_thread::yield();
+		LastEvent = GWindowInputEvents::MOVE;
 		return SUCCESS;
 	}
 	else
     {
-       // XUnlockDisplay(display);
+        XUnlockDisplay(display);
         //XFlush(display);
 		return FAILURE;
     }
@@ -1060,6 +1060,7 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		[window setFrame : rect display : YES animate : YES];
 	});
 
+	LastEvent = GWindowInputEvents::MOVE;
 	return SUCCESS;
 #endif
 
@@ -1090,16 +1091,16 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	if (Winret == 0)
 		return FAILURE;
 	else
+    {
+        LastEvent = GWindowInputEvents::RESIZE;
 		return SUCCESS;
+    }
 #elif __linux__
 
-//XLockDisplay(display);
-//std::this_thread::yield();
+XLockDisplay(display);
 	if (XResizeWindow(display, window, width, height))
 	{
         //Create an event "message" to pass to the server letting it know you Resized the window.
-        //std::this_thread::yield();
-	    //XFlush(display);
 
 		//Tells the server what events to look for with these masks.
 		unsigned int eventMask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | SubstructureRedirectMask;
@@ -1122,13 +1123,14 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		//sleep(1);
 		//XFlush(display);
 
-       // XUnlockDisplay(display);
+        XUnlockDisplay(display);
+        LastEvent = GWindowInputEvents::RESIZE;
+       // std::this_thread::yield();
 		return SUCCESS;
 	}
 	else
     {
-       // XUnlockDisplay(display);
-       // XFlush(display);
+        XUnlockDisplay(display);
 		return FAILURE;
     }
 
@@ -1143,7 +1145,7 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 	dispatch_sync(dispatch_get_main_queue(), ^{
 		[window setFrame : rect display : YES animate : YES];
 	});
-
+    LastEvent = GWindowInputEvents::RESIZE;
 	return SUCCESS;
 #endif
 	return FAILURE;
@@ -1340,12 +1342,10 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
 	_outWidth = w + bord; //client's width plus the border.
 	//XFlush(display);
@@ -1377,12 +1377,10 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
 	_outHeight = h + bord; //Client's height plus border.
 	//XFlush(display);
@@ -1417,12 +1415,12 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 	int x, y, screenNum;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
     if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         return FAILURE;
 
     //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
     _outClientWidth = w; //The width filled out is the client's width.
 
@@ -1463,12 +1461,10 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
     _outClientHeight = h; //The width filled out is the client's width.
 
@@ -1506,15 +1502,10 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XFlush(display);
-	//XSync(display, 0);
-
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
 	_outX = x;
 	//XFlush(display);
@@ -1548,15 +1539,10 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XFlush(display);
-	//XSync(display, 0);
-
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
 	_outY = y;
 	//XFlush(display);
@@ -1592,12 +1578,10 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
 		return FAILURE;
-
-    //std::this_thread::yield();
-   // XUnlockDisplay(display);
+    XUnlockDisplay(display);
 
 	_outX = x;
 	_outY = y + bord;
@@ -1634,6 +1618,7 @@ GReturn AppWindow::GetWindowHandle(unsigned int _handleSize, void** _outWindowHa
 	memcpy_s(_outWindowHandle, _handleSize, &wndHandle, _handleSize);
 
 	return SUCCESS;
+
 #elif __linux__
 	if (!display)
 	{
@@ -1643,12 +1628,15 @@ GReturn AppWindow::GetWindowHandle(unsigned int _handleSize, void** _outWindowHa
 	{
 		return INVALID_ARGUMENT;
 	}
+	XLockDisplay(display);
 	LINUX_WINDOW linuxWnd;
 	linuxWnd.window = (void*)&window;
 	linuxWnd.display = (void*)display;
 
 	memcpy(_outWindowHandle, &linuxWnd, _handleSize);
+	XUnlockDisplay(display);
 	return SUCCESS;
+
 #elif __APPLE__
 	if (!(__bridge void*)window)
 	{
@@ -1681,6 +1669,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	GetWidth(width);
 	GetHeight(height);
 #elif __linux__
+	XLockDisplay(display);
 	Screen* scr = DefaultScreenOfDisplay(display);
 	xMax = scr->width;
 	yMax = scr->height;
@@ -1731,6 +1720,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
     else
         _outIsFullscreen = false;
 
+    XUnlockDisplay(display);
 	return SUCCESS;
 
 #elif __APPLE__

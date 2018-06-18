@@ -70,7 +70,7 @@ TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
 	initMask |= OPENGL_ES_SUPPORT;
 	//initMask |= DIRECT2D_SUPPORT;
 
-	CHECK(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface) == SUCCESS);
+	REQUIRE(G_SUCCESS(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface)));
 }
 
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
@@ -121,9 +121,18 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 TEST_CASE("Testing OGLSurface Events")
 {
 	unsigned int clientX, clientY, width, height;
+/*
+	clientX = 0;
+	clientY = 0;
+	width = 400;
+	height = 700;
+*/
+
 	gWnd_OGL->GetClientTopLeft(clientX, clientY);
 	gWnd_OGL->GetWidth(width);
 	gWnd_OGL->GetHeight(height);
+
+
 
 #ifdef _WIN32
 
@@ -198,8 +207,6 @@ TEST_CASE("Testing OGLSurface Events")
 #endif
 
 }
-
-
 
 
 

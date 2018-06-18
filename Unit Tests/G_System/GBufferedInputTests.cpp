@@ -242,5 +242,3 @@ TEST_CASE("GBufferedInput Unregistering listener", "[DeregisterListener]")
 	bufferedInput->DecrementCount();
 
 }
-
-
