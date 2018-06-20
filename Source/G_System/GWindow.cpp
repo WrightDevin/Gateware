@@ -314,7 +314,7 @@ GReturn AppWindow::OpenWindow()
 		prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
 		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
-		linuxLoop = new std::thread(LinuxWndProc, display, window);
+		linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
         XUnlockDisplay(display);
 
 		linuxLoop->detach();
@@ -765,7 +765,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 
         XUnlockDisplay(display);
-        LastEvent = GWindowInputEvents::MAXIMIZE;
+        //LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -875,7 +875,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 
         XUnlockDisplay(display);
-        LastEvent = GWindowInputEvents::MAXIMIZE;
+        //LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -929,7 +929,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		else
 		{
 		    XUnlockDisplay(display);
-            LastEvent = GWindowInputEvents::MINIMIZE;
+           // LastEvent = GWindowInputEvents::MINIMIZE;
 			return SUCCESS;
 		}
 
@@ -1040,7 +1040,7 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 
 		XUnlockDisplay(display);
 		//std::this_thread::yield();
-		LastEvent = GWindowInputEvents::MOVE;
+		//LastEvent = GWindowInputEvents::MOVE;
 		return SUCCESS;
 	}
 	else
@@ -1124,7 +1124,7 @@ XLockDisplay(display);
 		//XFlush(display);
 
         XUnlockDisplay(display);
-        LastEvent = GWindowInputEvents::RESIZE;
+       // LastEvent = GWindowInputEvents::RESIZE;
        // std::this_thread::yield();
 		return SUCCESS;
 	}
@@ -1344,7 +1344,10 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        {
+        XUnlockDisplay(display);
 		return FAILURE;
+        }
     XUnlockDisplay(display);
 
 	_outWidth = w + bord; //client's width plus the border.
@@ -1379,7 +1382,10 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        {
+        XUnlockDisplay(display);
 		return FAILURE;
+        }
     XUnlockDisplay(display);
 
 	_outHeight = h + bord; //Client's height plus border.
@@ -1417,7 +1423,10 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 
 	XLockDisplay(display);
     if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
-        return FAILURE;
+        {
+        XUnlockDisplay(display);
+		return FAILURE;
+        }
 
     //std::this_thread::yield();
     XUnlockDisplay(display);
@@ -1463,7 +1472,10 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        {
+        XUnlockDisplay(display);
 		return FAILURE;
+        }
     XUnlockDisplay(display);
 
     _outClientHeight = h; //The width filled out is the client's width.
@@ -1504,7 +1516,10 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        {
+        XUnlockDisplay(display);
 		return FAILURE;
+        }
     XUnlockDisplay(display);
 
 	_outX = x;
@@ -1541,7 +1556,10 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+        {
+        XUnlockDisplay(display);
 		return FAILURE;
+        }
     XUnlockDisplay(display);
 
 	_outY = y;
@@ -1580,7 +1598,10 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 
 	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
+    {
+        XUnlockDisplay(display);
 		return FAILURE;
+    }
     XUnlockDisplay(display);
 
 	_outX = x;

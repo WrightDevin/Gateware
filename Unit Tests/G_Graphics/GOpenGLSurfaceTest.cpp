@@ -121,16 +121,14 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 TEST_CASE("Testing OGLSurface Events")
 {
 	unsigned int clientX, clientY, width, height;
-/*
-	clientX = 0;
-	clientY = 0;
-	width = 400;
-	height = 700;
-*/
+
+printf("\n\n STARTING GET FUNCTIONS \n\n");
 
 	gWnd_OGL->GetClientTopLeft(clientX, clientY);
 	gWnd_OGL->GetWidth(width);
 	gWnd_OGL->GetHeight(height);
+
+printf("\n\n FINISHED GET FUNCTIONS \n\n");
 
 
 
@@ -147,7 +145,7 @@ TEST_CASE("Testing OGLSurface Events")
     // Test OGL Functions with current settings.
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__

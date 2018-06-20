@@ -21,7 +21,6 @@ using namespace SYSTEM;
 namespace
 {
     // GWindow global variables.
-	//GWindowInputEvents LastEvent;
 
     //! Map of Listeners to send event information to.
     std::map<GListener *, unsigned long long> listeners;
@@ -29,7 +28,7 @@ namespace
 
 #ifdef _WIN32
 	//Methods
-	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
+	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp, GW::SYSTEM::GWindowInputEvents *Gwnd)
 	{
 		switch (msg)
 		{
@@ -52,21 +51,21 @@ namespace
 			case SIZE_MAXIMIZED:
 			{
 				eventStruct.eventFlags = MAXIMIZE;
-				LastEvent = GWindowInputEvents::MAXIMIZE;
+				Gwnd->LastEvent = GWindowInputEvents::MAXIMIZE;
 			}
 			break;
 
 			case SIZE_MINIMIZED:
 			{
 				eventStruct.eventFlags = MINIMIZE;
-				LastEvent = GWindowInputEvents::MINIMIZE;
+				Gwnd->LastEvent = GWindowInputEvents::MINIMIZE;
 			}
 			break;
 
 			case SIZE_RESTORED:
 			{
 				eventStruct.eventFlags = RESIZE;
-				LastEvent = GWindowInputEvents::RESIZE;
+				Gwnd->LastEvent = GWindowInputEvents::RESIZE;
 
 			}
 			break;
@@ -97,7 +96,7 @@ namespace
 			eventStruct.windowX = (int)LOWORD(lp);
 			eventStruct.windowY = (int)HIWORD(lp);
 
-			LastEvent = GWindowInputEvents::MOVE;
+			Gwnd->LastEvent = GWindowInputEvents::MOVE;
 
 			if (eventStruct.eventFlags != -1)
 			{
@@ -121,7 +120,7 @@ namespace
 			eventStruct.windowX = windowRect.left;
 			eventStruct.windowY = windowRect.top;
 
-			LastEvent = GWindowInputEvents::DESTROY;
+			Gwnd->LastEvent = GWindowInputEvents::DESTROY;
 
 			if (eventStruct.eventFlags != -1)
 			{
@@ -134,7 +133,7 @@ namespace
 		break;
 		case WM_DESTROY:
 		{
-			LastEvent = GWindowInputEvents::DESTROY;
+			Gwnd->LastEvent = GWindowInputEvents::DESTROY;
 		}
 		default:
 		{
@@ -149,7 +148,7 @@ namespace
 #endif // __WIN32
 
 #ifdef __linux__
-    void LinuxWndProc(Display * _display, Window _window)
+    void LinuxWndProc(Display * _display, Window _window, GW::SYSTEM::GWindowInputEvents *Gwnd)
     {
         Atom prop = 0;
         unsigned char * propRet = NULL;
@@ -171,8 +170,10 @@ namespace
        Atom propType = XInternAtom(_display, "_NET_WM_STATE", true);
        Atom propHidden = XInternAtom(_display, "_NET_WM_STATE_HIDDEN", true);
        Atom propFull = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", true);
-       Atom propClose = XInternAtom(_display, "_NET_WM_ACTION_CLOSE", true); // WM_DESTROY_WINDOW
+       Atom propClose = XInternAtom(_display, "WM_DESTROY_WINDOW", true);
     XUnlockDisplay(_display);
+
+    XSetWMProtocols(_display, _window, &propClose, 1);
 
         Atom actual_type = 0;
         unsigned long nitems = 0;
@@ -217,33 +218,33 @@ namespace
                             if(prop == propHidden)
                             {
                              eventFlag = MINIMIZE;
-                             //LastEvent = GWindowInputEvents::MINIMIZE;
+                             *Gwnd = GWindowInputEvents::MINIMIZE;
                             }
 
 
                             else if(prop == 301 || prop == 302 || prop == propFull)
                             {
                             eventFlag = MAXIMIZE;
-                            //LastEvent = GWindowInputEvents::MAXIMIZE;
+                            *Gwnd = GWindowInputEvents::MAXIMIZE;
                             }
 
                             else if(prevX != x || prevY != y)
                             {
                             eventFlag = MOVE;
-                            //LastEvent = GWindowInputEvents::MOVE;
+                            *Gwnd = GWindowInputEvents::MOVE;
                             }
 
 
                             else if(prevHeight != height || prevWidth != width)
                             {
                             eventFlag = RESIZE;
-                           // LastEvent = GWindowInputEvents::RESIZE;
+                            *Gwnd = GWindowInputEvents::RESIZE;
                             }
 
                             else if(prop == propClose)
                             {
                             eventFlag = DESTROY;
-                           // LastEvent = GWindowInputEvents::DESTROY;
+                            *Gwnd = GWindowInputEvents::DESTROY;
                             }
 
 
@@ -284,12 +285,12 @@ namespace
                         if(prevX != x || prevY != y) //if the previous position is not equal to the current position then we moved.
                         {
                         eventFlag = MOVE;
-                        //LastEvent = GWindowInputEvents::MOVE;
+                        *Gwnd = GWindowInputEvents::MOVE;
                         }
                         if(prevHeight != height || prevWidth != width) //if the previous width/height are not equal to the current width/height then we resized.
                         {
                         eventFlag = RESIZE;
-                       // LastEvent = GWindowInputEvents::RESIZE;
+                        *Gwnd = GWindowInputEvents::RESIZE;
                         }
 
                     XLockDisplay(_display);
@@ -320,7 +321,7 @@ namespace
                         //The change of a window's state from unmapped to mapped
 
                         eventFlag = MAXIMIZE;
-                       // LastEvent = GWindowInputEvents::MAXIMIZE;
+                        *Gwnd = GWindowInputEvents::MAXIMIZE;
 
 
                     XLockDisplay(_display);
@@ -383,7 +384,7 @@ namespace
                 XLockDisplay(_display);
                     XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
-                   // LastEvent = GWindowInputEvents::DESTROY;
+                    *Gwnd = GWindowInputEvents::DESTROY;
 
                     eventStruct.eventFlags = DESTROY;
                     eventStruct.width = width;
