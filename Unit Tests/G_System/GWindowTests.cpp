@@ -356,15 +356,15 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(CreateGWindow(300, 300, 300, 300, WINDOWEDBORDERED, &tstWindow)));
 	REQUIRE(tstWindow != nullptr);
 #ifndef _WIN32
-    sleep(0.001);
+    //sleep(0.001);
 #endif // __WIN32__
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-	//REQUIRE(curEvent == GWindowInputEvents::DESTROY);
+	REQUIRE(curEvent == GWindowInputEvents::DESTROY);
 
 	//Calls OpenWindow, the last event should be NOTIFY if the style is not MINIMIZE in the CreateGWindow().
 	REQUIRE(G_SUCCESS(tstWindow->OpenWindow()));
 #ifndef _WIN32
-    sleep(0.001);
+    //sleep(0.001);
 #endif // __WIN32__
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::NOTIFY);
@@ -372,39 +372,39 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 
 	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
 #endif 
 
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
 	REQUIRE(G_SUCCESS(tstWindow->ResizeWindow(700,700)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::RESIZE);
 #endif 
 
     REQUIRE(G_SUCCESS(tstWindow->MoveWindow(500, 500)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::MOVE); //Move while fullscreen/maximize won't call the move event. inside will call maximize last.
 #endif 
 
 	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(WINDOWEDBORDERED)));
 	REQUIRE(G_SUCCESS(tstWindow->Maximize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Have to set the style to something else rather than minimize to have the maximize event be called
 #endif 
 
 	REQUIRE(G_SUCCESS(tstWindow->Minimize()));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::MINIMIZE);
 #endif 
 
 	REQUIRE(G_SUCCESS(tstWindow->ChangeWindowStyle(FULLSCREENBORDERED)));
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
-#ifdef _WIN32
+#ifndef __linux__
 	REQUIRE(curEvent == GWindowInputEvents::MAXIMIZE); //Changing the WindowStyle to any Fullscreen calls the maximize.
 #endif 
 
@@ -415,15 +415,19 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	tstWindow->GetWindowHandle(windowHandleSize, (void**)&appWindowHandle);
 
 	DestroyWindow(appWindowHandle);
+    delete appWindowHandlw;
 
 #elif __APPLE__
 	//TODO add apple destroy window
     NSWindow* m_appWindow;
     unsigned int m_windowSize = sizeof(NSWindow*);
 
-    appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
+    tstWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
 
+    //[m_appWindow performClose: m_appWindow];
     [m_appWindow close];
+    [m_appWindow release];
+    //sleep(0.001);
 
 
 #elif __linux__
@@ -440,9 +444,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 #endif
 
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
+#ifdef _WIN32
 	REQUIRE(curEvent == GWindowInputEvents::DESTROY);
-
-
+#endif
 }
 
 

@@ -357,8 +357,16 @@ GReturn AppWindow::OpenWindow()
 		styleMask : windowStyleMask
 		backing : NSBackingStoreBuffered
 		defer : NO];
-
+        
 	[window setTitle : @"SampleCocoaWindow"];
+        
+    refMutex.lock();
+        
+    std::map<NSWindow*, GW::SYSTEM::GWindowInputEvents>::const_iterator iter = eventCatchers.find(window);
+    if (iter != eventCatchers.end())
+    eventCatchers[window] = LastEvent;
+        
+    refMutex.unlock();
 
     LastEvent = GWindowInputEvents::NOTIFY;
 
@@ -1212,6 +1220,13 @@ GReturn AppWindow::DecrementCount()
 		for (; iter != listeners.end(); ++iter)
 			iter->first->DecrementCount(); // free handle, don't call Deregister as that would be bad
 		listeners.clear(); // dump all invalid pointers
+        
+#ifdef __APPLE__
+      //Release handles to any eventCatchers that remain
+        std::map<NSWindow*, GW::SYSTEM::GWindowInputEvents>::iterator iter2 = eventCatchers.find(window);
+        if(iter2 != eventCatchers.end())
+            eventCatchers.erase(iter2);
+#endif
 		refMutex.unlock();
 
 #ifdef __linux__

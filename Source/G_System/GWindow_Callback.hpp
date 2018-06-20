@@ -24,6 +24,9 @@ namespace
 
     //! Map of Listeners to send event information to.
     std::map<GListener *, unsigned long long> listeners;
+#ifdef __APPLE__
+    std::map<NSWindow *, GW::SYSTEM::GWindowInputEvents> eventCatchers;
+#endif
     int testInt;
 
 #ifdef _WIN32

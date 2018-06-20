@@ -1,9 +1,12 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+
+
 @interface GWMacWindow : NSObject
 
 @end
+
 // The GWDelegate will be the delegate of the main window which will receive
 // window events
 @interface GWDelegate : NSObject <NSWindowDelegate>
@@ -12,10 +15,15 @@
                     toSize:(NSSize)frameSize;
 
 -(void) windowDidResize:(NSNotification*)notification;
+
 -(void) windowDidMove:(NSNotification*)notification;
+
 -(void) windowDidMiniaturize:(NSNotification*)notification;
+
 -(void) windowDidDeminiaturize:(NSNotification*)notification;
+
 -(void) windowDidEnterFullScreen:(NSNotification*)notification;
+
 -(void) windowWillClose:(NSNotification*)notification;
 
 @end
@@ -78,7 +86,7 @@
     //other than setFrame:display)
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::RESIZE;
+    eventCatchers[sender] = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = frameSize.height;
@@ -102,7 +110,7 @@
     
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::RESIZE;
+    eventCatchers[window] = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = window.frame.size.height;
@@ -120,10 +128,10 @@
 {
     //Tells the delegate that the window has moved.
     NSWindow* window = notification.object;
-    
+ 
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::MOVE;
+    eventCatchers[window] = GWindowInputEvents::MOVE;
     
     eventData.eventFlags = MOVE;
     eventData.height = window.frame.size.height;
@@ -144,7 +152,7 @@
     
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::MINIMIZE;
+    eventCatchers[window] = GWindowInputEvents::MINIMIZE;
     
     eventData.eventFlags = MINIMIZE;
     eventData.height = window.frame.size.height;
@@ -165,7 +173,7 @@
     
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::RESIZE;
+    eventCatchers[window] = GWindowInputEvents::RESIZE;
     
     eventData.eventFlags = RESIZE;
     eventData.height = window.frame.size.height;
@@ -185,7 +193,7 @@
     
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::MAXIMIZE;
+    eventCatchers[window] = GWindowInputEvents::MAXIMIZE;
     
     eventData.eventFlags = MAXIMIZE;
     eventData.height = window.frame.size.height;
@@ -206,7 +214,7 @@
     
     GWINDOW_EVENT_DATA eventData;
     
-    LastEvent = GWindowInputEvents::DESTROY;
+    eventCatchers[window] = GWindowInputEvents::DESTROY;
     
     eventData.eventFlags = DESTROY;
     eventData.height = window.frame.size.height;
