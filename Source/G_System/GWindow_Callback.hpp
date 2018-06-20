@@ -28,8 +28,9 @@ namespace
 
 #ifdef _WIN32
 	//Methods
-	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp, GW::SYSTEM::GWindowInputEvents *Gwnd)
+	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
+		GW::SYSTEM::GWindowInputEvents* GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
 		switch (msg)
 		{
 		case WM_SIZE:
@@ -51,21 +52,21 @@ namespace
 			case SIZE_MAXIMIZED:
 			{
 				eventStruct.eventFlags = MAXIMIZE;
-				Gwnd->LastEvent = GWindowInputEvents::MAXIMIZE;
+				*GEvents = GWindowInputEvents::MAXIMIZE;
 			}
 			break;
 
 			case SIZE_MINIMIZED:
 			{
 				eventStruct.eventFlags = MINIMIZE;
-				Gwnd->LastEvent = GWindowInputEvents::MINIMIZE;
+				*GEvents = GWindowInputEvents::MINIMIZE;
 			}
 			break;
 
 			case SIZE_RESTORED:
 			{
 				eventStruct.eventFlags = RESIZE;
-				Gwnd->LastEvent = GWindowInputEvents::RESIZE;
+				*GEvents = GWindowInputEvents::RESIZE;
 
 			}
 			break;
@@ -96,7 +97,7 @@ namespace
 			eventStruct.windowX = (int)LOWORD(lp);
 			eventStruct.windowY = (int)HIWORD(lp);
 
-			Gwnd->LastEvent = GWindowInputEvents::MOVE;
+			*GEvents = GWindowInputEvents::MOVE;
 
 			if (eventStruct.eventFlags != -1)
 			{
@@ -120,7 +121,7 @@ namespace
 			eventStruct.windowX = windowRect.left;
 			eventStruct.windowY = windowRect.top;
 
-			Gwnd->LastEvent = GWindowInputEvents::DESTROY;
+			*GEvents = GWindowInputEvents::DESTROY;
 
 			if (eventStruct.eventFlags != -1)
 			{
@@ -133,7 +134,7 @@ namespace
 		break;
 		case WM_DESTROY:
 		{
-			Gwnd->LastEvent = GWindowInputEvents::DESTROY;
+			*GEvents = GWindowInputEvents::DESTROY;
 		}
 		default:
 		{

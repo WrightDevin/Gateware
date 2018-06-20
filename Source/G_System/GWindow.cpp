@@ -211,6 +211,9 @@ GReturn AppWindow::OpenWindow()
 	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
 		width, height, NULL, NULL, GetModuleHandleW(0), 0);
 
+	//Pass class into SetWindowLongPtr
+	SetWindowLongPtr(wndHandle, GWLP_USERDATA, (LONG_PTR)(GWindowInputEvents*)&this->LastEvent);
+
 	if (wndHandle && style != MINIMIZED)
 	{
 		if (ShowWindow(wndHandle, SW_SHOWDEFAULT) != 0)
