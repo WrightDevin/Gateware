@@ -1093,14 +1093,6 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long
 		return INVALID_ARGUMENT;
 
 	GOpenGL* Surface = new GOpenGL();
-	Surface->SetGWindow(_gWin);
-
-	GReturn ret = Surface->Initialize(_initMask);
-
-	if(ret == FAILURE)
-        return FAILURE;
-
-	_gWin->RegisterListener(Surface, 0);
 
 	if (Surface == nullptr)
 		return FAILURE;
