@@ -188,7 +188,6 @@ namespace
 		{
 		    propRet = nullptr;
 
-		   // std::this_thread::yield();
 		   // XLockDisplay(_display);
 		    //Also flushes the request buffer if xlib's queue does not contain an event and waits for an event to arrive from server connection
             XNextEvent(_display, &event);
