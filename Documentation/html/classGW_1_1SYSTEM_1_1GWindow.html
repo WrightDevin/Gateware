@@ -30,7 +30,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gateware Libraries
-   &#160;<span id="projectnumber">R4E</span>
+   &#160;<span id="projectnumber">R5A</span>
    </div>
    <div id="projectbrief">Beta Build</div>
   </td>
@@ -165,6 +165,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#a28ae1c50fbd7c1c292ed5aa055cae9a7">IsFullscreen</a> (bool &amp;_outIsFullscreen)=0</td></tr>
 <tr class="memdesc:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a bool specifying whether or not the currently opened window is fullscreen.  <a href="#a28ae1c50fbd7c1c292ed5aa055cae9a7">More...</a><br /></td></tr>
 <tr class="separator:a28ae1c50fbd7c1c292ed5aa055cae9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ce407834e1c92b5fe4ffded363ab00"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1SYSTEM_1_1GWindow.html#ac5ce407834e1c92b5fe4ffded363ab00">GetLastEvent</a> (<a class="el" href="namespaceGW_1_1SYSTEM.html#a7d3a00c7f94541cb6f446fde944ab309">GWindowInputEvents</a> &amp;_LastEvent)=0</td></tr>
+<tr class="memdesc:ac5ce407834e1c92b5fe4ffded363ab00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the last input event that has happened to the window.  <a href="#ac5ce407834e1c92b5fe4ffded363ab00">More...</a><br /></td></tr>
+<tr class="separator:ac5ce407834e1c92b5fe4ffded363ab00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGW_1_1CORE_1_1GBroadcasting"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGW_1_1CORE_1_1GBroadcasting')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classGW_1_1CORE_1_1GBroadcasting.html">GW::CORE::GBroadcasting</a></td></tr>
 <tr class="memitem:a293251421ba1169016f722df2f5b573b inherit pub_methods_classGW_1_1CORE_1_1GBroadcasting"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGW_1_1CORE_1_1GBroadcasting.html#a293251421ba1169016f722df2f5b573b">RegisterListener</a> (<a class="el" href="classGW_1_1CORE_1_1GListener.html">GListener</a> *_addListener, unsigned long long _eventMask)=0</td></tr>
 <tr class="memdesc:a293251421ba1169016f722df2f5b573b inherit pub_methods_classGW_1_1CORE_1_1GBroadcasting"><td class="mdescLeft">&#160;</td><td class="mdescRight">Any listener added to this class must receive all events unless otherwise specified by the _eventMask (optional).  <a href="classGW_1_1CORE_1_1GBroadcasting.html#a293251421ba1169016f722df2f5b573b">More...</a><br /></td></tr>
@@ -388,6 +391,47 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramname">0</td><td>The window is minimized. </td></tr>
     <tr><td class="paramname">-1</td><td>No window exists to query size from. </td></tr>
     <tr><td class="paramname">else</td><td>Height was successfully queried and returned. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac5ce407834e1c92b5fe4ffded363ab00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ce407834e1c92b5fe4ffded363ab00">&#9670;&nbsp;</a></span>GetLastEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceGW.html#a67a839e3df7ea8a5c5686613a7a3de21">GReturn</a> GW::SYSTEM::GWindow::GetLastEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceGW_1_1SYSTEM.html#a7d3a00c7f94541cb6f446fde944ab309">GWindowInputEvents</a> &amp;&#160;</td>
+          <td class="paramname"><em>_LastEvent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the last input event that has happened to the window. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">GWindowInputEvent</td><td>you pass-in will be updated to the lastest event that was called.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FAILURE</td><td>The Gateware's internal event tracker wasn't a valid event. </td></tr>
+    <tr><td class="paramname">SUCCESS</td><td>The function run successfully and out-param is filled out. </td></tr>
   </table>
   </dd>
 </dl>

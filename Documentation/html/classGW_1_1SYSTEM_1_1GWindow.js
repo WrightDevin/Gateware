@@ -5,6 +5,7 @@ var classGW_1_1SYSTEM_1_1GWindow =
     [ "GetClientTopLeft", "classGW_1_1SYSTEM_1_1GWindow.html#ac80bfaba809d5eb54d6a11b11deddeb7", null ],
     [ "GetClientWidth", "classGW_1_1SYSTEM_1_1GWindow.html#a6cedaf7ca08ed3519092196a8ae79784", null ],
     [ "GetHeight", "classGW_1_1SYSTEM_1_1GWindow.html#aab8f7e74d8554f309a7785216ff89ff3", null ],
+    [ "GetLastEvent", "classGW_1_1SYSTEM_1_1GWindow.html#ac5ce407834e1c92b5fe4ffded363ab00", null ],
     [ "GetWidth", "classGW_1_1SYSTEM_1_1GWindow.html#a75672fb359ee44c5e551ee6223a10bdb", null ],
     [ "GetWindowHandle", "classGW_1_1SYSTEM_1_1GWindow.html#a71b73cc2ba9b010745f0f6171dc8b950", null ],
     [ "GetX", "classGW_1_1SYSTEM_1_1GWindow.html#a61da1f01be5fa48df2375701ed0062e9", null ],

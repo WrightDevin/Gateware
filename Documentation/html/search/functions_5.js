@@ -14,6 +14,7 @@ var searchData=
   ['getfilesize',['GetFileSize',['../classGW_1_1SYSTEM_1_1GFile.html#a2f4cba2dad96fa4c894545f43fee64b5',1,'GW::SYSTEM::GFile']]],
   ['getheight',['GetHeight',['../classGW_1_1SYSTEM_1_1GWindow.html#aab8f7e74d8554f309a7785216ff89ff3',1,'GW::SYSTEM::GWindow']]],
   ['getkeymask',['GetKeyMask',['../classGW_1_1SYSTEM_1_1GInput.html#a448ee14346a393286b0dfe1dc61ca93d',1,'GW::SYSTEM::GInput']]],
+  ['getlastevent',['GetLastEvent',['../classGW_1_1SYSTEM_1_1GWindow.html#ac5ce407834e1c92b5fe4ffded363ab00',1,'GW::SYSTEM::GWindow']]],
   ['getmousedelta',['GetMouseDelta',['../classGW_1_1SYSTEM_1_1GInput.html#a775fca7ad71371f369e3ad69fb32603a',1,'GW::SYSTEM::GInput']]],
   ['getmouseposition',['GetMousePosition',['../classGW_1_1SYSTEM_1_1GInput.html#a351eb04ac4a8699f6e4e416860d264b2',1,'GW::SYSTEM::GInput']]],
   ['getrendertarget',['GetRenderTarget',['../classGW_1_1GRAPHICS_1_1GDirectX11Surface.html#a953f4809860408b0e99928ac8b9b6a53',1,'GW::GRAPHICS::GDirectX11Surface']]],

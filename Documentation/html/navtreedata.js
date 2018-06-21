@@ -56,7 +56,7 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", null ],
+        [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -69,7 +69,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "GAudio_8h_source.html",
-"files.html"
+"dir_eda34a81377ca4b30a34b949f0be067a.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
