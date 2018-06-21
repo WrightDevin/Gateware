@@ -415,7 +415,7 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	tstWindow->GetWindowHandle(windowHandleSize, (void**)&appWindowHandle);
 
 	DestroyWindow(appWindowHandle);
-    delete appWindowHandlw;
+    //delete appWindowHandle;
 
 #elif __APPLE__
 	//TODO add apple destroy window
