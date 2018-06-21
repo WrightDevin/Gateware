@@ -58,19 +58,19 @@ GOpenGLSurface*		oglSurface;
 
 #endif
 
-
-TEST_CASE("Create GOpenGLESSurface Object.", "[GOpenGLESSurface]")
+// Note: OGL Tests could certainly be a bit more through...
+TEST_CASE("Create GOpenGLSurface Object.", "[GOpenGLSurface]")
 {
 	REQUIRE(G_SUCCESS(CreateGWindow(0, 0, 800, 500, WINDOWEDBORDERED, &gWnd_OGL)));
 
 	unsigned long long initMask = 0;
-	//initMask |= COLOR_10_BIT;
 	initMask |= DEPTH_BUFFER_SUPPORT;//
 	initMask |= DEPTH_STENCIL_SUPPORT;//
-	initMask |= OPENGL_ES_SUPPORT;
-	//initMask |= DIRECT2D_SUPPORT;
+	initMask |= OPENGL_ES_SUPPORT; // NOT EVERY DRIVER MAY SUPPORT THIS
+	//initMask |= COLOR_10_BIT; // OR THIS
+	//initMask |= DIRECT2D_SUPPORT; // THIS DEFINITELY SHOULD NOT BE SUPPORTED
 
-	CHECK(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface) == SUCCESS);
+	REQUIRE(G_SUCCESS(CreateGOpenGLSurface(gWnd_OGL, initMask, &oglSurface)));
 }
 
 TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHandle]")
@@ -120,11 +120,17 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 
 TEST_CASE("Testing OGLSurface Events")
 {
-
 	unsigned int clientX, clientY, width, height;
+
+printf("\n\n STARTING GET FUNCTIONS \n\n");
+
 	gWnd_OGL->GetClientTopLeft(clientX, clientY);
 	gWnd_OGL->GetWidth(width);
 	gWnd_OGL->GetHeight(height);
+
+printf("\n\n FINISHED GET FUNCTIONS \n\n");
+
+
 
 #ifdef _WIN32
 
@@ -139,7 +145,7 @@ TEST_CASE("Testing OGLSurface Events")
     // Test OGL Functions with current settings.
     glViewport(clientX, clientY, width, height);
     glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
 #elif __APPLE__
@@ -199,4 +205,6 @@ TEST_CASE("Testing OGLSurface Events")
 #endif
 
 }
+
+
 

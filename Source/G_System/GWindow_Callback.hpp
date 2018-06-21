@@ -24,12 +24,16 @@ namespace
 
     //! Map of Listeners to send event information to.
     std::map<GListener *, unsigned long long> listeners;
+#ifdef __APPLE__
+    std::map<NSWindow *, GW::SYSTEM::GWindowInputEvents> eventCatchers;
+#endif
     int testInt;
 
 #ifdef _WIN32
 	//Methods
 	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
+		GW::SYSTEM::GWindowInputEvents* GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
 		switch (msg)
 		{
 		case WM_SIZE:
@@ -51,24 +55,29 @@ namespace
 			case SIZE_MAXIMIZED:
 			{
 				eventStruct.eventFlags = MAXIMIZE;
+				*GEvents = GWindowInputEvents::MAXIMIZE;
 			}
 			break;
 
 			case SIZE_MINIMIZED:
 			{
 				eventStruct.eventFlags = MINIMIZE;
+				*GEvents = GWindowInputEvents::MINIMIZE;
 			}
 			break;
 
 			case SIZE_RESTORED:
 			{
 				eventStruct.eventFlags = RESIZE;
+				*GEvents = GWindowInputEvents::RESIZE;
+
 			}
 			break;
 			}
 
 			if (eventStruct.eventFlags != -1)
 			{
+
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
@@ -91,6 +100,8 @@ namespace
 			eventStruct.windowX = (int)LOWORD(lp);
 			eventStruct.windowY = (int)HIWORD(lp);
 
+			*GEvents = GWindowInputEvents::MOVE;
+
 			if (eventStruct.eventFlags != -1)
 			{
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
@@ -99,7 +110,6 @@ namespace
 			}
 		}
 		break;
-
 		case WM_CLOSE:
 		{
 			GWINDOW_EVENT_DATA eventStruct;
@@ -114,15 +124,21 @@ namespace
 			eventStruct.windowX = windowRect.left;
 			eventStruct.windowY = windowRect.top;
 
+			*GEvents = GWindowInputEvents::DESTROY;
+
 			if (eventStruct.eventFlags != -1)
 			{
+
 				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 			}
 		}
 		break;
-
+		case WM_DESTROY:
+		{
+			*GEvents = GWindowInputEvents::DESTROY;
+		}
 		default:
 		{
             Sleep(0);
@@ -136,9 +152,9 @@ namespace
 #endif // __WIN32
 
 #ifdef __linux__
-    void LinuxWndProc(Display * _display, Window _window)
+    void LinuxWndProc(Display * _display, Window _window, GW::SYSTEM::GWindowInputEvents *Gwnd)
     {
-        Atom propType = 0; Atom propHidden = 0; Atom propFull = 0; Atom prop = 0;
+        Atom prop = 0;
         unsigned char * propRet = NULL;
 		XEvent event;
 		GWINDOW_EVENT_DATA eventStruct;
@@ -154,9 +170,14 @@ namespace
         memset(&event, 0, sizeof(event));
         memset(&eventStruct, 0, sizeof(eventStruct));
 
-        propType = XInternAtom(_display, "_NET_WM_STATE", true);
-        propHidden = XInternAtom(_display, "_NET_WM_STATE_HIDDEN", true);
-        propFull = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", true);
+    XLockDisplay(_display);
+       Atom propType = XInternAtom(_display, "_NET_WM_STATE", true);
+       Atom propHidden = XInternAtom(_display, "_NET_WM_STATE_HIDDEN", true);
+       Atom propFull = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", true);
+       Atom propClose = XInternAtom(_display, "WM_DESTROY_WINDOW", true);
+    XUnlockDisplay(_display);
+
+    XSetWMProtocols(_display, _window, &propClose, 1);
 
         Atom actual_type = 0;
         unsigned long nitems = 0;
@@ -166,31 +187,148 @@ namespace
 		while (true)
 		{
 		    propRet = nullptr;
+
+		   // XLockDisplay(_display);
+		    //Also flushes the request buffer if xlib's queue does not contain an event and waits for an event to arrive from server connection
             XNextEvent(_display, &event);
+          //  XUnlockDisplay(_display);
+
 			switch (event.type)
 			{
-			case PropertyNotify:
-                {
-                status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
-                                        false, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &propRet);
-
-                    if(status == Success && propRet && nitems > 0)
+			    case Expose:
                     {
-                        prop = ((Atom *)propRet)[0];
-                        XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+                        //Expose, when a window becomes visible on the screen, after being obscured or unmapped.
+                        break;
+                    }
+                case PropertyNotify:
+                    {
+                    //PropertyNotify, when a client wants info about property changes for a specified window
+                    //To receive PropertyNotify events, set the PropertyChangeMask bit in the event-mask attribute of the window.
 
-                        if(prop == propHidden)
-                            eventFlag = MINIMIZE;
+                    XLockDisplay(_display);
+                    status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
+                                        false, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &propRet);
+                    XUnlockDisplay(_display);
 
-                        else if(prop == 301 || prop == 302)
+                        if(status == Success && propRet && nitems > 0)
+                        {
+                            prop = ((Atom *)propRet)[0];
+
+                            XLockDisplay(_display);
+                            XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+                            XUnlockDisplay(_display);
+
+                            if(prop == propHidden)
+                            {
+                             eventFlag = MINIMIZE;
+                             *Gwnd = GWindowInputEvents::MINIMIZE;
+                            }
+
+
+                            else if(prop == 301 || prop == 302 || prop == propFull)
+                            {
                             eventFlag = MAXIMIZE;
+                            *Gwnd = GWindowInputEvents::MAXIMIZE;
+                            }
 
-                        else if(prevX != x || prevY != y)
+                            else if(prevX != x || prevY != y)
+                            {
                             eventFlag = MOVE;
+                            *Gwnd = GWindowInputEvents::MOVE;
+                            }
 
-                        else if(prevHeight != height || prevWidth != width)
+
+                            else if(prevHeight != height || prevWidth != width)
+                            {
                             eventFlag = RESIZE;
+                            *Gwnd = GWindowInputEvents::RESIZE;
+                            }
 
+                            else if(prop == propClose)
+                            {
+                            eventFlag = DESTROY;
+                            *Gwnd = GWindowInputEvents::DESTROY;
+                            }
+
+
+                        XLockDisplay(_display);
+                            eventStruct.eventFlags = eventFlag;
+                            eventStruct.width = width;
+                            eventStruct.height = height;
+                            eventStruct.windowX = x;
+                            eventStruct.windowY = y;
+                            eventStruct.windowHandle = _display;
+
+                            prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+
+
+                            if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                            {
+                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                            for (; iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                            }
+                        XUnlockDisplay(_display);
+
+                        }
+                        XFree(propRet);
+                        break;
+                }
+                case ConfigureNotify:
+                    {
+                        //ConfigureNotify, when a client wants info about the actual changes to a window's state,
+                        //such as size, position, border, and stacking order.
+
+                        //Sets current window data to the events data about the window
+                        width = event.xconfigure.width;
+                        height = event.xconfigure.height;
+                        x = event.xconfigure.x;
+                        y = event.xconfigure.y;
+
+                        if(prevX != x || prevY != y) //if the previous position is not equal to the current position then we moved.
+                        {
+                        eventFlag = MOVE;
+                        *Gwnd = GWindowInputEvents::MOVE;
+                        }
+                        if(prevHeight != height || prevWidth != width) //if the previous width/height are not equal to the current width/height then we resized.
+                        {
+                        eventFlag = RESIZE;
+                        *Gwnd = GWindowInputEvents::RESIZE;
+                        }
+
+                    XLockDisplay(_display);
+                        //Inform the listeners of this event
+                        eventStruct.eventFlags = eventFlag;
+                        eventStruct.width = width;
+                        eventStruct.height = height;
+                        eventStruct.windowX = x;
+                        eventStruct.windowY = y;
+                        eventStruct.windowHandle = _display;
+
+                        prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+
+
+                        if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                        {
+                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                            for (; iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                        }
+                    XUnlockDisplay(_display);
+
+                    break;
+                }
+                case MapNotify:
+                    {
+                        //MapNotify, when clients want info about which windows are mapped.
+                        //The change of a window's state from unmapped to mapped
+
+                        eventFlag = MAXIMIZE;
+                        *Gwnd = GWindowInputEvents::MAXIMIZE;
+
+
+                    XLockDisplay(_display);
+                        //Inform the listeners of this event
                         eventStruct.eventFlags = eventFlag;
                         eventStruct.width = width;
                         eventStruct.height = height;
@@ -206,35 +344,71 @@ namespace
                             for (; iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
                         }
+                    XUnlockDisplay(_display);
 
                     }
-                    XFree(propRet);
-                    break;
-                }
-            case DestroyNotify:
-                {
-                XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
+                case ButtonPress:
+                    {
+                        //Respond to button press
+                        break;
+                    }
+                case ClientMessage:
+                    {
+                        /* Primarily used for transferring selection data,
+                        also might be used in a private interclient
+                        protocol; otherwise, not needed in event loop */
+                        break;
+                    }
+                case SelectionClear:
+                    {
+                        //Clients losing ownership of a selection.
+                        break;
+                    }
+                case SelectionNotify:
+                    {
+                        //A response to a ConvertSelection request when there is no owner for the selection
+                        break;
+                    }
+                case SelectionRequest:
+                    {
+                        //A client requests a selection conversion by calling XConvertSelection() for the owned selection.
+                        break;
+                    }
+                case NoExpose:
+                    {
+                        //Generates this event whenever a destination region could not be computed due to an obscured
+                        //or out-of-bounds source region.
+                        break;
+                    }
+                case DestroyNotify:
+                    {
+                    //The Destroy event gets called when a client wants info about which windows are destroyed.
 
-                eventStruct.eventFlags = DESTROY;
-                eventStruct.width = width;
-                eventStruct.height = height;
-                eventStruct.windowX = x;
-                eventStruct.windowY = y;
-                eventStruct.windowHandle = _display;
+                XLockDisplay(_display);
+                    XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
-                if (eventStruct.eventFlags != -1)
-                {
+                    *Gwnd = GWindowInputEvents::DESTROY;
+
+                    eventStruct.eventFlags = DESTROY;
+                    eventStruct.width = width;
+                    eventStruct.height = height;
+                    eventStruct.windowX = x;
+                    eventStruct.windowY = y;
+                    eventStruct.windowHandle = _display;
+
+                    if (eventStruct.eventFlags != -1)
+                    {
                     std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
                     for (; iter != listeners.end(); ++iter)
                         iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
-                }
-                break;
-                }
+                    }
+                XUnlockDisplay(_display);
+
+                    break;
+                    }
 
 			}
-       // if(propRet != nullptr)
-           // XFree(&propRet);
-        //sleep(0);
+
 		}
 
 

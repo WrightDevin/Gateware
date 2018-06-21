@@ -28,6 +28,7 @@
 #include <GL/glx.h>
 
 #include "glxext.h"
+#include "unistd.h"
 
 #elif __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -140,10 +141,11 @@ GOpenGL::~GOpenGL()
 {
 	#ifdef _WIN32
 	#elif __linux__
-
+//XLockDisplay((Display*)lWnd.display);
 	glXMakeCurrent((Display*)lWnd.display, None, NULL);
 	glXDestroyContext((Display*)lWnd.display, OGLXcontext);
 	XDestroyWindow((Display*)lWnd.display, *(Window*)lWnd.window);
+//XUnlockDisplay((Display*)lWnd.display);
 	XCloseDisplay((Display*)lWnd.display);
 
 	#elif __APPLE__
@@ -354,7 +356,6 @@ GReturn GOpenGL::Initialize(unsigned long long _initMask)
 	}
 
 #elif __linux__
-
 gWnd->GetWindowHandle(sizeof(LINUX_WINDOW), (void**)&lWnd);
 lWindow = (Window*)lWnd.window;
 
@@ -401,12 +402,12 @@ if (_initMask & DEPTH_STENCIL_SUPPORT)
 //////////////////////////////////////////////////
 // Select the Default Framebuffer Configuration //
 //////////////////////////////////////////////////
-
+XLockDisplay((Display*)lWnd.display);
 int fbCount;
 GLXFBConfig* fbc = glXChooseFBConfig((Display*)lWnd.display, DefaultScreen((Display*)lWnd.display), FBattribs, &fbCount);
 XVisualInfo* vi = glXGetVisualFromFBConfig((Display*)lWnd.display, fbc[0]);
-
 Colormap cMap = XCreateColormap((Display*)lWnd.display, RootWindow((Display*)lWnd.display, vi->screen), vi->visual, AllocNone);
+
 XSetWindowAttributes swa;
 swa.background_pixel = XWhitePixel((Display*)lWnd.display, 0);
 swa.border_pixel = XBlackPixel((Display*)lWnd.display, 0);
@@ -417,8 +418,6 @@ valueMask |= CWBackPixel;
 valueMask |= CWEventMask;
 
 XChangeWindowAttributes((Display*)lWnd.display, *lWindow, valueMask, &swa);
-
-
 GLXContext oldContext = glXCreateContext((Display*)lWnd.display, vi, 0, GL_TRUE);
 
 /////////////////////////
@@ -430,7 +429,8 @@ glExtensions = glXQueryExtensionsString((Display*)lWnd.display, DefaultScreen((D
 glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddressARB((const GLubyte*)"glXCreateContextAttribsARB");
 glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalEXT");
 
-glXMakeCurrent((Display*)lWnd.display, 0, 0);
+if(!glXMakeCurrent((Display*)lWnd.display, 0, 0))
+    return FAILURE;
 glXDestroyContext((Display*)lWnd.display, oldContext);
 
 ////////////////////////
@@ -451,7 +451,9 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
     }
 
     OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
-    glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext);
+    if(!glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext))
+        return FAILURE;
+    XUnlockDisplay((Display*)lWnd.display);
 
 	if (_initMask & DEPTH_BUFFER_SUPPORT)
 		glEnable(GL_DEPTH_TEST);
@@ -462,7 +464,6 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	//////////////////////////////////
 	// CHECK IF INIT FLAGS WERE MET //
 	//////////////////////////////////
-
 	//////////////////
 	// 10 BIT COLOR //
 	//////////////////
@@ -479,8 +480,6 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 			return FAILURE;
 
 	}
-
-
 	//////////////////////////
 	// DEPTH BUFFER SUPPORT //
 	//////////////////////////
@@ -492,8 +491,6 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 		if (depth == 0 || !glIsEnabled(GL_DEPTH_TEST))
 			return FAILURE;
 	}
-
-
 	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
 	///////////////////////////
@@ -505,8 +502,6 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 		if (stencil == 0 || !glIsEnabled(GL_STENCIL_TEST))
 			return FAILURE;
 	}
-
-
 	////////////////////////
 	// ES CONTEXT SUPPORT //
 	////////////////////////
@@ -517,10 +512,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 		if (strstr(version, "OpenGL ES") == NULL)
 			return FAILURE;
 	}
-
 	//Clean Memory
 	XFree(vi);
 	XFree(fbc);
+
 
 #elif __APPLE__
 
@@ -661,12 +656,11 @@ GReturn GOpenGL::UniversalSwapBuffers()
 	SwapBuffers(hdc);
 
 #elif __linux__
-
 	if (!lWnd.display || !lWnd.window || lWindow == nullptr)
 		return FAILURE;
-
+XLockDisplay((Display*)lWnd.display);
 	glXSwapBuffers((Display*)lWnd.display, *lWindow);
-
+XUnlockDisplay((Display*)lWnd.display);
 #elif __APPLE__
 
 	if (!OGLMcontext)
@@ -721,7 +715,6 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 		return SUCCESS;
 
 #elif __linux__
-
 		_outFuncAddress = (void**)glXGetProcAddress((const GLubyte*)_funcName);
 
 		if (_outFuncAddress == nullptr)
@@ -760,7 +753,6 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 		return FAILURE;
 
 #elif __linux__
-
         if (strstr(glExtensions, _extension) != NULL)
             return SUCCESS;
 
@@ -808,7 +800,6 @@ GReturn GOpenGL::QueryExtensionFunction(const char* _extension, const char* _fun
 	return FAILURE;
 
 #elif __linux__
-
     if (strstr(glExtensions, _extension) != NULL)
     {
 
@@ -852,11 +843,12 @@ GReturn GOpenGL::EnableSwapControl(bool _setSwapControl)
 	if (!OGLXcontext)
 		return FAILURE;
 
+XLockDisplay((Display*)lWnd.display);
 	if (_setSwapControl == true)
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 1);
 	else
 		glXSwapIntervalEXT((Display*)lWnd.display, *lWindow, 0);
-
+XUnlockDisplay((Display*)lWnd.display);
 	return SUCCESS;
 
 #elif __APPLE__
@@ -1004,7 +996,7 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
         }
 
 #elif __linux__
-
+XLockDisplay((Display*)lWnd.display);
         switch (_eventID)
         {
             case GW::SYSTEM::MAXIMIZE:
@@ -1044,7 +1036,7 @@ GReturn GOpenGL::OnEvent(const GUUIID & _senderInterface, unsigned int _eventID,
             }
                 break;
         }
-
+XUnlockDisplay((Display*)lWnd.display);
 #elif __APPLE__
 
         switch (_eventID)
@@ -1096,20 +1088,24 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, un
 
 GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
+	GReturn r; // result of init
 	if (_outSurface == nullptr || _gWin == nullptr)
 		return INVALID_ARGUMENT;
 
 	GOpenGL* Surface = new GOpenGL();
-	Surface->SetGWindow(_gWin);
-
-	Surface->Initialize(_initMask);
-
-	_gWin->RegisterListener(Surface, 0);
 
 	if (Surface == nullptr)
 		return FAILURE;
 
-	*_outSurface = Surface;
-
-	return SUCCESS;
+	Surface->SetGWindow(_gWin);
+	if (G_SUCCESS(r = Surface->Initialize(_initMask)))
+	{
+		if (G_SUCCESS(r = _gWin->RegisterListener(Surface, 0)))
+		{
+			*_outSurface = Surface;
+			return SUCCESS;
+		}
+	}
+	// didn't work...
+	return r;
 }
