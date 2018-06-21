@@ -6,7 +6,7 @@
 #include <iostream>
 
 //This is the ammount of files that should be in the directory after all test cases run
-#define DIR_SIZE 9
+#define DIR_SIZE 10
 
 //Test case file names will not be larger than 40 characters
 #define FILE_NAME_SIZE 40
@@ -302,7 +302,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 #ifdef _WIN32
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
-		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
+		REQUIRE(dirSize == DIR_SIZE); //10 is the number of files that should be in the directory after all other testing
 #elif __APPLE__
 		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
@@ -334,11 +334,12 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 			Checklist[1] = ".gitignore";
 			Checklist[2] = "CMakeLists.txt";
 			Checklist[3] = "Doxyfile";
-			Checklist[4] = "LICENSE.md";
-			Checklist[5] = "LinuxSetup";
-			Checklist[6] = "MacSetup.command";
-			Checklist[7] = "README.md";
-			Checklist[8] = "WinSetup.bat";
+			Checklist[4] = "gateware.ver";
+			Checklist[5] = "LICENSE.md";
+			Checklist[6] = "LinuxSetup";
+			Checklist[7] = "MacSetup.command";
+			Checklist[8] = "README.md";
+			Checklist[9] = "WinSetup.bat";
 
 			for (int i = 0; i < DIR_SIZE; i++)
 			{
@@ -353,7 +354,7 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 						continue;
 				}
 			}
-			REQUIRE(MatchNum == 9);
+			REQUIRE(MatchNum == dirSize);
 
 			for (unsigned int i = 0; i < dirSize; ++i)
 				delete[] files[i];

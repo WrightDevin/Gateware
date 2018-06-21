@@ -1,6 +1,7 @@
 // Override export symbols for DLL builds (must be included before interface code).
 #include "../../Source/DLL_Export_Symbols.h"
 #include "../../Interface/G_System/GWindow.h"
+#include "../GVersion.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -168,6 +169,12 @@ AppWindow::~AppWindow()
 
 GReturn AppWindow::OpenWindow()
 {
+#ifdef _DEBUG
+	#define GATEWARE_WINDOW_NAME GATEWARE_VERSION_STRING_LONG
+#else
+	#define GATEWARE_WINDOW_NAME GATEWARE_VERSION_STRING
+#endif
+
 #ifdef _WIN32
 	if (wndHandle)
 		return REDUNDANT_OPERATION;
@@ -179,8 +186,8 @@ GReturn AppWindow::OpenWindow()
 
 	winClass.cbSize = sizeof(WNDCLASSEX);
 	winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
-	winClass.hCursor = LoadCursorW(NULL, IDC_CROSS);
-	winClass.hIcon = LoadIconW(0, IDI_EXCLAMATION);
+	winClass.hCursor = LoadCursorW(NULL, IDC_ARROW);
+	winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
 	winClass.lpfnWndProc = GWindowProc;
 	winClass.lpszClassName = appName;
 	winClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -208,7 +215,7 @@ GReturn AppWindow::OpenWindow()
 		windowsStyle = WS_MINIMIZE;
 	}
 	//Create the window
-	wndHandle = CreateWindowW(appName, L"Win32Window", windowsStyle, xPos, yPos,
+	wndHandle = CreateWindowW(appName, L"" GATEWARE_WINDOW_NAME, windowsStyle, xPos, yPos,
 		width, height, NULL, NULL, GetModuleHandleW(0), 0);
 
 	//Pass class into SetWindowLongPtr
@@ -289,7 +296,7 @@ GReturn AppWindow::OpenWindow()
 		return FAILURE;
     }
 
-	XStoreName(display, window, "BasicWindowApp");
+	XStoreName(display, window, GATEWARE_WINDOW_NAME);
 
 	LastEvent = GWindowInputEvents::NOTIFY;
 
@@ -368,6 +375,8 @@ GReturn AppWindow::OpenWindow()
         
     refMutex.unlock();
 
+	[window setTitle : @GATEWARE_WINDOW_NAME];
+
     LastEvent = GWindowInputEvents::NOTIFY;
 
 	//[window autorelease];
@@ -407,6 +416,8 @@ GReturn AppWindow::OpenWindow()
 		return FAILURE;
 #endif
 
+// don't need this anymore
+#undef GATEWARE_WINDOW_NAME
 }
 
 GReturn AppWindow::ProcessWindowEvents()

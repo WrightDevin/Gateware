@@ -1088,6 +1088,7 @@ GATEWARE_EXPORT_EXPLICIT GReturn CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, un
 
 GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long long _initMask, GOpenGLSurface** _outSurface)
 {
+	GReturn r; // result of init
 	if (_outSurface == nullptr || _gWin == nullptr)
 		return INVALID_ARGUMENT;
 
@@ -1104,7 +1105,15 @@ GReturn GW::GRAPHICS::CreateGOpenGLSurface(SYSTEM::GWindow* _gWin, unsigned long
 	if (Surface == nullptr)
 		return FAILURE;
 
-	*_outSurface = Surface;
-
-	return SUCCESS;
+	Surface->SetGWindow(_gWin);
+	if (G_SUCCESS(r = Surface->Initialize(_initMask)))
+	{
+		if (G_SUCCESS(r = _gWin->RegisterListener(Surface, 0)))
+		{
+			*_outSurface = Surface;
+			return SUCCESS;
+		}
+	}
+	// didn't work...
+	return r;
 }
