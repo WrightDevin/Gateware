@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH ''
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH "master"
+#define GATEWARE_BRANCH "Tyler2"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x1f33a8d
+#define GATEWARE_COMMIT_HASH 0x6065f5b
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v4.0"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v4.0 (master) [1f33a8d]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v4.0 (Tyler2) [6065f5b]"
 
 #endif

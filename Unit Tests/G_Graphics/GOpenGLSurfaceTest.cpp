@@ -121,16 +121,9 @@ TEST_CASE("Querying OGLSurface Information.", "[GetContext], [GetDeviceContextHa
 TEST_CASE("Testing OGLSurface Events")
 {
 	unsigned int clientX, clientY, width, height;
-
-printf("\n\n STARTING GET FUNCTIONS \n\n");
-
 	gWnd_OGL->GetClientTopLeft(clientX, clientY);
 	gWnd_OGL->GetWidth(width);
 	gWnd_OGL->GetHeight(height);
-
-printf("\n\n FINISHED GET FUNCTIONS \n\n");
-
-
 
 #ifdef _WIN32
 
