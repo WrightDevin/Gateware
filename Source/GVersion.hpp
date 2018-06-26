@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "Tyler2"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x70f0bb1
+#define GATEWARE_COMMIT_HASH 0x3fe967a
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v4.0"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v4.0 (Tyler2) [70f0bb1]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v4.0 (Tyler2) [3fe967a]"
 
 #endif

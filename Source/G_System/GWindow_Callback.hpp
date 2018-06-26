@@ -8,7 +8,6 @@
 #include <X11/Xutil.h>
 #include "unistd.h"
 #include <map>
-#include <mutex>
 
 #elif __APPLE__
 #include <map>
@@ -181,8 +180,11 @@ namespace
         unsigned long bytes_after = 0;
         int actual_format = 0;
 
-		while (XEventsQueued(_display, QueuedAlready) > 0) //true //XPending(_display) > 0
+		while (true) //true //XPending(_display) > 0
 		{
+		    if(XEventsQueued(_display, QueuedAlready) > 0) //The fix to the hanging bug in linux
+            {
+
 		    propRet = nullptr;
 
 		    //Also flushes the request buffer if xlib's queue does not contain an event and waits for an event to arrive from server connection
@@ -396,10 +398,11 @@ namespace
                     break;
                     }
 
-
 			}
 
-		}
+            }
+
+        }
 
 
 

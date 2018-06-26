@@ -586,7 +586,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         bool fullscreen = false;
         if (fullscreen == true)
             [window toggleFullScreen : nil];
-        
+
 		dispatch_sync(dispatch_get_main_queue(), ^{
 
 			FlushMacEventLoop();
@@ -697,7 +697,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		[window setFrame : rect display : YES];
 
 		[window setStyleMask : styleMask];
-        
+
         bool fullscreen = false;
         if (fullscreen == true)
             [window toggleFullScreen : nil];
@@ -805,13 +805,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		bool fullscreen = false;
 		IsFullscreen(fullscreen);
-        
+
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
-        
+
         //[window setCollectionBehavior:(NSWindowCollectionBehaviorFullScreenPrimary)];
         //[window toggleFullScreen:nil];
-        
+
 		dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
@@ -912,8 +912,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		bool fullscreen;
 		IsFullscreen(fullscreen);
-        
-        
+
+
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
 
@@ -987,7 +987,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         dispatch_sync(dispatch_get_main_queue(), ^{
             [window miniaturize:nil];
         });
-        
+
 		//dispatch_sync(dispatch_get_main_queue(), ^{
 		//	FlushMacEventLoop();
 		//});
@@ -1094,11 +1094,11 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	//dispatch_sync(dispatch_get_main_queue(), ^{
 	//	[window setFrame : rect display : YES animate : YES];
 	//});
-    
+
     NSPoint pointPos;
     pointPos.y = newPos.y;
     pointPos.x = newPos.x;
-    
+
     dispatch_sync(dispatch_get_main_queue(), ^{
         [window setFrameTopLeftPoint: pointPos];
     });
@@ -1790,11 +1790,11 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 
 GReturn AppWindow::GetLastEvent(GWindowInputEvents& _LastEvent)
 {
-    
+
 #ifdef __APPLE__
     LastEvent = (GWindowInputEvents)eventCatchers[this->window];
 #endif
-    
+
 	//Checks our LastEvent and sees if its a valid event.
 	if (LastEvent < 0 || LastEvent > GWindowInputEvents::DESTROY)
 		return FAILURE;

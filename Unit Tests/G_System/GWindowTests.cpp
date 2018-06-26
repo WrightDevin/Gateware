@@ -447,7 +447,7 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
     XCloseDisplay((Display*)l_appWindow->display);
 
     delete l_appWindow;
-    sleep(0.001);
+    sleep(1.001);
 #endif
 
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
