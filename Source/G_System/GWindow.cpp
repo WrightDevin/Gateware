@@ -583,6 +583,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		[window setStyleMask : styleMask];
 		[window setFrame : rect display : YES];
 
+        bool fullscreen = false;
+        if (fullscreen == true)
+            [window toggleFullScreen : nil];
+        
 		dispatch_sync(dispatch_get_main_queue(), ^{
 
 			FlushMacEventLoop();
@@ -693,6 +697,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		[window setFrame : rect display : YES];
 
 		[window setStyleMask : styleMask];
+        
+        bool fullscreen = false;
+        if (fullscreen == true)
+            [window toggleFullScreen : nil];
 
 		dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
@@ -792,14 +800,18 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		NSUInteger styleMask = NSWindowStyleMaskFullScreen;
 		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-		[window setStyleMask : styleMask];
-		//[window setFrame:rect display:YES];
+        [window setStyleMask : styleMask];
+		[window setFrame:rect display:YES];
 
-		bool fullscreen;
+		bool fullscreen = false;
 		IsFullscreen(fullscreen);
+        
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
-
+        
+        //[window setCollectionBehavior:(NSWindowCollectionBehaviorFullScreenPrimary)];
+        //[window toggleFullScreen:nil];
+        
 		dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
@@ -886,7 +898,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 
         XUnlockDisplay(display);
-        //LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -901,6 +912,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		bool fullscreen;
 		IsFullscreen(fullscreen);
+        
+        
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
 
@@ -967,12 +980,17 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			FlushMacEventLoop();
 		});
 
-		if (![window isMiniaturized])
-			[window miniaturize : nil];
+		//if (![window isMiniaturized])
+		//	[window miniaturize : nil];
 
-		dispatch_sync(dispatch_get_main_queue(), ^{
-			FlushMacEventLoop();
-		});
+        //This set-up allows the window to minimize and let our event system know.
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [window miniaturize:nil];
+        });
+        
+		//dispatch_sync(dispatch_get_main_queue(), ^{
+		//	FlushMacEventLoop();
+		//});
 
 		if ([window isMiniaturized])
 		{
@@ -1072,9 +1090,18 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	newPos.y = yPos - height;
 	newPos.x = xPos;
 
-	dispatch_sync(dispatch_get_main_queue(), ^{
-		[window setFrame : rect display : YES animate : YES];
-	});
+    //It worked for setting the position but it was calling our Resize event so it never hit the move event after this function
+	//dispatch_sync(dispatch_get_main_queue(), ^{
+	//	[window setFrame : rect display : YES animate : YES];
+	//});
+    
+    NSPoint pointPos;
+    pointPos.y = newPos.y;
+    pointPos.x = newPos.x;
+    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [window setFrameTopLeftPoint: pointPos];
+    });
 
 	return SUCCESS;
 #endif
@@ -1763,6 +1790,11 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 
 GReturn AppWindow::GetLastEvent(GWindowInputEvents& _LastEvent)
 {
+    
+#ifdef __APPLE__
+    LastEvent = (GWindowInputEvents)eventCatchers[this->window];
+#endif
+    
 	//Checks our LastEvent and sees if its a valid event.
 	if (LastEvent < 0 || LastEvent > GWindowInputEvents::DESTROY)
 		return FAILURE;

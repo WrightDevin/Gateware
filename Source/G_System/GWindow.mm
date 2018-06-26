@@ -85,9 +85,8 @@
     //Tells the delegate that the window is being resized (whether by the user or through one of the setFrame...methods
     //other than setFrame:display)
     GWINDOW_EVENT_DATA eventData;
-    
     eventCatchers[sender] = GWindowInputEvents::RESIZE;
-    
+
     eventData.eventFlags = RESIZE;
     eventData.height = frameSize.height;
     eventData.width = frameSize.width;
@@ -227,8 +226,8 @@
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
     
-    NSWindow* wnd;
-    NSRect rect;
+    //NSWindow* wnd;
+    //NSRect rect;
     
     
     
