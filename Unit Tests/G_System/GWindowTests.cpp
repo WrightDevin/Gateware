@@ -270,12 +270,6 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 
 TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], [GetClientTopLeft]")
 {
-    /*
-    [GetClientWidth], [GetClientHeight], [GetClientTopLeft]
-    Causes the app to hang until you click a window.
-    This is bc the function calls XGetGeometry() (the location of the hang)
-    */
-
 	unsigned int appWindowClientWidth = 0;
 	unsigned int appWindowClientHeight = 0;
 	unsigned int appWindowClientPosX = 0;
@@ -315,7 +309,7 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Fail case
 	windowListener->GetWindowTestValue(windowTestValue);
-	//CHECK(windowTestValue == 1);
+	CHECK(windowTestValue == 1);
 
 #ifdef _WIN32
 	// Tell window to maximize
@@ -333,7 +327,7 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Pass case
 	windowListener->GetWindowTestValue(windowTestValue);
-	//REQUIRE(windowTestValue == 1);
+	REQUIRE(windowTestValue == 1);
 }
 
 TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
