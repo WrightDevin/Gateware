@@ -325,7 +325,8 @@ GReturn AppWindow::OpenWindow()
 		prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
 		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
-		linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
+		//linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
+		linuxLoop = new std::thread(LinuxWndProc, display, window, std::ref(this->LastEvent)); //In-order to pass-by reference you must use std::ref
         XUnlockDisplay(display);
 
 		linuxLoop->detach();
@@ -1790,16 +1791,18 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 
 GReturn AppWindow::GetLastEvent(GWindowInputEvents& _LastEvent)
 {
-
 #ifdef __APPLE__
     LastEvent = (GWindowInputEvents)eventCatchers[this->window];
 #endif
+winMutex.lock();
 
 	//Checks our LastEvent and sees if its a valid event.
 	if (LastEvent < 0 || LastEvent > GWindowInputEvents::DESTROY)
 		return FAILURE;
 
-	_LastEvent = LastEvent;
+	_LastEvent = this->LastEvent;
+
+winMutex.unlock();
 
 	return SUCCESS;
 

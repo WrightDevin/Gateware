@@ -152,7 +152,8 @@ namespace
 #endif // __WIN32
 
 #ifdef __linux__
-    void LinuxWndProc(Display * _display, Window _window, GW::SYSTEM::GWindowInputEvents *Gwnd)
+    //void LinuxWndProc(Display * _display, Window _window, GW::SYSTEM::GWindowInputEvents *Gwnd)
+    void LinuxWndProc(Display * _display, Window _window, GW::SYSTEM::GWindowInputEvents &Gwnd)
     {
         Atom prop = 0;
         unsigned char * propRet = NULL;
@@ -180,10 +181,12 @@ namespace
         unsigned long bytes_after = 0;
         int actual_format = 0;
 
-		while (true) //true //XPending(_display) > 0
+        //bool run = true;
+		while (XEventsQueued(_display, QueuedAlready) > 0)
 		{
-		    if(XEventsQueued(_display, QueuedAlready) > 0) //The fix to the hanging bug in linux
-            {
+		    //std::this_thread::yield();
+            //if(XEventsQueued(_display, QueuedAlready) > 0) //The fix to the hanging bug in linux
+            //{
 
 		    propRet = nullptr;
 
@@ -213,27 +216,28 @@ namespace
                             if(prop == propHidden)
                             {
                              eventFlag = MINIMIZE;
-                             *Gwnd = GWindowInputEvents::MINIMIZE;
+                             Gwnd = GWindowInputEvents::MINIMIZE;
                             }
                             else if(prop == 301 || prop == 302 || prop == propFull)
                             {
                             eventFlag = MAXIMIZE;
-                            *Gwnd = GWindowInputEvents::MAXIMIZE;
+                            Gwnd = GWindowInputEvents::MAXIMIZE;
                             }
                             else if(prevX != x || prevY != y)
                             {
                             eventFlag = MOVE;
-                            *Gwnd = GWindowInputEvents::MOVE;
+                            Gwnd = GWindowInputEvents::MOVE;
                             }
                             else if(prevHeight != height || prevWidth != width)
                             {
                             eventFlag = RESIZE;
-                            *Gwnd = GWindowInputEvents::RESIZE;
+                            Gwnd = GWindowInputEvents::RESIZE;
                             }
                             else if(prop == propClose)
                             {
                             eventFlag = DESTROY;
-                            *Gwnd = GWindowInputEvents::DESTROY;
+                            Gwnd = GWindowInputEvents::DESTROY;
+                            //run = false;
                             }
 
                             eventStruct.eventFlags = eventFlag;
@@ -266,12 +270,12 @@ namespace
                         if(prevX != x || prevY != y) //if the previous position is not equal to the current position then we moved.
                         {
                         eventFlag = MOVE;
-                        *Gwnd = GWindowInputEvents::MOVE;
+                        Gwnd = GWindowInputEvents::MOVE;
                         }
                         if(prevHeight != height || prevWidth != width) //if the previous width/height are not equal to the current width/height then we resized.
                         {
                         eventFlag = RESIZE;
-                        *Gwnd = GWindowInputEvents::RESIZE;
+                        Gwnd = GWindowInputEvents::RESIZE;
                         }
 
                             eventStruct.eventFlags = eventFlag;
@@ -298,7 +302,7 @@ namespace
                         //The change of a window's state from unmapped to mapped
 
                         eventFlag = MAXIMIZE;
-                        *Gwnd = GWindowInputEvents::MAXIMIZE;
+                        Gwnd = GWindowInputEvents::MAXIMIZE;
 
                             eventStruct.eventFlags = eventFlag;
                             eventStruct.width = width;
@@ -330,7 +334,7 @@ namespace
                         if(event.xclient.message_type == propHidden)
                         {
                             eventFlag = MINIMIZE;
-                            *Gwnd = GWindowInputEvents::MINIMIZE;
+                            Gwnd = GWindowInputEvents::MINIMIZE;
 
                             eventStruct.eventFlags = eventFlag;
                             eventStruct.width = width;
@@ -378,7 +382,7 @@ namespace
                     XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
 
                     eventFlag = DESTROY;
-                    *Gwnd = GWindowInputEvents::DESTROY;
+                    Gwnd = GWindowInputEvents::DESTROY;
 
                         eventStruct.eventFlags = eventFlag;
                         eventStruct.width = width;
@@ -395,15 +399,15 @@ namespace
                                 for (; iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
                             }
+                    //run = false;
                     break;
                     }
 
-			}
+			//}
 
             }
 
         }
-
 
 
     }
