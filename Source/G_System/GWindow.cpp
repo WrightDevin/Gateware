@@ -92,6 +92,7 @@ private:
 	GWindowInputEvents LastEvent;
 
 	std::mutex refMutex;
+	std::mutex winMutex;
 
 public:
 
@@ -324,7 +325,8 @@ GReturn AppWindow::OpenWindow()
 		prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
 		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
-		linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
+		//linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
+		linuxLoop = new std::thread(LinuxWndProc, display, window, std::ref(this->LastEvent)); //In-order to pass-by reference you must use std::ref
         XUnlockDisplay(display);
 
 		linuxLoop->detach();
@@ -364,15 +366,15 @@ GReturn AppWindow::OpenWindow()
 		styleMask : windowStyleMask
 		backing : NSBackingStoreBuffered
 		defer : NO];
-        
+
 	[window setTitle : @"SampleCocoaWindow"];
-        
+
     refMutex.lock();
-        
+
     std::map<NSWindow*, GW::SYSTEM::GWindowInputEvents>::const_iterator iter = eventCatchers.find(window);
     if (iter != eventCatchers.end())
     eventCatchers[window] = LastEvent;
-        
+
     refMutex.unlock();
 
 	[window setTitle : @GATEWARE_WINDOW_NAME];
@@ -582,6 +584,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		[window setStyleMask : styleMask];
 		[window setFrame : rect display : YES];
 
+        bool fullscreen = false;
+        if (fullscreen == true)
+            [window toggleFullScreen : nil];
+
 		dispatch_sync(dispatch_get_main_queue(), ^{
 
 			FlushMacEventLoop();
@@ -693,6 +699,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		[window setStyleMask : styleMask];
 
+        bool fullscreen = false;
+        if (fullscreen == true)
+            [window toggleFullScreen : nil];
+
 		dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
@@ -726,7 +736,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		else
 			ShowWindow(wndHandle, SW_MAXIMIZE);
 
-        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __linux__
@@ -775,19 +784,14 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
 		XEvent eventStruct;
 		memset(&eventStruct, 0, sizeof eventStruct);
-        eventStruct.type = MapNotify; //You are changing window mapping that a Map msg.
+        eventStruct.type = MapNotify;
         eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
         eventStruct.xmap.display = display;
         eventStruct.xmap.window = window;
 
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, false, eventMask, &eventStruct);
-		//sleep(1);
-		//XFlush(display);
-
-
         XUnlockDisplay(display);
-        //LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -797,13 +801,17 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		NSUInteger styleMask = NSWindowStyleMaskFullScreen;
 		NSRect rect = NSMakeRect(xPos, yPos, width, height);
 
-		[window setStyleMask : styleMask];
-		//[window setFrame:rect display:YES];
+        [window setStyleMask : styleMask];
+		[window setFrame:rect display:YES];
 
-		bool fullscreen;
+		bool fullscreen = false;
 		IsFullscreen(fullscreen);
+
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
+
+        //[window setCollectionBehavior:(NSWindowCollectionBehaviorFullScreenPrimary)];
+        //[window toggleFullScreen:nil];
 
 		dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
@@ -811,7 +819,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (window)
 		{
-		    LastEvent = GWindowInputEvents::MAXIMIZE;
 			return SUCCESS;
 		}
 
@@ -837,7 +844,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		else
 			ShowWindow(wndHandle, SW_MAXIMIZE);
 
-        LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 #elif __linux__
         XLockDisplay(display);
@@ -870,13 +876,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			return FAILURE;
         }
 
-		//XFlush(display);
-		//XSync(display, 0);
-
         XMapWindow(display,window);
 
         //Create an event "message" to pass to the server letting it know you Resized the window.
-        //XFlush(display);
 
 		//Tells the server what events to look for with these masks.
 		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
@@ -885,7 +887,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
 		XEvent eventStruct;
 		memset(&eventStruct, 0, sizeof eventStruct);
-        eventStruct.type = MapNotify; //You are changing window mapping that a Map msg.
+        eventStruct.type = MapNotify;
         eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
         eventStruct.xmap.display = display;
         eventStruct.xmap.window = window;
@@ -897,7 +899,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 
         XUnlockDisplay(display);
-        //LastEvent = GWindowInputEvents::MAXIMIZE;
 		return SUCCESS;
 
 #elif __APPLE__
@@ -912,6 +913,8 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		bool fullscreen;
 		IsFullscreen(fullscreen);
+
+
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
 
@@ -921,7 +924,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		if (window)
 		{
-		    LastEvent = GWindowInputEvents::MAXIMIZE;
 			return SUCCESS;
 		}
 
@@ -938,20 +940,33 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		RECT windowRect = { xPos, yPos, width, height };
 		GetWindowRect(wndHandle, &windowRect);
-        LastEvent = GWindowInputEvents::MINIMIZE;
 		return SUCCESS;
 #elif __linux__
 
         XLockDisplay(display);
 		if (!XIconifyWindow(display, window, DefaultScreen(display)))
         {
-            XUnlockDisplay(display);
+            //Tells the server what events to look for with these masks.
+            unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
+
+
+            //Fill the correct Event structure for the action you performed on the window to update the server side.
+            XEvent eventStruct;
+            memset(&eventStruct, 0, sizeof eventStruct);
+            eventStruct.type = ClientMessage;
+            eventStruct.xclient.send_event = true; //True = that you are going to use XSendEvent to let the server know
+            eventStruct.xclient.display = display;
+            eventStruct.xclient.window = window;
+            eventStruct.xclient.message_type = prop_hidden;
+
+            //Send event to server and wait a bit so it can receive it.
+            XSendEvent(display, window, false, eventMask, &eventStruct);
+        XUnlockDisplay(display);
             return FAILURE;
         }
 		else
 		{
 		    XUnlockDisplay(display);
-           // LastEvent = GWindowInputEvents::MINIMIZE;
 			return SUCCESS;
 		}
 
@@ -966,16 +981,20 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 			FlushMacEventLoop();
 		});
 
-		if (![window isMiniaturized])
-			[window miniaturize : nil];
+		//if (![window isMiniaturized])
+		//	[window miniaturize : nil];
 
-		dispatch_sync(dispatch_get_main_queue(), ^{
-			FlushMacEventLoop();
-		});
+        //This set-up allows the window to minimize and let our event system know.
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [window miniaturize:nil];
+        });
+
+		//dispatch_sync(dispatch_get_main_queue(), ^{
+		//	FlushMacEventLoop();
+		//});
 
 		if ([window isMiniaturized])
 		{
-            LastEvent = GWindowInputEvents::MINIMIZE;
 			return SUCCESS;
 		}
 
@@ -1030,7 +1049,6 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 		return FAILURE;
 	else
     {
-        LastEvent = GWindowInputEvents::MOVE;
 		return SUCCESS;
     }
 #elif __linux__
@@ -1057,18 +1075,13 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, 0, eventMask, &eventStruct);
-		//sleep(1);
-		//XFlush(display);
 
 		XUnlockDisplay(display);
-		//std::this_thread::yield();
-		//LastEvent = GWindowInputEvents::MOVE;
 		return SUCCESS;
 	}
 	else
     {
         XUnlockDisplay(display);
-        //XFlush(display);
 		return FAILURE;
     }
 
@@ -1078,11 +1091,19 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 	newPos.y = yPos - height;
 	newPos.x = xPos;
 
-	dispatch_sync(dispatch_get_main_queue(), ^{
-		[window setFrame : rect display : YES animate : YES];
-	});
+    //It worked for setting the position but it was calling our Resize event so it never hit the move event after this function
+	//dispatch_sync(dispatch_get_main_queue(), ^{
+	//	[window setFrame : rect display : YES animate : YES];
+	//});
 
-	LastEvent = GWindowInputEvents::MOVE;
+    NSPoint pointPos;
+    pointPos.y = newPos.y;
+    pointPos.x = newPos.x;
+
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [window setFrameTopLeftPoint: pointPos];
+    });
+
 	return SUCCESS;
 #endif
 
@@ -1114,7 +1135,6 @@ GReturn AppWindow::ResizeWindow(int _width, int _height)
 		return FAILURE;
 	else
     {
-        LastEvent = GWindowInputEvents::RESIZE;
 		return SUCCESS;
     }
 #elif __linux__
@@ -1146,8 +1166,6 @@ XLockDisplay(display);
 		//XFlush(display);
 
         XUnlockDisplay(display);
-       // LastEvent = GWindowInputEvents::RESIZE;
-       // std::this_thread::yield();
 		return SUCCESS;
 	}
 	else
@@ -1167,7 +1185,6 @@ XLockDisplay(display);
 	dispatch_sync(dispatch_get_main_queue(), ^{
 		[window setFrame : rect display : YES animate : YES];
 	});
-    LastEvent = GWindowInputEvents::RESIZE;
 	return SUCCESS;
 #endif
 	return FAILURE;
@@ -1231,7 +1248,7 @@ GReturn AppWindow::DecrementCount()
 		for (; iter != listeners.end(); ++iter)
 			iter->first->DecrementCount(); // free handle, don't call Deregister as that would be bad
 		listeners.clear(); // dump all invalid pointers
-        
+
 #ifdef __APPLE__
       //Release handles to any eventCatchers that remain
         std::map<NSWindow*, GW::SYSTEM::GWindowInputEvents>::iterator iter2 = eventCatchers.find(window);
@@ -1371,13 +1388,13 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        XUnlockDisplay(display);
+        //XUnlockDisplay(display);
 		return FAILURE;
         }
-    XUnlockDisplay(display);
+    //XUnlockDisplay(display);
 
 	_outWidth = w + bord; //client's width plus the border.
 	//XFlush(display);
@@ -1409,13 +1426,13 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        XUnlockDisplay(display);
+        //XUnlockDisplay(display);
 		return FAILURE;
         }
-    XUnlockDisplay(display);
+   // XUnlockDisplay(display);
 
 	_outHeight = h + bord; //Client's height plus border.
 	//XFlush(display);
@@ -1450,21 +1467,15 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 	int x, y, screenNum;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
     if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        XUnlockDisplay(display);
+        //XUnlockDisplay(display);
 		return FAILURE;
         }
-
-    //std::this_thread::yield();
-    XUnlockDisplay(display);
+    //XUnlockDisplay(display);
 
     _outClientWidth = w; //The width filled out is the client's width.
-
-    //sleep(1);
-    //XFlush(display);
-   // XSync(display, 0);
     return SUCCESS;
 
 
@@ -1499,18 +1510,15 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
         XUnlockDisplay(display);
 		return FAILURE;
         }
-    XUnlockDisplay(display);
+    //XUnlockDisplay(display);
 
     _outClientHeight = h; //The width filled out is the client's width.
-
-    //XFlush(display);
-    //XSync(display, 0);
     return SUCCESS;
 
 #elif __APPLE__
@@ -1543,17 +1551,15 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        XUnlockDisplay(display);
+        //XUnlockDisplay(display);
 		return FAILURE;
         }
-    XUnlockDisplay(display);
+    //XUnlockDisplay(display);
 
 	_outX = x;
-	//XFlush(display);
-
 
 #elif __APPLE__
 	if (!window)
@@ -1583,17 +1589,14 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
         XUnlockDisplay(display);
 		return FAILURE;
         }
-    XUnlockDisplay(display);
-
+    //XUnlockDisplay(display);
 	_outY = y;
-	//XFlush(display);
-
 #elif __APPLE__
 	if (!window)
 		return FAILURE;
@@ -1625,21 +1628,16 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	XLockDisplay(display);
+	//XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
     {
-        XUnlockDisplay(display);
+        //XUnlockDisplay(display);
 		return FAILURE;
     }
-    XUnlockDisplay(display);
+    //XUnlockDisplay(display);
 
 	_outX = x;
 	_outY = y + bord;
-
-	//sleep(1);
-	//XFlush(display);
-
-
 #elif __APPLE__
 	if (!window)
 		return FAILURE;
@@ -1793,11 +1791,18 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 
 GReturn AppWindow::GetLastEvent(GWindowInputEvents& _LastEvent)
 {
+#ifdef __APPLE__
+    LastEvent = (GWindowInputEvents)eventCatchers[this->window];
+#endif
+winMutex.lock();
+
 	//Checks our LastEvent and sees if its a valid event.
 	if (LastEvent < 0 || LastEvent > GWindowInputEvents::DESTROY)
 		return FAILURE;
 
-	_LastEvent = LastEvent;
+	_LastEvent = this->LastEvent;
+
+winMutex.unlock();
 
 	return SUCCESS;
 
