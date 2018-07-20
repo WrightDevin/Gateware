@@ -66,7 +66,7 @@ TEST_CASE("Create GOpenGLSurface Object.", "[GOpenGLSurface]")
 	unsigned long long initMask = 0;
 	initMask |= DEPTH_BUFFER_SUPPORT;//
 	initMask |= DEPTH_STENCIL_SUPPORT;//
-	initMask |= OPENGL_ES_SUPPORT; // NOT EVERY DRIVER MAY SUPPORT THIS
+	//initMask |= OPENGL_ES_SUPPORT; // NOT EVERY DRIVER MAY SUPPORT THIS
 	//initMask |= COLOR_10_BIT; // OR THIS
 	//initMask |= DIRECT2D_SUPPORT; // THIS DEFINITELY SHOULD NOT BE SUPPORTED
 
