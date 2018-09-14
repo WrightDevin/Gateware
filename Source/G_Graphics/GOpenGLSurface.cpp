@@ -896,7 +896,6 @@ GReturn GOpenGL::DecrementCount()
 
 	if (refCount == 0)
 	{
-		gWnd->DeregisterListener(this);
 		delete this;
 	}
 
@@ -1068,7 +1067,8 @@ XUnlockDisplay((Display*)lWnd.display);
                 break;
             case GW::SYSTEM::DESTROY:
             {
-                this->~GOpenGL();
+				gWnd->DecrementCount(); // release our hold on GWindow
+				gWnd = nullptr; // pointer is no longer valid
             }
                 break;
         }
