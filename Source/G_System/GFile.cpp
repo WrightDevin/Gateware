@@ -74,7 +74,7 @@ class FileIO : public GW::SYSTEM::GFile
 	DIR* currDirStream;  //Maintains the current directory.
 	fstream file;  //Maintains the current file (if one is open).
 	FILE* binaryFile = NULL; //for binary read and write
-
+	errno_t err;// for checking file opened in sucure way
 	string currDir;  //A cached directory path for faster fetching.
 
 	atomic<unsigned int> dirSize;  //A cached directory size for faster fetching.
@@ -188,11 +188,14 @@ GW::GReturn FileIO::OpenBinaryRead(const char* const _file)
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
 
-	//open the file in binary reading mode
-	binaryFile = fopen(tempDir, "rb");
-
-	if (binaryFile == NULL)
-		return GW::FILE_NOT_FOUND;
+	//using fopen_s to securely open the file in binary reading mode
+	if ((err = fopen_s(&binaryFile, tempDir, "rb")) != 0)
+	{
+		if (err == 2)
+			return GW::FILE_NOT_FOUND;
+		else
+			return GW::FAILURE;
+	}
 
 	//Set mode to read
 	mode = ios::in;
@@ -227,11 +230,14 @@ GW::GReturn FileIO::OpenBinaryWrite(const char* const _file)
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
 
-	//open the file in binary writing mode
-	binaryFile = fopen(tempDir, "wb");
-
-	if (binaryFile == NULL)
-		return GW::FILE_NOT_FOUND;
+	//using fopen_s to securely open the file in binary writing mode
+	if ((err = fopen_s(&binaryFile, tempDir, "wb")) != 0)
+	{
+		if (err == 2)
+			return GW::FILE_NOT_FOUND;
+		else
+			return GW::FAILURE;
+	}
 
 	//Set mode to write
 	mode = ios::out;
@@ -269,11 +275,14 @@ GW::GReturn FileIO::AppendBinaryWrite(const char* const _file)
 	strcpy_s(tempDir, G_TO_UTF8(currDir).c_str());
 	strcat_s(tempDir, _file);
 
-	//open the file in binary appending mode
-	binaryFile = fopen(tempDir, "ab");
-
-	if (binaryFile == NULL)
-		return GW::FILE_NOT_FOUND;
+	//using fopen_s to securely open the file in binary appending mode
+	if ((err = fopen_s(&binaryFile, tempDir, "ab")) != 0)
+	{
+		if (err == 2)
+			return GW::FILE_NOT_FOUND;
+		else
+			return GW::FAILURE;
+	}
 
 	//Set mode to write
 	mode = ios::out;

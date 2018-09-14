@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH 'b'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH ""
+#define GATEWARE_BRANCH "master"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x
+#define GATEWARE_COMMIT_HASH 0x4638161
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v5.0b"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b () []"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (master) [4638161]"
 
 #endif
