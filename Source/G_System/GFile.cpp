@@ -74,7 +74,9 @@ class FileIO : public GW::SYSTEM::GFile
 	DIR* currDirStream;  //Maintains the current directory.
 	fstream file;  //Maintains the current file (if one is open).
 	FILE* binaryFile = NULL; //for binary read and write
+#if defined(_WIN32)
 	errno_t err;// for checking file opened in sucure way
+#endif
 	string currDir;  //A cached directory path for faster fetching.
 
 	atomic<unsigned int> dirSize;  //A cached directory size for faster fetching.
@@ -463,7 +465,8 @@ GW::GReturn FileIO::Read(char* _outData, unsigned int _numBytes)
 #if defined(_WIN32)
 	if (binaryFile)
 	{
-		fread(_outData, sizeof(char), _numBytes, binaryFile);
+		//setting the buffer size(2nd parameter) be as big as reading data size(_numBytes)
+		fread_s(_outData, _numBytes, sizeof(char), _numBytes, binaryFile);
 	}
 	else
 		file.read((wchar_t*)_outData, _numBytes);
