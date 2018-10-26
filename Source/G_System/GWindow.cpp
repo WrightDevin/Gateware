@@ -149,6 +149,8 @@ public:
 	GReturn IsFullscreen(bool& _outIsFullscreen);
 
 	GReturn GetLastEvent(GWindowInputEvents& _LastEvent);
+
+	GReturn CloseWindow();
 };
 
 AppWindow::AppWindow() : refCount(1), xPos(0), yPos(0), width(0), height(0), style(FULLSCREENBORDERED)
@@ -1806,6 +1808,27 @@ winMutex.unlock();
 
 	return SUCCESS;
 
+}
+
+GReturn AppWindow::CloseWindow()
+{
+#ifdef _WIN32
+	if (!wndHandle)
+		return FAILURE;
+	if (!DestroyWindow(wndHandle))
+	{
+		DWORD error = GetLastError();
+		return FAILURE;
+}
+	else
+		return SUCCESS;
+#elif __linux__
+	return FEATURE_UNSUPPORTED;
+#elif __APPLE__
+	return FEATURE_UNSUPPORTED;
+#endif // _WIN32
+
+	return FAILURE;
 }
 
 

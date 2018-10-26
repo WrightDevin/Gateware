@@ -465,6 +465,15 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 
 }
 
+TEST_CASE("Close Window", "[Close Window]")
+{
+	// Pass cases
+	REQUIRE(G_SUCCESS(appWindow->CloseWindow()));
+
+	// Fail cases
+	CHECK(G_FAIL(appWindow->CloseWindow()));
+	CHECK(G_FAIL(unopenedWindow->CloseWindow()));
+}
 
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 {
