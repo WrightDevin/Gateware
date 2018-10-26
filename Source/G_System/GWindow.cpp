@@ -1814,8 +1814,8 @@ GReturn AppWindow::CloseWindow()
 {
 #ifdef _WIN32
 	if (!wndHandle)
-		return FAILURE;
-	if (!DestroyWindow(wndHandle))
+		return INVALID_ARGUMENT;
+	if (!PostMessage(wndHandle, WM_CLOSE, NULL, NULL))
 	{
 		DWORD error = GetLastError();
 		return FAILURE;

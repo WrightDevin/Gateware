@@ -469,9 +469,13 @@ TEST_CASE("Close Window", "[Close Window]")
 {
 	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->CloseWindow()));
+	appWindow->ProcessWindowEvents();
+	windowListener->GetWindowTestValue(windowTestValue);
+	CHECK(windowTestValue == 2);
+	
 
 	// Fail cases
-	CHECK(G_FAIL(appWindow->CloseWindow()));
+	CHECK(G_FAIL(appWindow->CloseWindow()== GW::INVALID_ARGUMENT));
 	CHECK(G_FAIL(unopenedWindow->CloseWindow()));
 }
 

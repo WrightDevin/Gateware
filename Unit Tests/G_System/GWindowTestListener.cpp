@@ -32,6 +32,7 @@ GW::GReturn GWindowTestListener::OnEvent(const GW::GUUIID &_senderInterface, uns
 			break;
 
 		case GW::SYSTEM::DESTROY:
+			windowTestValue = 2;
 			break;
 		}
 	}
