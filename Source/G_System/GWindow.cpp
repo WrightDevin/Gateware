@@ -1825,17 +1825,17 @@ GReturn AppWindow::CloseWindow()
 #elif __linux__
 if(!window||!display)
     return FAILURE;
-    XLockDisplay(display);
-    if(XDestroyWindow(display,window)==BadWindow)
+    XDestroyWindow(display,window);
+    return SUCCESS;
+/*if(XDestroyWindow(display,window)==BadWindow)
     {
-        XUnlockDisplay(display);
         return FAILURE;
     }
-    else
+else
     {
-        XUnlockDisplay(display);
         return SUCCESS;
     }
+    */
 	return FEATURE_UNSUPPORTED;
 #elif __APPLE__
 	return FEATURE_UNSUPPORTED;
