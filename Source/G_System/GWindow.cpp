@@ -1815,13 +1815,13 @@ GReturn AppWindow::CloseWindow()
 #ifdef _WIN32
 	if (!wndHandle)
 		return INVALID_ARGUMENT;
-	if (!PostMessage(wndHandle, WM_CLOSE, NULL, NULL))
+	if (DestroyWindow(wndHandle))
+		return SUCCESS;
+	else
 	{
 		DWORD error = GetLastError();
 		return FAILURE;
-}
-	else
-		return SUCCESS;
+	}
 #elif __linux__
 	return FEATURE_UNSUPPORTED;
 #elif __APPLE__

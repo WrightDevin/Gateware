@@ -111,6 +111,7 @@ namespace
 		}
 		break;
 		case WM_CLOSE:
+		case WM_DESTROY:
 		{
 			GWINDOW_EVENT_DATA eventStruct;
 
@@ -135,10 +136,6 @@ namespace
 			}
 		}
 		break;
-		case WM_DESTROY:
-		{
-			*GEvents = GWindowInputEvents::DESTROY;
-		}
 		default:
 		{
             Sleep(0);
