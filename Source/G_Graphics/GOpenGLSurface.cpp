@@ -452,7 +452,10 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 
     OGLXcontext = glXCreateContextAttribsARB((Display*)lWnd.display, fbc[0], NULL, true, contextAttribs);
     if(!glXMakeCurrent((Display*)lWnd.display, *lWindow, OGLXcontext))
-        return FAILURE;
+    {
+     XUnlockDisplay((Display*)lWnd.display);
+     return FAILURE;
+    }
     XUnlockDisplay((Display*)lWnd.display);
 
 	if (_initMask & DEPTH_BUFFER_SUPPORT)
@@ -494,7 +497,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
 	///////////////////////////
-	if (_initMask && DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 	{
 		GLint stencil;
 		glGetIntegerv(GL_STENCIL_BITS, &stencil);
@@ -505,7 +508,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	////////////////////////
 	// ES CONTEXT SUPPORT //
 	////////////////////////
-	if (_initMask && OPENGL_ES_SUPPORT)
+	if (_initMask & OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
 
