@@ -10,6 +10,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
 #include "unistd.h"
+#include <X11/Xatom.h>
 #elif __APPLE__
 
 #ifdef __OBJC__
@@ -60,7 +61,7 @@ private:
 	Atom prop_vMax;
 	Atom prop_remove;
 	Atom prop_hints;
-	Atom prop_iconic;
+	Atom prop_fscreen;
 	Atom prop_active;
 
 	typedef struct
@@ -89,7 +90,7 @@ private:
 	std::atomic<int> height;
 
 	GWindowStyle style;
-	GWindowInputEvents LastEvent;
+	GWindowInputEvents LastEvent = GWindowInputEvents::DESTROY;
 
 	std::mutex refMutex;
 	std::mutex winMutex;
@@ -319,12 +320,12 @@ GReturn AppWindow::OpenWindow()
 		//XSync(display, 0);
 		//XFlush(display);
 		prop_type = XInternAtom(display, "_NET_WM_STATE", False);
-		prop_hidden = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+		prop_fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
 		prop_hMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 		prop_vMax = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
 		prop_remove = XInternAtom(display, "_NET_WM_STATE_REMOVE", False);
 		prop_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-		prop_iconic = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
+		prop_hidden = XInternAtom(display, "_NET_WM_STATE_HIDDEN", False);
 		prop_active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
 
 		//linuxLoop = new std::thread(LinuxWndProc, display, window, &this->LastEvent);
@@ -334,7 +335,6 @@ GReturn AppWindow::OpenWindow()
 		linuxLoop->detach();
 		return SUCCESS;
 	}
-
 	else
     {
         XUnlockDisplay(display);
@@ -566,14 +566,14 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		unMaxEvent.xclient.data.l[4] = 0;
 
 		stat = XSendEvent(display, DefaultRootWindow(display), False,
-			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+			SubstructureNotifyMask | SubstructureRedirectMask | PropertyChangeMask, &unMaxEvent);
 		if (!stat)
         {
             XUnlockDisplay(display);
 			return FAILURE;
         }
 
-		//XFlush(display);
+		XFlush(display);
 		XUnlockDisplay(display);
 		return SUCCESS;
 #elif __APPLE__
@@ -677,15 +677,47 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		unMaxEvent.xclient.data.l[4] = 0;
 
 		stat = XSendEvent(display, window, False,
-			SubstructureNotifyMask | SubstructureRedirectMask, &unMaxEvent);
+			SubstructureNotifyMask | SubstructureRedirectMask | PropertyChangeMask, &unMaxEvent);
 		if (!stat)
         {
             XUnlockDisplay(display);
 			return FAILURE;
         }
 
-		//XFlush(display);
+		XFlush(display);
 		//XSync(display, 0);
+		Atom actual_type_return;
+        int actual_format_return;
+        unsigned long   nitems_return;
+        unsigned long   bytes_after_return;
+        unsigned char * prop_return = NULL;
+
+        int result = XGetWindowProperty(
+        display,
+        window,
+        prop_type,
+        0L,
+		(~0L),
+		False,
+		AnyPropertyType,
+		&actual_type_return,
+		&actual_format_return,
+		&nitems_return,
+        &bytes_after_return,
+        &prop_return);
+
+        Atom* atoms = (Atom*)prop_return;
+        Atom a = (Atom)prop_return[0];
+        Atom b = (Atom)prop_return[1];
+        //Getting the atom of fullscreen state
+        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+        char* nam ;
+        if(atoms[0] != fscreen)
+        {
+            nam= XGetAtomName(display, atoms[0]);
+        }
+
+
 		XUnlockDisplay(display);
 		return SUCCESS;
 
@@ -720,7 +752,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	}
 	break;
 
-	case FULLSCREENBORDERED:
+	case FULLSCREENBORDERED: //maximize
 	{
 #ifdef _WIN32
 		RECT windowRect;
@@ -753,7 +785,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
 		int stat = XSendEvent(display, RootWindow(display, XDefaultScreen(display)), False,
 			SubstructureRedirectMask | SubstructureNotifyMask, (XEvent*)&ev);
-
+        //XFlush(display);
 		if (!stat)
         {
             XUnlockDisplay(display);
@@ -772,15 +804,15 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         }
 
 		//XSync(display, 0);
-		//XFlush(display);
 
-        XMapWindow(display,window);
+
+        //XMapWindow(display,window);
 
         //Create an event "message" to pass to the server letting it know you Resized the window.
         //XFlush(display);
 
 		//Tells the server what events to look for with these masks.
-		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
+		unsigned int eventMask = SubstructureNotifyMask | SubstructureRedirectMask| PropertyChangeMask;
 
 
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
@@ -790,10 +822,69 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
         eventStruct.xmap.display = display;
         eventStruct.xmap.window = window;
+        /*
+        XEvent eventStruct;
+        Atom wm_stat = XInternAtom(display, "_NET_WM_STATE", False);
+        Atom wm_stat1 = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+        Atom wm_stat2 = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 
+        memset(&eventStruct, 0, sizeof(eventStruct));
+        eventStruct.type = ClientMessage;
+        eventStruct.xclient.window = window;
+        eventStruct.xclient.display = display;
+        eventStruct.xclient.message_type = wm_stat;
+        eventStruct.xclient.format = 32;
+        eventStruct.xclient.data.l[0] = 1;
+        eventStruct.xclient.data.l[1] = prop_hMax;
+        eventStruct.xclient.data.l[2] = prop_vMax;
+        */
+        flag = 1;
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, false, eventMask, &eventStruct);
+        XSync(display,False);
+        //XFlush(display);
+        Atom actual_type_return;
+        int actual_format_return;
+        unsigned long   nitems_return;
+        unsigned long   bytes_after_return;
+        unsigned char * prop_return = NULL;
+
+        int result = XGetWindowProperty(
+        display,
+        window,
+        prop_type,
+        0L,
+		(~0L),
+		False,
+		AnyPropertyType,
+		&actual_type_return,
+		&actual_format_return,
+		&nitems_return,
+        &bytes_after_return,
+        &prop_return);
+
+        Atom* atoms = (Atom*)prop_return;
+        Atom a = (Atom)prop_return[0];
+        Atom b = (Atom)prop_return[1];
+        //Getting the atom of fullscreen state
+        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+        char* nam ;
+        if(atoms[0] != fscreen)
+        {
+            nam= XGetAtomName(display, atoms[0]);
+        }
+
+
         XUnlockDisplay(display);
+        XEvent tempE;
+        int tt;
+        /*do
+        {
+            XPeekEvent(display, &tempE);
+            XFlush(display);
+            XSync(display, False);
+        }while(eventStruct.xclient.data.l[1] != tempE.xclient.data.l[1] && XPending(display));
+*/
 		return SUCCESS;
 
 #elif __APPLE__
@@ -829,7 +920,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	}
 	break;
 
-	case FULLSCREENBORDERLESS:
+	case FULLSCREENBORDERLESS: //fullscreen
 	{
 #ifdef _WIN32
 		RECT windowRect;
@@ -883,24 +974,82 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         //Create an event "message" to pass to the server letting it know you Resized the window.
 
 		//Tells the server what events to look for with these masks.
-		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask |SubstructureNotifyMask | SubstructureRedirectMask;
+		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask | SubstructureNotifyMask | SubstructureRedirectMask;
 
 
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
-		XEvent eventStruct;
+		/*XEvent eventStruct;
 		memset(&eventStruct, 0, sizeof eventStruct);
         eventStruct.type = MapNotify;
         eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
         eventStruct.xmap.display = display;
-        eventStruct.xmap.window = window;
+        eventStruct.xmap.window = window;*/
+
+         XEvent eventStruct;
+        Atom wm_stat = XInternAtom(display, "_NET_WM_STATE", False);
+        Atom fullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False );
+
+
+        memset(&eventStruct, 0, sizeof(eventStruct));
+        eventStruct.type = ClientMessage;
+        eventStruct.xclient.window = window;
+        eventStruct.xclient.display = display;
+        eventStruct.xclient.message_type = wm_stat;
+        eventStruct.xclient.format = 32;
+        eventStruct.xclient.data.l[0] = 1;
+        eventStruct.xclient.data.l[1] = fullscreen;
+        eventStruct.xclient.data.l[2] = 0;
 
         //Send event to server and wait a bit so it can receive it.
+        flag = 1;
+        //int nu1 = XPending(display);
 		XSendEvent(display, window, false, eventMask, &eventStruct);
-		//sleep(1);
-		//XFlush(display);
+       // nu1 = XPending(display);
+		XFlush(display);
+        //XSync(display,False);
+       /* Atom actual_type_return;
+        int actual_format_return;
+        unsigned long   nitems_return;
+        unsigned long   bytes_after_return;
+        unsigned char * prop_return = NULL;
 
+        int result = XGetWindowProperty(
+        display,
+        window,
+        prop_type,
+        0L,
+		(~0L),
+		False,
+		AnyPropertyType,
+		&actual_type_return,
+		&actual_format_return,
+		&nitems_return,
+        &bytes_after_return,
+        &prop_return);
 
+        Atom* atoms = (Atom*)prop_return;
+        Atom a = prop_return[0];
+        Atom b = prop_return[1];
+        //Getting the atom of fullscreen state
+        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
+        if(atoms[0] == fscreen)
+        {
+            int i = 0;
+        }*/
         XUnlockDisplay(display);
+        //XEvent tempE;
+       // nu1 = XPending(display);
+       // XFlush(display);
+       // XSync(display,False);
+
+        while(XPending(display))
+        {
+            //XSync(display, False);
+            //nu1 =XPending(display);
+            //sleep(1);
+            XFlush(display);
+        }
+
 		return SUCCESS;
 
 #elif __APPLE__
@@ -963,12 +1112,14 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
             //Send event to server and wait a bit so it can receive it.
             XSendEvent(display, window, false, eventMask, &eventStruct);
+            XFlush(display);
         XUnlockDisplay(display);
             return FAILURE;
         }
 		else
 		{
 		    XUnlockDisplay(display);
+
 			return SUCCESS;
 		}
 
@@ -1021,9 +1172,11 @@ GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowSt
 		xPos = _x;
 		yPos = _y;
 		style = _style;
-		LastEvent = GWindowInputEvents::DESTROY;
+		//LastEvent = GWindowInputEvents::DESTROY;
 	}
 
+    if(LastEvent == GWindowInputEvents::DESTROY)
+    LastEvent = GWindowInputEvents::NOTIFY;
 	//display = nullptr;
 	return SUCCESS;
 }
@@ -1077,7 +1230,7 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
 
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, 0, eventMask, &eventStruct);
-
+        XFlush(display);
 		XUnlockDisplay(display);
 		return SUCCESS;
 	}
@@ -1165,7 +1318,7 @@ XLockDisplay(display);
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, false, eventMask, &eventStruct);
 		//sleep(1);
-		//XFlush(display);
+		XFlush(display);
 
         XUnlockDisplay(display);
 		return SUCCESS;
@@ -1390,15 +1543,15 @@ GReturn AppWindow::GetWidth(unsigned int& _outWidth)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        //XUnlockDisplay(display);
+        XUnlockDisplay(display);
 		return FAILURE;
         }
-    //XUnlockDisplay(display);
-
 	_outWidth = w + bord; //client's width plus the border.
+    XUnlockDisplay(display);
+
 	//XFlush(display);
 	//XSync(display, 0);
 
@@ -1428,15 +1581,15 @@ GReturn AppWindow::GetHeight(unsigned int& _outHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        //XUnlockDisplay(display);
+        XUnlockDisplay(display);
 		return FAILURE;
         }
-   // XUnlockDisplay(display);
-
 	_outHeight = h + bord; //Client's height plus border.
+    XUnlockDisplay(display);
+
 	//XFlush(display);
 	//XSync(display, 0);
 
@@ -1469,15 +1622,15 @@ GReturn AppWindow::GetClientWidth(unsigned int& _outClientWidth)
 	int x, y, screenNum;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
     if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
         //XUnlockDisplay(display);
 		return FAILURE;
         }
-    //XUnlockDisplay(display);
 
     _outClientWidth = w; //The width filled out is the client's width.
+    XUnlockDisplay(display);
     return SUCCESS;
 
 
@@ -1512,15 +1665,15 @@ GReturn AppWindow::GetClientHeight(unsigned int& _outClientHeight)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
         XUnlockDisplay(display);
 		return FAILURE;
         }
-    //XUnlockDisplay(display);
 
     _outClientHeight = h; //The width filled out is the client's width.
+    XUnlockDisplay(display);
     return SUCCESS;
 
 #elif __APPLE__
@@ -1553,15 +1706,15 @@ GReturn AppWindow::GetX(unsigned int& _outX)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+    XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
-        //XUnlockDisplay(display);
+        XUnlockDisplay(display);
 		return FAILURE;
         }
-    //XUnlockDisplay(display);
-
 	_outX = x;
+    XUnlockDisplay(display);
+
 
 #elif __APPLE__
 	if (!window)
@@ -1591,14 +1744,14 @@ GReturn AppWindow::GetY(unsigned int& _outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
         {
         XUnlockDisplay(display);
 		return FAILURE;
         }
-    //XUnlockDisplay(display);
 	_outY = y;
+    XUnlockDisplay(display);
 #elif __APPLE__
 	if (!window)
 		return FAILURE;
@@ -1630,16 +1783,16 @@ GReturn AppWindow::GetClientTopLeft(unsigned int &_outX, unsigned int &_outY)
 	int x, y;
 	unsigned int w, h, bord, depth;
 
-	//XLockDisplay(display);
+	XLockDisplay(display);
 	if (!XGetGeometry(display, window, &root, &x, &y, &w, &h, &bord, &depth))
     {
         //XUnlockDisplay(display);
 		return FAILURE;
     }
-    //XUnlockDisplay(display);
 
 	_outX = x;
 	_outY = y + bord;
+    XUnlockDisplay(display);
 #elif __APPLE__
 	if (!window)
 		return FAILURE;
@@ -1719,40 +1872,46 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	GetWidth(width);
 	GetHeight(height);
 #elif __linux__
-	XLockDisplay(display);
+    XLockDisplay(display);
 	Screen* scr = DefaultScreenOfDisplay(display);
 	xMax = scr->width;
 	yMax = scr->height;
-	//Atom actual_type_return;
-	//int actual_format_return;
-	//unsigned long   nitems_return;
-	//unsigned long   bytes_after_return;
-	//unsigned char * prop_return = NULL;
 
-	//int result = XGetWindowProperty(
-    //    display,
-    //    window,
-    //    prop_type,
-    //    0L,
-	//	sizeof(Atom),
-	//	False,
-	//	AnyPropertyType,
-	//	&actual_type_return,
-	//	&actual_format_return,
-	//	&nitems_return,
-    //    &bytes_after_return,
-    //    &prop_return);
+	Atom actual_type_return;
+	int actual_format_return;
+	unsigned long   nitems_return;
+	unsigned long   bytes_after_return;
+	unsigned char * prop_return = NULL;
+	int result = XGetWindowProperty(
+        display,
+        window,
+        prop_type,
+        0L,
+		sizeof(Atom),
+		False,
+		AnyPropertyType,
+		&actual_type_return,
+		&actual_format_return,
+		&nitems_return,
+        &bytes_after_return,
+        &prop_return);
 
 
    // Atom vProp = ((Atom *)prop_return)[0];
 	//Atom hProp = ((Atom *)prop_return)[1];
 
-   // if(result != Success)
-   // {
-   //     char temp[1024];
-   //     XGetErrorText(display, result, temp, 1024);
-   //     return FAILURE;
-   // }
+    if(result != Success)
+    {
+        char temp[1024];
+        XGetErrorText(display, result, temp, 1024);
+        return FAILURE;
+    }
+     Atom* props = (Atom*)prop_return;
+    if(props[0] == prop_fscreen )
+    _outIsFullscreen = true;
+    else
+    _outIsFullscreen = false;
+    /*
 	//if (hProp == prop_hMax && vProp == prop_vMax)
 	//	_outIsFullscreen = true;
 	//else
@@ -1761,15 +1920,16 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	//Testing using XGetWindowAttributes for checking if full screen
     XWindowAttributes temp;
     XGetWindowAttributes(display, window, &temp);
+
     int tempBW = temp.border_width;
     int tempW = temp.width + tempBW;
     int tempH = temp.height + tempBW;
 
-    if(tempW == prop_hMax && tempH == prop_vMax)
+    if(tempW == xMax && tempH == yMax)
         _outIsFullscreen = true;
     else
         _outIsFullscreen = false;
-
+    */
     XUnlockDisplay(display);
 	return SUCCESS;
 
