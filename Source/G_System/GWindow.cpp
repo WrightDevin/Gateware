@@ -1823,19 +1823,25 @@ GReturn AppWindow::CloseWindow()
 		return FAILURE;
 	}
 #elif __linux__
-if(!window||!display)
-    return FAILURE;
-    XDestroyWindow(display,window);
-    return SUCCESS;
-/*if(XDestroyWindow(display,window)==BadWindow)
+    XLockDisplay(display);
+    if(!window||!display)
     {
+        XUnlockDisplay(display);
         return FAILURE;
     }
-else
+    //XFlush(display);
+    XUnmapWindow(display, window);
+    if(XDestroyWindow(display,window)==BadWindow)
     {
+        XMapWindow(display,window);
+        XUnlockDisplay(display);
+        return INVALID_ARGUMENT;
+    }
+    else
+    {
+        XUnlockDisplay(display);
         return SUCCESS;
     }
-    */
 	return FEATURE_UNSUPPORTED;
 #elif __APPLE__
 	return FEATURE_UNSUPPORTED;

@@ -15,24 +15,27 @@ GW::GReturn GWindowTestListener::OnEvent(const GW::GUUIID &_senderInterface, uns
 		switch (_eventID)
 		{
 		case GW::SYSTEM::NOTIFY:
+            windowTestValue = 1;
 			break;
 
 		case GW::SYSTEM::MINIMIZE:
+            windowTestValue = 2;
 			break;
 
 		case GW::SYSTEM::MAXIMIZE:
-			windowTestValue = 1;
+			windowTestValue = 3;
 			break;
 
 		case GW::SYSTEM::RESIZE:
-			windowTestValue = 1;
+			windowTestValue = 4;
 			break;
 
 		case GW::SYSTEM::MOVE:
+            windowTestValue = 5;
 			break;
 
 		case GW::SYSTEM::DESTROY:
-			windowTestValue = 2;
+			windowTestValue = 6;
 			break;
 		}
 	}

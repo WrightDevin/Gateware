@@ -309,7 +309,7 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Fail case
 	windowListener->GetWindowTestValue(windowTestValue);
-	CHECK(windowTestValue == 1);
+	CHECK(windowTestValue != 0);
 
 #ifdef _WIN32
 	// Tell window to maximize
@@ -327,7 +327,7 @@ TEST_CASE("Sending events to listeners.", "")
 
 	// Pass case
 	windowListener->GetWindowTestValue(windowTestValue);
-	REQUIRE(windowTestValue == 1);
+	REQUIRE(windowTestValue != 0);
 }
 
 TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
@@ -470,7 +470,7 @@ TEST_CASE("Close Window", "[Close Window]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(appWindow->CloseWindow()));
 	windowListener->GetWindowTestValue(windowTestValue);
-	CHECK(windowTestValue == 2);
+	CHECK(windowTestValue == 6);
 
 
 	// Fail cases
