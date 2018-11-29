@@ -41,6 +41,9 @@ class GeneralController : public GController
 {
 public:
 	//GeneralController
+	GeneralController();
+	virtual ~GeneralController();
+
 	GReturn CreateGeneralController(GController** _outController);
 
 	// GController
@@ -62,10 +65,25 @@ public:
 
 GATEWARE_EXPORT_IMPLICIT GReturn CreateGController(int _controllerType, GController** _outController)
 {
+	return GW::SYSTEM::CreateGController(_controllerType, _outController);
+}
+
+GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outController)
+{
 	return FAILURE;
 }
 
 // GeneralController
+
+GeneralController::GeneralController()
+{
+
+}
+
+GeneralController::~GeneralController()
+{
+
+}
 
 GReturn GeneralController::CreateGeneralController(GController** _outController)
 {

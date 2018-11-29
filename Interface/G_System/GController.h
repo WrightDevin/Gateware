@@ -1,5 +1,5 @@
-#ifndef GCONNTROLLER_H
-#define GCONNTROLLER_H
+#ifndef GCONTROLLER_H
+#define GCONTROLLER_H
 
 /*!
 File: GController.h
@@ -38,7 +38,7 @@ namespace GW
 			int controllerIndex; /*!< The Controller index where the event took place */ 
 			int inputCode;		 /*!< The Code repsenting the Detected input */
 			float inputValue;	 /*!< The value of the detected input */
-			bool isConnected	 /*!< Value indicating whether the conntroller is connected */
+			bool isConnected	 /*!< Value indicating whether the controller is connected */
 		};
 #pragma pack(pop)
 
@@ -69,7 +69,7 @@ namespace GW
 		public:
 			//! Used to poll the current state of a button or axis on a controller
 			/*
-			*	Use an Inputcode to to check the state of a button or axis on the controller
+			*	Use an Inputcode to check the state of a button or axis on the controller
 			*	at the selected index. If a button is being checked the _outState will be 0 for 
 			*	up and 1 for down. If a axis is being checked the _outState will be between -1 and 1 inclusively.
 			*
