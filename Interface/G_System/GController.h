@@ -31,6 +31,7 @@ namespace GW
 		/*
 		*	If the corresponding event is an Input Event inputCode and inputValue will contain the input code and value 
 		*	respectively for the detected input. If the corresponding event is an Connection event inputCode and inputValue will be 0. 
+		*	isConnected will be 0 for false and 1 for true.
 		*	
 		*/
 		struct GCONTROLLER_EVENT_DATA
@@ -38,7 +39,7 @@ namespace GW
 			int controllerIndex; /*!< The Controller index where the event took place */ 
 			int inputCode;		 /*!< The Code repsenting the Detected input */
 			float inputValue;	 /*!< The value of the detected input */
-			bool isConnected	 /*!< Value indicating whether the controller is connected */
+			int isConnected		 /*!< Value indicating whether the controller is connected */
 		};
 #pragma pack(pop)
 
