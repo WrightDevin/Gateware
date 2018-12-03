@@ -47,7 +47,7 @@ G_Audio/GAudioTests.cpp
 
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GController GDirectX11Surface GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif(WIN32)
 

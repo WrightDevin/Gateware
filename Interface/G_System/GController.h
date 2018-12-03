@@ -39,7 +39,7 @@ namespace GW
 			int controllerIndex; /*!< The Controller index where the event took place */ 
 			int inputCode;		 /*!< The Code repsenting the Detected input */
 			float inputValue;	 /*!< The value of the detected input */
-			int isConnected		 /*!< Value indicating whether the controller is connected */
+			int isConnected;		 /*!< Value indicating whether the controller is connected */
 		};
 #pragma pack(pop)
 
@@ -117,7 +117,7 @@ namespace GW
 			virtual GReturn GetNumConnected(int &_outConnectedCount) = 0;
 
 		
-		} //end GController class
+		}; //end GController class
 
 		//! Creates a new GController object
 		/*
