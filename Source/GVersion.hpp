@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH 'b'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH "master"
+#define GATEWARE_BRANCH "DevinWright_GController"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x4638161
+#define GATEWARE_COMMIT_HASH 0x7de5f9e
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v5.0b"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (master) [4638161]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (DevinWright_GController) [7de5f9e]"
 
 #endif

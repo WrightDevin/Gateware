@@ -46,11 +46,11 @@ namespace GW
 		//! GControllerEvents holds the possible events that can be sent from GController
 		enum GControllerEvents
 		{
-			BUTTONPRESSED,			/*!< Input event for button press */
-			BUTTONRELEASED,			/*!< Input event for button released */
-			AXISVALUECHANGED,		/*!< Input event for axis value changed */
-			CONTROLLERCONNECTED,	/*!< Connection event for a controller being connected */
-			CONTROLLERDISCONNECTED	/*!< Connection event for a controller being disconnected */
+			CONTROLLERBUTTONPRESSED,			/*!< Input event for button press */
+			CONTROLLERBUTTONRELEASED,			/*!< Input event for button released */
+			CONTROLLERAXISVALUECHANGED,			/*!< Input event for axis value changed */
+			CONTROLLERCONNECTED,				/*!< Connection event for a controller being connected */
+			CONTROLLERDISCONNECTED				/*!< Connection event for a controller being disconnected */
 		};
 
 		//! Unique Identifier for this interface. {ABD3CB16-4210-4CC6-B0D0-AD0FFCC7E2D2}
