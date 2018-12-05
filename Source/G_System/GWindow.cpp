@@ -572,7 +572,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         }
 
 		XFlush(display);
-		XUnlockDisplay(display);
+        std::unique_lock<std::mutex> eventLocker(eventLock);
+        XUnlockDisplay(display);
+        //eventCond.wait(eventLocker);
+        eventLocker.unlock();
+
 		return SUCCESS;
 #elif __APPLE__
 		if ([window isMiniaturized])
@@ -684,37 +688,6 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 		XFlush(display);
 		//XSync(display, 0);
-		Atom actual_type_return;
-        int actual_format_return;
-        unsigned long   nitems_return;
-        unsigned long   bytes_after_return;
-        unsigned char * prop_return = NULL;
-
-        int result = XGetWindowProperty(
-        display,
-        window,
-        prop_type,
-        0L,
-		(~0L),
-		False,
-		AnyPropertyType,
-		&actual_type_return,
-		&actual_format_return,
-		&nitems_return,
-        &bytes_after_return,
-        &prop_return);
-
-        Atom* atoms = (Atom*)prop_return;
-        Atom a = (Atom)prop_return[0];
-        Atom b = (Atom)prop_return[1];
-        //Getting the atom of fullscreen state
-        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
-        char* nam ;
-        if(atoms[0] != fscreen)
-        {
-            nam= XGetAtomName(display, atoms[0]);
-        }
-
 
 		XUnlockDisplay(display);
 		return SUCCESS;
@@ -812,7 +785,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		//Tells the server what events to look for with these masks.
 		unsigned int eventMask = SubstructureNotifyMask | SubstructureRedirectMask| PropertyChangeMask;
 
-
+        /* OLD CODE
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
 		XEvent eventStruct;
 		memset(&eventStruct, 0, sizeof eventStruct);
@@ -820,11 +793,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xmap.send_event = true; //True = that you are going to use XSendEvent to let the server know
         eventStruct.xmap.display = display;
         eventStruct.xmap.window = window;
-        /*
+        */
+
         XEvent eventStruct;
         Atom wm_stat = XInternAtom(display, "_NET_WM_STATE", False);
-        Atom wm_stat1 = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
-        Atom wm_stat2 = XInternAtom(display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 
         memset(&eventStruct, 0, sizeof(eventStruct));
         eventStruct.type = ClientMessage;
@@ -835,54 +807,13 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xclient.data.l[0] = 1;
         eventStruct.xclient.data.l[1] = prop_hMax;
         eventStruct.xclient.data.l[2] = prop_vMax;
-        */
-        flag = 1;
+
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, false, eventMask, &eventStruct);
         XSync(display,False);
         //XFlush(display);
-        Atom actual_type_return;
-        int actual_format_return;
-        unsigned long   nitems_return;
-        unsigned long   bytes_after_return;
-        unsigned char * prop_return = NULL;
-
-        int result = XGetWindowProperty(
-        display,
-        window,
-        prop_type,
-        0L,
-		(~0L),
-		False,
-		AnyPropertyType,
-		&actual_type_return,
-		&actual_format_return,
-		&nitems_return,
-        &bytes_after_return,
-        &prop_return);
-
-        Atom* atoms = (Atom*)prop_return;
-        Atom a = (Atom)prop_return[0];
-        Atom b = (Atom)prop_return[1];
-        //Getting the atom of fullscreen state
-        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
-        char* nam ;
-        if(atoms[0] != fscreen)
-        {
-            nam= XGetAtomName(display, atoms[0]);
-        }
-
-
         XUnlockDisplay(display);
-        XEvent tempE;
-        int tt;
-        /*do
-        {
-            XPeekEvent(display, &tempE);
-            XFlush(display);
-            XSync(display, False);
-        }while(eventStruct.xclient.data.l[1] != tempE.xclient.data.l[1] && XPending(display));
-*/
+
 		return SUCCESS;
 
 #elif __APPLE__
@@ -959,7 +890,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		hint.flags = 2;
 		hint.decorations = 0;
 
-		XChangeProperty(display, window, prop_hints, prop_hints, 32, PropModeReplace, (unsigned char *)&hint, 5);
+		//Change the XChangProperty
+        Atom wm_stat = XInternAtom(display, "_NET_WM_STATE", False);
+        Atom fullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False );
+		XChangeProperty(display, window, wm_stat, XA_ATOM, 32, PropModeReplace, (unsigned char *)&fullscreen, 1);
 
 		if (!XMoveResizeWindow(display, window, 0, 0, 1920, 1080))
         {
@@ -974,7 +908,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		//Tells the server what events to look for with these masks.
 		unsigned int eventMask = ResizeRedirectMask | PropertyChangeMask | SubstructureNotifyMask | SubstructureRedirectMask;
 
-
+        //Old Code
 		//Fill the correct Event structure for the action you performed on the window to update the server side.
 		/*XEvent eventStruct;
 		memset(&eventStruct, 0, sizeof eventStruct);
@@ -983,11 +917,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xmap.display = display;
         eventStruct.xmap.window = window;*/
 
-         XEvent eventStruct;
-        Atom wm_stat = XInternAtom(display, "_NET_WM_STATE", False);
-        Atom fullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False );
-
-
+        XEvent eventStruct;
         memset(&eventStruct, 0, sizeof(eventStruct));
         eventStruct.type = ClientMessage;
         eventStruct.xclient.window = window;
@@ -998,55 +928,16 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xclient.data.l[1] = fullscreen;
         eventStruct.xclient.data.l[2] = 0;
 
+        std::unique_lock<std::mutex> eventLocker(eventLock);
         //Send event to server and wait a bit so it can receive it.
-        flag = 1;
-        //int nu1 = XPending(display);
 		XSendEvent(display, window, false, eventMask, &eventStruct);
-       // nu1 = XPending(display);
-		XFlush(display);
-        //XSync(display,False);
-       /* Atom actual_type_return;
-        int actual_format_return;
-        unsigned long   nitems_return;
-        unsigned long   bytes_after_return;
-        unsigned char * prop_return = NULL;
 
-        int result = XGetWindowProperty(
-        display,
-        window,
-        prop_type,
-        0L,
-		(~0L),
-		False,
-		AnyPropertyType,
-		&actual_type_return,
-		&actual_format_return,
-		&nitems_return,
-        &bytes_after_return,
-        &prop_return);
+		//XFlush(display);
+        XSync(display,False);
 
-        Atom* atoms = (Atom*)prop_return;
-        Atom a = prop_return[0];
-        Atom b = prop_return[1];
-        //Getting the atom of fullscreen state
-        Atom fscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
-        if(atoms[0] == fscreen)
-        {
-            int i = 0;
-        }*/
         XUnlockDisplay(display);
-        //XEvent tempE;
-       // nu1 = XPending(display);
-       // XFlush(display);
-       // XSync(display,False);
-
-        while(XPending(display))
-        {
-            //XSync(display, False);
-            //nu1 =XPending(display);
-            //sleep(1);
-            XFlush(display);
-        }
+        //eventCond.wait(eventLocker);
+        eventLocker.unlock();
 
 		return SUCCESS;
 
@@ -1894,10 +1785,6 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
         &bytes_after_return,
         &prop_return);
 
-
-   // Atom vProp = ((Atom *)prop_return)[0];
-	//Atom hProp = ((Atom *)prop_return)[1];
-
     if(result != Success)
     {
         char temp[1024];
@@ -1909,25 +1796,7 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
     _outIsFullscreen = true;
     else
     _outIsFullscreen = false;
-    /*
-	//if (hProp == prop_hMax && vProp == prop_vMax)
-	//	_outIsFullscreen = true;
-	//else
-	//	_outIsFullscreen = false;
 
-	//Testing using XGetWindowAttributes for checking if full screen
-    XWindowAttributes temp;
-    XGetWindowAttributes(display, window, &temp);
-
-    int tempBW = temp.border_width;
-    int tempW = temp.width + tempBW;
-    int tempH = temp.height + tempBW;
-
-    if(tempW == xMax && tempH == yMax)
-        _outIsFullscreen = true;
-    else
-        _outIsFullscreen = false;
-    */
     XUnlockDisplay(display);
 	return SUCCESS;
 

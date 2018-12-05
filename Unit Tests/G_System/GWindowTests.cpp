@@ -229,9 +229,9 @@ TEST_CASE("Querying Window information.", "[GetWidth], [GetHeight], [GetX], [Get
 	CHECK(G_FAIL(appWindowIsFullscreen == true));
 
 	// Resize windows for pass tests
-	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
-	REQUIRE(G_SUCCESS(appWindow->IsFullscreen(appWindowIsFullscreen)));
-	CHECK(appWindowIsFullscreen == false);
+	//REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERED)));
+	//REQUIRE(G_SUCCESS(appWindow->IsFullscreen(appWindowIsFullscreen)));
+	//CHECK(appWindowIsFullscreen == false);
     //GWindowInputEvents curEvent = GWindowInputEvents::DESTROY;
 	//appWindow->GetLastEvent(curEvent);
 	REQUIRE(G_SUCCESS(appWindow->ReconfigureWindow(0, 0, 1920, 1080, FULLSCREENBORDERLESS)));

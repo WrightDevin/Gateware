@@ -2,6 +2,7 @@
 #include "../../Interface/G_System/GWindow.h"
 #include "GUtility.h"
 #include <mutex>
+#include <condition_variable>
 
 #ifdef __linux
 #include <X11/Xlib.h>
@@ -11,6 +12,7 @@
 #include <map>
 #elif __APPLE__
 #include <map>
+
 
 #endif
 
@@ -22,6 +24,8 @@ namespace
 {
     // GWindow global variables.
     std::mutex mutex;
+    std::condition_variable eventCond;
+    std::mutex eventLock;
 
     //! Map of Listeners to send event information to.
     std::map<GListener *, unsigned long long> listeners;
@@ -189,8 +193,9 @@ namespace
 		    propRet = nullptr;
 
 		    //Also flushes the request buffer if xlib's queue does not contain an event and waits for an event to arrive from server connection
+            XLockDisplay(_display);
             XNextEvent(_display, &event);
-           // XLockDisplay(_display);
+
 			switch (event.type)
 			{
 			    case Expose:
@@ -202,16 +207,18 @@ namespace
                     {
                     //PropertyNotify, when a client wants info about property changes for a specified window
                     //To receive PropertyNotify events, set the PropertyChangeMask bit in the event-mask attribute of the window.
-                    XLockDisplay(_display);
+                    //XLockDisplay(_display);
+
+                    std::unique_lock<std::mutex> eventLocker(eventLock);
                     status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
                                         false, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &propRet);
-                    XUnlockDisplay(_display);
+                    //XUnlockDisplay(_display);
                         if(status == Success && propRet && nitems > 0)
                         {
                             prop = ((Atom *)propRet)[0];
-                            XLockDisplay(_display);
+                            //XLockDisplay(_display);
                             XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
-                            XUnlockDisplay(_display);
+                            //XUnlockDisplay(_display);
                             if(prop == propHidden)
                             {
                              eventFlag = MINIMIZE;
@@ -219,13 +226,17 @@ namespace
                             }
                             else if(prop == 301 || prop == 302 || prop == propFull)
                             {
+                            //std::unique_lock<std::mutex> eventLocker(eventLock);
                             eventFlag = MAXIMIZE;
                             Gwnd = GWindowInputEvents::MAXIMIZE;
+                            //eventLocker.unlock();
+                            //eventCond.notify_all();
                             }
                             else if(prevX != x || prevY != y)
                             {
                             eventFlag = MOVE;
                             Gwnd = GWindowInputEvents::MOVE;
+
                             }
                             else if(prevHeight != height || prevWidth != width)
                             {
@@ -260,6 +271,9 @@ namespace
                             mutex.unlock();
                             }
                         }
+
+                        eventLocker.unlock();
+                        eventCond.notify_all();
                         XFree(propRet);
                         break;
                     }
@@ -267,9 +281,11 @@ namespace
                     {
                         //ConfigureNotify, when a client wants info about the actual changes to a window's state,
                         //such as size, position, border, and stacking order.
-                        XLockDisplay(_display);
+                        //XLockDisplay(_display);
+                        std::unique_lock<std::mutex> eventLocker(eventLock);
+
                         XGetGeometry(_display, _window, &rootRet, &x, &y, &width, &height, &borderHeight, &depth);
-                        XUnlockDisplay(_display);
+                        //XUnlockDisplay(_display);
                         if(prevX != x || prevY != y) //if the previous position is not equal to the current position then we moved.
                         {
                         eventFlag = MOVE;
@@ -280,27 +296,31 @@ namespace
                         eventFlag = RESIZE;
                         Gwnd = GWindowInputEvents::RESIZE;
                         }
+
                         XFlush(_display);
 
-                            eventStruct.eventFlags = eventFlag;
-                            eventStruct.width = width;
-                            eventStruct.height = height;
-                            eventStruct.windowX = x;
-                            eventStruct.windowY = y;
-                            eventStruct.windowHandle = _display;
+                        eventLocker.unlock();
+                        //eventCond.notify_all();
 
-                            prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+                       eventStruct.eventFlags = eventFlag;
+                       eventStruct.width = width;
+                       eventStruct.height = height;
+                       eventStruct.windowX = x;
+                       eventStruct.windowY = y;
+                       eventStruct.windowHandle = _display;
+
+                       prevX = x; prevY = y; prevHeight = height; prevWidth = width;
 
 
-                            if (eventStruct.eventFlags != -1 && listeners.size() > 0)
-                                {
-                                    mutex.lock();
-                                    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
-                                    for (; iter != listeners.end(); ++iter)
-                                        iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                       if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                       {
+                           mutex.lock();
+                           std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                           for (; iter != listeners.end(); ++iter)
+                               iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
-                                    mutex.unlock();
-                                }
+                           mutex.unlock();
+                       }
                         break;
                     }
                 case MapNotify:
@@ -308,27 +328,31 @@ namespace
                         //MapNotify, when clients want info about which windows are mapped.
                         //The change of a window's state from unmapped to mapped
 
+                        //std::unique_lock<std::mutex> eventLocker(eventLock);
                         eventFlag = MAXIMIZE;
                         Gwnd = GWindowInputEvents::MAXIMIZE;
-                            XFlush(_display);
-                            eventStruct.eventFlags = eventFlag;
-                            eventStruct.width = width;
-                            eventStruct.height = height;
-                            eventStruct.windowX = x;
-                            eventStruct.windowY = y;
-                            eventStruct.windowHandle = _display;
 
-                            prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+                        XFlush(_display);
+                        //eventLocker.unlock();
+                        //eventCond.notify_all();
+                        eventStruct.eventFlags = eventFlag;
+                        eventStruct.width = width;
+                        eventStruct.height = height;
+                        eventStruct.windowX = x;
+                        eventStruct.windowY = y;
+                        eventStruct.windowHandle = _display;
 
-                            if (eventStruct.eventFlags != -1 && listeners.size() > 0)
-                                {
-                                    mutex.lock();
-                                    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
-                                    for (; iter != listeners.end(); ++iter)
-                                        iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                        prevX = x; prevY = y; prevHeight = height; prevWidth = width;
 
-                                    mutex.unlock();
-                                }
+                        if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                        {
+                            mutex.lock();
+                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                            for (; iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+
+                            mutex.unlock();
+                        }
                     }
                 case ButtonPress:
                     {
@@ -340,10 +364,22 @@ namespace
                         /* Primarily used for transferring selection data,
                         also might be used in a private interclient
                         protocol; */
-                        XLockDisplay(_display);
+                        //XLockDisplay(_display);
+                        std::unique_lock<std::mutex> eventLocker(eventLock);
+                        //Using wondin property to check that which event it is
                         status = XGetWindowProperty(event.xproperty.display, event.xproperty.window, propType, 0L, sizeof(Atom),
                                         false, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &propRet);
-                        XUnlockDisplay(_display);
+
+                        Screen* scr = DefaultScreenOfDisplay(_display);
+                        unsigned int xMax = scr->width;
+                        unsigned int yMax  = scr->height;
+                        XWindowAttributes temp;
+                        XGetWindowAttributes(_display, _window, &temp);
+                        int tempBW = temp.border_width;
+                        int tempW = temp.width + tempBW;
+                        int tempH = temp.height+ tempBW;
+
+                        //XUnlockDisplay(_display);
                         Atom* props = (Atom*)propRet;
 
                         if(event.xclient.message_type == propHidden)
@@ -351,11 +387,14 @@ namespace
                             eventFlag = MINIMIZE;
                             Gwnd = GWindowInputEvents::MINIMIZE;
                         }
-                        if(event.xclient.message_type == propFull || (props[0] == prop_hMax && props[1] == prop_vMax) )
+                        if(event.xclient.message_type == propFull || (tempW == xMax && tempH == yMax)) //(props[0] == prop_hMax && props[1] == prop_vMax) )
                         {
                             eventFlag = MAXIMIZE;
                             Gwnd = GWindowInputEvents::MAXIMIZE;
                             flag = 0;
+                           // eventLocker.unlock();
+                            //eventCond.notify_all();
+
                         }
                         if(event.xclient.message_type == propType)
                         {
@@ -371,6 +410,8 @@ namespace
                              }
                         }
                         XFlush(_display);
+                        eventLocker.unlock();
+                        //eventCond.notify_all();
                         eventStruct.eventFlags = eventFlag;
                         eventStruct.width = width;
                         eventStruct.height = height;
@@ -420,24 +461,24 @@ namespace
                     eventFlag = DESTROY;
                     Gwnd = GWindowInputEvents::DESTROY;
 
-                        eventStruct.eventFlags = eventFlag;
-                        eventStruct.width = width;
-                        eventStruct.height = height;
-                        eventStruct.windowX = x;
-                        eventStruct.windowY = y;
-                        eventStruct.windowHandle = _display;
+                    eventStruct.eventFlags = eventFlag;
+                    eventStruct.width = width;
+                    eventStruct.height = height;
+                    eventStruct.windowX = x;
+                    eventStruct.windowY = y;
+                    eventStruct.windowHandle = _display;
 
-                        prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+                    prevX = x; prevY = y; prevHeight = height; prevWidth = width;
 
-                        if (eventStruct.eventFlags != -1 && listeners.size() > 0)
-                            {
-                                mutex.lock();
-                                std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
-                                for (; iter != listeners.end(); ++iter)
-                                    iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                    if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                    {
+                        mutex.lock();
+                        std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                        for (; iter != listeners.end(); ++iter)
+                            iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
-                                mutex.unlock();
-                            }
+                        mutex.unlock();
+                    }
                     //run = false;
                     break;
                     }
@@ -445,7 +486,7 @@ namespace
 			//}
 
             }
-            //XUnlockDisplay(_display);
+            XUnlockDisplay(_display);
         }
 
 
