@@ -18,7 +18,7 @@ struct CONTROLLER_STATE
 	float start;
 };
 
-CONTROLLER_STATE event_controllers[4];
+extern CONTROLLER_STATE event_controllers[4]; // Used to keep track of controller data from events
 
 class GControllerTestListener : public GW::CORE::GListener
 {

@@ -115,7 +115,7 @@ TEST_CASE("CreateGController Tests", "[CreateGController]")
 
 }
 
-TEST_CASE("GBufferedInput Register Listeners.", "[RegisterListener]")
+TEST_CASE("GController Register Listeners.", "[RegisterListener]")
 {
 
 	//Create our new test listener
@@ -164,9 +164,8 @@ TEST_CASE("GController Manual input test")
 	CHECK(controller->GetState(0, -1, outState) == GW::INVALID_ARGUMENT);
 	//end test
 
-	controller->GetNumConnected(numConnected);
-	REQUIRE(numConnected > 0);
-
+	controller->IsConnected(0, isConnected);
+	REQUIRE(isConnected);
 	
 	// test polling
 	while (true)

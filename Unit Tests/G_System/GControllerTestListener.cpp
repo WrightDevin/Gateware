@@ -2,6 +2,8 @@
 #include "../Unit Tests/Common.h"
 #include "G_System\GControllerInputDefines.h"
 
+CONTROLLER_STATE event_controllers[4];
+
 GW::GReturn GControllerTestListener::OnEvent(const GW::GUUIID &_senderInterface, unsigned int _eventID, void *_eventData, unsigned int _sizeOfData)
 {
 	if (_senderInterface == GW::SYSTEM::GControllerUUIID)
