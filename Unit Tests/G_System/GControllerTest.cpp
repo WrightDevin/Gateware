@@ -33,7 +33,8 @@ TEST_CASE("GController core test battery", "[CreateGController], [RequestInterfa
 	// THE CREATION FUNCTION IS UNIQUE MOST EVERYTHING BELOW THIS SHOULD BE THE SAME FOR ALL INTERFACES
 	SECTION("Creation Tests", "[CreateGController]")
 	{
-		CHECK(GW::SYSTEM::CreateGController(-1, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, nullptr) == GW::INVALID_ARGUMENT);
+		CHECK(GW::SYSTEM::CreateGController(-1, &GController_specific) == GW::INVALID_ARGUMENT);
 		// TODO: Add additonal Creation parameter testing here as nessasary.
 
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, &GController_specific)));
@@ -136,7 +137,7 @@ TEST_CASE("GController Manual controller connection test")
 	int maxIndex = -1;
 	bool isConnected = false;
 	int numReportedConnected = -1;
-	int numConfirmedConnected = -1;
+	int numConfirmedConnected = 0;
 	// Test invaild arguments
 	CHECK(controller->IsConnected(-1, isConnected) == GW::INVALID_ARGUMENT);
 	// end test
@@ -144,7 +145,7 @@ TEST_CASE("GController Manual controller connection test")
 	REQUIRE(G_SUCCESS(controller->GetMaxIndex(maxIndex)));
 	REQUIRE(G_SUCCESS(controller->GetNumConnected(numReportedConnected)));
 
-	for (int i = 0; i < maxIndex; ++i)
+	for (unsigned int i = 0; i < maxIndex; ++i)
 	{
 		REQUIRE(G_SUCCESS(controller->IsConnected(i, isConnected)));
 		if (isConnected)
@@ -203,6 +204,9 @@ TEST_CASE("GController Manual input test")
 		CHECK(outState == event_controllers[0].start);
 		if (outState == 1.0f)
 			break;
+
+		// Sleep so that the results can be read before the next loop
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
