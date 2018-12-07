@@ -14,9 +14,9 @@ License: MIT
 // Example Input code: 0XFF01112 FF(Reserved for future use) 01(Controler ID) 1(Axis || Button) 12(Input type)
 
 // Controller IDs
-#define G_GENERAL_CONTROLLER			0x00000 //! No max controller count
-#define G_XBOX_CONTROLLER				0x01000 //! Supports up to four controllers
-#define G_PS4_CONTROLLER				0x02000 //! No max controller count
+#define G_GENERAL_CONTROLLER			0x00000 
+#define G_XBOX_CONTROLLER				0x01000 
+#define G_PS4_CONTROLLER				0x02000 
 
 // Input type
 #define G_SOUTH_BTN						0x00
