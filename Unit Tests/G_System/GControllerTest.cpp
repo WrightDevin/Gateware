@@ -4,6 +4,7 @@
 #include <thread>
 
 #define MANUAl_INPUT
+//#define MANUAL_CONNECTION_EVENTS
 //#define SIMULATED_INPUT
 
 ///=============================================================================
@@ -116,7 +117,7 @@ TEST_CASE("CreateGController Tests", "[CreateGController]")
 
 #ifdef _WIN32 // Temp until General controller support is added to Windows
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_XBOX_CONTROLLER, &controller)));
-#elif
+#else
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, &controller)));
 #endif // _WIN32
 
@@ -163,9 +164,27 @@ TEST_CASE("GController Manual controller connection test")
 	}
 
 	CHECK(numConfirmedConnected == numReportedConnected);
-	int d = 0;
+}
+
+#ifdef MANUAL_CONNECTION_EVENTS
+
+TEST_CASE("GController Manual controller connection event test")
+{
+	int maxIndex = -1;
+	bool isConnected = false;
+	int numReportedConnected = -1;
+	int numConfirmedConnected = 0;
+	printf("Unplug the controller\n");
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	CHECK(event_controllers[0].isConnected == 0);
+	printf("Plug the controller back in\n");
+	std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+	CHECK(event_controllers[0].isConnected == 1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 }
+#endif // MANUAL_CONNECTION_EVENTS
+
 #ifdef _WIN32 // Temp until General controller support is added to Windows
 TEST_CASE("GController Manual Xbox input test")
 {
@@ -263,7 +282,7 @@ TEST_CASE("GController Manual Xbox input test")
 	}
 
 }
-#elif
+#else
 TEST_CASE("GController Manual input test")
 {
 	float outState = 0.0f;

@@ -46,8 +46,7 @@ namespace GW
 		//! GControllerEvents holds the possible events that can be sent from GController
 		enum GControllerEvents
 		{
-			CONTROLLERBUTTONPRESSED,			/*!< Input event for button press */
-			CONTROLLERBUTTONRELEASED,			/*!< Input event for button released */
+			CONTROLLERBUTTONVALUECHANGED,		/*!< Input event for button value change */
 			CONTROLLERAXISVALUECHANGED,			/*!< Input event for axis value changed */
 			CONTROLLERCONNECTED,				/*!< Connection event for a controller being connected */
 			CONTROLLERDISCONNECTED				/*!< Connection event for a controller being disconnected */

@@ -6,7 +6,7 @@
 
 struct CONTROLLER_STATE
 {
-	int isConnected;
+	int isConnected = -1;
 	float southBTN;
 	float dpadDown;
 	float leftShoulder;

@@ -12,38 +12,7 @@ GW::GReturn GControllerTestListener::OnEvent(const GW::GUUIID &_senderInterface,
 		memcpy(&data, _eventData, _sizeOfData);
 		switch (_eventID)
 		{
-		case GW::SYSTEM::CONTROLLERBUTTONPRESSED:
-		{
-			switch (data.inputCode & 0xFF)
-			{
-			case G_SOUTH_BTN:
-			{
-				event_controllers[data.controllerIndex].southBTN = data.inputValue;
-				break;
-			}
-			case G_DPAD_DOWN_BTN:
-			{
-				event_controllers[data.controllerIndex].dpadDown = data.inputValue;
-				break;
-			}
-			case G_LEFT_SHOULDER_BTN:
-			{
-				event_controllers[data.controllerIndex].leftShoulder = data.inputValue;
-				break;
-			}
-			case G_RIGHT_THUMB_BTN:
-			{
-				event_controllers[data.controllerIndex].rightThumb = data.inputValue;
-				break;
-			}
-			case G_START_BTN:
-			{
-				event_controllers[data.controllerIndex].start = data.inputValue;
-			}
-			}
-			break;
-		}
-		case GW::SYSTEM::CONTROLLERBUTTONRELEASED:
+		case GW::SYSTEM::CONTROLLERBUTTONVALUECHANGED:
 		{
 			switch (data.inputCode & 0xFF)
 			{
@@ -93,7 +62,7 @@ GW::GReturn GControllerTestListener::OnEvent(const GW::GUUIID &_senderInterface,
 				event_controllers[data.controllerIndex].leftTrigger = data.inputValue;
 				break;
 			}
-			case G_PS4_RIGHT_TRIGGER_AXIS:
+			case G_RIGHT_TRIGGER_AXIS:
 			{
 				event_controllers[data.controllerIndex].rightTrigger = data.inputValue;
 				break;

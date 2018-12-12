@@ -20,6 +20,8 @@
 #define MAX_GENENRAL_INPUTS 20 // Can change
 #define MAX_XBOX_INPUTS 20
 #define MAX_PS4_INPUTS 20
+#define MAX_XBOX_THUMB_AXIS 32767
+#define MAX_XBOX_TRIGGER_AXIS 255
 
 using namespace GW;
 using namespace CORE;
@@ -38,16 +40,30 @@ namespace
 		float* controllerInputs; // controllerInputs is used to hold an array for the input values of the controller
 	};
 
-	unsigned int FindEmptyControllerIndex(unsigned int maxIndex, const CONTROLLER_STATE* controllers)
+	// This function does not lock before using _controllers
+	unsigned int FindEmptyControllerIndex(unsigned int _maxIndex, const CONTROLLER_STATE* _controllers)
 	{
-		for (unsigned int i = 0; i < maxIndex; ++i)
+		for (unsigned int i = 0; i < _maxIndex; ++i)
 		{
-			if (controllers[i].isConnected == 0)
+			if (_controllers[i].isConnected == 0)
 				return i;
 		}
 		return -1;
 	}
 
+	// prehaps make return vaule GRETURN
+	CONTROLLER_STATE* CopyControllerState(const CONTROLLER_STATE* _stateToCopy, CONTROLLER_STATE* _outCopy)
+	{
+		if (_stateToCopy->maxInputs == _outCopy->maxInputs)
+			for (unsigned int i = 0; i < _outCopy->maxInputs; ++i)
+			{
+				_outCopy->controllerInputs[i] = _stateToCopy->controllerInputs[i];
+			}
+		else
+			_outCopy = nullptr;
+
+		return _outCopy;
+	}
 
 }
 //end
@@ -96,6 +112,8 @@ private:
 	float XboxDeadZoneCalc(float _value, bool _isTigger);
 
     int XControllerSlotIndices[4];
+	DWORD XControllerLastPacket[4];
+
 	std::thread* xInputThread;
 public:
 	// XboxController
@@ -107,6 +125,7 @@ public:
     GReturn GetState(int _controllerIndex, int _inputCode, float& _outState);
 	GReturn GetMaxIndex(int &_outMax);
 	GReturn GetNumConnected(int &_outConnectedCount);
+	GReturn IsConnected(int _controllerIndex, bool& _outIsConnected);
 
 	// GInterface
 	GReturn DecrementCount();
@@ -132,8 +151,7 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 
 #ifdef _WIN32
 		return FEATURE_UNSUPPORTED;
-#elif
-		
+#else
 		GeneralController* genController = new GeneralController;
 		if (genController == nullptr)
 			return FAILURE;
@@ -180,7 +198,6 @@ GeneralController::GeneralController()
 
 GeneralController::~GeneralController()
 {
-
 }
 
 void GeneralController::Init()
@@ -222,11 +239,16 @@ GReturn GeneralController::GetMaxIndex(int &_outMax)
 GReturn GeneralController::GetNumConnected(int &_outConnectedCount)
 {
 	_outConnectedCount = 0;
+	controllersMutex.lock();
+
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 		if (controllers[i].isConnected)
 			++_outConnectedCount;
 	}
+
+	controllersMutex.unlock();
+
 	return SUCCESS;
 }
 
@@ -392,17 +414,48 @@ GReturn XboxController::GetState(int _controllerIndex, int _inputCode, float& _o
 GReturn XboxController::GetNumConnected(int &_outConnectedCount)
 {
 	_outConnectedCount = 0;
+	controllersMutex.lock();
+
 	for (unsigned int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 	{
 		if (controllers[i].isConnected)
 			++_outConnectedCount;
 	}
+	controllersMutex.unlock();
+	return SUCCESS;
+}
+
+GReturn XboxController::IsConnected(int _controllerIndex, bool& _outIsConnected)
+{
+	if (_controllerIndex < 0 || _controllerIndex >= MAX_XBOX_CONTROLLER_INDEX)
+		return INVALID_ARGUMENT;
+
+	controllersMutex.lock();
+
+	_outIsConnected = controllers[_controllerIndex].isConnected == 0 ? false : true;
+
+	controllersMutex.unlock();
+
 	return SUCCESS;
 }
 
 float XboxController::XboxDeadZoneCalc(float _value, bool _isTigger)
 {
-	return 0.0f;
+	if (_isTigger)
+	{
+		if (std::abs(_value) > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+			_value /= MAX_XBOX_TRIGGER_AXIS;
+		else
+			_value = 0;
+	}
+	else
+	{
+		if (std::abs(_value) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+			_value /= MAX_XBOX_THUMB_AXIS;
+		else
+			_value = 0;
+	}
+	return _value;
 }
 
 void XboxController::XinputLoop()
@@ -410,66 +463,243 @@ void XboxController::XinputLoop()
 	DWORD result;
 	XINPUT_STATE controllerState;
 	ZeroMemory(&controllerState, sizeof(XINPUT_STATE));
+	GCONTROLLER_EVENT_DATA eventData;
+	ZeroMemory(&eventData, sizeof(GCONTROLLER_EVENT_DATA));
+	std::map<GListener*, unsigned long long>::iterator iter;
+	auto lastCheck = std::chrono::high_resolution_clock::now();
+	bool isFirstLoop = true;
+	CONTROLLER_STATE oldState;
+	oldState.maxInputs = MAX_XBOX_INPUTS;
+	oldState.controllerInputs = new float[MAX_XBOX_INPUTS];
 
 	while (isRunning)
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			result = XInputGetState(i, &controllerState);
-			if (result == ERROR_SUCCESS)
+		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100 
+		  || isFirstLoop)
+		{ 
+			lastCheck = std::chrono::high_resolution_clock::now();
+			isFirstLoop = false;
+			for (int i = 0; i < 4; ++i)
 			{
-				if (XControllerSlotIndices[i] < 0)
+				result = XInputGetState(i, &controllerState);
+				if (result == ERROR_SUCCESS)
 				{
-					controllersMutex.lock();
+					if (XControllerSlotIndices[i] < 0)
+					{
+						controllersMutex.lock();
 
-					XControllerSlotIndices[i] = FindEmptyControllerIndex(MAX_XBOX_CONTROLLER_INDEX, controllers);
-					controllers[XControllerSlotIndices[i]].isConnected = 1;
+						XControllerSlotIndices[i] = FindEmptyControllerIndex(MAX_XBOX_CONTROLLER_INDEX, controllers);
+						controllers[XControllerSlotIndices[i]].isConnected = 1;
 
-					controllersMutex.unlock();
+						controllersMutex.unlock();
+
+						eventData.controllerIndex = XControllerSlotIndices[i];
+						eventData.inputCode = 0;
+						eventData.inputValue = 0;
+						eventData.isConnected = 1;
+						for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+							iter->first->OnEvent(GControllerUUIID, CONTROLLERCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+					}
+
+
+					if (XControllerSlotIndices[i] >= 0 && controllerState.dwPacketNumber != XControllerLastPacket[i]) // add checks for events
+					{
+						CopyControllerState(&controllers[XControllerSlotIndices[i]], &oldState);
+						eventData.isConnected = 1;
+						eventData.controllerIndex = XControllerSlotIndices[i];
+
+						controllersMutex.lock();
+
+						XControllerLastPacket[i] = controllerState.dwPacketNumber;
+
+						// Buttons
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN] != oldState.controllerInputs[G_SOUTH_BTN])
+						{
+							eventData.inputCode = G_XBOX_A_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN] != oldState.controllerInputs[G_EAST_BTN])
+						{
+							eventData.inputCode = G_XBOX_B_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN] != oldState.controllerInputs[G_NORTH_BTN])
+						{
+							eventData.inputCode = G_XBOX_Y_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN] != oldState.controllerInputs[G_WEST_BTN])
+						{
+							eventData.inputCode = G_XBOX_X_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN] != oldState.controllerInputs[G_LEFT_SHOULDER_BTN])
+						{
+							eventData.inputCode = G_XBOX_LEFT_SHOULDER_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN] != oldState.controllerInputs[G_RIGHT_SHOULDER_BTN])
+						{
+							eventData.inputCode = G_XBOX_RIGHT_SHOULDER_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN] != oldState.controllerInputs[G_DPAD_LEFT_BTN])
+						{
+							eventData.inputCode = G_XBOX_DPAD_LEFT_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN] != oldState.controllerInputs[G_DPAD_RIGHT_BTN])
+						{
+							eventData.inputCode = G_XBOX_DPAD_RIGHT_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN] != oldState.controllerInputs[G_DPAD_UP_BTN])
+						{
+							eventData.inputCode = G_XBOX_DPAD_UP_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN] != oldState.controllerInputs[G_DPAD_DOWN_BTN])
+						{
+							eventData.inputCode = G_XBOX_DPAD_DOWN_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN] != oldState.controllerInputs[G_LEFT_THUMB_BTN])
+						{
+							eventData.inputCode = G_XBOX_LEFT_THUMB_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN] != oldState.controllerInputs[G_RIGHT_THUMB_BTN])
+						{
+							eventData.inputCode = G_XBOX_RIGHT_THUMB_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN] != oldState.controllerInputs[G_START_BTN])
+						{
+							eventData.inputCode = G_XBOX_START_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0 ? 1.0f : 0.0f;
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN] != oldState.controllerInputs[G_SELECT_BTN])
+						{
+							eventData.inputCode = G_XBOX_BACK_BTN;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						// AXES
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bLeftTrigger, true);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS] != oldState.controllerInputs[G_LEFT_TRIGGER_AXIS])
+						{
+							eventData.inputCode = G_XBOX_LEFT_TRIGGER_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bRightTrigger, true);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS] != oldState.controllerInputs[G_RIGHT_TRIGGER_AXIS])
+						{
+							eventData.inputCode = G_XBOX_RIGHT_TRIGGER_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLX, false);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS] != oldState.controllerInputs[G_LX_AXIS])
+						{
+							eventData.inputCode = G_XBOX_LX_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLY, false);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS] != oldState.controllerInputs[G_LY_AXIS])
+						{
+							eventData.inputCode = G_XBOX_LY_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbRX, false);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS] != oldState.controllerInputs[G_RX_AXIS])
+						{
+							eventData.inputCode = G_XBOX_RX_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+						controllers[XControllerSlotIndices[i]].controllerInputs[G_RY_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbRY, false);
+						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RY_AXIS] != oldState.controllerInputs[G_RY_AXIS])
+						{
+							eventData.inputCode = G_XBOX_RY_AXIS;
+							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RY_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+						}
+
+						controllersMutex.unlock();
+					}
 				}
-					
-
-				if (XControllerSlotIndices[i] >= 0) // add checks for events
+				else // no controller connected
 				{
-					controllersMutex.lock();
+					if (XControllerSlotIndices[i] >= 0)
+					{
+						//call event
+						controllers[XControllerSlotIndices[i]].isConnected = 0;
+						eventData.controllerIndex = XControllerSlotIndices[i];
+						eventData.inputCode = 0;
+						eventData.inputValue = 0;
+						eventData.isConnected = 0;
+						for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+							iter->first->OnEvent(GControllerUUIID, CONTROLLERDISCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 
-					// Buttons
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0 ? 1.0f : 0.0f;
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0 ? 1.0f : 0.0f;
-					// AXES
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bLeftTrigger, true);
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bRightTrigger, true);
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLX, false);
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLY, false);
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbRX, false);
-					controllers[XControllerSlotIndices[i]].controllerInputs[G_RY_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbRY, false);
+						XControllerSlotIndices[i] = -1;
 
-					controllersMutex.unlock();
-				}
-			}
-			else // no controller connected
-			{
-				if (XControllerSlotIndices[i] >= 0)
-				{
-					controllers[XControllerSlotIndices[i]].isConnected = 0;
-					XControllerSlotIndices[i] = -1;
+					}
 				}
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+
+	delete[] oldState.controllerInputs;
 }
 
 GReturn XboxController::DecrementCount()
@@ -484,7 +714,13 @@ GReturn XboxController::DecrementCount()
 		// handle destruction
 		isRunning = false;
 		xInputThread->join();
-		
+		delete xInputThread;
+
+		for (int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
+		{
+			delete[] controllers[i].controllerInputs;
+		}
+		delete[] controllers;
 		delete this;
 	}
 
