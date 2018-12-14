@@ -11,7 +11,7 @@
 #include <windows.h>
 #include <xinput.h>
 //#include <direct.h>
-
+// look into WMCREATEDEVICE message for detecting new controller
 #pragma comment(lib, "XInput.lib")
 #endif // _WIN32
 
@@ -20,7 +20,7 @@
 #define MAX_GENENRAL_INPUTS 20 // Can change
 #define MAX_XBOX_INPUTS 20
 #define MAX_PS4_INPUTS 20
-#define MAX_XBOX_THUMB_AXIS 32767
+#define MAX_XBOX_THUMB_AXIS 32768
 #define MAX_XBOX_TRIGGER_AXIS 255
 
 using namespace GW;
@@ -28,9 +28,9 @@ using namespace CORE;
 using namespace SYSTEM;
 
 //temp move globals to an included file look at GBI AND GWINDOW
-//! Map of Listeners to send event information to. 
 namespace
 {
+	//! Map of Listeners to send event information to. 
 	std::map<GListener *, unsigned long long> listeners;
 
 	struct CONTROLLER_STATE
@@ -71,6 +71,8 @@ namespace
 class GeneralController : public GController
 {
 protected:
+	void DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY);
+
 	std::atomic<unsigned int> referenceCount;
 	std::atomic<bool> isRunning;
 	std::mutex controllersMutex;
@@ -79,6 +81,8 @@ protected:
 
 	// Lock before using
 	CONTROLLER_STATE* controllers;
+	GControllerDeadzoneTypes deadzoneType;
+	float deadzonePercentage;
 
 public:
 	//GeneralController
@@ -92,6 +96,11 @@ public:
 	virtual GReturn IsConnected(int _controllerIndex, bool& _outIsConnected);
 	virtual GReturn GetMaxIndex(int &_outMax);
 	virtual GReturn GetNumConnected(int &_outConnectedCount);
+	virtual GReturn SetDeadZone(GControllerDeadzoneTypes _type, float _deadzonePercentage);
+	virtual GReturn StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex);
+	virtual GReturn IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating);
+	virtual GReturn StopVirbration(unsigned int _controllerIndex);
+	virtual GReturn StopAllVirbrations();
 
 	// GBroadcasting
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
@@ -146,10 +155,11 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 	// Add cases for each supported controller for _WIN32
 	switch (_controllerType)
 	{
-	case G_GENERAL_CONTROLLER: // not truly supported until directinput is added
+	case G_GENERAL_CONTROLLER: // not supported until directinput is added
 	{
 
 #ifdef _WIN32
+		_outController = nullptr;
 		return FEATURE_UNSUPPORTED;
 #else
 		GeneralController* genController = new GeneralController;
@@ -163,11 +173,15 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 	}
 	case G_XBOX_CONTROLLER:
 	{
+#ifdef _WIN32
 		XboxController* xController = new XboxController;
 		if (xController == nullptr)
 			return FAILURE;
 		xController->Init();
 		(*_outController) = xController;
+#else
+		return FEATURE_UNSUPPORTED;
+#endif // !_WIN32
 		break;
 	}
 	default:
@@ -203,6 +217,8 @@ GeneralController::~GeneralController()
 void GeneralController::Init()
 {
 	controllers = new CONTROLLER_STATE[MAX_CONTROLLER_INDEX];
+	deadzoneType = DEADZONESQUARE;
+	deadzonePercentage = .2f;
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 	controllers[i].isConnected = 0;
@@ -250,6 +266,67 @@ GReturn GeneralController::GetNumConnected(int &_outConnectedCount)
 	controllersMutex.unlock();
 
 	return SUCCESS;
+}
+
+GReturn GeneralController::SetDeadZone(GControllerDeadzoneTypes _type, float _deadzonePercentage)
+{
+	if (_deadzonePercentage > 1.0f || _deadzonePercentage < 0.0f)
+		return INVALID_ARGUMENT;
+
+	deadzoneType = _type;
+	deadzonePercentage = _deadzonePercentage;
+
+	return SUCCESS;
+}
+
+GReturn GeneralController::StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex)
+{
+	return FEATURE_UNSUPPORTED;
+}
+
+GReturn GeneralController::IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating)
+{
+	return FEATURE_UNSUPPORTED;
+}
+
+GReturn GeneralController::StopVirbration(unsigned int _controllerIndex)
+{
+	return FEATURE_UNSUPPORTED;
+}
+
+GReturn GeneralController::StopAllVirbrations()
+{
+	return FEATURE_UNSUPPORTED;
+}
+
+void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY)
+{
+    _outX = _x / _axisMax;
+    _outY = _y / _axisMax;
+	float liveRange = 1.0f - deadzonePercentage;
+	if (deadzoneType == DEADZONESQUARE)
+	{
+		if (std::abs(_outX) <= deadzonePercentage)
+			_outX = 0.0f;
+		if (std::abs(_outY) <= deadzonePercentage)
+			_outY = 0.0f;
+
+		if (_outX > 0.0f)
+			_outX = (_outX - deadzonePercentage) / liveRange;
+		else if(_outX < 0.0f)
+			_outX = (_outX + deadzonePercentage) / liveRange;
+		if (_outY > 0.0f)
+			_outY = (_outY - deadzonePercentage) / liveRange;
+		else if (_outY < 0.0f)
+			_outY = (_outY + deadzonePercentage) / liveRange;
+	}
+	else
+	{
+		float mag = std::sqrt(_outX * _outX + _outY * _outY);
+		mag = (mag - deadzonePercentage) / liveRange;
+		_outX *= mag;
+		_outY *= mag;
+	}
 }
 
 GReturn GeneralController::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
@@ -324,6 +401,12 @@ GReturn GeneralController::DecrementCount()
 		isRunning = false;
 		
 		// handle destruction
+		for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+		{
+			delete[] controllers[i].controllerInputs;
+		}
+		delete[] controllers;
+
 		delete this;
 	}
 
@@ -381,6 +464,8 @@ XboxController::~XboxController()
 void XboxController::Init()
 {
 	controllers = new CONTROLLER_STATE[MAX_XBOX_CONTROLLER_INDEX];
+	deadzoneType = DEADZONESQUARE;
+	deadzonePercentage = .2f;
 	for (unsigned int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 	{
 		controllers[i].isConnected = 0;
@@ -642,7 +727,12 @@ void XboxController::XinputLoop()
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 						}
-						controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLX, false);
+						DeadzoneCalculation(controllerState.Gamepad.sThumbLX,
+											controllerState.Gamepad.sThumbLY,
+											MAX_XBOX_THUMB_AXIS,
+											controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS],
+											controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS]);
+
 						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS] != oldState.controllerInputs[G_LX_AXIS])
 						{
 							eventData.inputCode = G_XBOX_LX_AXIS;
@@ -650,7 +740,6 @@ void XboxController::XinputLoop()
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 						}
-						controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbLY, false);
 						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS] != oldState.controllerInputs[G_LY_AXIS])
 						{
 							eventData.inputCode = G_XBOX_LY_AXIS;
@@ -658,6 +747,7 @@ void XboxController::XinputLoop()
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 						}
+
 						controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.sThumbRX, false);
 						if (controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS] != oldState.controllerInputs[G_RX_AXIS])
 						{

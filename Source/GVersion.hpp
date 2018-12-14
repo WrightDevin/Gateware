@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "DevinWright_GController"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x7de5f9e
+#define GATEWARE_COMMIT_HASH 0x4005320
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v5.0b"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (DevinWright_GController) [7de5f9e]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (DevinWright_GController) [4005320]"
 
 #endif

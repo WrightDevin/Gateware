@@ -252,18 +252,21 @@ TEST_CASE("GController Manual Xbox input test")
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].LY);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 		printf("Move the left stick down\n");
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_XBOX_LY_AXIS, outState)));
 		CHECK(outState < 0.0f);
 		CHECK(outState == event_controllers[0].LY);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 		printf("Press down the left trigger\n");
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_XBOX_LEFT_TRIGGER_AXIS, outState)));
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].leftTrigger);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 		printf("Press down the right trigger\n");
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_XBOX_RIGHT_TRIGGER_AXIS, outState)));
@@ -380,6 +383,17 @@ TEST_CASE("GController Manual input test")
 
 }
 #endif // _WIN32
+
+TEST_CASE("GController Setting Deadzone")
+{
+	CHECK(controller->SetDeadZone(GW::SYSTEM::DEADZONESQUARE, -1.0f) == GW::INVALID_ARGUMENT);
+	CHECK(controller->SetDeadZone(GW::SYSTEM::DEADZONESQUARE, 2.0f) == GW::INVALID_ARGUMENT);
+
+
+	REQUIRE(G_SUCCESS(controller->SetDeadZone(GW::SYSTEM::DEADZONESQUARE, .5f)));
+	REQUIRE(G_SUCCESS(controller->SetDeadZone(GW::SYSTEM::DEADZONECIRCLE, .35f)));
+
+}
 
 
 

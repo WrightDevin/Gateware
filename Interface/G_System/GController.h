@@ -52,11 +52,19 @@ namespace GW
 			CONTROLLERDISCONNECTED				/*!< Connection event for a controller being disconnected */
 		};
 
-		//! Unique Identifier for this interface. {ABD3CB16-4210-4CC6-B0D0-AD0FFCC7E2D2}
+		//! GControllerDeadzoneTypes holds the diffrent type of deadzone calculations
+		enum GControllerDeadzoneTypes
+		{
+			DEADZONESQUARE,	/*!< Calulates the deadzone of x and y separately*/
+			DEADZONECIRCLE	/*!< Calulates the deadzone of x and y as a single magnitude*/
+		};
+
+		//! Unique Identifier for this interface. {46714BC8-ECF5-4B86-AD4E-665BEB5378AB}
 		static const GUUIID GControllerUUIID = 
 		{
-			0xabd3cb16, 0x4210, 0x4cc6,{ 0xb0, 0xd0, 0xad, 0xf, 0xfc, 0xc7, 0xe2, 0xd2 } 
+			0x46714bc8, 0xecf5, 0x4b86,{ 0xad, 0x4e, 0x66, 0x5b, 0xeb, 0x53, 0x78, 0xab }
 		};
+
 		//! A multi-threaded controller input library.
 		/*!
 		*	This library can be used to poll the current state of connected controllers.
@@ -115,6 +123,64 @@ namespace GW
 			*/
 			virtual GReturn GetNumConnected(int &_outConnectedCount) = 0;
 
+			//! Set how the stick deadzones should be calculated
+			/*
+			*	Default deadzone is _type = DEADZONESQUARE, _deadzonePercentage = .2f
+			*
+			*	\param [in] _type Specifies the dead zone calculation to be used.
+			*	\param [in] _deadzonePercentage The size of the deadzone.
+			*
+			*	\retval SUCCESS The deadzone was set to the new parameters
+			*	\retval INVALID_ARGUMENT _deadzonePercentage is invaild
+			*/
+			virtual GReturn SetDeadZone(GControllerDeadzoneTypes _type, float _deadzonePercentage) = 0;
+
+			//! Start vibration in selected controller
+			/*
+			*	This will not replace a currently running vibration, the previous vibration must end or be stopped first.
+			*	Controllers have diffrent start up times and strengths this method does not account for this.
+			*
+			*	\param [in] _pan is a -1 to 1 ratio where -1 is full left motor, 1 is full right motor.
+			*	\param [in] _duration In seconds how long the vibration will run.
+			*	\param [in] _strength 0 to 1 ratio of how strong the vibration will be.
+			*	\param [in] _controllerIndex The controller to vibrate.
+			*
+			*	\retval SUCCESS The vibration has been started in the selected controller.
+			*	\retval	INVALID_ARGUMENT One or more arguments are out of range.
+			*	\retval FAILURE Controller is currently vibrating.
+			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
+			*/
+			virtual GReturn StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex) = 0;
+
+			//! Used to check if a controller is currently vibrating
+			/*
+			*	\param [in] _controllerIndex The controller index to check.
+			*	\param [out] _outIsVibrating Is a reference to a bool to store whether a controller is vibrating.
+			*
+			*	\retval SUCCESS The out-param was successfully filled out
+			*	\retval INVALID_ARGUMENT _controllerIndex was out of range.
+			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
+			*/
+			virtual GReturn IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating) = 0;
+
+			//! Used to stop a controller from vibrating 
+			/*
+			*	\param [in] _controllerIndex The controller index to stop
+			*
+			*	\retval SUCCESS The virbration was stop
+			*	\retval INVALID_ARGUMENT _controllerIndex was out of range.
+			*	\retval	REDUNDANT_OPERATION The controller was not vibrating. 
+			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
+			*/
+			virtual GReturn StopVirbration(unsigned int _controllerIndex) = 0;
+
+			//! Stops all currently vibrating controllers
+			/*
+			*	\retval SUCCESS All vibrations were stopped
+			*	\retval	REDUNDANT_OPERATION No controller were vibrating.
+			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
+			*/
+			virtual GReturn StopAllVirbrations() = 0;
 		
 		}; //end GController class
 
