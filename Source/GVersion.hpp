@@ -31,18 +31,18 @@ SOFTWARE.
 #define GVERSION_HPP
 
 // The Major version is increased when a new library is added.(minor & patch are reset)
-#define GATEWARE_MAJOR 5
+#define GATEWARE_MAJOR 6
 // The Minor version is increased whenever an interface is altered.(patch is reset)
 #define GATEWARE_MINOR 0
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH 'b'
+#define GATEWARE_PATCH 'a'
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "DevinWright_GController"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x4005320
+#define GATEWARE_COMMIT_HASH 0x097db45
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v5.0b"
+#define GATEWARE_VERSION_STRING "Gateware v6.0a"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0b (DevinWright_GController) [4005320]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.0a (DevinWright_GController) [097db45]"
 
 #endif

@@ -7,7 +7,7 @@ Purpose: A Gateware interface handles controller input and provides disconnectio
 Author: Devin Wright
 Contributors: N/A
 Last Modified: 11/29/2018
-Interface Status: Pre-Alpha
+Interface Status: Beta
 Copyright: 7thGate Software LLC.
 License: MIT
 */
