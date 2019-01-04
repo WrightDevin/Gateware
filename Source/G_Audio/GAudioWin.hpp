@@ -681,6 +681,9 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 		{
 			sndUser->isPlaying = false;
 			sndUser->isPaused = true;
+			// Bug fix, reload the audio buffer so the sound can play again (can't beleive I had to fix this!)
+			sndUser->mySourceVoice->Stop();
+			sndUser->mySourceVoice->SubmitSourceBuffer(&sndUser->myAudioBuffer);
 		}
 
 	}
