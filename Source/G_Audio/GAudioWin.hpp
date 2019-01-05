@@ -538,6 +538,7 @@ public:
 	std::atomic_bool loops = false;
 	std::atomic_bool isPlaying = false;
 	std::atomic_bool isPaused = false;
+	std::atomic_bool isComplete = false;
 	float volume = 1.0f;
 
 	WindowAppAudio * audio;
@@ -682,8 +683,7 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 			sndUser->isPlaying = false;
 			sndUser->isPaused = true;
 			// Bug fix, reload the audio buffer so the sound can play again (can't beleive I had to fix this!)
-			sndUser->mySourceVoice->Stop();
-			sndUser->mySourceVoice->SubmitSourceBuffer(&sndUser->myAudioBuffer);
+			sndUser->isComplete = true; // this shifts the fix onto the main audio thread which resolves the popping issue
 		}
 
 	}
@@ -917,7 +917,7 @@ GReturn WindowAppSound::Play()
 		return result;
 	HRESULT theResult = S_OK;
 
-	if (isPlaying)
+	if (isPlaying || isComplete)
 	{
 		result = StopSound();
 		if (result != SUCCESS)
@@ -1003,6 +1003,7 @@ GReturn WindowAppSound::StopSound()
 	WaitForSingleObject(myContext->hBufferEndEvent, INFINITE);
 	isPlaying = false;
 	isPaused = true;
+	isComplete = false;
 
 	result = SUCCESS;
 	return result;
