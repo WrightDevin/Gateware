@@ -125,8 +125,9 @@ private:
 	float XboxDeadZoneCalc(float _value, bool _isTigger);
 
     int XControllerSlotIndices[4];
+    #ifdef _WIN32
 	DWORD XControllerLastPacket[4];
-
+    #endif // !_WIN32
 	std::thread* xInputThread;
 	std::thread* controllerVibThreads;
 public:
