@@ -315,6 +315,7 @@ GReturn GeneralController::StopAllVirbrations()
 
 void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY)
 {
+#ifdef _WIN32
     _outX = _x / _axisMax;
     _outY = _y / _axisMax;
 	float liveRange = 1.0f - deadzonePercentage;
@@ -341,6 +342,7 @@ void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, 
 		_outX *= mag;
 		_outY *= mag;
 	}
+#endif
 }
 
 GReturn GeneralController::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
@@ -544,6 +546,7 @@ GReturn XboxController::IsConnected(int _controllerIndex, bool& _outIsConnected)
 
 void XboxController::XinputVibration()
 {
+#ifdef _WIN32
 	auto vibStart = std::chrono::high_resolution_clock::now();
 	std::chrono::milliseconds deltaTime;
 
@@ -569,6 +572,7 @@ void XboxController::XinputVibration()
 		}
 		controllersMutex.unlock();
 	}
+#endif
 }
 
 GReturn XboxController::StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex)
@@ -661,6 +665,7 @@ GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
 }
 GReturn XboxController::StopAllVirbrations()
 {
+#ifdef _WIN32
 	XINPUT_VIBRATION vibrationState;
 	vibrationState.wLeftMotorSpeed = 0;
 	vibrationState.wRightMotorSpeed = 0;
@@ -679,10 +684,14 @@ GReturn XboxController::StopAllVirbrations()
 	controllersMutex.unlock();
 
 	return SUCCESS;
+#else
+    return FAILURE;
+#endif // _WIN32
 }
 
 float XboxController::XboxDeadZoneCalc(float _value, bool _isTigger)
 {
+#ifdef _WIN32
 	if (_isTigger)
 	{
 		if (std::abs(_value) > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
@@ -698,10 +707,14 @@ float XboxController::XboxDeadZoneCalc(float _value, bool _isTigger)
 			_value = 0;
 	}
 	return _value;
+#else
+    return 0;
+#endif // _WIN32
 }
 
 void XboxController::XinputLoop()
 {
+#ifdef _WIN32
 	DWORD result;
 	XINPUT_STATE controllerState;
 	ZeroMemory(&controllerState, sizeof(XINPUT_STATE));
@@ -969,6 +982,7 @@ void XboxController::XinputLoop()
 	}
 
 	delete[] oldState.controllerInputs;
+#endif // _WIN32
 }
 
 GReturn XboxController::DecrementCount()
