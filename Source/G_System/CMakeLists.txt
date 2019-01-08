@@ -1,12 +1,11 @@
-project(LibraryProject)
+﻿project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
 add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog GLog.cpp ${HEADER_FILES})
-add_library (GController GController.cpp ${HEADER_FILES})
 
 add_library (GFile_DLL SHARED GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog_DLL SHARED GLog.cpp GFile.cpp ${HEADER_FILES})
-add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES} direntw.h GUtility.h)
+
 
 
 #################################################################################APPLE ONLY
@@ -52,8 +51,6 @@ target_link_libraries(GFile "-framework ${COCOA_LIBRARY}")
 
 target_link_libraries(GLog "-framework ${COCOA_LIBRARY}")
 
-target_link_libraries(GController "-framework ${COCOA_LIBRARY}")
-
 
 target_link_libraries(GBufferedInput_DLL "-framework cocoa")
 
@@ -64,8 +61,6 @@ target_link_libraries(GWindow_DLL "-framework cocoa")
 target_link_libraries(GFile_DLL "-framework cocoa")
 
 target_link_libraries(GLog_DLL "-framework cocoa")
-
-target_link_libraries(GController_DLL "-framework cocoa")
 
 
 #################################################################################EVERYTHING ELSE
@@ -102,7 +97,6 @@ GFile
 GInput 
 GLog 
 GWindow 
-GController
 PROPERTY FOLDER "Static libraries")
 
 set_property(TARGET 
@@ -111,7 +105,6 @@ GFile_DLL
 GInput_DLL 
 GLog_DLL 
 GWindow_DLL 
-GController_DLL
 PROPERTY FOLDER "Dynamic libraries")
 
 ##################################################################################COMPILE DEFINITIONS FOR DYNAMIC LIBRARIES
@@ -121,7 +114,6 @@ target_compile_definitions(GFile_DLL PUBLIC GATEWARE_EXPORT_BUILD)
 target_compile_definitions(GInput_DLL PUBLIC GATEWARE_EXPORT_BUILD)
 target_compile_definitions(GLog_DLL PUBLIC GATEWARE_EXPORT_BUILD)
 target_compile_definitions(GWindow_DLL PUBLIC GATEWARE_EXPORT_BUILD)
-target_compile_definitions(GController_DLL PUBLIC GATEWARE_EXPORT_BUILD)
 
 
 ##################################################################################--EXAMPLE ON HOW TO ADD FILE INTO PROJECT--

@@ -14,4 +14,4 @@ mkdir ./Xcode
 cd Xcode
 
 export PATH=$PATH:/Applications/CMake.app/Contents/bin
-cmake ./../../gateware.git.0 -DCMAKE_OSX_ARCHITECTURES="x86_64" -G "Xcode"
+cmake ./../../gateware.git.0 -DCMAKE_OSX_ARCHITECTURES="x86_64;i386" -G "Xcode"
