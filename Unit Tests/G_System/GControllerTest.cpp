@@ -5,6 +5,7 @@
 
 #define MANUAl_INPUT
 //#define MANUAL_CONNECTION_EVENTS
+#define MANUAL_VIBRATION_TEST
 //#define SIMULATED_INPUT
 
 ///=============================================================================
@@ -184,6 +185,62 @@ TEST_CASE("GController Manual controller connection event test")
 
 }
 #endif // MANUAL_CONNECTION_EVENTS
+
+#ifdef MANUAL_VIBRATION_TEST
+TEST_CASE("GController Manual controller vibration test")
+{
+	bool isConnected = false;
+	bool isVibrating = false;
+	controller->IsConnected(0, isConnected);
+	REQUIRE(isConnected);
+
+	// Checking invailds
+	CHECK(controller->IsVibrating(-1, isVibrating) == GW::INVALID_ARGUMENT);
+	CHECK(controller->StopVirbration(-1) == GW::INVALID_ARGUMENT);
+	CHECK(controller->StartVibration(-1.0f, -1.0f, -2.0f, -1) == GW::INVALID_ARGUMENT);
+	
+	printf("Vibration both sides duration .5 seconds\n");
+	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	controller->IsVibrating(0, isVibrating);
+	CHECK(isVibrating == false);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+
+	printf("Vibration Left side duration .5 seconds\n");
+	CHECK(G_SUCCESS(controller->StartVibration(-1, 1, .5f, 0)));
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	controller->IsVibrating(0, isVibrating);
+	CHECK(isVibrating == false);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+
+	printf("Vibration Right side duration .5 seconds\n");
+	CHECK(G_SUCCESS(controller->StartVibration(1, 1, .5f, 0)));
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	controller->IsVibrating(0, isVibrating);
+	CHECK(isVibrating == false);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
+	CHECK(G_SUCCESS(controller->StopVirbration(0)));
+	controller->IsVibrating(0, isVibrating);
+	CHECK(isVibrating == false);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
+	CHECK(G_SUCCESS(controller->StopAllVirbrations()));
+	controller->IsVibrating(0, isVibrating);
+	CHECK(isVibrating == false);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
+	CHECK(controller->StartVibration(0, 1, .5f, 0) == GW::FAILURE);
+	CHECK(G_SUCCESS(controller->StopVirbration(0)));
+
+
+}
+#endif// MANUAL_VIBRATION_TEST
 
 #ifdef _WIN32 // Temp until General controller support is added to Windows
 TEST_CASE("GController Manual Xbox input test")

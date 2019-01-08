@@ -177,7 +177,6 @@ namespace GW
 			//! Stops all currently vibrating controllers
 			/*
 			*	\retval SUCCESS All vibrations were stopped
-			*	\retval	REDUNDANT_OPERATION No controller were vibrating.
 			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
 			*/
 			virtual GReturn StopAllVirbrations() = 0;

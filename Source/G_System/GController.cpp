@@ -22,6 +22,7 @@
 #define MAX_PS4_INPUTS 20
 #define MAX_XBOX_THUMB_AXIS 32768
 #define MAX_XBOX_TRIGGER_AXIS 255
+#define XINPUT_MAX_VIBRATION 65535
 
 using namespace GW;
 using namespace CORE;
@@ -36,6 +37,9 @@ namespace
 	struct CONTROLLER_STATE
 	{
 		int isConnected;
+		int isVibrating;
+		float vibrationDuration;
+		std::chrono::high_resolution_clock::time_point* vibrationStartTime;
 		int maxInputs; // Hold the size of controllerInputs array
 		float* controllerInputs; // controllerInputs is used to hold an array for the input values of the controller
 	};
@@ -55,7 +59,7 @@ namespace
 	CONTROLLER_STATE* CopyControllerState(const CONTROLLER_STATE* _stateToCopy, CONTROLLER_STATE* _outCopy)
 	{
 		if (_stateToCopy->maxInputs == _outCopy->maxInputs)
-			for (unsigned int i = 0; i < _outCopy->maxInputs; ++i)
+			for (int i = 0; i < _outCopy->maxInputs; ++i)
 			{
 				_outCopy->controllerInputs[i] = _stateToCopy->controllerInputs[i];
 			}
@@ -124,10 +128,13 @@ private:
 	DWORD XControllerLastPacket[4];
 
 	std::thread* xInputThread;
+	std::thread* controllerVibThreads;
 public:
 	// XboxController
 	XboxController();
 	~XboxController();
+
+	void XinputVibration();
 
 	// GController
 	void Init();
@@ -135,7 +142,10 @@ public:
 	GReturn GetMaxIndex(int &_outMax);
 	GReturn GetNumConnected(int &_outConnectedCount);
 	GReturn IsConnected(int _controllerIndex, bool& _outIsConnected);
-
+	GReturn StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex);
+	GReturn IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating);
+	GReturn StopVirbration(unsigned int _controllerIndex);
+	GReturn StopAllVirbrations();
 	// GInterface
 	GReturn DecrementCount();
 };
@@ -222,6 +232,9 @@ void GeneralController::Init()
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 	controllers[i].isConnected = 0;
+	controllers[i].isVibrating = 0;
+	controllers[i].vibrationDuration = 0;
+	controllers[i].vibrationStartTime = new std::chrono::high_resolution_clock::time_point();
 	controllers[i].maxInputs = MAX_GENENRAL_INPUTS;
 	controllers[i].controllerInputs = new float[MAX_GENENRAL_INPUTS];
 	}
@@ -404,6 +417,7 @@ GReturn GeneralController::DecrementCount()
 		for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 		{
 			delete[] controllers[i].controllerInputs;
+			delete controllers[i].vibrationStartTime;
 		}
 		delete[] controllers;
 
@@ -469,12 +483,15 @@ void XboxController::Init()
 	for (unsigned int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 	{
 		controllers[i].isConnected = 0;
+		controllers[i].isVibrating = 0;
+		controllers[i].vibrationDuration = 0;
+		controllers[i].vibrationStartTime = new std::chrono::high_resolution_clock::time_point();
 		controllers[i].maxInputs = MAX_XBOX_INPUTS;
 		controllers[i].controllerInputs = new float[MAX_XBOX_INPUTS];
 	}
 #ifdef _WIN32
 	xInputThread = new std::thread(&XboxController::XinputLoop, this);
-	//xInputThread->detach();
+	//controllerVibThreads = new std::thread(&XboxController::XinputVibration, this);
 #endif // _WIN32
 }
 
@@ -524,6 +541,145 @@ GReturn XboxController::IsConnected(int _controllerIndex, bool& _outIsConnected)
 	return SUCCESS;
 }
 
+void XboxController::XinputVibration()
+{
+	auto vibStart = std::chrono::high_resolution_clock::now();
+	std::chrono::milliseconds deltaTime;
+
+	while (isRunning)
+	{
+		controllersMutex.lock();
+		for (int i = 0; i < 4; ++i)
+		{
+			
+			if (controllers[XControllerSlotIndices[i]].isConnected && controllers[XControllerSlotIndices[i]].isVibrating)
+			{
+				//controllers[XControllerSlotIndices[i]].vibrationDuration -= (deltaTime.count() / 1000.f);
+				if (controllers[XControllerSlotIndices[i]].vibrationDuration <= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - vibStart).count()/1000.0f)
+				{
+					XINPUT_VIBRATION vibrationState;
+					vibrationState.wLeftMotorSpeed = 0;
+					vibrationState.wRightMotorSpeed = 0;
+					controllers[XControllerSlotIndices[i]].isVibrating = 0;
+					controllers[XControllerSlotIndices[i]].vibrationDuration = 0.0f;
+					XInputSetState(i, &vibrationState);
+				}
+			}
+		}
+		controllersMutex.unlock();
+	}
+}
+
+GReturn XboxController::StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex)
+{
+	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0)
+		|| (_pan < -1.0f || _pan > 1.0f) 
+		|| _duration < 0.0f 
+		|| (_strength < -1.0f || _strength > 1.0f) )
+		return INVALID_ARGUMENT;
+
+	controllersMutex.lock();
+
+	if (controllers[_controllerIndex].isVibrating)
+	{
+		controllersMutex.unlock();
+		return FAILURE;
+	}
+
+#ifdef _WIN32
+	XINPUT_VIBRATION vibrationState;
+	unsigned int vibrationStrength = XINPUT_MAX_VIBRATION * _strength;
+	vibrationState.wLeftMotorSpeed  = vibrationStrength * ( .5f + (.5f * (-1 *_pan)));
+	vibrationState.wRightMotorSpeed = vibrationStrength * (.5f + (.5f * _pan));
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (_controllerIndex == XControllerSlotIndices[i])
+		{
+
+			controllers[i].isVibrating = 1;
+			controllers[i].vibrationDuration = _duration;
+			*controllers[i].vibrationStartTime = std::chrono::high_resolution_clock::now();
+			XInputSetState(i, &vibrationState);
+			break;
+		}
+	}
+	//controllerVibThreads[i] = new std::thread(&XboxController::XinputVibration, this);
+	
+
+
+
+#endif // _WIN32
+
+	controllersMutex.unlock();
+	return SUCCESS;
+}
+GReturn XboxController::IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating)
+{
+	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0))
+		return INVALID_ARGUMENT;
+
+	controllersMutex.lock();
+
+	_outIsVibrating = controllers[_controllerIndex].isVibrating == 0 ? false : true;
+
+	controllersMutex.unlock();
+
+	return SUCCESS;
+}
+GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
+{
+	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0))
+		return INVALID_ARGUMENT;
+
+	controllersMutex.lock();
+	if (controllers[_controllerIndex].isVibrating == false)
+	{
+		controllersMutex.unlock();
+		return REDUNDANT_OPERATION;
+	}
+
+#ifdef _WIN32
+	XINPUT_VIBRATION vibrationState;
+	vibrationState.wLeftMotorSpeed = 0;
+	vibrationState.wRightMotorSpeed = 0;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (_controllerIndex == XControllerSlotIndices[i])
+		{
+			controllers[i].isVibrating = 0;
+			controllers[i].vibrationDuration = 0.0f;
+			XInputSetState(i, &vibrationState);
+			break;
+		}
+	}
+#endif // _WIN32
+
+	controllersMutex.unlock();
+	return SUCCESS;
+}
+GReturn XboxController::StopAllVirbrations()
+{
+	XINPUT_VIBRATION vibrationState;
+	vibrationState.wLeftMotorSpeed = 0;
+	vibrationState.wRightMotorSpeed = 0;
+
+	controllersMutex.lock();
+
+	for (int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
+	{
+		if (controllers[i].isVibrating)
+		{
+			controllers[i].isVibrating = 0;
+			controllers[i].vibrationDuration = 0.0f;
+			XInputSetState(i, &vibrationState);
+		}
+	}
+	controllersMutex.unlock();
+
+	return SUCCESS;
+}
+
 float XboxController::XboxDeadZoneCalc(float _value, bool _isTigger)
 {
 	if (_isTigger)
@@ -556,11 +712,14 @@ void XboxController::XinputLoop()
 	CONTROLLER_STATE oldState;
 	oldState.maxInputs = MAX_XBOX_INPUTS;
 	oldState.controllerInputs = new float[MAX_XBOX_INPUTS];
+	//std::chrono::milliseconds deltaTime;
+
 
 	while (isRunning)
 	{
+
 		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100 
-		  || isFirstLoop)
+			|| isFirstLoop)
 		{ 
 			lastCheck = std::chrono::high_resolution_clock::now();
 			isFirstLoop = false;
@@ -764,6 +923,8 @@ void XboxController::XinputLoop()
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 						}
+						
+					
 
 						controllersMutex.unlock();
 					}
@@ -774,6 +935,8 @@ void XboxController::XinputLoop()
 					{
 						//call event
 						controllers[XControllerSlotIndices[i]].isConnected = 0;
+						controllers[XControllerSlotIndices[i]].isVibrating = 0;
+						controllers[XControllerSlotIndices[i]].vibrationDuration = 0.0f;
 						eventData.controllerIndex = XControllerSlotIndices[i];
 						eventData.inputCode = 0;
 						eventData.inputValue = 0;
@@ -783,6 +946,21 @@ void XboxController::XinputLoop()
 
 						XControllerSlotIndices[i] = -1;
 
+					}
+				}
+
+				if (XControllerSlotIndices[i] >= 0 && controllers[XControllerSlotIndices[i]].isVibrating)
+				{
+					if (controllers[XControllerSlotIndices[i]].vibrationDuration <=
+						(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() -
+							*controllers[XControllerSlotIndices[i]].vibrationStartTime).count() *.001f))
+					{
+						XINPUT_VIBRATION vibrationState;
+						vibrationState.wLeftMotorSpeed = 0;
+						vibrationState.wRightMotorSpeed = 0;
+						controllers[XControllerSlotIndices[i]].isVibrating = 0;
+						controllers[XControllerSlotIndices[i]].vibrationDuration = 0.0f;
+						XInputSetState(i, &vibrationState);
 					}
 				}
 			}
@@ -805,10 +983,14 @@ GReturn XboxController::DecrementCount()
 		isRunning = false;
 		xInputThread->join();
 		delete xInputThread;
+		//controllerVibThreads->join();
+		//delete controllerVibThreads;
 
 		for (int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 		{
 			delete[] controllers[i].controllerInputs;
+			delete controllers[i].vibrationStartTime;
+
 		}
 		delete[] controllers;
 		delete this;
