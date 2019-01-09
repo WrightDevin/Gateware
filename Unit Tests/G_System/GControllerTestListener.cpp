@@ -1,6 +1,8 @@
 #include "GControllerTestListener.h"
 #include "../Unit Tests/Common.h"
-#include "G_System\GControllerInputDefines.h"
+#include "G_System/GControllerInputDefines.h"
+#include <stdio.h>
+#include <string.h>
 
 CONTROLLER_STATE event_controllers[4];
 

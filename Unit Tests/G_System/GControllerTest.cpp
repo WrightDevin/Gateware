@@ -41,7 +41,8 @@ TEST_CASE("GController core test battery", "[CreateGController], [RequestInterfa
 
 #ifdef _WIN32 // Temp until General controller support is added to Windows
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_XBOX_CONTROLLER, &GController_specific)));
-#elif
+#endif // _WIN32
+#ifndef _WIN32
 		REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, &GController_specific)));
 #endif // _WIN32
 
@@ -122,7 +123,7 @@ TEST_CASE("CreateGController Tests", "[CreateGController]")
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, &controller)));
 #endif // _WIN32
 
-	
+
 
 	REQUIRE(controller != nullptr);
 
@@ -198,7 +199,7 @@ TEST_CASE("GController Manual controller vibration test")
 	CHECK(controller->IsVibrating(-1, isVibrating) == GW::INVALID_ARGUMENT);
 	CHECK(controller->StopVirbration(-1) == GW::INVALID_ARGUMENT);
 	CHECK(controller->StartVibration(-1.0f, -1.0f, -2.0f, -1) == GW::INVALID_ARGUMENT);
-	
+
 	printf("Vibration both sides duration .5 seconds\n");
 	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
 	std::this_thread::sleep_for(std::chrono::seconds(2));
