@@ -8,7 +8,7 @@
 #import "../G_Audio/GAudioTests.cpp"
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
-#import "../G_Graphics/GOpenGLSurfaceTest.cpp"
+//#import "../G_Graphics/GOpenGLSurfaceTest.cpp"
 #import "../G_Math/GMatrixTest.cpp"
 #import "../G_Math/GQuaternionTest.cpp"
 #import "../G_Math/GVectorTest.cpp"
