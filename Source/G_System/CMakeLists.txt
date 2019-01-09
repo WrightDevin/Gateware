@@ -2,11 +2,11 @@ project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
 add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog GLog.cpp ${HEADER_FILES})
-#add_library (GController GController.cpp ${HEADER_FILES})
+add_library (GController GController.cpp ${HEADER_FILES})
 
 add_library (GFile_DLL SHARED GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog_DLL SHARED GLog.cpp GFile.cpp ${HEADER_FILES})
-#add_library (GController_DLL SHARED GController.cpp GLog.cpp GFile.cpp ${HEADER_FILES})
+add_library (GController_DLL SHARED GController.cpp GLog.cpp GFile.cpp ${HEADER_FILES})
 
 
 
@@ -80,7 +80,7 @@ add_library (GInput GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow GWindow.cpp ${HEADER_FILES})
 
-add_library (GController GController.cpp ${HEADER_FILES})
+#add_library (GController GController.cpp ${HEADER_FILES})
 
 
 add_library (GBufferedInput_DLL SHARED GBufferedInput.cpp ${HEADER_FILES})
@@ -89,7 +89,7 @@ add_library (GInput_DLL SHARED GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow_DLL SHARED GWindow.cpp ${HEADER_FILES})
 
-add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
+#add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
 
 
 endif()
