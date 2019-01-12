@@ -3,9 +3,9 @@
 
 #include <thread>
 
-#define MANUAl_INPUT
+//#define MANUAl_INPUT
 //#define MANUAL_CONNECTION_EVENTS
-#define MANUAL_VIBRATION_TEST
+//#define MANUAL_VIBRATION_TEST
 //#define SIMULATED_INPUT
 
 ///=============================================================================
