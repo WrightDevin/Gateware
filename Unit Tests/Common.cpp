@@ -748,3 +748,8 @@ int r = 0;
 #endif
 
 	}
+
+	extern void SimulateControllerInput(unsigned long flags)
+	{
+
+	}

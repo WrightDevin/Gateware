@@ -30,25 +30,4 @@ rm amd64Release
 
 cd ../../
 
-mkdir Gateware_i386
-cd Gateware_i386
-
-mkdir i386Debug
-cd i386Debug
-
-touch i386Debug
-export PATH=$PATH:../../../../gateware.git.0/CMake/bin
-cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug;
-rm i386Debug
-
-cd ../
-mkdir i386Release
-
-cd i386Release
-
-touch i386Release
-export PATH=$PATH:../../../../gateware.git.0/CMake/bin
-cmake ../../../../gateware.git.0 -G "CodeBlocks - Unix Makefiles" -DCMAKE_BUILD_TYPE=Release;
-rm i386Release
-
 sleep 30s

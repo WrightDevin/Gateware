@@ -12,6 +12,8 @@
 #include <G_System/GLog.h>
 #include <G_System/GFile.h>
 #include <G_System/GWindow.h>
+#include <G_System/GController.h>
+#include <G_System/GControllerInputDefines.h>
 #include <G_Graphics/GDirectX11Surface.h>
 #include <G_Graphics/GOpenGLSurface.h>
 #include <G_Math/GVector.h>
@@ -26,6 +28,8 @@
 #include <../../gateware.git.0/Interface/G_System/GLog.h>
 #include <../../gateware.git.0/Interface/G_System/GFile.h>
 #include <../../gateware.git.0/Interface/G_System/GWindow.h>
+#include <../../gateware.git.0/Interface/G_System/GController.h>
+#include <../../gateware.git.0/Interface/G_System/GControllerInputDefines.h>
 #include <../../gateware.git.0/Interface/G_Graphics/GDirectX11Surface.h>
 #include <../../gateware.git.0/Interface/G_Graphics/GOpenGLSurface.h>
 #include <../../gateware.git.0/Interface/G_Audio/GAudio.h>
@@ -75,6 +79,8 @@
 
 	//Needed by GInput and GBufferedInput
 	extern void SimulateInput(unsigned long flags);
+
+	extern void SimulateControllerInput(unsigned long flags);
 
 	//TODO: Add any other necessary non-platform dependent functionality here.
 
