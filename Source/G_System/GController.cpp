@@ -732,8 +732,8 @@ void XboxController::XinputLoop()
 
 	while (isRunning)
 	{
-
-		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100 
+		// *UPDATED* loop runs 100 times per second. may want to up this to highest refresh rate possible on a monitor
+		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10 
 			|| isFirstLoop)
 		{ 
 			lastCheck = std::chrono::high_resolution_clock::now();
