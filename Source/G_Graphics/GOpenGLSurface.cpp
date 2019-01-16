@@ -494,7 +494,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	///////////////////////////
 	// DEPTH STENCIL SUPPORT //
 	///////////////////////////
-	if (_initMask && DEPTH_STENCIL_SUPPORT)
+	if (_initMask & DEPTH_STENCIL_SUPPORT)
 	{
 		GLint stencil;
 		glGetIntegerv(GL_STENCIL_BITS, &stencil);
@@ -505,7 +505,7 @@ glXDestroyContext((Display*)lWnd.display, oldContext);
 	////////////////////////
 	// ES CONTEXT SUPPORT //
 	////////////////////////
-	if (_initMask && OPENGL_ES_SUPPORT)
+	if (_initMask & OPENGL_ES_SUPPORT)
 	{
 		char* version = (char*)glGetString(GL_VERSION);
 

@@ -557,12 +557,13 @@ GReturn GMatirxCpp::RotationByVectorF(GVECTORF _vector, float _radian, GMATRIXF 
 
 GReturn GMatirxCpp::TranslatelocalF(GMATRIXF _matrix, GVECTORF _vector, GMATRIXF & _outMatrix)
 {
+	// *BUG FIX* for some reason this was column major & global?
 	GMATRIXF Translation = GIdentityMatrixF;
-	Translation.data[3] = _vector.x;
-	Translation.data[7] = _vector.y;
-	Translation.data[11] = _vector.z;
-
-	MultiplyMatrixF(_matrix, Translation, _outMatrix);
+	Translation.data[12] = _vector.x;
+	Translation.data[13] = _vector.y;
+	Translation.data[14] = _vector.z;
+	// order switched
+	MultiplyMatrixF(Translation, _matrix, _outMatrix);
 
 	return SUCCESS;
 }
@@ -1081,12 +1082,13 @@ GReturn GMatirxCpp::RotationByVectorD(GVECTORD _vector, double _radian, GMATRIXD
 
 GReturn GMatirxCpp::TranslatelocalD(GMATRIXD _matrix, GVECTORD _vector, GMATRIXD & _outMatrix)
 {
+	// *BUG FIX* for some reason this was column major & global?
 	GMATRIXD Translation = GIdentityMatrixD;
-	Translation.data[3] = _vector.x;
-	Translation.data[7] = _vector.y;
-	Translation.data[11] = _vector.z;
-
-	MultiplyMatrixD(_matrix, Translation, _outMatrix);
+	Translation.data[12] = _vector.x;
+	Translation.data[13] = _vector.y;
+	Translation.data[14] = _vector.z;
+	// order switched
+	MultiplyMatrixD(Translation, _matrix, _outMatrix);
 
 	return SUCCESS;
 }

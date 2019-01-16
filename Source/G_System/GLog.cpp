@@ -322,12 +322,12 @@ GW::GReturn LogFile::DecrementCount()
 	//Delete it if not.
 	if (refCount == 0)
 	{
-		//Decrement the count of our internal GFile.
-		logFile->DecrementCount();
-
 		//Tell the thread to stop running and wait for it.
 		threadRunning = false;
 		worker->join();
+		
+		//Decrement the count of our internal GFile.
+		logFile->DecrementCount();
 
 		//Cleanup.
 		delete worker;

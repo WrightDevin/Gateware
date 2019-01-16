@@ -330,6 +330,8 @@ TEST_CASE("Sending events to listeners.", "")
 	REQUIRE(windowTestValue == 1);
 }
 
+// The function GetLastEvent will be removed and replaced with IsOpen() in GWindow
+#if 0
 TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 {
 	/*
@@ -463,7 +465,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::DESTROY); //Linux side this is a false positive
 
+	tstWindow->DecrementCount();
 }
+#endif
 
 
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
@@ -482,7 +486,6 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	windowListener->DecrementCount();
 	appWindow->DecrementCount();
 	unopenedWindow->DecrementCount();
-	tstWindow->DecrementCount();
 }
 
 

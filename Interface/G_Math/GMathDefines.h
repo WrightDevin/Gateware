@@ -162,9 +162,11 @@ namespace GW
 
 #pragma pack(pop)
 
+		static const GVECTORF GIdentityVectorF = { 0,0,0,1 };
+		static const GVECTORD GIdentityVectorD = { 0,0,0,1 };
 		static const GVECTORF GZeroVectorF = { 0,0,0,0 };
 		static const GVECTORD GZeroVectorD = { 0,0,0,0 };
-
+		
 		static const GMATRIXF GIdentityMatrixF{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 		static const GMATRIXD GIdentityMatrixD{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 		static const GMATRIXF GZeroMatrixF{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };

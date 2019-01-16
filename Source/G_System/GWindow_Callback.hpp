@@ -33,7 +33,11 @@ namespace
 	//Methods
 	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
-		GW::SYSTEM::GWindowInputEvents* GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
+		GW::SYSTEM::GWindowInputEvents* GEvents = nullptr;
+		GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
+		if (GEvents == nullptr) // *BUG FIX* This will happen once if you launch a window fullscreen
+			return DefWindowProcW(window, msg, wp, lp);
+		// If we have a valid event handler we can process
 		switch (msg)
 		{
 		case WM_SIZE:
