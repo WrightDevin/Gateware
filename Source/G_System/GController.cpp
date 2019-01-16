@@ -6,6 +6,8 @@
 #include <atomic>
 #include <thread>
 #include <map>
+#include <iostream>
+#include <string.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -15,6 +17,19 @@
 #pragma comment(lib, "XInput.lib")
 #endif // _WIN32
 
+#ifdef __linux__
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/inotify.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <linux/joystick.h>
+#include <chrono>
+#include <cmath>
+#include<dirent.h>
+#endif // __linux__
+
 #define MAX_CONTROLLER_INDEX 16
 #define MAX_XBOX_CONTROLLER_INDEX 4
 #define MAX_GENENRAL_INPUTS 20 // Can change
@@ -23,6 +38,7 @@
 #define MAX_XBOX_THUMB_AXIS 32768
 #define MAX_XBOX_TRIGGER_AXIS 255
 #define XINPUT_MAX_VIBRATION 65535
+#define MAX_LINUX_THUMB_AXIS 32768
 
 using namespace GW;
 using namespace CORE;
@@ -31,7 +47,7 @@ using namespace SYSTEM;
 //temp move globals to an included file look at GBI AND GWINDOW
 namespace
 {
-	//! Map of Listeners to send event information to. 
+	//! Map of Listeners to send event information to.
 	std::map<GListener *, unsigned long long> listeners;
 
 	struct CONTROLLER_STATE
@@ -74,6 +90,16 @@ namespace
 
 class GeneralController : public GController
 {
+private:
+        void Linux_InitControllers();
+        void Linux_InotifyLoop();
+        void Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd);
+
+        std::thread* linuxControllerThreads[MAX_CONTROLLER_INDEX];
+        std::thread* linuxInotifyThread;
+        std::atomic<bool> iscontrollerLoopRunning[MAX_CONTROLLER_INDEX];
+        char* controllerFilePaths[MAX_CONTROLLER_INDEX];
+
 protected:
 	void DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY);
 
@@ -81,7 +107,7 @@ protected:
 	std::atomic<bool> isRunning;
 	std::mutex controllersMutex;
 	std::mutex listenerMutex;
-	
+
 
 	// Lock before using
 	CONTROLLER_STATE* controllers;
@@ -109,7 +135,7 @@ public:
 	// GBroadcasting
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
 	GReturn DeregisterListener(GListener* _removeListener);
-	
+
 	// GInterface
 	GReturn GetCount(unsigned int& _outCount);
 	GReturn IncrementCount();
@@ -158,12 +184,12 @@ GATEWARE_EXPORT_IMPLICIT GReturn CreateGController(int _controllerType, GControl
 }
 
 GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outController)
-{	
+{
 	//replace with a better check for vaild _controllertype
 	if(_outController == nullptr || (_controllerType >> 12) < 0 || (_controllerType >> 12) > 0xFF)
 		return INVALID_ARGUMENT;
 
-#ifdef _WIN32
+//#ifdef _WIN32
 	// Add cases for each supported controller for _WIN32
 	switch (_controllerType)
 	{
@@ -177,10 +203,11 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 		GeneralController* genController = new GeneralController;
 		if (genController == nullptr)
 			return FAILURE;
+        genController->Init();
 		(*_outController) = genController;
 #endif // !_WIN32
 
-		
+
 		break;
 	}
 	case G_XBOX_CONTROLLER:
@@ -201,17 +228,17 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 		return FEATURE_UNSUPPORTED;
 	}
 	}
-#elif __linux__
+//#elif __linux__
 	// Add  cases for each supported controller for Linux
-	return FEATURE_UNSUPPORTED;
-#elif __APPLE__
+	//return FEATURE_UNSUPPORTED;
+//#elif __APPLE__
 	// Add  cases for each supported controller for Mac
-	return FEATURE_UNSUPPORTED;
-#endif
+	//return FEATURE_UNSUPPORTED;
+//#endif
 
 
 	return SUCCESS;
-	
+
 }
 
 // GeneralController
@@ -240,11 +267,23 @@ void GeneralController::Init()
 	controllers[i].maxInputs = MAX_GENENRAL_INPUTS;
 	controllers[i].controllerInputs = new float[MAX_GENENRAL_INPUTS];
 	}
+#ifdef _linux_
+        Linux_InitControllers();
+        linuxInotifyThread = new std::thread(&GeneralController::linuxInotifyThread, this);
+
+#endif // _linux_
 }
 
 GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float& _outState)
 {
-	return FAILURE;
+	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || ((_inputCode & 0xFF) < 0 && (_inputCode & 0xFF) >= MAX_GENENRAL_INPUTS))
+		return INVALID_ARGUMENT;
+	if (controllers->isConnected == 0)
+		return FAILURE;
+
+	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];
+
+	return SUCCESS;
 }
 
 GReturn GeneralController::IsConnected(int _controllerIndex, bool& _outIsConnected)
@@ -316,7 +355,7 @@ GReturn GeneralController::StopAllVirbrations()
 
 void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY)
 {
-#ifdef _WIN32
+#ifndef __APPLE__
     _outX = _x / _axisMax;
     _outY = _y / _axisMax;
 	float liveRange = 1.0f - deadzonePercentage;
@@ -416,7 +455,7 @@ GReturn GeneralController::DecrementCount()
 	if (referenceCount == 0)
 	{
 		isRunning = false;
-		
+
 		// handle destruction
 		for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 		{
@@ -424,7 +463,10 @@ GReturn GeneralController::DecrementCount()
 			delete controllers[i].vibrationStartTime;
 		}
 		delete[] controllers;
-
+		#ifdef _linux_
+		linuxInotifyThread.join();
+		delete linuxInotifyThread;
+		#endif
 		delete this;
 	}
 
@@ -464,6 +506,176 @@ GReturn GeneralController::RequestInterface(const GUUIID& _interfaceID, void** _
 		return INTERFACE_UNSUPPORTED;
 
 	return SUCCESS;
+}
+
+void GeneralController::Linux_InitControllers()
+{
+    for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+    {
+        iscontrollerLoopRunning[i] = false;
+    }
+
+DIR *dir;
+struct dirent *fileData;
+if ((dir = opendir("/dev/input")) != NULL) {
+  /* print all the files and directories within directory */
+  while ((fileData = readdir(dir)) != NULL) {
+    printf ("%s\n", fileData->d_name);
+  }
+  closedir (dir);
+}
+}
+
+void GeneralController::Linux_InotifyLoop()
+{
+    int fd = 0;
+    int wd = 0;
+    int length = sizeof(struct inotify_event) + 16;
+    struct inotify_event iev, base;
+    base.len = 0;
+    base.mask = 0;
+    auto lastCheck = std::chrono::high_resolution_clock::now();
+
+    fd = inotify_init();
+    if(fd < 0)
+        printf("ERROR");
+
+    wd = inotify_add_watch(fd,"/dev/input", IN_CREATE | IN_DELETE);
+    if(wd < 0)
+        printf("ERROR");
+
+    char filepath[] = "/dev/input";
+
+    for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+        iscontrollerLoopRunning[i] = false;
+
+    while(isRunning)
+    {
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
+		{
+        iev = base;
+        read(fd, &iev, length);
+        if(iev.len)
+        {
+            if(iev.mask & IN_CREATE)
+            {
+                if(!(iev.mask & IN_ISDIR))
+                {
+                    char newFile[30];
+                    strcpy(newFile, "/dev/input/");
+                    strcat(newFile, iev.name);
+                    // check the type of file
+                    int jsCheck = strncmp(iev.name,"js",2);
+                    int evdevCheck = strncmp(iev.name, "event",5);
+                    // check if file has a vaild number of inputs  move to controller loop
+                    if(jsCheck == 0)
+                    {
+                        int joy_fd = open(newFile, O_RDONLY | O_NONBLOCK);    // move to inoitfy loop
+                        if(joy_fd == -1)
+                         {
+                           continue;
+                         }
+                        else
+                         {
+                         int axesCount, buttonCount;
+                         ioctl(joy_fd, JSIOCGAXES, axesCount);
+                         ioctl(joy_fd, JSIOCGBUTTONS, buttonCount);
+                            if(axesCount != 8 && buttonCount != 13)
+                                continue;
+                            else
+                            {
+                                 // Launch new input thread and add the array
+                                int index = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
+                                if(index > -1)
+                                {
+                                    iscontrollerLoopRunning[index] = true;
+                                    controllerFilePaths[index] = iev.name;
+                                    linuxControllerThreads[index] = new std::thread(&GeneralController::Linux_ControllerInputLoop, this, newFile, index, joy_fd);
+                                }
+                            }
+                         }
+                    }
+                    else if (evdevCheck == 0)
+                    {
+                    }
+
+
+
+                }
+            }
+            else if(iev.mask & IN_DELETE)
+            {
+                if(!(iev.mask & IN_ISDIR))
+                    {
+                        for(int controllerIndex = 0; controllerIndex < MAX_CONTROLLER_INDEX; ++controllerIndex)
+                        {
+                            int result = strcmp(controllerFilePaths[controllerIndex], iev.name);
+                            if(result == 0)
+                            {
+                                iscontrollerLoopRunning[controllerIndex] = false;
+                                linuxControllerThreads[controllerIndex]->join();
+                                delete linuxControllerThreads[controllerIndex];
+                            }
+                        }
+                    }
+            }
+
+        }
+        }
+    }
+}
+
+void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
+{
+    struct js_event jev; // time value type number
+    struct js_event base;
+    int axes[8] = {0};
+    int buttons[13] = {0};
+    auto lastCheck = std::chrono::high_resolution_clock::now();
+    GCONTROLLER_EVENT_DATA eventData;
+    std::map<GListener*, unsigned long long>::iterator iter;
+
+        // init controller at _controllerindex
+        controllersMutex.lock();
+        controllers[_controllerIndex].isConnected = true;
+        controllersMutex.unlock();
+
+        while(iscontrollerLoopRunning[_controllerIndex])
+        {
+          if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10)
+           {
+            read(fd,&jev, sizeof(struct js_event));
+           switch (jev.type)
+           {
+                case JS_EVENT_BUTTON:
+                {
+                    controllersMutex.lock();
+                    if(jev.number == 0 && jev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
+                    {
+                        controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = jev.value;
+                        eventData.inputCode = G_GENERAL_SOUTH_BTN;
+                        eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN];
+                        for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                            iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                    }
+                    controllersMutex.unlock();
+                    break;
+                }
+                case JS_EVENT_AXIS:
+                {
+                    controllersMutex.lock();
+                    axes[jev.number] = jev.value;
+                    controllersMutex.unlock();
+                    break;
+                }
+           }
+           jev = base;
+          }
+        }
+
+        controllersMutex.lock();
+        controllers[_controllerIndex].isConnected = false;
+        controllersMutex.unlock();
 }
 
 // XboxController
@@ -556,7 +768,7 @@ void XboxController::XinputVibration()
 		controllersMutex.lock();
 		for (int i = 0; i < 4; ++i)
 		{
-			
+
 			if (controllers[XControllerSlotIndices[i]].isConnected && controllers[XControllerSlotIndices[i]].isVibrating)
 			{
 				//controllers[XControllerSlotIndices[i]].vibrationDuration -= (deltaTime.count() / 1000.f);
@@ -579,8 +791,8 @@ void XboxController::XinputVibration()
 GReturn XboxController::StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex)
 {
 	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0)
-		|| (_pan < -1.0f || _pan > 1.0f) 
-		|| _duration < 0.0f 
+		|| (_pan < -1.0f || _pan > 1.0f)
+		|| _duration < 0.0f
 		|| (_strength < -1.0f || _strength > 1.0f) )
 		return INVALID_ARGUMENT;
 
@@ -611,7 +823,7 @@ GReturn XboxController::StartVibration(float _pan, float _duration, float _stren
 		}
 	}
 	//controllerVibThreads[i] = new std::thread(&XboxController::XinputVibration, this);
-	
+
 
 
 
@@ -733,9 +945,9 @@ void XboxController::XinputLoop()
 	while (isRunning)
 	{
 
-		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100 
+		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100
 			|| isFirstLoop)
-		{ 
+		{
 			lastCheck = std::chrono::high_resolution_clock::now();
 			isFirstLoop = false;
 			for (int i = 0; i < 4; ++i)
@@ -938,8 +1150,8 @@ void XboxController::XinputLoop()
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 						}
-						
-					
+
+
 
 						controllersMutex.unlock();
 					}
