@@ -267,11 +267,11 @@ void GeneralController::Init()
 	controllers[i].maxInputs = MAX_GENENRAL_INPUTS;
 	controllers[i].controllerInputs = new float[MAX_GENENRAL_INPUTS];
 	}
-#ifdef _linux_
+//#ifdef _linux_
         Linux_InitControllers();
-        linuxInotifyThread = new std::thread(&GeneralController::linuxInotifyThread, this);
+        linuxInotifyThread = new std::thread(&GeneralController::Linux_InotifyLoop, this);
 
-#endif // _linux_
+//#endif // _linux_
 }
 
 GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float& _outState)
@@ -553,8 +553,10 @@ void GeneralController::Linux_InotifyLoop()
     {
     if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
 		{
+        lastCheck = std::chrono::high_resolution_clock::now();
         iev = base;
         read(fd, &iev, length);
+
         if(iev.len)
         {
             if(iev.mask & IN_CREATE)
@@ -567,19 +569,19 @@ void GeneralController::Linux_InotifyLoop()
                     // check the type of file
                     int jsCheck = strncmp(iev.name,"js",2);
                     int evdevCheck = strncmp(iev.name, "event",5);
-                    // check if file has a vaild number of inputs  move to controller loop
+                    // check if file has a vaild number of inputs
                     if(jsCheck == 0)
                     {
-                        int joy_fd = open(newFile, O_RDONLY | O_NONBLOCK);    // move to inoitfy loop
+                        int joy_fd = open(newFile, O_RDONLY | O_NONBLOCK);
                         if(joy_fd == -1)
                          {
                            continue;
                          }
                         else
                          {
-                         int axesCount, buttonCount;
-                         ioctl(joy_fd, JSIOCGAXES, axesCount);
-                         ioctl(joy_fd, JSIOCGBUTTONS, buttonCount);
+                         int axesCount = 99, buttonCount = 99;
+                         ioctl(joy_fd, JSIOCGAXES, &axesCount);
+                         ioctl(joy_fd, JSIOCGBUTTONS, &buttonCount);
                             if(axesCount != 8 && buttonCount != 13)
                                 continue;
                             else
@@ -609,7 +611,7 @@ void GeneralController::Linux_InotifyLoop()
                     {
                         for(int controllerIndex = 0; controllerIndex < MAX_CONTROLLER_INDEX; ++controllerIndex)
                         {
-                            int result = strcmp(controllerFilePaths[controllerIndex], iev.name);
+                            int result = 1;//strcmp(controllerFilePaths[controllerIndex], iev.name);
                             if(result == 0)
                             {
                                 iscontrollerLoopRunning[controllerIndex] = false;
@@ -621,8 +623,10 @@ void GeneralController::Linux_InotifyLoop()
             }
 
         }
+
         }
     }
+    int d = 0;
 }
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
@@ -945,7 +949,7 @@ void XboxController::XinputLoop()
 	while (isRunning)
 	{
 		// *UPDATED* loop runs 100 times per second. may want to up this to highest refresh rate possible on a monitor
-		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10 
+		if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10
 			|| isFirstLoop)
 		{
 			lastCheck = std::chrono::high_resolution_clock::now();
