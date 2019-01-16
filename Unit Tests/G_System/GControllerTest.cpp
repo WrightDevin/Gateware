@@ -481,5 +481,3 @@ TEST_CASE("GController Unregistering listener", "[DeregisterListener]")
 	controller->DecrementCount();
 
 }
-
-
