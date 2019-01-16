@@ -291,7 +291,9 @@ TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], 
 	REQUIRE(G_SUCCESS(appWindow->GetClientTopLeft(appWindowClientPosX, appWindowClientPosY)));
 }
 
-
+ // Section needs to be reworked using only the GWindow interface functions.
+ // Event testing needs to sync with windowListener. Example on line 330
+ // This is required to advoid race condtion issuses on the Linux platform.
 TEST_CASE("Sending events to listeners.", "")
 {
 	int windowTestValue = 0;
@@ -308,8 +310,8 @@ TEST_CASE("Sending events to listeners.", "")
 #endif
 
 	// Fail case
-	windowListener->GetWindowTestValue(windowTestValue);
-	CHECK(windowTestValue == 1);
+	//windowListener->GetWindowTestValue(windowTestValue);
+	//CHECK(windowTestValue == 1);
 
 #ifdef _WIN32
 	// Tell window to maximize
@@ -319,13 +321,17 @@ TEST_CASE("Sending events to listeners.", "")
 	//appWindow->GetWindowHandle(l_windowSize, (void**)&l_appWindow);
 	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 	appWindow->Maximize();
-	sleep(0.001);
+	windowListener->m_testsPending++;
 #elif __APPLE__
 	//appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
 	//ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
 	// Pass case
+	while(windowListener->m_testsPending)
+	{
+        sleep(.001);
+	}  // while tell all test are completed
 	windowListener->GetWindowTestValue(windowTestValue);
 	REQUIRE(windowTestValue == 1);
 }
