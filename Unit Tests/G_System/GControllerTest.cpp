@@ -353,8 +353,8 @@ TEST_CASE("GController Manual input test")
 	CHECK(controller->GetState(-1, G_GENERAL_SOUTH_BTN, outState) == GW::INVALID_ARGUMENT);
 	CHECK(controller->GetState(0, -1, outState) == GW::INVALID_ARGUMENT);
 	//end test
-
-    controller->IsConnected(0, isConnected);
+     while(!isConnected)
+        controller->IsConnected(0, isConnected);
 	REQUIRE(isConnected);
 	int count = -1;
 	controller->GetNumConnected(count);

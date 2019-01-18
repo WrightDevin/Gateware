@@ -278,6 +278,8 @@ void GeneralController::Init()
 	controllers[i].controllerInputs = new float[MAX_GENENRAL_INPUTS];
 	}
 //#ifdef _linux_
+        for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+            iscontrollerLoopRunning[i] = false;
         Linux_InitControllers();
         linuxInotifyThread = new std::thread(&GeneralController::Linux_InotifyLoop, this);
 
@@ -608,12 +610,9 @@ void GeneralController::Linux_InotifyLoop()
 
     char filepath[] = "/dev/input";
 
-    for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
-        iscontrollerLoopRunning[i] = false;
-
     while(isRunning)
     {
-    if( true || std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
+    if( std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
 		{
         lastCheck = std::chrono::high_resolution_clock::now();
         iev = base;
@@ -681,7 +680,7 @@ void GeneralController::Linux_InotifyLoop()
                             int result = 1;//strcmp(controllerFilePaths[controllerIndex], iev.name);
                             if(result == 0)
                             {
-                                iscontrollerLoopRunning[controllerIndex] = 0;
+                                iscontrollerLoopRunning[controllerIndex] = false;
                                 linuxControllerThreads[controllerIndex]->join();
                                 delete linuxControllerThreads[controllerIndex];
                             }
