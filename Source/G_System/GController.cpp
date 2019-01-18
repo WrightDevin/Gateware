@@ -24,10 +24,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <linux/joystick.h>
+//#include <linux/joystick.h>
+#include <linux/input.h>
+#include <linux/input-event-codes.h>
 #include <chrono>
 #include <cmath>
 #include<dirent.h>
+
+#define LONG_BITS (sizeof(long) * 8)
+#define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
 #endif // __linux__
 
 #define MAX_CONTROLLER_INDEX 16
@@ -84,6 +89,11 @@ namespace
 
 		return _outCopy;
 	}
+
+    int bit_is_set(const unsigned long *array, int bit)
+    {
+        return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
+    }
 
 }
 //end
@@ -276,13 +286,20 @@ void GeneralController::Init()
 
 GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float& _outState)
 {
-	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || ((_inputCode & 0xFF) < 0 && (_inputCode & 0xFF) >= MAX_GENENRAL_INPUTS))
+	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || ((_inputCode < 0) && (_inputCode & 0xFF) >= MAX_GENENRAL_INPUTS))
 		return INVALID_ARGUMENT;
-	if (controllers->isConnected == 0)
+
+    controllersMutex.lock();
+
+	if (controllers[_controllerIndex].isConnected == 0)
+	{
+        controllersMutex.unlock();
 		return FAILURE;
+    }
 
 	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];
 
+	controllersMutex.unlock();
 	return SUCCESS;
 }
 
@@ -519,8 +536,53 @@ DIR *dir;
 struct dirent *fileData;
 if ((dir = opendir("/dev/input")) != NULL) {
   /* print all the files and directories within directory */
-  while ((fileData = readdir(dir)) != NULL) {
+  while ((fileData = readdir(dir)) != NULL)
+  {
     printf ("%s\n", fileData->d_name);
+
+    char newFile[30];
+    strcpy(newFile, "/dev/input/");
+    strcat(newFile, fileData->d_name);
+    // check the type of file
+    int evdevCheck = strncmp(fileData->d_name, "event",5);
+    // check if file has a vaild number of inputs
+    if (evdevCheck == 0)
+    {
+                        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        int event_fd = open(newFile, O_RDONLY | O_NONBLOCK);
+        if(event_fd > -1)
+        {
+            unsigned long keys[NLONGS(KEY_CNT)];
+            ioctl(event_fd, EVIOCGBIT(EV_KEY, sizeof(keys)), keys); // gets the keys supported by the device
+            if(bit_is_set(keys,BTN_SOUTH))
+            {
+                controllersMutex.lock();
+                int controllerIndex = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
+                controllersMutex.unlock();
+                if(controllerIndex != -1)
+                {
+                    printf("Opening file %s\n", fileData->d_name);
+                    iscontrollerLoopRunning[controllerIndex] = true;
+                    controllerFilePaths[controllerIndex] = fileData->d_name;
+                    controllersMutex.lock();
+                    controllers[controllerIndex].isConnected = 1;
+                    controllersMutex.unlock();
+                    linuxControllerThreads[controllerIndex] = new std::thread(
+                                                                            &GeneralController::Linux_ControllerInputLoop,
+                                                                            this,
+                                                                            newFile,
+                                                                            controllerIndex,
+                                                                            event_fd);
+
+                 }
+             }
+
+        }
+        else
+        {
+            printf("Could not open file %s\n", newFile);
+        }
+    }
   }
   closedir (dir);
 }
@@ -551,7 +613,7 @@ void GeneralController::Linux_InotifyLoop()
 
     while(isRunning)
     {
-    if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
+    if( true || std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
 		{
         lastCheck = std::chrono::high_resolution_clock::now();
         iev = base;
@@ -567,38 +629,43 @@ void GeneralController::Linux_InotifyLoop()
                     strcpy(newFile, "/dev/input/");
                     strcat(newFile, iev.name);
                     // check the type of file
-                    int jsCheck = strncmp(iev.name,"js",2);
                     int evdevCheck = strncmp(iev.name, "event",5);
                     // check if file has a vaild number of inputs
-                    if(jsCheck == 0)
+              if (evdevCheck == 0)
                     {
-                        int joy_fd = open(newFile, O_RDONLY | O_NONBLOCK);
-                        if(joy_fd == -1)
-                         {
-                           continue;
-                         }
-                        else
-                         {
-                         int axesCount = 99, buttonCount = 99;
-                         ioctl(joy_fd, JSIOCGAXES, &axesCount);
-                         ioctl(joy_fd, JSIOCGBUTTONS, &buttonCount);
-                            if(axesCount != 8 && buttonCount != 13)
-                                continue;
-                            else
+                        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        int event_fd = open(newFile, O_RDONLY | O_NONBLOCK);
+                        if(event_fd > -1)
+                        {
+                            unsigned long keys[NLONGS(KEY_CNT)];
+                            ioctl(event_fd, EVIOCGBIT(EV_KEY, sizeof(keys)), keys); // gets the keys supported by the device
+                            if(bit_is_set(keys,BTN_SOUTH))
                             {
-                                 // Launch new input thread and add the array
-                                int index = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
-                                if(index > -1)
+                                controllersMutex.lock();
+                                int controllerIndex = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
+                                controllersMutex.unlock();
+                                if(controllerIndex != -1)
                                 {
-                                    iscontrollerLoopRunning[index] = true;
-                                    controllerFilePaths[index] = iev.name;
-                                    linuxControllerThreads[index] = new std::thread(&GeneralController::Linux_ControllerInputLoop, this, newFile, index, joy_fd);
+                                    iscontrollerLoopRunning[controllerIndex] = true;
+                                    controllerFilePaths[controllerIndex] = iev.name;
+                                    controllersMutex.lock();
+                                    controllers[controllerIndex].isConnected = 1;
+                                    controllersMutex.unlock();
+                                    linuxControllerThreads[controllerIndex] = new std::thread(
+                                                                                             &GeneralController::Linux_ControllerInputLoop,
+                                                                                             this,
+                                                                                             newFile,
+                                                                                             controllerIndex,
+                                                                                             event_fd);
+
                                 }
                             }
-                         }
-                    }
-                    else if (evdevCheck == 0)
-                    {
+
+                        }
+                        else
+                        {
+                            printf("Could not open file %s", newFile);
+                        }
                     }
 
 
@@ -614,7 +681,7 @@ void GeneralController::Linux_InotifyLoop()
                             int result = 1;//strcmp(controllerFilePaths[controllerIndex], iev.name);
                             if(result == 0)
                             {
-                                iscontrollerLoopRunning[controllerIndex] = false;
+                                iscontrollerLoopRunning[controllerIndex] = 0;
                                 linuxControllerThreads[controllerIndex]->join();
                                 delete linuxControllerThreads[controllerIndex];
                             }
@@ -631,32 +698,28 @@ void GeneralController::Linux_InotifyLoop()
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
 {
-    struct js_event jev; // time value type number
-    struct js_event base;
+    struct input_event ev; // time value type number
+    struct input_event base;
     int axes[8] = {0};
     int buttons[13] = {0};
     auto lastCheck = std::chrono::high_resolution_clock::now();
     GCONTROLLER_EVENT_DATA eventData;
     std::map<GListener*, unsigned long long>::iterator iter;
 
-        // init controller at _controllerindex
-        controllersMutex.lock();
-        controllers[_controllerIndex].isConnected = true;
-        controllersMutex.unlock();
 
         while(iscontrollerLoopRunning[_controllerIndex])
         {
           if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10)
            {
-            read(fd,&jev, sizeof(struct js_event));
-           switch (jev.type)
+            read(fd, &ev, sizeof(struct input_event));
+           switch (ev.code)
            {
-                case JS_EVENT_BUTTON:
+                case BTN_SOUTH:
                 {
                     controllersMutex.lock();
-                    if(jev.number == 0 && jev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
+                    if(ev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
                     {
-                        controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = jev.value;
+                        controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = ev.value;
                         eventData.inputCode = G_GENERAL_SOUTH_BTN;
                         eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN];
                         for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -665,20 +728,13 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     controllersMutex.unlock();
                     break;
                 }
-                case JS_EVENT_AXIS:
-                {
-                    controllersMutex.lock();
-                    axes[jev.number] = jev.value;
-                    controllersMutex.unlock();
-                    break;
-                }
            }
-           jev = base;
+           ev = base;
           }
         }
 
         controllersMutex.lock();
-        controllers[_controllerIndex].isConnected = false;
+        controllers[_controllerIndex].isConnected = 0;
         controllersMutex.unlock();
 }
 
@@ -725,7 +781,7 @@ GReturn XboxController::GetState(int _controllerIndex, int _inputCode, float& _o
 {
 	if (_controllerIndex < 0 || _controllerIndex > MAX_XBOX_CONTROLLER_INDEX || (_inputCode & 0xFF000) != G_XBOX_CONTROLLER || ((_inputCode & 0xFF) < 0 && (_inputCode & 0xFF) > 19))
 		return INVALID_ARGUMENT;
-	if (controllers->isConnected == 0)
+	if (controllers[_controllerIndex].isConnected == 0)
 		return FAILURE;
 
 	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];

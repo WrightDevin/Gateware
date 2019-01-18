@@ -353,16 +353,12 @@ TEST_CASE("GController Manual input test")
 	CHECK(controller->GetState(-1, G_GENERAL_SOUTH_BTN, outState) == GW::INVALID_ARGUMENT);
 	CHECK(controller->GetState(0, -1, outState) == GW::INVALID_ARGUMENT);
 	//end test
-    printf("Connect Controller now\n") ;
-	while(!isConnected)
-	{
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        controller->IsConnected(0, isConnected);
-        //CHECK(isConnected);
-    }
-    printf("Controller Connected\n");
 
+    controller->IsConnected(0, isConnected);
 	REQUIRE(isConnected);
+	int count = -1;
+	controller->GetNumConnected(count);
+	printf("Controllers Connected %u\n", count);
 
 	// test polling
 	while (true)
