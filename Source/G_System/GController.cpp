@@ -30,6 +30,7 @@
 #include <chrono>
 #include <cmath>
 #include<dirent.h>
+#include <unistd.h>
 
 #define LONG_BITS (sizeof(long) * 8)
 #define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
@@ -37,13 +38,16 @@
 
 #define MAX_CONTROLLER_INDEX 16
 #define MAX_XBOX_CONTROLLER_INDEX 4
-#define MAX_GENENRAL_INPUTS 20 // Can change
+#define MAX_GENENRAL_INPUTS 20
 #define MAX_XBOX_INPUTS 20
 #define MAX_PS4_INPUTS 20
 #define MAX_XBOX_THUMB_AXIS 32768
+#define MIN_XBOX_THUMB_AXIS -32768
 #define MAX_XBOX_TRIGGER_AXIS 255
 #define XINPUT_MAX_VIBRATION 65535
 #define MAX_LINUX_THUMB_AXIS 32768
+#define MAX_GENENRAL_TRIGGER_AXIS 255
+#define GENENRAL_TRIGGER_THRESHOLD 51
 
 using namespace GW;
 using namespace CORE;
@@ -92,7 +96,7 @@ namespace
 
     int bit_is_set(const unsigned long *array, int bit)
     {
-        return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
+        return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));  // TODO: modfiy later
     }
 
 }
@@ -111,7 +115,7 @@ private:
         char* controllerFilePaths[MAX_CONTROLLER_INDEX];
 
 protected:
-	void DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY);
+	void DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY);
 
 	std::atomic<unsigned int> referenceCount;
 	std::atomic<bool> isRunning;
@@ -276,7 +280,12 @@ void GeneralController::Init()
 	controllers[i].vibrationStartTime = new std::chrono::high_resolution_clock::time_point();
 	controllers[i].maxInputs = MAX_GENENRAL_INPUTS;
 	controllers[i].controllerInputs = new float[MAX_GENENRAL_INPUTS];
+	for(unsigned int j = 0; j < MAX_GENENRAL_INPUTS; ++j)
+	{
+        controllers[i].controllerInputs[j] = 0.0f;
 	}
+	}
+
 //#ifdef _linux_
         for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
             iscontrollerLoopRunning[i] = false;
@@ -372,11 +381,12 @@ GReturn GeneralController::StopAllVirbrations()
 	return FEATURE_UNSUPPORTED;
 }
 
-void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float &_outX, float &_outY)
+void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY)
 {
 #ifndef __APPLE__
-    _outX = _x / _axisMax;
-    _outY = _y / _axisMax;
+    float range = _axisMax - _axisMin;
+    _outX = (((_x - _axisMin) * 2) / range) - 1;
+    _outY = (((_y - _axisMin) * 2) / range) - 1;
 	float liveRange = 1.0f - deadzonePercentage;
 	if (deadzoneType == DEADZONESQUARE)
 	{
@@ -598,7 +608,7 @@ void GeneralController::Linux_InotifyLoop()
     struct inotify_event iev, base;
     base.len = 0;
     base.mask = 0;
-    auto lastCheck = std::chrono::high_resolution_clock::now();
+    //auto lastCheck = std::chrono::high_resolution_clock::now();
 
     fd = inotify_init();
     if(fd < 0)
@@ -612,14 +622,14 @@ void GeneralController::Linux_InotifyLoop()
 
     while(isRunning)
     {
-    if( std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 100)
-		{
-        lastCheck = std::chrono::high_resolution_clock::now();
         iev = base;
-        read(fd, &iev, length);
+        int result = read(fd, &iev, length);
+        if(result != -1)
+		{
 
         if(iev.len)
         {
+            printf("new file %s\n", iev.name);
             if(iev.mask & IN_CREATE)
             {
                 if(!(iev.mask & IN_ISDIR))
@@ -632,7 +642,7 @@ void GeneralController::Linux_InotifyLoop()
                     // check if file has a vaild number of inputs
               if (evdevCheck == 0)
                     {
-                        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        sleep(1);
                         int event_fd = open(newFile, O_RDONLY | O_NONBLOCK);
                         if(event_fd > -1)
                         {
@@ -645,6 +655,7 @@ void GeneralController::Linux_InotifyLoop()
                                 controllersMutex.unlock();
                                 if(controllerIndex != -1)
                                 {
+                                    printf("Opening File %s", iev.name);
                                     iscontrollerLoopRunning[controllerIndex] = true;
                                     controllerFilePaths[controllerIndex] = iev.name;
                                     controllersMutex.lock();
@@ -677,7 +688,7 @@ void GeneralController::Linux_InotifyLoop()
                     {
                         for(int controllerIndex = 0; controllerIndex < MAX_CONTROLLER_INDEX; ++controllerIndex)
                         {
-                            int result = 1;//strcmp(controllerFilePaths[controllerIndex], iev.name);
+                            int result = strncmp(controllerFilePaths[controllerIndex], iev.name, 8);
                             if(result == 0)
                             {
                                 iscontrollerLoopRunning[controllerIndex] = false;
@@ -691,46 +702,513 @@ void GeneralController::Linux_InotifyLoop()
         }
 
         }
+        else
+        {
+            sleep(1);
+        }
     }
-    int d = 0;
+    close(fd);
+
+    for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+    {
+             if(iscontrollerLoopRunning[i])
+             {
+                iscontrollerLoopRunning[i] = false;
+                linuxControllerThreads[i]->join();
+                delete linuxControllerThreads[i];
+             }
+    }
 }
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
 {
-    struct input_event ev; // time value type number
+    struct input_event ev; // time value type code
     struct input_event base;
-    int axes[8] = {0};
-    int buttons[13] = {0};
-    auto lastCheck = std::chrono::high_resolution_clock::now();
+    base.value = 0;
+    base.type = 0;
+    base.code = 0;
     GCONTROLLER_EVENT_DATA eventData;
     std::map<GListener*, unsigned long long>::iterator iter;
+    int lastLX = 0, lastLY = 0, lastRX = 0, lastRY = 0, lastLT = 0, lastRT = 0;
+    struct input_absinfo axisInfo;
+    ioctl(fd, EVIOCGABS(ABS_X), &axisInfo); // reads max and min for abs axes
+
 
 
         while(iscontrollerLoopRunning[_controllerIndex])
         {
-          if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastCheck).count() >= 10)
+          ev = base;
+          int result = read(fd, &ev, sizeof(struct input_event));
+          if(result != -1)
            {
-            read(fd, &ev, sizeof(struct input_event));
-           switch (ev.code)
+
+           switch(ev.type)
            {
-                case BTN_SOUTH:
+           case EV_KEY:
+           {
+                switch (ev.code)
                 {
-                    controllersMutex.lock();
-                    if(ev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
+                    case BTN_SOUTH:
                     {
-                        controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = ev.value;
-                        eventData.inputCode = G_GENERAL_SOUTH_BTN;
-                        eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN];
-                        for (iter = listeners.begin(); iter != listeners.end(); ++iter)
-                            iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_SOUTH_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
                     }
-                    controllersMutex.unlock();
-                    break;
+                    case BTN_EAST:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_EAST_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_EAST_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_EAST_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_EAST_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+
+                    case BTN_NORTH:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_NORTH_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_NORTH_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_NORTH_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_NORTH_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+                    case BTN_WEST:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_WEST_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_WEST_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_WEST_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_WEST_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+                    case BTN_TL:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_LEFT_SHOULDER_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+
+                      case BTN_TR:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_RIGHT_SHOULDER_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+
+                        case BTN_SELECT:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_SELECT_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_SELECT_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_SELECT_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SELECT_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+                    case BTN_START:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_START_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_START_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_START_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_START_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+                    case BTN_THUMBL:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_LEFT_THUMB_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+                     case BTN_THUMBR:
+                    {
+                        controllersMutex.lock();
+                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN])
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN] = ev.value;
+                            eventData.inputCode = G_GENERAL_RIGHT_THUMB_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                        }
+                        controllersMutex.unlock();
+                        break;
+                    }
+
                 }
+
+                break;
+            }
+            case EV_ABS:
+            {
+                  switch(ev.code)
+                  {
+                    case ABS_X:
+                    {
+                        // leftX
+                         if(ev.value != lastLX)
+                         {
+                         controllersMutex.lock();
+                         float oldY = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+                            lastLX = ev.value;
+                            DeadzoneCalculation(lastLX,
+                                                lastLY,
+											axisInfo.maximum,
+											axisInfo.minimum,
+											controllers[_controllerIndex].controllerInputs[G_LX_AXIS],
+											controllers[_controllerIndex].controllerInputs[G_LY_AXIS]);
+
+                            eventData.inputCode = G_GENERAL_LX_AXIS;
+							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                            controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
+                            if(oldY != controllers[_controllerIndex].controllerInputs[G_LY_AXIS])
+                            {
+                                // Send LY event
+                                eventData.inputCode = G_GENERAL_LY_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                         }
+                        break;
+                    }
+                    case ABS_Y:  // flipped on ps4 controller
+                    {
+                    //leftY
+                            if(ev.value != lastLY)
+                         {
+                            controllersMutex.lock();
+                            lastLY = ev.value; // evdev values for Y are flipped
+                            float oldX = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+                            DeadzoneCalculation(lastLX,
+                                                lastLY,
+											axisInfo.maximum,
+											axisInfo.minimum,
+											controllers[_controllerIndex].controllerInputs[G_LX_AXIS],
+											controllers[_controllerIndex].controllerInputs[G_LY_AXIS]);
+
+							// Send LY event
+							controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
+                            eventData.inputCode = G_GENERAL_LY_AXIS;
+							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            if(oldX != controllers[_controllerIndex].controllerInputs[G_LX_AXIS])
+                            {
+                                // Send LX event
+                                eventData.inputCode = G_GENERAL_LX_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                         }
+                        break;
+                    }
+                    case ABS_Z:
+                    {
+                        // left trigger
+                        if(ev.value != lastLT)
+                        {
+                            controllersMutex.lock();
+                            lastLT = ev.value;
+                            float oldAxis = controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS];
+                            if(ev.value > GENENRAL_TRIGGER_THRESHOLD)
+                            {
+
+                                controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS] = ev.value / GENENRAL_TRIGGER_THRESHOLD;
+
+                            }
+                            else
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS] = 0;
+                            }
+                            if(oldAxis != controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS])
+                            {
+                                eventData.inputCode = G_GENERAL_LEFT_TRIGGER_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                        }
+
+                        break;
+                    }
+
+                    case  ABS_RX:
+                    {
+                        // RightX
+                         if(ev.value != lastRX)
+                         {
+                         controllersMutex.lock();
+                         float oldY = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+                            lastRX = ev.value;
+                            DeadzoneCalculation(lastRX,
+                                                lastRY,
+											axisInfo.maximum,
+											axisInfo.minimum,
+											controllers[_controllerIndex].controllerInputs[G_RX_AXIS],
+											controllers[_controllerIndex].controllerInputs[G_RY_AXIS]);
+
+                            eventData.inputCode = G_GENERAL_RX_AXIS;
+							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                            controllers[_controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
+                            if(oldY != controllers[_controllerIndex].controllerInputs[G_RY_AXIS])
+                            {
+                                // Send LY event
+                                eventData.inputCode = G_GENERAL_RY_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                         }
+                        break;
+                    }
+                    case ABS_RY:
+                    {
+                    //leftY
+                            if(ev.value != lastRY)
+                         {
+                         controllersMutex.lock();
+                            lastRY = ev.value; // evdev values for y are flipped.
+                            float oldX = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+                            DeadzoneCalculation(lastRX,
+                                                lastRY,
+											axisInfo.maximum,
+											axisInfo.minimum,
+											controllers[_controllerIndex].controllerInputs[G_RX_AXIS],
+											controllers[_controllerIndex].controllerInputs[G_RY_AXIS]);
+
+							// Send LY event
+							controllers[_controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
+                            eventData.inputCode = G_GENERAL_RY_AXIS;
+							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            if(oldX != controllers[_controllerIndex].controllerInputs[G_RX_AXIS])
+                            {
+                                // Send LX event
+                                eventData.inputCode = G_GENERAL_RX_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                         }
+                        break;
+                    }
+                    case ABS_RZ:
+                    {
+                        // left trigger
+                        if(ev.value != lastRT)
+                        {
+                            lastLT = ev.value;
+                            float oldAxis = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
+                            if(ev.value > GENENRAL_TRIGGER_THRESHOLD)
+                            {
+
+                                controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS] = ev.value / GENENRAL_TRIGGER_THRESHOLD;
+
+                            }
+                            else
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS] = 0;
+                            }
+                            if(oldAxis != controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS])
+                            {
+                                eventData.inputCode = G_GENERAL_RIGHT_TRIGGER_AXIS;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+                            controllersMutex.unlock();
+                        }
+
+                        break;
+                    }
+                    case ABS_HAT0X:
+                    case ABS_HAT3X:
+                    {
+                        controllersMutex.lock();
+                        // DPAD HORZONTAL
+                        if(ev.value == 1)
+                        {
+
+                            controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
+                            eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                        }
+                        else if(ev.value == -1)
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
+                            eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                        }
+                        else if (ev.value == 0)
+                        {
+                            if(controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] != 0)
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
+                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                            }
+
+                            if(controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] != 0)
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
+                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+
+                        }
+                        controllersMutex.unlock();
+
+                        break;
+                    }
+                     case ABS_HAT0Y:
+                     case ABS_HAT3Y:
+                    {
+                        controllersMutex.lock();
+                        // DPAD VERT
+                        if(ev.value == 1)
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
+                            eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                        }
+                        else if(ev.value == -1)
+                        {
+                            controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
+                            eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                        }
+                        else if (ev.value == 0)
+                        {
+                            if(controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] != 0)
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
+                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
+                            }
+
+                            if(controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] != 0)
+                            {
+                                controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
+                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
+                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            }
+
+                        }
+                        controllersMutex.unlock();
+
+                        break;
+                    }
+                  }
+                break;
+            }
+
+            }
+            }
+            else
+            {
+                if(errno == EAGAIN)
+                    sleep(.001);
+                else
+                    break;
+            }
+
            }
-           ev = base;
-          }
-        }
+
+
+        close(fd);
 
         controllersMutex.lock();
         controllers[_controllerIndex].isConnected = 0;
@@ -1175,6 +1653,7 @@ void XboxController::XinputLoop()
 						DeadzoneCalculation(controllerState.Gamepad.sThumbLX,
 											controllerState.Gamepad.sThumbLY,
 											MAX_XBOX_THUMB_AXIS,
+											MIN_XBOX_THUMB_AXIS,
 											controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS],
 											controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS]);
 

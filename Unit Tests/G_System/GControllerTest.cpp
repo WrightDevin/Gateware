@@ -354,7 +354,8 @@ TEST_CASE("GController Manual input test")
 	CHECK(controller->GetState(0, -1, outState) == GW::INVALID_ARGUMENT);
 	//end test
      while(!isConnected)
-        controller->IsConnected(0, isConnected);
+    controller->IsConnected(0, isConnected);
+
 	REQUIRE(isConnected);
 	int count = -1;
 	controller->GetNumConnected(count);
@@ -365,28 +366,28 @@ TEST_CASE("GController Manual input test")
 	{
 		// Buttons: SOUTH, DPAD_DOWN, LEFT_SHOULDER, RIGHT_THUMB
 		printf("Press the South Button\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_SOUTH_BTN, outState)));
 		CHECK(outState == 1.0f);
 		CHECK(outState == event_controllers[0].southBTN);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		printf("Press the Down on the DPAD\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_DPAD_DOWN_BTN, outState)));
 		CHECK(outState == 1.0f);
 		CHECK(outState == event_controllers[0].dpadDown);
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		printf("Press the Left Shoulder\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LEFT_SHOULDER_BTN, outState)));
 		CHECK(outState == 1.0f);
 		CHECK(outState == event_controllers[0].leftShoulder);
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		printf("Press Down on the Right Thumb stick\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_RIGHT_THUMB_BTN, outState)));
 		CHECK(outState == 1.0f);
 		CHECK(outState == event_controllers[0].rightThumb);
@@ -394,39 +395,39 @@ TEST_CASE("GController Manual input test")
 
 		// AXES: LX, LY, LEFT_TRIGGER, RIGHT_TRIGGER
 		printf("Move the left stick left\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LX_AXIS, outState)));
 		CHECK(outState < 0.0f);
 		CHECK(outState == event_controllers[0].LX);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		printf("Move the left stick right\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LX_AXIS, outState)));
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].LX);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		printf("Move the left stick up\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LY_AXIS, outState)));
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].LY);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		printf("Move the left stick down\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LY_AXIS, outState)));
 		CHECK(outState < 0.0f);
 		CHECK(outState == event_controllers[0].LY);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		printf("Press down the left trigger\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_LEFT_TRIGGER_AXIS, outState)));
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].leftTrigger);
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		printf("Press down the right trigger\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_RIGHT_TRIGGER_AXIS, outState)));
 		CHECK(outState > 0.0f);
 		CHECK(outState == event_controllers[0].rightTrigger);
@@ -434,7 +435,7 @@ TEST_CASE("GController Manual input test")
 
 		// EXIT CODE: START
 		printf("Press start to end\n");
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		REQUIRE(G_SUCCESS(controller->GetState(0, G_GENERAL_START_BTN, outState)));
 		CHECK(outState == 1.0f);
 		CHECK(outState == event_controllers[0].start);
