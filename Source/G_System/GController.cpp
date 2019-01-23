@@ -134,6 +134,7 @@ protected:
 	std::atomic<unsigned int> referenceCount;
 	std::atomic<bool> isRunning;
 	std::mutex controllersMutex;
+	std::unique_lock<std::mutex> unique_controllersMutex;
 	std::mutex listenerMutex;
 
 
@@ -300,15 +301,15 @@ void GeneralController::Init()
 	}
 	}
 
+    unique_controllersMutex = std::unique_lock<std::mutex>(controllersMutex, std::defer_lock);
 
-
-//#ifdef _linux_
+#ifdef __linux__
         for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
             iscontrollerLoopRunning[i] = false;
         Linux_InitControllers();
         linuxInotifyThread = new std::thread(&GeneralController::Linux_InotifyLoop, this);
 
-//#endif // _linux_
+#endif // _linux_
 }
 
 GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float& _outState)
@@ -316,17 +317,17 @@ GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float&
 	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || ((_inputCode < 0) && (_inputCode & 0xFF) >= MAX_GENENRAL_INPUTS))
 		return INVALID_ARGUMENT;
 
-    controllersMutex.lock();
+    unique_controllersMutex.lock();
 
 	if (controllers[_controllerIndex].isConnected == 0)
 	{
-        controllersMutex.unlock();
+        unique_controllersMutex.unlock();
 		return FAILURE;
     }
 
 	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 	return SUCCESS;
 }
 
@@ -335,11 +336,11 @@ GReturn GeneralController::IsConnected(int _controllerIndex, bool& _outIsConnect
 	if (_controllerIndex < 0 || _controllerIndex >= MAX_CONTROLLER_INDEX)
 		return INVALID_ARGUMENT;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	_outIsConnected = controllers[_controllerIndex].isConnected == 0 ? false : true;
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 
 	return SUCCESS;
 }
@@ -353,7 +354,7 @@ GReturn GeneralController::GetMaxIndex(int &_outMax)
 GReturn GeneralController::GetNumConnected(int &_outConnectedCount)
 {
 	_outConnectedCount = 0;
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
@@ -361,7 +362,7 @@ GReturn GeneralController::GetNumConnected(int &_outConnectedCount)
 			++_outConnectedCount;
 	}
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 
 	return SUCCESS;
 }
@@ -508,8 +509,8 @@ GReturn GeneralController::DecrementCount()
 			delete controllers[i].vibrationStartTime;
 		}
 		delete[] controllers;
-		#ifdef _linux_
-		linuxInotifyThread.join();
+		#ifdef __linux__
+		linuxInotifyThread->join();
 		delete linuxInotifyThread;
 		#endif
 		delete this;
@@ -584,17 +585,17 @@ if ((dir = opendir("/dev/input")) != NULL) {
             ioctl(event_fd, EVIOCGBIT(EV_KEY, sizeof(keys)), keys); // gets the keys supported by the device
             if(bit_is_set(keys,BTN_SOUTH))
             {
-                controllersMutex.lock();
+                unique_controllersMutex.lock();
                 int controllerIndex = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
-                controllersMutex.unlock();
+                unique_controllersMutex.unlock();
                 if(controllerIndex != -1)
                 {
                     printf("Opening file %s\n", fileData->d_name);
                     iscontrollerLoopRunning[controllerIndex] = true;
                     controllerFilePaths[controllerIndex] = fileData->d_name;
-                    controllersMutex.lock();
+                    unique_controllersMutex.lock();
                     controllers[controllerIndex].isConnected = 1;
-                    controllersMutex.unlock();
+                    unique_controllersMutex.unlock();
                     linuxControllerThreads[controllerIndex] = new std::thread(
                                                                             &GeneralController::Linux_ControllerInputLoop,
                                                                             this,
@@ -666,17 +667,17 @@ void GeneralController::Linux_InotifyLoop()
                             ioctl(event_fd, EVIOCGBIT(EV_KEY, sizeof(keys)), keys); // gets the keys supported by the device
                             if(bit_is_set(keys,BTN_SOUTH))
                             {
-                                controllersMutex.lock();
+                                unique_controllersMutex.lock();
                                 int controllerIndex = FindEmptyControllerIndex(MAX_CONTROLLER_INDEX, controllers);
-                                controllersMutex.unlock();
+                                unique_controllersMutex.unlock();
                                 if(controllerIndex != -1)
                                 {
                                     printf("Opening File %s", iev.name);
                                     iscontrollerLoopRunning[controllerIndex] = true;
                                     controllerFilePaths[controllerIndex] = iev.name;
-                                    controllersMutex.lock();
+                                    unique_controllersMutex.lock();
                                     controllers[controllerIndex].isConnected = 1;
-                                    controllersMutex.unlock();
+                                    unique_controllersMutex.unlock();
                                     linuxControllerThreads[controllerIndex] = new std::thread(
                                                                                              &GeneralController::Linux_ControllerInputLoop,
                                                                                              this,
@@ -720,7 +721,8 @@ void GeneralController::Linux_InotifyLoop()
         }
         else
         {
-            sleep(1);
+            printf("SLEEP");
+            sleep(.001);
         }
     }
     close(fd);
@@ -766,7 +768,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                 {
                     case BTN_SOUTH:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = ev.value;
@@ -775,12 +777,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                     case BTN_EAST:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_EAST_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_EAST_BTN] = ev.value;
@@ -789,13 +791,13 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
 
                     case BTN_NORTH:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_NORTH_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_NORTH_BTN] = ev.value;
@@ -804,12 +806,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                     case BTN_WEST:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_WEST_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_WEST_BTN] = ev.value;
@@ -818,12 +820,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                     case BTN_TL:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN] = ev.value;
@@ -832,13 +834,13 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
 
                       case BTN_TR:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN] = ev.value;
@@ -847,13 +849,13 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
 
                         case BTN_SELECT:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_SELECT_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_SELECT_BTN] = ev.value;
@@ -862,12 +864,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                     case BTN_START:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_START_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_START_BTN] = ev.value;
@@ -876,12 +878,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                     case BTN_THUMBL:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN] = ev.value;
@@ -890,12 +892,12 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
                      case BTN_THUMBR:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN])
                         {
                             controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN] = ev.value;
@@ -904,7 +906,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
                         break;
                     }
 
@@ -921,7 +923,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         // leftX
                         if(ev.value != lastLX)
                         {
-                         controllersMutex.lock();
+                         unique_controllersMutex.lock();
                          float oldY = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
                             lastLX = ev.value;
                             DeadzoneCalculation(lastLX,
@@ -945,7 +947,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                          }
                         break;
                     }
@@ -954,7 +956,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     //leftY
                         if(ev.value != lastLY)
                          {
-                            controllersMutex.lock();
+                            unique_controllersMutex.lock();
                             lastLY = ev.value; // evdev values for Y are flipped
                             float oldX = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
                             DeadzoneCalculation(lastLX,
@@ -978,7 +980,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                          }
                         break;
                     }
@@ -987,7 +989,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         // left trigger
                         if(ev.value != lastLT)
                         {
-                            controllersMutex.lock();
+                            unique_controllersMutex.lock();
                             lastLT = ev.value;
                             float oldAxis = controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS];
                             if(ev.value > GENENRAL_TRIGGER_THRESHOLD)
@@ -1007,7 +1009,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                         }
 
                         break;
@@ -1018,7 +1020,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         // RightX
                          if(ev.value != lastRX)
                          {
-                         controllersMutex.lock();
+                         unique_controllersMutex.lock();
                          float oldY = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
                             lastRX = ev.value;
                             DeadzoneCalculation(lastRX,
@@ -1042,7 +1044,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                          }
                         break;
                     }
@@ -1051,7 +1053,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     //leftY
                         if(ev.value != lastRY)
                          {
-                            controllersMutex.lock();
+                            unique_controllersMutex.lock();
                             lastRY = ev.value; // evdev values for y are flipped.
                             float oldX = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
                             DeadzoneCalculation(lastRX,
@@ -1075,7 +1077,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                          }
                         break;
                     }
@@ -1084,7 +1086,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         // left trigger
                         if(ev.value != lastRT)
                         {
-                            controllersMutex.lock();
+                            unique_controllersMutex.lock();
                             lastLT = ev.value;
                             float oldAxis = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
                             if(ev.value > GENENRAL_TRIGGER_THRESHOLD)
@@ -1104,7 +1106,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
-                            controllersMutex.unlock();
+                            unique_controllersMutex.unlock();
                         }
 
                         break;
@@ -1112,7 +1114,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     case ABS_HAT0X:
                     case ABS_HAT3X:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         // DPAD HORZONTAL
                         if(ev.value == 1)
                         {
@@ -1155,14 +1157,14 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             }
 
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
 
                         break;
                     }
                      case ABS_HAT0Y:
                      case ABS_HAT3Y:
                     {
-                        controllersMutex.lock();
+                        unique_controllersMutex.lock();
                         // DPAD VERT
                         if(ev.value == 1)
                         {
@@ -1204,7 +1206,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             }
 
                         }
-                        controllersMutex.unlock();
+                        unique_controllersMutex.unlock();
 
                         break;
                     }
@@ -1227,9 +1229,9 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
         close(fd);
 
-        controllersMutex.lock();
+        unique_controllersMutex.lock();
         controllers[_controllerIndex].isConnected = 0;
-        controllersMutex.unlock();
+        unique_controllersMutex.unlock();
 }
 
 // XboxController
@@ -1259,6 +1261,8 @@ void XboxController::Init()
 		controllers[i].maxInputs = MAX_XBOX_INPUTS;
 		controllers[i].controllerInputs = new float[MAX_XBOX_INPUTS];
 	}
+
+    unique_controllersMutex = std::unique_lock<std::mutex>(controllersMutex, std::defer_lock);
 #ifdef _WIN32
 	xInputThread = new std::thread(&XboxController::XinputLoop, this);
 	//controllerVibThreads = new std::thread(&XboxController::XinputVibration, this);
