@@ -346,6 +346,7 @@ TEST_CASE("GController Manual Xbox input test")
 #else
 TEST_CASE("GController Manual input test")
 {
+
 	float outState = 0.0f;
 	int numConnected = 0;
 	bool isConnected = false;
@@ -353,7 +354,7 @@ TEST_CASE("GController Manual input test")
 	CHECK(controller->GetState(-1, G_GENERAL_SOUTH_BTN, outState) == GW::INVALID_ARGUMENT);
 	CHECK(controller->GetState(0, -1, outState) == GW::INVALID_ARGUMENT);
 	//end test
-     while(!isConnected)
+
     controller->IsConnected(0, isConnected);
 
 	REQUIRE(isConnected);

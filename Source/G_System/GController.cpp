@@ -32,6 +32,8 @@
 #include<dirent.h>
 #include <unistd.h>
 
+
+
 #define LONG_BITS (sizeof(long) * 8)
 #define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
 #endif // __linux__
@@ -68,6 +70,17 @@ namespace
 		int maxInputs; // Hold the size of controllerInputs array
 		float* controllerInputs; // controllerInputs is used to hold an array for the input values of the controller
 	};
+
+// Modified verion of the struct from inotify.h to pass the catch tests
+// Due to the __flexarr hack catch was throwing an error saying the buffer for name was overflowed
+struct G_inotify_event
+{
+  int wd;		/* Watch descriptor.  */
+  uint32_t mask;	/* Watch mask.  */
+  uint32_t cookie;	/* Cookie to synchronize two events.  */
+  uint32_t len;		/* Length (including NULs) of name.  */
+  char name[16];	/* Name.  */
+};
 
 	// This function does not lock before using _controllers
 	unsigned int FindEmptyControllerIndex(unsigned int _maxIndex, const CONTROLLER_STATE* _controllers)
@@ -604,8 +617,8 @@ void GeneralController::Linux_InotifyLoop()
 {
     int fd = 0;
     int wd = 0;
-    int length = sizeof(struct inotify_event) + 16;
-    struct inotify_event iev, base;
+    int length = sizeof(struct G_inotify_event);
+    struct G_inotify_event iev, base;
     base.len = 0;
     base.mask = 0;
     //auto lastCheck = std::chrono::high_resolution_clock::now();
