@@ -620,8 +620,8 @@ void GeneralController::Linux_InotifyLoop()
 {
     int fd = 0;
     int wd = 0;
-    int length = sizeof(struct G_inotify_event);
     struct G_inotify_event iev, base;
+    int length = sizeof(struct G_inotify_event);
     base.len = 0;
     base.mask = 0;
     //auto lastCheck = std::chrono::high_resolution_clock::now();
