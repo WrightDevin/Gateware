@@ -54,6 +54,7 @@
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
+//unlock controllers mutex before calling on event for liseners: use isener mutex
 
 //temp move globals to an included file look at GBI AND GWINDOW
 namespace
@@ -298,6 +299,8 @@ void GeneralController::Init()
         controllers[i].controllerInputs[j] = 0.0f;
 	}
 	}
+
+
 
 //#ifdef _linux_
         for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
@@ -735,8 +738,8 @@ void GeneralController::Linux_InotifyLoop()
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
 {
-    struct input_event ev; // time value type code
-    struct input_event base;
+    input_event ev; // time value type code
+    input_event base;
     base.value = 0;
     base.type = 0;
     base.code = 0;
@@ -916,8 +919,8 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     case ABS_X:
                     {
                         // leftX
-                         if(ev.value != lastLX)
-                         {
+                        if(ev.value != lastLX)
+                        {
                          controllersMutex.lock();
                          float oldY = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
                             lastLX = ev.value;
@@ -949,7 +952,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     case ABS_Y:  // flipped on ps4 controller
                     {
                     //leftY
-                            if(ev.value != lastLY)
+                        if(ev.value != lastLY)
                          {
                             controllersMutex.lock();
                             lastLY = ev.value; // evdev values for Y are flipped
@@ -1046,9 +1049,9 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     case ABS_RY:
                     {
                     //leftY
-                            if(ev.value != lastRY)
+                        if(ev.value != lastRY)
                          {
-                         controllersMutex.lock();
+                            controllersMutex.lock();
                             lastRY = ev.value; // evdev values for y are flipped.
                             float oldX = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
                             DeadzoneCalculation(lastRX,
@@ -1081,6 +1084,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         // left trigger
                         if(ev.value != lastRT)
                         {
+                            controllersMutex.lock();
                             lastLT = ev.value;
                             float oldAxis = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
                             if(ev.value > GENENRAL_TRIGGER_THRESHOLD)
