@@ -55,6 +55,7 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 //unlock controllers mutex before calling on event for liseners: use isener mutex
+// add linux connection and disconection events
 
 //temp move globals to an included file look at GBI AND GWINDOW
 namespace
@@ -501,6 +502,10 @@ GReturn GeneralController::DecrementCount()
 	if (referenceCount == 0)
 	{
 		isRunning = false;
+		#ifdef __linux__
+		linuxInotifyThread->join();
+		delete linuxInotifyThread;
+		#endif
 
 		// handle destruction
 		for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
@@ -509,10 +514,7 @@ GReturn GeneralController::DecrementCount()
 			delete controllers[i].vibrationStartTime;
 		}
 		delete[] controllers;
-		#ifdef __linux__
-		linuxInotifyThread->join();
-		delete linuxInotifyThread;
-		#endif
+
 		delete this;
 	}
 
@@ -627,7 +629,7 @@ void GeneralController::Linux_InotifyLoop()
     base.mask = 0;
     //auto lastCheck = std::chrono::high_resolution_clock::now();
 
-    fd = inotify_init();
+    fd = inotify_init1(IN_NONBLOCK);
     if(fd < 0)
         printf("ERROR");
 
@@ -637,7 +639,7 @@ void GeneralController::Linux_InotifyLoop()
 
     char filepath[] = "/dev/input";
 
-    while(isRunning)
+    while(isRunning == true)
     {
         iev = base;
         int result = read(fd, &iev, length);
@@ -721,21 +723,22 @@ void GeneralController::Linux_InotifyLoop()
         }
         else
         {
-            printf("SLEEP");
-            sleep(.001);
+            sleep(1);
         }
     }
     close(fd);
 
     for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
     {
-             if(iscontrollerLoopRunning[i])
-             {
-                iscontrollerLoopRunning[i] = false;
-                linuxControllerThreads[i]->join();
-                delete linuxControllerThreads[i];
-             }
+        if(iscontrollerLoopRunning[i])
+        {
+            iscontrollerLoopRunning[i] = false;
+            linuxControllerThreads[i]->join();
+            delete linuxControllerThreads[i];
+        }
     }
+
+
 }
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
