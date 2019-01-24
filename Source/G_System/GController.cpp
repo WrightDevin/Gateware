@@ -55,7 +55,6 @@ using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
 //unlock controllers mutex before calling on event for liseners: use isener mutex
-// add linux connection and disconection events
 
 //temp move globals to an included file look at GBI AND GWINDOW
 namespace
@@ -137,6 +136,7 @@ protected:
 	std::mutex controllersMutex;
 	std::unique_lock<std::mutex> unique_controllersMutex;
 	std::mutex listenerMutex;
+	std::unique_lock<std::mutex> unique_listenerMutex;
 
 
 	// Lock before using
@@ -303,6 +303,7 @@ void GeneralController::Init()
 	}
 
     unique_controllersMutex = std::unique_lock<std::mutex>(controllersMutex, std::defer_lock);
+    unique_listenerMutex = std::unique_lock<std::mutex>(listenerMutex, std::defer_lock);
 
 #ifdef __linux__
         for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
@@ -564,7 +565,10 @@ void GeneralController::Linux_InitControllers()
     }
 
 DIR *dir;
-struct dirent *fileData;
+dirent *fileData;
+GCONTROLLER_EVENT_DATA eventData;
+std::map<GListener*, unsigned long long>::iterator iter;
+
 if ((dir = opendir("/dev/input")) != NULL) {
   /* print all the files and directories within directory */
   while ((fileData = readdir(dir)) != NULL)
@@ -604,6 +608,14 @@ if ((dir = opendir("/dev/input")) != NULL) {
                                                                             newFile,
                                                                             controllerIndex,
                                                                             event_fd);
+                    eventData.controllerIndex = controllerIndex;
+                    eventData.inputCode = 0;
+                    eventData.inputValue = 0;
+                    eventData.isConnected = 1;
+                    unique_listenerMutex.lock();
+                    for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                        iter->first->OnEvent(GControllerUUIID, CONTROLLERCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                    unique_listenerMutex.unlock();
 
                  }
              }
@@ -621,6 +633,8 @@ if ((dir = opendir("/dev/input")) != NULL) {
 
 void GeneralController::Linux_InotifyLoop()
 {
+    GCONTROLLER_EVENT_DATA eventData;
+    std::map<GListener*, unsigned long long>::iterator iter;
     int fd = 0;
     int wd = 0;
     struct G_inotify_event iev, base;
@@ -687,6 +701,15 @@ void GeneralController::Linux_InotifyLoop()
                                                                                              controllerIndex,
                                                                                              event_fd);
 
+
+                                    eventData.controllerIndex = controllerIndex;
+                                    eventData.inputCode = 0;
+                                    eventData.inputValue = 0;
+                                    eventData.isConnected = 1;
+                                    unique_listenerMutex.lock();
+                                    for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                            iter->first->OnEvent(GControllerUUIID, CONTROLLERCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                    unique_listenerMutex.unlock();
                                 }
                             }
 
@@ -771,145 +794,148 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                 {
                     case BTN_SOUTH:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_SOUTH_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SOUTH_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
                     case BTN_EAST:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_EAST_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_EAST_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_EAST_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_EAST_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
 
                     case BTN_NORTH:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_NORTH_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_NORTH_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_NORTH_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_NORTH_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
                     case BTN_WEST:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_WEST_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_WEST_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_WEST_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_WEST_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
                     case BTN_TL:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_LEFT_SHOULDER_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_SHOULDER_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
 
                       case BTN_TR:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_RIGHT_SHOULDER_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_SHOULDER_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
 
                         case BTN_SELECT:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_SELECT_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_SELECT_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_SELECT_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_SELECT_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
                     case BTN_START:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_START_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_START_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_START_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_START_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
                         break;
                     }
                     case BTN_THUMBL:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_LEFT_THUMB_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_THUMB_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
+
                         break;
                     }
                      case BTN_THUMBR:
                     {
-                        unique_controllersMutex.lock();
-                        if(ev.value != controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN])
-                        {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN] = ev.value;
                             eventData.inputCode = G_GENERAL_RIGHT_THUMB_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_THUMB_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                        }
-                        unique_controllersMutex.unlock();
+                            unique_listenerMutex.unlock();
+
+
                         break;
                     }
 
@@ -938,23 +964,33 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
                             eventData.inputCode = G_GENERAL_LX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+							unique_controllersMutex.unlock();
+
+							unique_listenerMutex.lock();
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
-                            if(oldY != controllers[_controllerIndex].controllerInputs[G_LY_AXIS])
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+                            unique_controllersMutex.unlock();
+
+                            if(oldY != eventData.inputValue)
                             {
                                 // Send LY event
                                 eventData.inputCode = G_GENERAL_LY_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+
+                                unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
+
                          }
                         break;
                     }
-                    case ABS_Y:  // flipped on ps4 controller
+                    case ABS_Y:
                     {
                     //leftY
                         if(ev.value != lastLY)
@@ -973,17 +1009,27 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 							controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
                             eventData.inputCode = G_GENERAL_LY_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
+							unique_controllersMutex.unlock();
+
+							unique_listenerMutex.lock();
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                            if(oldX != controllers[_controllerIndex].controllerInputs[G_LX_AXIS])
+                            unique_listenerMutex.unlock();
+
+                            unique_controllersMutex.lock();
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+                            unique_controllersMutex.unlock();
+
+                            if(oldX != eventData.inputValue)
                             {
                                 // Send LX event
                                 eventData.inputCode = G_GENERAL_LX_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
+                                unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
+
                          }
                         break;
                     }
@@ -1005,14 +1051,20 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             {
                                 controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS] = 0;
                             }
-                            if(oldAxis != controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS])
+
+
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS];
+                            unique_controllersMutex.unlock();
+                            if(oldAxis != eventData.inputValue)
                             {
                                 eventData.inputCode = G_GENERAL_LEFT_TRIGGER_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LEFT_TRIGGER_AXIS];
+
+                               unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
+
                         }
 
                         break;
@@ -1035,19 +1087,28 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
                             eventData.inputCode = G_GENERAL_RX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+							unique_controllersMutex.unlock();
+
+							unique_listenerMutex.lock();
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
-                            if(oldY != controllers[_controllerIndex].controllerInputs[G_RY_AXIS])
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+                            unique_controllersMutex.unlock();
+
+                            if(oldY != eventData.inputValue)
                             {
                                 // Send LY event
                                 eventData.inputCode = G_GENERAL_RY_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+                                unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
+
                          }
                         break;
                     }
@@ -1070,17 +1131,26 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 							controllers[_controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
                             eventData.inputCode = G_GENERAL_RY_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
+							unique_controllersMutex.unlock();
+
+							unique_listenerMutex.lock();
 							for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 								iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-                            if(oldX != controllers[_controllerIndex].controllerInputs[G_RX_AXIS])
+                            unique_listenerMutex.unlock();
+
+                            unique_controllersMutex.lock();
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+                            unique_controllersMutex.unlock();
+
+                            if(oldX != eventData.inputValue)
                             {
                                 // Send LX event
                                 eventData.inputCode = G_GENERAL_RX_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
+                                unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
                          }
                         break;
                     }
@@ -1102,14 +1172,19 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             {
                                 controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS] = 0;
                             }
+
+                            eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
+                            unique_controllersMutex.unlock();
                             if(oldAxis != controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS])
                             {
                                 eventData.inputCode = G_GENERAL_RIGHT_TRIGGER_AXIS;
-                                eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS];
+
+                                unique_listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                                unique_listenerMutex.unlock();
                             }
-                            unique_controllersMutex.unlock();
+
                         }
 
                         break;
@@ -1117,37 +1192,45 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                     case ABS_HAT0X:
                     case ABS_HAT3X:
                     {
-                        unique_controllersMutex.lock();
+
                         // DPAD HORZONTAL
                         if(ev.value == 1)
                         {
-
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
                             eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
                         else if(ev.value == -1)
                         {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
                             eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
                         else if (ev.value == 0)
                         {
+                            unique_controllersMutex.lock();
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] != 0)
                             {
+
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
                                 eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
-                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
-                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-
                             }
 
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] != 0)
@@ -1155,48 +1238,60 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
                                 eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
-                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
-                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+
                             }
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
-                        unique_controllersMutex.unlock();
 
                         break;
                     }
                      case ABS_HAT0Y:
                      case ABS_HAT3Y:
                     {
-                        unique_controllersMutex.lock();
+
                         // DPAD VERT
                         if(ev.value == 1)
                         {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
                             eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
                         else if(ev.value == -1)
                         {
+                            unique_controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
                             eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
+                            unique_controllersMutex.unlock();
+
+                            unique_listenerMutex.lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
                         else if (ev.value == 0)
                         {
+                            unique_controllersMutex.lock();
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] != 0)
                             {
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
                                 eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
-                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
-                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
-
                             }
 
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] != 0)
@@ -1204,12 +1299,15 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
                                 eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
-                                for (iter = listeners.begin(); iter != listeners.end(); ++iter)
-                                    iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
                             }
+                             unique_controllersMutex.unlock();
+
+                                unique_listenerMutex.lock();
+                            for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+                                iter->first->OnEvent(GControllerUUIID, CONTROLLERBUTTONVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+                            unique_listenerMutex.unlock();
 
                         }
-                        unique_controllersMutex.unlock();
 
                         break;
                     }
@@ -1235,6 +1333,16 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
         unique_controllersMutex.lock();
         controllers[_controllerIndex].isConnected = 0;
         unique_controllersMutex.unlock();
+
+
+        eventData.controllerIndex = _controllerIndex;
+        eventData.inputCode = 0;
+        eventData.inputValue = 0;
+        eventData.isConnected = 0;
+        unique_listenerMutex.lock();
+        for (iter = listeners.begin(); iter != listeners.end(); ++iter)
+            iter->first->OnEvent(GControllerUUIID, CONTROLLERDISCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
+        unique_listenerMutex.unlock();
 }
 
 // XboxController
@@ -1266,6 +1374,7 @@ void XboxController::Init()
 	}
 
     unique_controllersMutex = std::unique_lock<std::mutex>(controllersMutex, std::defer_lock);
+    unique_listenerMutex = std::unique_lock<std::mutex>(listenerMutex, std::defer_lock);
 #ifdef _WIN32
 	xInputThread = new std::thread(&XboxController::XinputLoop, this);
 	//controllerVibThreads = new std::thread(&XboxController::XinputVibration, this);
