@@ -54,8 +54,9 @@
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
-//unlock controllers mutex before calling on event for liseners: use isener mutex
 // add linux connection and disconection events
+//unlock controllers mutex before calling on event for liseners: use isener mutex
+// add missing locks in xinput loop
 
 //temp move globals to an included file look at GBI AND GWINDOW
 namespace
@@ -1293,14 +1294,14 @@ GReturn XboxController::GetState(int _controllerIndex, int _inputCode, float& _o
 GReturn XboxController::GetNumConnected(int &_outConnectedCount)
 {
 	_outConnectedCount = 0;
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	for (unsigned int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 	{
 		if (controllers[i].isConnected)
 			++_outConnectedCount;
 	}
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 	return SUCCESS;
 }
 
@@ -1309,11 +1310,11 @@ GReturn XboxController::IsConnected(int _controllerIndex, bool& _outIsConnected)
 	if (_controllerIndex < 0 || _controllerIndex >= MAX_XBOX_CONTROLLER_INDEX)
 		return INVALID_ARGUMENT;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	_outIsConnected = controllers[_controllerIndex].isConnected == 0 ? false : true;
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 
 	return SUCCESS;
 }
@@ -1326,7 +1327,7 @@ void XboxController::XinputVibration()
 
 	while (isRunning)
 	{
-		controllersMutex.lock();
+		unique_controllersMutex.lock();
 		for (int i = 0; i < 4; ++i)
 		{
 
@@ -1344,7 +1345,7 @@ void XboxController::XinputVibration()
 				}
 			}
 		}
-		controllersMutex.unlock();
+		unique_controllersMutex.unlock();
 	}
 #endif
 }
@@ -1357,11 +1358,11 @@ GReturn XboxController::StartVibration(float _pan, float _duration, float _stren
 		|| (_strength < -1.0f || _strength > 1.0f) )
 		return INVALID_ARGUMENT;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	if (controllers[_controllerIndex].isVibrating)
 	{
-		controllersMutex.unlock();
+		unique_controllersMutex.unlock();
 		return FAILURE;
 	}
 
@@ -1390,7 +1391,7 @@ GReturn XboxController::StartVibration(float _pan, float _duration, float _stren
 
 #endif // _WIN32
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 	return SUCCESS;
 }
 GReturn XboxController::IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating)
@@ -1398,11 +1399,11 @@ GReturn XboxController::IsVibrating(unsigned int _controllerIndex, bool& _outIsV
 	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0))
 		return INVALID_ARGUMENT;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	_outIsVibrating = controllers[_controllerIndex].isVibrating == 0 ? false : true;
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 
 	return SUCCESS;
 }
@@ -1411,10 +1412,10 @@ GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
 	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0))
 		return INVALID_ARGUMENT;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 	if (controllers[_controllerIndex].isVibrating == false)
 	{
-		controllersMutex.unlock();
+		unique_controllersMutex.unlock();
 		return REDUNDANT_OPERATION;
 	}
 
@@ -1434,7 +1435,7 @@ GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
 	}
 #endif // _WIN32
 
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 	return SUCCESS;
 }
 GReturn XboxController::StopAllVirbrations()
@@ -1444,7 +1445,7 @@ GReturn XboxController::StopAllVirbrations()
 	vibrationState.wLeftMotorSpeed = 0;
 	vibrationState.wRightMotorSpeed = 0;
 
-	controllersMutex.lock();
+	unique_controllersMutex.lock();
 
 	for (int i = 0; i < MAX_XBOX_CONTROLLER_INDEX; ++i)
 	{
@@ -1455,7 +1456,7 @@ GReturn XboxController::StopAllVirbrations()
 			XInputSetState(i, &vibrationState);
 		}
 	}
-	controllersMutex.unlock();
+	unique_controllersMutex.unlock();
 
 	return SUCCESS;
 #else
@@ -1518,12 +1519,12 @@ void XboxController::XinputLoop()
 				{
 					if (XControllerSlotIndices[i] < 0)
 					{
-						controllersMutex.lock();
+						unique_controllersMutex.lock();
 
 						XControllerSlotIndices[i] = FindEmptyControllerIndex(MAX_XBOX_CONTROLLER_INDEX, controllers);
 						controllers[XControllerSlotIndices[i]].isConnected = 1;
 
-						controllersMutex.unlock();
+						unique_controllersMutex.unlock();
 
 						eventData.controllerIndex = XControllerSlotIndices[i];
 						eventData.inputCode = 0;
@@ -1540,7 +1541,7 @@ void XboxController::XinputLoop()
 						eventData.isConnected = 1;
 						eventData.controllerIndex = XControllerSlotIndices[i];
 
-						controllersMutex.lock();
+						unique_controllersMutex.lock();
 
 						XControllerLastPacket[i] = controllerState.dwPacketNumber;
 
@@ -1715,7 +1716,7 @@ void XboxController::XinputLoop()
 
 
 
-						controllersMutex.unlock();
+						unique_controllersMutex.unlock();
 					}
 				}
 				else // no controller connected
