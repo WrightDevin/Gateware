@@ -980,6 +980,13 @@ void XboxController::XinputLoop()
 				}
 			}
 		}
+		else // This thread cannot be left to run rampant
+		{
+			// The following is not ideal, instead we should consider creating a Gateware thread pool in G_System
+			// This thread pool would eliminate spinloop "solutions" and have built in HRZ timing for running ops
+			std::this_thread::yield(); // give up time slice
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 	}
 
 	delete[] oldState.controllerInputs;
