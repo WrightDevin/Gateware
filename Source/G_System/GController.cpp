@@ -109,11 +109,13 @@ struct G_inotify_event
 
 		return _outCopy;
 	}
+#ifdef __linux__
 
     int bit_is_set(const unsigned long *array, int bit)
     {
         return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));  // TODO: modfiy later
     }
+#endif
 
 }
 //end
@@ -561,6 +563,7 @@ GReturn GeneralController::RequestInterface(const GUUIID& _interfaceID, void** _
 
 void GeneralController::Linux_InitControllers()
 {
+#ifdef __linux__
     for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
     {
         iscontrollerLoopRunning[i] = false;
@@ -631,10 +634,12 @@ if ((dir = opendir("/dev/input")) != NULL) {
   }
   closedir (dir);
 }
+#endif
 }
 
 void GeneralController::Linux_InotifyLoop()
 {
+#ifdef __linux__
     GCONTROLLER_EVENT_DATA eventData;
     std::map<GListener*, unsigned long long>::iterator iter;
     int fd = 0;
@@ -762,12 +767,14 @@ void GeneralController::Linux_InotifyLoop()
             delete linuxControllerThreads[i];
         }
     }
+#endif
 
 
 }
 
 void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd)
 {
+#ifdef __linux__
     input_event ev; // time value type code
     input_event base;
     base.value = 0;
@@ -1345,6 +1352,8 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
         for (iter = listeners.begin(); iter != listeners.end(); ++iter)
             iter->first->OnEvent(GControllerUUIID, CONTROLLERDISCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
         unique_listenerMutex.unlock();
+    
+#endif
 }
 
 // XboxController
