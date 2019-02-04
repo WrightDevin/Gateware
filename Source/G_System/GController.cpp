@@ -5,7 +5,7 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
-
+#include <string.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -67,14 +67,14 @@ private:
         void Linux_InitControllers();
         void Linux_InotifyLoop();
         void Linux_ControllerInputLoop(char* _filePath, unsigned int _controllerIndex, int fd);
-    
+
 #ifdef __linux__
         std::thread* linuxControllerThreads[MAX_CONTROLLER_INDEX];
         std::thread* linuxInotifyThread;
         std::atomic<bool> iscontrollerLoopRunning[MAX_CONTROLLER_INDEX];
         char* controllerFilePaths[MAX_CONTROLLER_INDEX];
 #endif
-    
+
 #ifdef __APPLE__
     NSThread* runLoopThread;
     HIDMANAGER * manager;
@@ -94,7 +94,7 @@ protected:
     CONTROLLER_STATE* controllers;
 
 	// Lock before using
- 
+
 	GControllerDeadzoneTypes deadzoneType;
 	float deadzonePercentage;
 
@@ -264,25 +264,25 @@ void GeneralController::Init()
         linuxInotifyThread = new std::thread(&GeneralController::Linux_InotifyLoop, this);
 
 #endif // _linux_
-    
+
 #ifdef __APPLE__
     manager = [HIDMANAGER alloc];
     manager->isRunning = &isRunning;
     manager->controllersMutex = &controllersMutex;
     manager->listenerMutex = &listenerMutex;
     manager->controllers = controllers;
-    
+
     int returnVal;
     returnVal = pthread_attr_init(&runLoopPthread_attr);
-    
+
     assert(!returnVal);
-    
+
     returnVal = pthread_attr_setdetachstate(&runLoopPthread_attr, PTHREAD_CREATE_JOINABLE);
-    
+
     assert(!returnVal);
-    
+
     int threadError = pthread_create(&runLoopPthread_ID, &runLoopPthread_attr, &RunLoopThreadEntry, manager);
- 
+
 #endif
 }
 
@@ -490,7 +490,7 @@ GReturn GeneralController::DecrementCount()
         #ifdef __APPLE__
         //[manager StopRunLoop];
         pthread_join(runLoopPthread_ID, NULL);
-        
+
         #endif
 		// handle destruction
 		for (int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
@@ -552,7 +552,7 @@ void GeneralController::Linux_InitControllers()
 DIR *dir;
 dirent *fileData;
 GCONTROLLER_EVENT_DATA eventData;
-std::map<GListener*, unsigned long long>::iterator iter;
+std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
 
 if ((dir = opendir("/dev/input")) != NULL) {
   /* print all the files and directories within directory */
@@ -621,7 +621,7 @@ void GeneralController::Linux_InotifyLoop()
 {
 #ifdef __linux__
     GCONTROLLER_EVENT_DATA eventData;
-    std::map<GListener*, unsigned long long>::iterator iter;
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
     int fd = 0;
     int wd = 0;
     struct G_inotify_event iev, base;
@@ -761,7 +761,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
     base.type = 0;
     base.code = 0;
     GCONTROLLER_EVENT_DATA eventData;
-    std::map<GListener*, unsigned long long>::iterator iter;
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
     int lastLX = 0, lastLY = 0, lastRX = 0, lastRY = 0, lastLT = 0, lastRT = 0;
     struct input_absinfo axisInfo;
     ioctl(fd, EVIOCGABS(ABS_X), &axisInfo); // reads max and min for abs axes
@@ -1332,7 +1332,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
         for (iter = listeners.begin(); iter != listeners.end(); ++iter)
             iter->first->OnEvent(GControllerUUIID, CONTROLLERDISCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
         listenerMutex.unlock();
-    
+
 #endif
 }
 

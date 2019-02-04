@@ -110,7 +110,7 @@ GReturn BufferedInput::DecrementCount() {
         //[currentResponder setNextResponder:responder];
         [currentResponder setNextResponder:nil];
 #endif
-        
+
 		delete this;
 
 	}
@@ -384,8 +384,8 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //Need to convert _data back into an NSWindow*.
     //NSWindow* currentResponder = ((__bridge NSWindow*)_data);
     currentResponder = ((__bridge NSWindow*)_data);
-    
-    
+
+
 	//We only want to process the message and pass it on. So if there is already
 	//a responder we set our responders next responder to be the current next responder.
     [responder setNextResponder:currentResponder.nextResponder];
@@ -399,7 +399,7 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //In order to get mouse button presses we need to set our responder to be
     //The next responder in the contentView as well.
     [currentResponder.contentView setNextResponder:responder];
-   
+
 
 
 #endif
@@ -417,7 +417,7 @@ void BufferedInput::InputThread()
 	while (threadOpen)
 	{
 
-        std::map<GListener* , unsigned long long>::iterator iter = _listeners.begin();
+        std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
 
         Display* _display = (Display*)_linuxWindow.display;
 

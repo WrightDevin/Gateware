@@ -86,7 +86,7 @@ add_library (GInput GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow GWindow.cpp ${HEADER_FILES})
 
-#add_library (GController GController.cpp ${HEADER_FILES})
+add_library (GController GController.cpp ${HEADER_FILES})
 
 
 add_library (GBufferedInput_DLL SHARED GBufferedInput.cpp ${HEADER_FILES})
@@ -95,7 +95,7 @@ add_library (GInput_DLL SHARED GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow_DLL SHARED GWindow.cpp ${HEADER_FILES})
 
-#add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
+add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
 
 
 endif()
