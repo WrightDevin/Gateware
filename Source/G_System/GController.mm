@@ -63,7 +63,7 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
                  // send controller connected event
                 
                  GCONTROLLER_EVENT_DATA eventData;
-                 std::map<GListener*, unsigned long long>::iterator iter;
+                 std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
                 
                  eventData.controllerIndex = controllerIndex;
                  eventData.inputCode = 0;
@@ -104,7 +104,7 @@ static void gamepadWasRemoved(void* inContext, IOReturn inResult, void* inSender
                 // send controller connected event
                 
                 GCONTROLLER_EVENT_DATA eventData;
-                std::map<GListener*, unsigned long long>::iterator iter;
+                std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
                 
                 eventData.controllerIndex = controllerIndex;
                 eventData.inputCode = 0;

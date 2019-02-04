@@ -5,14 +5,10 @@
 #include "GUtility.h"
 #include <mutex>
 #include <atomic>
-
-#ifdef __linux
-
-#elif __APPLE__
-#include <map>
+#include <vector>
+#include <algorithm>
 
 
-#endif
 
 #define MAX_CONTROLLER_INDEX 16
 #define MAX_XBOX_CONTROLLER_INDEX 4
@@ -43,8 +39,8 @@ namespace
     
    
         //! Map of Listeners to send event information to.
-        std::map<GListener *, unsigned long long> listeners;
-        
+        std::vector<std::pair<GListener *, unsigned long long>> listeners;
+    
         
         struct CONTROLLER_STATE
         {
@@ -60,7 +56,7 @@ namespace
             #endif
         };
         
-      
+    
         // Modified verion of the struct from inotify.h to pass the catch tests
         // Due to the __flexarr hack catch was throwing an error saying the buffer for name was overflowed
         struct G_inotify_event
@@ -161,7 +157,7 @@ namespace
         return NULL;
     }
         
-       
+    
 #endif
         
         
