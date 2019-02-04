@@ -1244,7 +1244,7 @@ GReturn AppWindow::DecrementCount()
 	{
 		//Release handles to any listeners that remain (releases handles)
 		refMutex.lock();
-		std::map<GListener*, unsigned long long>::iterator iter = listeners.begin();
+		std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
 		for (; iter != listeners.end(); ++iter)
 			iter->first->DecrementCount(); // free handle, don't call Deregister as that would be bad
 		listeners.clear(); // dump all invalid pointers
@@ -1330,13 +1330,15 @@ GReturn AppWindow::RegisterListener(GListener* _addListener, unsigned long long 
 	}
 
 	refMutex.lock();
-
-	std::map<GListener*, unsigned long long>::const_iterator iter = listeners.find(_addListener);
+	std::pair<GListener*, unsigned long long> search(_addListener, _eventMask);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find(listeners.begin(), listeners.end(), search);
 	if (iter != listeners.end()) {
+		refMutex.unlock();
 		return REDUNDANT_OPERATION;
 	}
 
-	listeners[_addListener] = _eventMask;
+	listeners.push_back(search);
 	_addListener->IncrementCount();
 
 	refMutex.unlock();
@@ -1352,7 +1354,12 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 	refMutex.lock();
 
-	std::map<GListener*, unsigned long long>::const_iterator iter = listeners.find(_removeListener);
+	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find_if(listeners.begin(), listeners.end(), 
+			[&search](std::pair<GListener*, unsigned long long> const& elem) { 
+				return elem.first == search.first; 
+	});
 	if (iter != listeners.end()) {
 		iter->first->DecrementCount();
 		listeners.erase(iter);

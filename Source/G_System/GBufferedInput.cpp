@@ -91,7 +91,7 @@ GReturn BufferedInput::DecrementCount() {
 
 		//Release handles to any listeners that remain (releases handles)
 		mutex.lock();
-		std::map<GListener*, unsigned long long>::iterator iter = _listeners.begin();
+		std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
 		for (; iter != _listeners.end(); ++iter)
 			iter->first->DecrementCount(); // free handle
 		_listeners.clear(); // dump all invalid pointers
@@ -160,12 +160,14 @@ GReturn BufferedInput::RegisterListener(GListener* _addListener, unsigned long l
 
 	mutex.lock();
 
-	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_addListener);
+	std::pair<GListener*, unsigned long long> search(_addListener, _eventMask);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find(_listeners.begin(), _listeners.end(), search);
 	if (iter != _listeners.end()) {
+		mutex.unlock();
 		return REDUNDANT_OPERATION;
 	}
-
-	_listeners[_addListener] = _eventMask;
+	_listeners.push_back(search);
 	_addListener->IncrementCount();
 
 	mutex.unlock();
@@ -180,7 +182,12 @@ GReturn BufferedInput::DeregisterListener(GListener* _removeListener) {
 		return INVALID_ARGUMENT;
 	}
 	mutex.lock();
-	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
+	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find_if(_listeners.begin(), _listeners.end(),
+			[&search](std::pair<GListener*, unsigned long long> const& elem) {
+		return elem.first == search.first;
+	});
 	if (iter != _listeners.end()) {
 		iter->first->DecrementCount();
 		_listeners.erase(iter);

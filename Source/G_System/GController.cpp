@@ -5,9 +5,8 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
-#include <map>
-#include <iostream>
-#include <string.h>
+#include <vector>
+#include <algorithm>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -415,12 +414,15 @@ GReturn GeneralController::RegisterListener(GListener* _addListener, unsigned lo
 
 	listenerMutex.lock();
 
-	std::map<GListener*, unsigned long long>::const_iterator iter = listeners.find(_addListener);
+	std::pair<GListener*, unsigned long long> search(_addListener, _eventMask);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find(listeners.begin(), listeners.end(), search);
 	if (iter != listeners.end()) {
+		listenerMutex.unlock();
 		return REDUNDANT_OPERATION;
 	}
 
-	listeners[_addListener] = _eventMask;
+	listeners.push_back(search);
 	_addListener->IncrementCount();
 
 	listenerMutex.unlock();
@@ -436,7 +438,12 @@ GReturn GeneralController::DeregisterListener(GListener* _removeListener)
 
 	listenerMutex.lock();
 
-	std::map<GListener*, unsigned long long>::const_iterator iter = listeners.find(_removeListener);
+	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find_if(listeners.begin(), listeners.end(),
+			[&search](std::pair<GListener*, unsigned long long> const& elem) {
+		return elem.first == search.first;
+	});
 	if (iter != listeners.end()) {
 		iter->first->DecrementCount();
 		listeners.erase(iter);
@@ -1589,7 +1596,7 @@ void XboxController::XinputLoop()
 	ZeroMemory(&controllerState, sizeof(XINPUT_STATE));
 	GCONTROLLER_EVENT_DATA eventData;
 	ZeroMemory(&eventData, sizeof(GCONTROLLER_EVENT_DATA));
-	std::map<GListener*, unsigned long long>::iterator iter;
+	std::vector<std::pair<GListener*, unsigned long long>>::iterator iter;
 	auto lastCheck = std::chrono::high_resolution_clock::now();
 	bool isFirstLoop = true;
 	CONTROLLER_STATE oldState;
@@ -1848,6 +1855,13 @@ void XboxController::XinputLoop()
 					}
 				}
 			}
+		}
+		else // This thread cannot be left to run rampant
+		{
+			// The following is not ideal, instead we should consider creating a Gateware thread pool in G_System
+			// This thread pool would eliminate spinloop "solutions" and have built in HRZ timing for running ops
+			std::this_thread::yield(); // give up time slice
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 
