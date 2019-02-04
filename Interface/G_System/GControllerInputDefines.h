@@ -39,6 +39,7 @@ License: MIT
 #define G_LY_AXIS						0x11
 #define G_RX_AXIS						0x12
 #define G_RY_AXIS						0x13
+#define G_UNKOWN_INPUT                  0xff
 
 // Axis || Button
 #define G_BUTTON						0x0
