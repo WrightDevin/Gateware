@@ -1381,7 +1381,7 @@ GReturn XboxController::GetMaxIndex(int &_outMax)
 
 GReturn XboxController::GetState(int _controllerIndex, int _inputCode, float& _outState)
 {
-	if (_controllerIndex < 0 || _controllerIndex > MAX_XBOX_CONTROLLER_INDEX || (_inputCode & 0xFF000) != G_XBOX_CONTROLLER || ((_inputCode & 0xFF) < 0 && (_inputCode & 0xFF) > 19))
+	if (_controllerIndex < 0 || _controllerIndex > MAX_XBOX_CONTROLLER_INDEX || ((_inputCode >> 12) & 0xFF) != G_XBOX_CONTROLLER || (_inputCode < 0 && (_inputCode & 0xFF) > 19))
 		return INVALID_ARGUMENT;
 	if (controllers[_controllerIndex].isConnected == 0)
 		return FAILURE;
@@ -1630,6 +1630,7 @@ void XboxController::XinputLoop()
 						eventData.inputCode = 0;
 						eventData.inputValue = 0;
 						eventData.isConnected = 1;
+						eventData.controllerID = G_XBOX_CONTROLLER;
 						for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 							iter->first->OnEvent(GControllerUUIID, CONTROLLERCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 					}
@@ -1831,6 +1832,7 @@ void XboxController::XinputLoop()
 						eventData.inputCode = 0;
 						eventData.inputValue = 0;
 						eventData.isConnected = 0;
+						eventData.controllerID = G_XBOX_CONTROLLER;
 						for (iter = listeners.begin(); iter != listeners.end(); ++iter)
 							iter->first->OnEvent(GControllerUUIID, CONTROLLERDISCONNECTED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
 

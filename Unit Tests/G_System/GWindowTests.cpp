@@ -330,7 +330,13 @@ TEST_CASE("Sending events to listeners.", "")
 	// Pass case
 	while(windowListener->m_testsPending)
 	{
-        sleep(.001);
+	#ifndef _WIN32
+		sleep(.001);
+	#else
+		Sleep(.001);
+	#endif // !_WIN32
+
+        
 	}  // while tell all test are completed
 	windowListener->GetWindowTestValue(windowTestValue);
 	REQUIRE(windowTestValue == 1);
