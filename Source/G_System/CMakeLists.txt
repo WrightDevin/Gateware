@@ -2,11 +2,9 @@ project(LibraryProject)
 #################################################################################LIBRARIES WITH NO .MM FILES
 add_library (GFile GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog GLog.cpp ${HEADER_FILES})
-add_library (GController GController.cpp ${HEADER_FILES})
 
 add_library (GFile_DLL SHARED GFile.cpp ${HEADER_FILES} direntw.h GUtility.h )
 add_library (GLog_DLL SHARED GLog.cpp GFile.cpp ${HEADER_FILES})
-add_library (GController_DLL SHARED GController.cpp GLog.cpp GFile.cpp ${HEADER_FILES})
 
 
 
@@ -25,6 +23,7 @@ old vs new CMake versions (See the cmakelists for the unit tests for changes whe
 
 set(COCOA_LIBRARY Cocoa)
 
+set( IOKIT_LIBRARY IOKit )
 
 message(“Adding .mm files”)
 
@@ -34,6 +33,8 @@ add_library(GInput GInput.mm)
 
 add_library(GWindow GWindow.mm) 
 
+add_library(GController GController.mm) 
+
 
 add_library(GBufferedInput_DLL SHARED GBufferedInput.mm)
 
@@ -41,6 +42,7 @@ add_library(GInput_DLL SHARED GInput.mm)
 
 add_library(GWindow_DLL SHARED GWindow.mm)
 
+add_library(GController_DLL SHARED GController.mm)
 
 
 target_link_libraries(GBufferedInput "-framework ${COCOA_LIBRARY}")
@@ -55,6 +57,8 @@ target_link_libraries(GLog "-framework ${COCOA_LIBRARY}")
 
 target_link_libraries(GController "-framework ${COCOA_LIBRARY}")
 
+target_link_libraries(GController "-framework ${IOKIT_LIBRARY}")
+
 target_link_libraries(GBufferedInput_DLL "-framework cocoa")
 
 target_link_libraries(GInput_DLL "-framework cocoa")
@@ -66,6 +70,8 @@ target_link_libraries(GFile_DLL "-framework cocoa")
 target_link_libraries(GLog_DLL "-framework cocoa")
 
 target_link_libraries(GController_DLL "-framework cocoa")
+
+target_link_libraries(GController_DLL "-framework IOKit")
 
 
 #################################################################################EVERYTHING ELSE
@@ -80,7 +86,7 @@ add_library (GInput GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow GWindow.cpp ${HEADER_FILES})
 
-#add_library (GController GController.cpp ${HEADER_FILES})
+add_library (GController GController.cpp ${HEADER_FILES})
 
 
 add_library (GBufferedInput_DLL SHARED GBufferedInput.cpp ${HEADER_FILES})
@@ -89,7 +95,7 @@ add_library (GInput_DLL SHARED GInput.cpp ${HEADER_FILES})
 
 add_library (GWindow_DLL SHARED GWindow.cpp ${HEADER_FILES})
 
-#add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
+add_library (GController_DLL SHARED GController.cpp ${HEADER_FILES})
 
 
 endif()

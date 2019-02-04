@@ -37,6 +37,7 @@ namespace GW
 		struct GCONTROLLER_EVENT_DATA
 		{
 			int controllerIndex; /*!< The Controller index where the event took place */ 
+			int controllerID;	 /*!<  The Controller ID of the controller that sent the event*/
 			int inputCode;		 /*!< The Code repsenting the Detected input */
 			float inputValue;	 /*!< The value of the detected input */
 			int isConnected;		 /*!< Value indicating whether the controller is connected */
@@ -59,11 +60,12 @@ namespace GW
 			DEADZONECIRCLE	/*!< Calulates the deadzone of x and y as a single magnitude*/
 		};
 
-		//! Unique Identifier for this interface. {46714BC8-ECF5-4B86-AD4E-665BEB5378AB}
+		//! Unique Identifier for this interface. {DFF7EEBF-C333-4606-9500-BDE01CE7C1CB}
 		static const GUUIID GControllerUUIID = 
 		{
-			0x46714bc8, 0xecf5, 0x4b86,{ 0xad, 0x4e, 0x66, 0x5b, 0xeb, 0x53, 0x78, 0xab }
+			0xdff7eebf, 0xc333, 0x4606,{ 0x95, 0x0, 0xbd, 0xe0, 0x1c, 0xe7, 0xc1, 0xcb }
 		};
+
 
 		//! A multi-threaded controller input library.
 		/*!

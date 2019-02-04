@@ -56,7 +56,7 @@
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
 	//Send off the event.
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, KEYPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -75,7 +75,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, KEYRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -94,7 +94,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+   std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -113,7 +113,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -132,7 +132,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+   std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -150,7 +150,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -169,7 +169,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONPRESSED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -188,7 +188,7 @@
     NSPoint screenMousePosition = [NSEvent mouseLocation];
     _dataStruct.screenX = screenMousePosition.x;
     _dataStruct.screenY = screenMousePosition.y;
-    std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
     for (; iter != _listeners.end(); ++iter) {
         iter->first->OnEvent(GBufferedInputUUIID, BUTTONRELEASED, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
     }
@@ -219,7 +219,7 @@
     _dataStruct.screenY = screenMousePosition.y;
 	//Make sure theres data to send and send the data to all registered listeners.
     if(_dataStruct.data){
-        std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+        std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
         for (; iter != _listeners.end(); ++iter) {
             iter->first->OnEvent(GBufferedInputUUIID, MOUSESCROLL, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
         }
