@@ -2,6 +2,32 @@
 #define GCONTROLLER_STATIC_H
 #include "../../Interface/G_System/GControllerInputDefines.h"
 
+#define MAX_CONTROLLER_INDEX 16
+#define MAX_XBOX_CONTROLLER_INDEX 4
+#define MAX_GENENRAL_INPUTS 20
+#define MAX_XBOX_INPUTS 20
+#define MAX_PS4_INPUTS 20
+#define MAX_XBOX_THUMB_AXIS 32768
+#define MIN_XBOX_THUMB_AXIS -32768
+#define MAX_PS4_THUMB_AXIS 255
+#define MIN_PS4_THUMB_AXIS 0
+#define MAX_XBOX_TRIGGER_AXIS 255
+#define XINPUT_MAX_VIBRATION 65535
+#define MAX_LINUX_THUMB_AXIS 32768
+#define MAX_GENENRAL_TRIGGER_AXIS 255
+#define GENENRAL_TRIGGER_THRESHOLD 51
+
+#define SONY_VENDOR_ID 0x054C
+
+
+#define MAX_AXIS 0
+#define MIN_AXIS 1
+static const int ControllerAxisRanges[2][3] = {
+    //Genenral  //Xbox  //PS4
+    {MAX_XBOX_THUMB_AXIS, MAX_XBOX_THUMB_AXIS, MAX_PS4_THUMB_AXIS},
+    {MIN_XBOX_THUMB_AXIS, MIN_XBOX_THUMB_AXIS, MIN_PS4_THUMB_AXIS},
+};
+
 static const unsigned int Mac_ControllerCodes[][3] = {
 	  //Genenral      //Xbox		   //PS4
 	{ G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 0
@@ -61,7 +87,7 @@ static const unsigned int Mac_ControllerCodes[][3] = {
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 54
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 55
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 56
-    { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 57
+    { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_DPAD_LEFT_BTN}, // 57
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 58
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 59
     { G_UNKOWN_INPUT,  G_UNKOWN_INPUT,  G_UNKOWN_INPUT}, // 60

@@ -83,7 +83,6 @@ private:
 #endif
 
 protected:
-	void DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY);
 
 	std::atomic<unsigned int> referenceCount;
 	std::atomic<bool> isRunning;
@@ -271,6 +270,8 @@ void GeneralController::Init()
     manager->controllersMutex = &controllersMutex;
     manager->listenerMutex = &listenerMutex;
     manager->controllers = controllers;
+    manager->deadzonePercentage = &deadzonePercentage;
+    manager->deadzoneType = &deadzoneType;
 
     int returnVal;
     returnVal = pthread_attr_init(&runLoopPthread_attr);
@@ -372,38 +373,7 @@ GReturn GeneralController::StopAllVirbrations()
 	return FEATURE_UNSUPPORTED;
 }
 
-void GeneralController::DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY)
-{
-#ifndef __APPLE__
-    float range = _axisMax - _axisMin;
-    _outX = (((_x - _axisMin) * 2) / range) - 1;
-    _outY = (((_y - _axisMin) * 2) / range) - 1;
-	float liveRange = 1.0f - deadzonePercentage;
-	if (deadzoneType == DEADZONESQUARE)
-	{
-		if (std::abs(_outX) <= deadzonePercentage)
-			_outX = 0.0f;
-		if (std::abs(_outY) <= deadzonePercentage)
-			_outY = 0.0f;
 
-		if (_outX > 0.0f)
-			_outX = (_outX - deadzonePercentage) / liveRange;
-		else if(_outX < 0.0f)
-			_outX = (_outX + deadzonePercentage) / liveRange;
-		if (_outY > 0.0f)
-			_outY = (_outY - deadzonePercentage) / liveRange;
-		else if (_outY < 0.0f)
-			_outY = (_outY + deadzonePercentage) / liveRange;
-	}
-	else
-	{
-		float mag = std::sqrt(_outX * _outX + _outY * _outY);
-		mag = (mag - deadzonePercentage) / liveRange;
-		_outX *= mag;
-		_outY *= mag;
-	}
-#endif
-}
 
 GReturn GeneralController::RegisterListener(GListener* _addListener, unsigned long long _eventMask)
 {
@@ -949,7 +919,9 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 											axisInfo.maximum,
 											axisInfo.minimum,
 											controllers[_controllerIndex].controllerInputs[G_LX_AXIS],
-											controllers[_controllerIndex].controllerInputs[G_LY_AXIS]);
+											controllers[_controllerIndex].controllerInputs[G_LY_AXIS]
+                                            deadzoneType,
+                                            deadzonePercentage);
 
                             eventData.inputCode = G_GENERAL_LX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
@@ -992,7 +964,9 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 											axisInfo.maximum,
 											axisInfo.minimum,
 											controllers[_controllerIndex].controllerInputs[G_LX_AXIS],
-											controllers[_controllerIndex].controllerInputs[G_LY_AXIS]);
+											controllers[_controllerIndex].controllerInputs[G_LY_AXIS],
+                                            deadzoneType,
+                                            deadzonePercentage);
 
 							// Send LY event
 							controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value

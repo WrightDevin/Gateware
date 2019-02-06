@@ -8,20 +8,11 @@
 #include <vector>
 #include <algorithm>
 
+#ifdef __APPLE__
+#include <cmath>
+#endif
 
 
-#define MAX_CONTROLLER_INDEX 16
-#define MAX_XBOX_CONTROLLER_INDEX 4
-#define MAX_GENENRAL_INPUTS 20
-#define MAX_XBOX_INPUTS 20
-#define MAX_PS4_INPUTS 20
-#define MAX_XBOX_THUMB_AXIS 32768
-#define MIN_XBOX_THUMB_AXIS -32768
-#define MAX_XBOX_TRIGGER_AXIS 255
-#define XINPUT_MAX_VIBRATION 65535
-#define MAX_LINUX_THUMB_AXIS 32768
-#define MAX_GENENRAL_TRIGGER_AXIS 255
-#define GENENRAL_TRIGGER_THRESHOLD 51
 
 using namespace GW;
 using namespace CORE;
@@ -50,7 +41,7 @@ namespace
             std::chrono::high_resolution_clock::time_point* vibrationStartTime;
             int maxInputs; // Hold the size of controllerInputs array
             float* controllerInputs; // controllerInputs is used to hold an array for the input values of the controller
-            
+            int controllerID;
             #ifdef __APPLE__
             IOHIDDeviceRef device;
             #endif
@@ -92,6 +83,40 @@ namespace
             
             return _outCopy;
         }
+    
+    void DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY, int _deadzoneType, float _deadzonePercentage)
+    {
+
+        float range = _axisMax - _axisMin;
+        _outX = (((_x - _axisMin) * 2) / range) - 1;
+        _outY = (((_y - _axisMin) * 2) / range) - 1;
+        float liveRange = 1.0f - _deadzonePercentage;
+        if (_deadzoneType == DEADZONESQUARE)
+        {
+            if (std::abs(_outX) <= _deadzonePercentage)
+                _outX = 0.0f;
+            if (std::abs(_outY) <= _deadzonePercentage)
+                _outY = 0.0f;
+            
+            if (_outX > 0.0f)
+                _outX = (_outX - _deadzonePercentage) / liveRange;
+            else if(_outX < 0.0f)
+                _outX = (_outX + _deadzonePercentage) / liveRange;
+            if (_outY > 0.0f)
+                _outY = (_outY - _deadzonePercentage) / liveRange;
+            else if (_outY < 0.0f)
+                _outY = (_outY + _deadzonePercentage) / liveRange;
+        }
+        else
+        {
+            float mag = std::sqrt(_outX * _outX + _outY * _outY);
+            mag = (mag - _deadzonePercentage) / liveRange;
+            _outX *= mag;
+            _outY *= mag;
+        }
+
+    }
+    
 #ifdef __linux__
         
         int bit_is_set(const unsigned long *array, int bit)
@@ -171,12 +196,17 @@ namespace
 @interface HIDMANAGER : NSObject // HidManager wrapper class
 {
     @public
-    // these are to point to the GController locks
+    // these are to point to the GController varibles
     std::mutex* controllersMutex;
     std::mutex* listenerMutex;
     std::atomic<bool>* isRunning;
     CONTROLLER_STATE* controllers;
+    GControllerDeadzoneTypes* deadzoneType;
+    float* deadzonePercentage;
+    
     CFRunLoopRef managerRunLoop;
+    
+    int LX, LY, LZ, RX, RY, RZ;
 }
 -(void) InitManagerAndRunLoop;
 -(void) StopRunLoop;
