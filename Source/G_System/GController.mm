@@ -40,6 +40,9 @@ static void Handle_IOHIDDeviceInputValueCallback(
     {
          int inputCode = Mac_ControllerCodes[usage][manager->controllers[controllerIndex].controllerID];
          // switch on input type
+        if(inputCode == G_UNKOWN_INPUT)
+            return;
+        
         if(type == kIOHIDElementTypeInput_Button)
         {
            // swap 2 with controller id stored in controllers
@@ -108,7 +111,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                     if(scaledValue != manager->LY)
                     {
                         manager->controllersMutex->lock();
-                        manager->LY = scaledValue; // evdev values for Y are flipped
+                        manager->LY = scaledValue;
                         float oldX = manager->controllers[controllerIndex].controllerInputs[G_LX_AXIS];
                         DeadzoneCalculation(manager->LX,
                                             manager->LY,
@@ -192,7 +195,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                     if(scaledValue != manager->RY)
                     {
                         manager->controllersMutex->lock();
-                        manager->RY = scaledValue; // evdev values for Y are flipped
+                        manager->RY = scaledValue;
                         float oldX = manager->controllers[controllerIndex].controllerInputs[G_RX_AXIS];
                         DeadzoneCalculation(manager->RX,
                                             manager->RY,
@@ -913,7 +916,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
 
 static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, IOHIDDeviceRef device) {
     
-    NSLog(@"Gamepad was plugged in");
+    //NSLog(@"Gamepad was plugged in");
    
     HIDMANAGER* manager = (__bridge HIDMANAGER*)inContext;
     if(*(manager->isRunning))
@@ -931,6 +934,7 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
                  manager->controllers[controllerIndex].isConnected = 1;
                  manager->controllers[controllerIndex].device = device;
                 uint32_t vendorID;
+                // IOHIDeviceGetProperty Returns a CFTyperef based on the CString passed in. CFNumberGetValue is used to retrieve the value
                 CFNumberGetValue((CFNumberRef)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey)), kCFNumberSInt32Type, &vendorID);
                 
                 switch (vendorID) {
@@ -938,7 +942,10 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
                         manager->controllers[controllerIndex].controllerID = G_PS4_CONTROLLER;
                         break;
                         
+                    case MICROSOFT_VENDOR_ID:
+                         manager->controllers[controllerIndex].controllerID = G_XBOX_CONTROLLER;
                     default:
+                        manager->controllers[controllerIndex].controllerID = G_GENERAL_CONTROLLER;
                         break;
                 }
                 
@@ -951,7 +958,7 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
                  eventData.inputCode = 0;
                  eventData.inputValue = 0;
                  eventData.isConnected = 1;
-                 eventData.controllerID =manager->controllers[controllerIndex].controllerID;
+                 eventData.controllerID = manager->controllers[controllerIndex].controllerID;
         
                  manager->listenerMutex->lock();
                  for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -968,9 +975,9 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
 
 static void gamepadWasRemoved(void* inContext, IOReturn inResult, void* inSender, IOHIDDeviceRef device)
 {
-    NSLog(@"Gamepad was unplugged");
+   // NSLog(@"Gamepad was unplugged");
     
-    IOReturn res = IOHIDDeviceClose(device, kIOHIDOptionsTypeNone);
+    IOHIDDeviceClose(device, kIOHIDOptionsTypeNone);
     HIDMANAGER* manager = (__bridge HIDMANAGER*)inContext;
     if(*(manager->isRunning))
     {
@@ -993,6 +1000,7 @@ static void gamepadWasRemoved(void* inContext, IOReturn inResult, void* inSender
                 eventData.inputCode = 0;
                 eventData.inputValue = 0;
                 eventData.isConnected = 0;
+                eventData.controllerID = manager->controllers[controllerIndex].controllerID;
                 
                 manager->listenerMutex->lock();
                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -1032,34 +1040,17 @@ IOHIDManagerSetDeviceMatchingMultiple(hidManager, criteria);
 
 CFRelease(criteria);
 
-IOReturn tIOReturn = IOHIDManagerOpen(hidManager, kIOHIDOptionsTypeNone);
+IOHIDManagerOpen(hidManager, kIOHIDOptionsTypeNone);
 CFTimeInterval timer = 1;
 Boolean runLoopReturn = true;
+    
+// The run loop will exit once a second to check and see if GController is still running
+// The run loop is used for proccessing the events for the IOHIDManager it work similar to [NSAPP run]
 while(*isRunning)
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, timer, runLoopReturn);
-    
-int d = 0;
 
 }
 
--(void) StopRunLoop
-{
-    CFRunLoopStop(managerRunLoop);
-}
-
--(void) SetControllerLock:(std::unique_lock<std::mutex>*) lock
-{
-   // controllersMutex = lock;
-}
--(void) SetListenerLock: (std::unique_lock<std::mutex>*) lock
-{
-    //listenerMutex = lock;
-}
-
--(void) SetIsRunning: (std::atomic<bool>*) _IsRunning
-{
-    isRunning = _IsRunning;
-}
 
 @end
 

@@ -32,8 +32,7 @@
 
 
 
-#define LONG_BITS (sizeof(long) * 8)
-#define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
+
 #endif // __linux__
 
 #ifdef __APPLE__

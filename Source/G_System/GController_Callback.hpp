@@ -118,6 +118,9 @@ namespace
     }
     
 #ifdef __linux__
+    
+#define LONG_BITS (sizeof(long) * 8)
+#define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
         
         int bit_is_set(const unsigned long *array, int bit)
         {
@@ -126,8 +129,9 @@ namespace
 #endif
         
 #ifdef __APPLE__
+    
+    // This Function creates and return an array of dictionarys used to match connected devices
         static CFMutableArrayRef CreateHIDManagerCriteria()
-        
         {
             
             // create a dictionary to add usage page/usages to
@@ -209,10 +213,6 @@ namespace
     int LX, LY, LZ, RX, RY, RZ;
 }
 -(void) InitManagerAndRunLoop;
--(void) StopRunLoop;
--(void) SetControllerLock:(std::unique_lock<std::mutex>*) lock ;
--(void) SetListenerLock: (std::unique_lock<std::mutex>*) lock ;
--(void) SetIsRunning: (std::atomic<bool>*) _IsRunning;
 
 @end
 
