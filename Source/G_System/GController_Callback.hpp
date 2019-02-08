@@ -8,6 +8,21 @@
 #include <vector>
 #include <algorithm>
 
+#ifdef __linux__
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/inotify.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <linux/input.h>
+#include <linux/input-event-codes.h>
+#include <chrono>
+#include <cmath>
+#include<dirent.h>
+#include <unistd.h>
+#endif // __linux__
+
 #ifdef __APPLE__
 #include <cmath>
 #endif
@@ -27,12 +42,12 @@ using namespace SYSTEM;
 
 namespace
 {
-    
-   
+
+
         //! Map of Listeners to send event information to.
         std::vector<std::pair<GListener *, unsigned long long>> listeners;
-    
-        
+
+
         struct CONTROLLER_STATE
         {
             int isConnected;
@@ -46,8 +61,8 @@ namespace
             IOHIDDeviceRef device;
             #endif
         };
-        
-    
+
+
         // Modified verion of the struct from inotify.h to pass the catch tests
         // Due to the __flexarr hack catch was throwing an error saying the buffer for name was overflowed
         struct G_inotify_event
@@ -58,7 +73,7 @@ namespace
             uint32_t len;        /* Length (including NULs) of name.  */
             char name[16];    /* Name.  */
         };
-        
+
         // This function does not lock before using _controllers
         unsigned int FindEmptyControllerIndex(unsigned int _maxIndex, const CONTROLLER_STATE* _controllers)
         {
@@ -69,7 +84,7 @@ namespace
             }
             return -1;
         }
-        
+
         // prehaps make return vaule GRETURN
         CONTROLLER_STATE* CopyControllerState(const CONTROLLER_STATE* _stateToCopy, CONTROLLER_STATE* _outCopy)
         {
@@ -80,10 +95,10 @@ namespace
                 }
             else
                 _outCopy = nullptr;
-            
+
             return _outCopy;
         }
-    
+
     void DeadzoneCalculation(float _x, float _y, float _axisMax, float _axisMin, float &_outX, float &_outY, int _deadzoneType, float _deadzonePercentage)
     {
 
@@ -97,7 +112,7 @@ namespace
                 _outX = 0.0f;
             if (std::abs(_outY) <= _deadzonePercentage)
                 _outY = 0.0f;
-            
+
             if (_outX > 0.0f)
                 _outX = (_outX - _deadzonePercentage) / liveRange;
             else if(_outX < 0.0f)
@@ -116,82 +131,87 @@ namespace
         }
 
     }
-    
+
 #ifdef __linux__
-    
-#define LONG_BITS (sizeof(long) * 8)
-#define NLONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
-        
-        int bit_is_set(const unsigned long *array, int bit)
+
+
+        // This functions gets an array of bits representing the keys supported for the device and check if BTN_GAMEPAD/BTN_SOUTH is set
+        bool isGamepadBitSet(int _event_fd)
         {
-            return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));  // TODO: modfiy later
+            // keys' size is based on how many sets of 64 bits it would take to cover all of the diffrent types of keys where each key is a bit
+            unsigned long keys[(KEY_CNT + 64 - 1)/64];
+            // EXVIOCGBIT gets the keys supported by the device returned as an array of 64 bits per index
+            // BTN_GAMEPAD represents the bit we want to check so we find where the bit would be located in the array
+            // and in the current 64 bits
+            ioctl(_event_fd, EVIOCGBIT(EV_KEY, sizeof(keys)), keys);
+            return (keys[BTN_GAMEPAD / 64] & (1LL << (BTN_GAMEPAD % 64))) != 0 ? true : false;
         }
 #endif
-        
+
 #ifdef __APPLE__
-    
+
     // This Function creates and return an array of dictionarys used to match connected devices
         static CFMutableArrayRef CreateHIDManagerCriteria()
         {
-            
+
             // create a dictionary to add usage page/usages to
             UInt32 usagePage = kHIDPage_GenericDesktop;
             UInt32 joyUsage = kHIDUsage_GD_Joystick;
             UInt32 gamepadUsage = kHIDUsage_GD_GamePad;
             UInt32 mutiaxisUsage = kHIDUsage_GD_MultiAxisController;
-            
+
             CFMutableDictionaryRef joyDictionary = CFDictionaryCreateMutable( kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-            
+
             CFMutableDictionaryRef gamepadDictionary = CFDictionaryCreateMutable( kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-            
+
             CFMutableDictionaryRef multiaxisDictionary = CFDictionaryCreateMutable( kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-            
+
             CFNumberRef pageCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usagePage);
-            
+
             CFDictionarySetValue(joyDictionary,CFSTR(kIOHIDDeviceUsagePageKey), pageCFNumberRef);
             CFDictionarySetValue(gamepadDictionary,CFSTR(kIOHIDDeviceUsagePageKey), pageCFNumberRef);
             CFDictionarySetValue(multiaxisDictionary,CFSTR(kIOHIDDeviceUsagePageKey), pageCFNumberRef);
             CFRelease(pageCFNumberRef);
-            
+
             CFNumberRef usageCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &joyUsage);
             CFDictionarySetValue(joyDictionary, CFSTR(kIOHIDDeviceUsageKey), usageCFNumberRef);
-            
+
             usageCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &gamepadUsage);
             CFDictionarySetValue(gamepadDictionary, CFSTR(kIOHIDDeviceUsageKey), usageCFNumberRef);
-            
+
             usageCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &mutiaxisUsage);
             CFDictionarySetValue(multiaxisDictionary, CFSTR(kIOHIDDeviceUsageKey), usageCFNumberRef);
             CFRelease(usageCFNumberRef);
-            
+
             CFMutableArrayRef dictionaryCFArr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-            
+
             CFArrayAppendValue(dictionaryCFArr, joyDictionary);
             CFArrayAppendValue(dictionaryCFArr, gamepadDictionary);
             CFArrayAppendValue(dictionaryCFArr, multiaxisDictionary);
-            
+
             CFRelease(joyDictionary);
             CFRelease(gamepadDictionary);
             CFRelease(multiaxisDictionary);
-            
+
             return dictionaryCFArr;
-            
+
         }
-    
-    
+
+
     static void* RunLoopThreadEntry(void* manager_ptr)
     {
         HIDMANAGER* manager = static_cast<HIDMANAGER*>(manager_ptr);
         [manager InitManagerAndRunLoop];
-        
+
         return NULL;
     }
-        
-    
+
+
 #endif
-        
-        
-        
-        
+
+
+
+
 }//end
 
 #ifdef __APPLE__
@@ -207,9 +227,9 @@ namespace
     CONTROLLER_STATE* controllers;
     GControllerDeadzoneTypes* deadzoneType;
     float* deadzonePercentage;
-    
+
     CFRunLoopRef managerRunLoop;
-    
+
     int LX, LY, LZ, RX, RY, RZ;
 }
 -(void) InitManagerAndRunLoop;

@@ -94,4 +94,12 @@ static const unsigned int Mac_ControllerCodes[][3] = {
     { G_UNKOWN_INPUT,        G_UNKOWN_INPUT,       G_UNKOWN_INPUT}, // 60
 };
 
+static const unsigned int Linux_ControllerCodes[] = {
+G_SOUTH_BTN, G_EAST_BTN, G_UNKOWN_INPUT, G_NORTH_BTN,
+G_WEST_BTN,  G_UNKOWN_INPUT, G_LEFT_SHOULDER_BTN, G_RIGHT_SHOULDER_BTN,
+G_UNKOWN_INPUT, G_UNKOWN_INPUT, G_SELECT_BTN, G_START_BTN,
+G_UNKOWN_INPUT, G_LEFT_THUMB_BTN, G_RIGHT_THUMB_BTN
+};
+
+
 #endif
