@@ -181,18 +181,18 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 #endif // !_WIN32
 		break;
 	}
-    
+
     case G_PS4_CONTROLLER:
     {
 #ifdef _WIN32
-       
+
         _outController = nullptr;
         return FEATURE_UNSUPPORTED;
 #else
         GeneralController* genController = new GeneralController;
         if (genController == nullptr)
             return FAILURE;
-        
+
         genController->SetSupportedControllerID(G_PS4_CONTROLLER);
         genController->Init();
         (*_outController) = genController;
@@ -226,7 +226,7 @@ void GeneralController::Init()
 	controllers = new CONTROLLER_STATE[MAX_CONTROLLER_INDEX];
 	deadzoneType = DEADZONESQUARE;
 	deadzonePercentage = .2f;
-    
+
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 	controllers[i].isConnected = 0;
@@ -538,12 +538,12 @@ if ((dir = opendir("/dev/input")) != NULL) {
                 if(controllerIndex != -1)
                 {
                     //printf("Opening file %s\n", fileData->d_name);
-                   
-                    
+
+
                     input_id ID;
                     ioctl(event_fd, EVIOCGID, ID);
-                   
-                   
+
+
                     int controllerID;
                      switch(ID.vendor)
                         {
@@ -563,12 +563,12 @@ if ((dir = opendir("/dev/input")) != NULL) {
                                 break;
                             }
                         }
-                    
+
                     if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
                     {
                         continue;
                     }
-                    
+
                     controllersMutex.lock();
                     iscontrollerLoopRunning[controllerIndex] = true;
                     controllerFilePaths[controllerIndex] = fileData->d_name;
@@ -664,10 +664,10 @@ void GeneralController::Linux_InotifyLoop()
                                 if(controllerIndex != -1)
                                 {
                                     //printf("Opening File %s", iev.name);
-                                   
+
                                     input_id ID;
                                     ioctl(event_fd, EVIOCGID, ID);
-                                    
+
 
                                     int controllerID;
                                     switch(ID.vendor)
@@ -688,12 +688,12 @@ void GeneralController::Linux_InotifyLoop()
                                             break;
                                         }
                                     }
-                                    
+
                                     if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
                                     {
                                         continue;
                                     }
-                                    
+
                                     controllersMutex.lock();
                                     controllers[controllerIndex].controllerID = controllerID;
                                     iscontrollerLoopRunning[controllerIndex] = true;
@@ -842,7 +842,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                             deadzoneType,
                                             deadzonePercentage);
 
-                            eventData.inputCode = G_GENERAL_LX_AXIS;
+                            eventData.inputCode = G_LX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
 							eventData.controllerIndex = _controllerIndex;
 							eventData.controllerID = controllers[_controllerIndex].controllerID;
