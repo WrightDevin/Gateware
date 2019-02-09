@@ -58,10 +58,9 @@ protected:
 	std::atomic<unsigned int> referenceCount;
 	std::atomic<bool> isRunning;
     std::mutex controllersMutex;
-    //std::unique_lock<std::mutex> controllersMutex;
     std::mutex listenerMutex;
-    //std::unique_lock<std::mutex> listenerMutex;
     CONTROLLER_STATE* controllers;
+    int  supportedControllerID;
 
 	// Lock before using
 
@@ -73,7 +72,8 @@ public:
 	GeneralController();
 	virtual ~GeneralController();
 
-	virtual void Init();
+    virtual void Init();
+    void SetSupportedControllerID (int _controllerID) {supportedControllerID = _controllerID;};
 
 	// GController
 	virtual GReturn GetState(int _controllerIndex, int _inputCode, float& _outState);
@@ -139,15 +139,12 @@ GATEWARE_EXPORT_IMPLICIT GReturn CreateGController(int _controllerType, GControl
 
 GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outController)
 {
-	//replace with a better check for vaild _controllertype
-	if(_outController == nullptr || (_controllerType >> 12) < 0 || (_controllerType >> 12) > 0xFF)
+	if(_outController == nullptr || _controllerType < 0 || _controllerType > 0xFF)
 		return INVALID_ARGUMENT;
 
-//#ifdef _WIN32
-	// Add cases for each supported controller for _WIN32
 	switch (_controllerType)
 	{
-	case G_GENERAL_CONTROLLER: // not supported until directinput is added
+	case G_GENERAL_CONTROLLER: // not supported on Windows until directinput is added
 	{
 
 #ifdef _WIN32
@@ -157,6 +154,7 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 		GeneralController* genController = new GeneralController;
 		if (genController == nullptr)
 			return FAILURE;
+        genController->SetSupportedControllerID(G_GENERAL_CONTROLLER);
         genController->Init();
 		(*_outController) = genController;
 #endif // !_WIN32
@@ -171,26 +169,41 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 		if (xController == nullptr)
 			return FAILURE;
 		xController->Init();
+        xController->SetSupportedControllerID(G_XBOX_CONTROLLER);
 		(*_outController) = xController;
 #else
-        _outController = nullptr;
-		return FEATURE_UNSUPPORTED;
+        GeneralController* genController = new GeneralController;
+        if (genController == nullptr)
+            return FAILURE;
+        genController->SetSupportedControllerID(G_XBOX_CONTROLLER);
+        genController->Init();
+        (*_outController) = genController;
 #endif // !_WIN32
 		break;
 	}
+    
+    case G_PS4_CONTROLLER:
+    {
+#ifdef _WIN32
+       
+        _outController = nullptr;
+        return FEATURE_UNSUPPORTED;
+#else
+        GeneralController* genController = new GeneralController;
+        if (genController == nullptr)
+            return FAILURE;
+        
+        genController->SetSupportedControllerID(G_PS4_CONTROLLER);
+        genController->Init();
+        (*_outController) = genController;
+#endif // !_WIN32
+        break;
+    }
 	default:
 	{
 		return FEATURE_UNSUPPORTED;
 	}
 	}
-//#elif __linux__
-	// Add  cases for each supported controller for Linux
-	//return FEATURE_UNSUPPORTED;
-//#elif __APPLE__
-	// Add  cases for each supported controller for Mac
-	//return FEATURE_UNSUPPORTED;
-//#endif
-
 
 	return SUCCESS;
 
@@ -213,6 +226,7 @@ void GeneralController::Init()
 	controllers = new CONTROLLER_STATE[MAX_CONTROLLER_INDEX];
 	deadzoneType = DEADZONESQUARE;
 	deadzonePercentage = .2f;
+    
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 	controllers[i].isConnected = 0;
@@ -244,6 +258,7 @@ void GeneralController::Init()
     manager->controllers = controllers;
     manager->deadzonePercentage = &deadzonePercentage;
     manager->deadzoneType = &deadzoneType;
+    manager->supportedControllerID = supportedControllerID;
 
     int returnVal;
     returnVal = pthread_attr_init(&runLoopPthread_attr);
@@ -261,7 +276,7 @@ void GeneralController::Init()
 
 GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float& _outState)
 {
-	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || ((_inputCode < 0) && (_inputCode & 0xFF) >= MAX_GENENRAL_INPUTS))
+	if (_controllerIndex < 0 || _controllerIndex > MAX_CONTROLLER_INDEX || _inputCode < 0 || _inputCode  >= MAX_GENENRAL_INPUTS)
 		return INVALID_ARGUMENT;
 
     controllersMutex.lock();
@@ -272,7 +287,7 @@ GReturn GeneralController::GetState(int _controllerIndex, int _inputCode, float&
 		return FAILURE;
     }
 
-	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];
+	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode)];
 
 	controllersMutex.unlock();
 	return SUCCESS;
@@ -522,32 +537,43 @@ if ((dir = opendir("/dev/input")) != NULL) {
                 controllersMutex.unlock();
                 if(controllerIndex != -1)
                 {
-                    printf("Opening file %s\n", fileData->d_name);
-                    iscontrollerLoopRunning[controllerIndex] = true;
-                    controllerFilePaths[controllerIndex] = fileData->d_name;
+                    //printf("Opening file %s\n", fileData->d_name);
+                   
+                    
                     input_id ID;
                     ioctl(event_fd, EVIOCGID, ID);
-                    controllersMutex.lock();
-                    controllers[controllerIndex].isConnected = 1;
-
+                   
+                   
+                    int controllerID;
                      switch(ID.vendor)
                         {
                             case SONY_VENDOR_ID:
                             {
-                                controllers[controllerIndex].controllerID = G_PS4_CONTROLLER;
+                                controllerID = G_PS4_CONTROLLER;
                                 break;
                             }
                             case MICROSOFT_VENDOR_ID:
                             {
-                                controllers[controllerIndex].controllerID = G_XBOX_CONTROLLER;
+                                controllerID = G_XBOX_CONTROLLER;
                                 break;
                             }
                             default:
                             {
-                                controllers[controllerIndex].controllerID = G_GENERAL_CONTROLLER;
+                                controllerID = G_GENERAL_CONTROLLER;
                                 break;
                             }
                         }
+                    
+                    if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
+                    {
+                        continue;
+                    }
+                    
+                    controllersMutex.lock();
+                    iscontrollerLoopRunning[controllerIndex] = true;
+                    controllerFilePaths[controllerIndex] = fileData->d_name;
+                    controllers[controllerIndex].controllerID = controllerID;
+                    controllers[controllerIndex].isConnected = 1;
                     eventData.controllerID = controllers[controllerIndex].controllerID;
                     controllersMutex.unlock();
                     linuxControllerThreads[controllerIndex] = new std::thread(
@@ -572,7 +598,7 @@ if ((dir = opendir("/dev/input")) != NULL) {
         }
         else
         {
-            printf("Could not open file %s\n", newFile);
+           // printf("Could not open file %s\n", newFile);
         }
     }
   }
@@ -637,33 +663,42 @@ void GeneralController::Linux_InotifyLoop()
                                 controllersMutex.unlock();
                                 if(controllerIndex != -1)
                                 {
-                                    printf("Opening File %s", iev.name);
-                                    iscontrollerLoopRunning[controllerIndex] = true;
-                                    controllerFilePaths[controllerIndex] = iev.name;
+                                    //printf("Opening File %s", iev.name);
+                                   
                                     input_id ID;
                                     ioctl(event_fd, EVIOCGID, ID);
-                                    controllersMutex.lock();
-                                    controllers[controllerIndex].isConnected = 1;
+                                    
 
+                                    int controllerID;
                                     switch(ID.vendor)
                                     {
                                         case SONY_VENDOR_ID:
                                         {
-                                            controllers[controllerIndex].controllerID = G_PS4_CONTROLLER;
+                                            controllerID = G_PS4_CONTROLLER;
                                             break;
                                         }
                                         case MICROSOFT_VENDOR_ID:
                                         {
-                                            controllers[controllerIndex].controllerID = G_XBOX_CONTROLLER;
+                                            controllerID = G_XBOX_CONTROLLER;
                                             break;
                                         }
                                         default:
                                         {
-                                            controllers[controllerIndex].controllerID = G_GENERAL_CONTROLLER;
+                                            controllerID = G_GENERAL_CONTROLLER;
                                             break;
                                         }
                                     }
-
+                                    
+                                    if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
+                                    {
+                                        continue;
+                                    }
+                                    
+                                    controllersMutex.lock();
+                                    controllers[controllerIndex].controllerID = controllerID;
+                                    iscontrollerLoopRunning[controllerIndex] = true;
+                                    controllerFilePaths[controllerIndex] = iev.name;
+                                    controllers[controllerIndex].isConnected = 1;
                                     eventData.controllerID = controllers[controllerIndex].controllerID;
                                     controllersMutex.unlock();
                                     linuxControllerThreads[controllerIndex] = new std::thread(
@@ -688,7 +723,7 @@ void GeneralController::Linux_InotifyLoop()
                         }
                         else
                         {
-                            printf("Could not open file %s", newFile);
+                           // printf("Could not open file %s", newFile);
                         }
                     }
 
@@ -773,7 +808,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
                 controllersMutex.lock();
                 controllers[_controllerIndex].controllerInputs[inputCode] = ev.value;
-                eventData.inputCode = ((inputCode | 0xff00000));
+                eventData.inputCode = inputCode;
                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[inputCode];
                 eventData.controllerIndex = _controllerIndex;
                 eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -828,7 +863,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             if(oldY != eventData.inputValue)
                             {
                                 // Send LY event
-                                eventData.inputCode = G_GENERAL_LY_AXIS;
+                                eventData.inputCode = G_LY_AXIS;
 
                                 listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -858,7 +893,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
 							// Send LY event
 							controllers[_controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
-                            eventData.inputCode = G_GENERAL_LY_AXIS;
+                            eventData.inputCode = G_LY_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LY_AXIS];
 							eventData.controllerIndex = _controllerIndex;
 							eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -878,7 +913,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             if(oldX != eventData.inputValue)
                             {
                                 // Send LX event
-                                eventData.inputCode = G_GENERAL_LX_AXIS;
+                                eventData.inputCode = G_LX_AXIS;
                                 listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
@@ -914,7 +949,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             controllersMutex.unlock();
                             if(oldAxis != eventData.inputValue)
                             {
-                                eventData.inputCode = G_GENERAL_LEFT_TRIGGER_AXIS;
+                                eventData.inputCode = G_LEFT_TRIGGER_AXIS;
 
                                listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -944,7 +979,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 											deadzoneType,
 											deadzonePercentage);
 
-                            eventData.inputCode = G_GENERAL_RX_AXIS;
+                            eventData.inputCode = G_RX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RX_AXIS];
 							eventData.controllerIndex = _controllerIndex;
 							eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -965,7 +1000,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             if(oldY != eventData.inputValue)
                             {
                                 // Send LY event
-                                eventData.inputCode = G_GENERAL_RY_AXIS;
+                                eventData.inputCode = G_RY_AXIS;
                                 listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
@@ -994,7 +1029,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
 
 							// Send LY event
 							controllers[_controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
-                            eventData.inputCode = G_GENERAL_RY_AXIS;
+                            eventData.inputCode = G_RY_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_RY_AXIS];
 							eventData.controllerIndex = _controllerIndex;
 							eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -1014,7 +1049,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             if(oldX != eventData.inputValue)
                             {
                                 // Send LX event
-                                eventData.inputCode = G_GENERAL_RX_AXIS;
+                                eventData.inputCode = G_RX_AXIS;
                                 listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
@@ -1048,7 +1083,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             controllersMutex.unlock();
                             if(oldAxis != controllers[_controllerIndex].controllerInputs[G_RIGHT_TRIGGER_AXIS])
                             {
-                                eventData.inputCode = G_GENERAL_RIGHT_TRIGGER_AXIS;
+                                eventData.inputCode = G_RIGHT_TRIGGER_AXIS;
 
                                 listenerMutex.lock();
                                 for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -1069,7 +1104,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         {
                             controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
-                            eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                            eventData.inputCode = G_DPAD_RIGHT_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                             eventData.controllerIndex = _controllerIndex;
                             eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -1085,7 +1120,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         {
                             controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
-                            eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                            eventData.inputCode = G_DPAD_LEFT_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                             eventData.controllerIndex = _controllerIndex;
                             eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -1107,14 +1142,14 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             {
 
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                             }
 
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] != 0)
                             {
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
 
                             }
@@ -1138,7 +1173,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         {
                             controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
-                            eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                            eventData.inputCode = G_DPAD_DOWN_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                             eventData.controllerIndex = _controllerIndex;
                             eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -1154,7 +1189,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         {
                             controllersMutex.lock();
                             controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
-                            eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                            eventData.inputCode = G_DPAD_UP_BTN;
                             eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                             eventData.controllerIndex = _controllerIndex;
                             eventData.controllerID = controllers[_controllerIndex].controllerID;
@@ -1174,14 +1209,14 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] != 0)
                             {
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                             }
 
                             if(controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] != 0)
                             {
                                 controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                             }
                              controllersMutex.unlock();
@@ -1276,12 +1311,12 @@ GReturn XboxController::GetMaxIndex(int &_outMax)
 
 GReturn XboxController::GetState(int _controllerIndex, int _inputCode, float& _outState)
 {
-	if (_controllerIndex < 0 || _controllerIndex > MAX_XBOX_CONTROLLER_INDEX || ((_inputCode >> 12) & 0xFF) != G_XBOX_CONTROLLER || (_inputCode < 0 && (_inputCode & 0xFF) > 19))
+	if (_controllerIndex < 0 || _controllerIndex > MAX_XBOX_CONTROLLER_INDEX ||  _inputCode < 0 || _inputCode  > 19)
 		return INVALID_ARGUMENT;
 	if (controllers[_controllerIndex].isConnected == 0)
 		return FAILURE;
 
-	_outState = controllers[_controllerIndex].controllerInputs[(_inputCode & 0xff)];
+	_outState = controllers[_controllerIndex].controllerInputs[_inputCode];
 
 	return SUCCESS;
 }
@@ -1548,7 +1583,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_A_BTN;
+							eventData.inputCode = G_SOUTH_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_SOUTH_BTN];
 							controllersMutex.unlock();
 
@@ -1562,7 +1597,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_B_BTN;
+							eventData.inputCode = G_EAST_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_EAST_BTN];
 							controllersMutex.unlock();
 
@@ -1575,7 +1610,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_Y_BTN;
+							eventData.inputCode = G_NORTH_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_NORTH_BTN];
 							controllersMutex.unlock();
 
@@ -1588,7 +1623,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_X_BTN;
+							eventData.inputCode = G_WEST_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_WEST_BTN];
 							controllersMutex.unlock();
 
@@ -1602,7 +1637,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_LEFT_SHOULDER_BTN;
+							eventData.inputCode = G_LEFT_SHOULDER_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_SHOULDER_BTN];
 							controllersMutex.unlock();
 
@@ -1616,7 +1651,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_RIGHT_SHOULDER_BTN;
+							eventData.inputCode = G_RIGHT_SHOULDER_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_SHOULDER_BTN];
 							controllersMutex.unlock();
 
@@ -1630,7 +1665,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_DPAD_LEFT_BTN;
+							eventData.inputCode = G_DPAD_LEFT_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_LEFT_BTN];
 							controllersMutex.unlock();
 
@@ -1644,7 +1679,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_DPAD_RIGHT_BTN;
+							eventData.inputCode = G_DPAD_RIGHT_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_RIGHT_BTN];
 							controllersMutex.unlock();
 
@@ -1658,7 +1693,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_DPAD_UP_BTN;
+							eventData.inputCode = G_DPAD_UP_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_UP_BTN];
 							controllersMutex.unlock();
 
@@ -1672,7 +1707,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_DPAD_DOWN_BTN;
+							eventData.inputCode = G_DPAD_DOWN_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_DPAD_DOWN_BTN];
 							controllersMutex.unlock();
 
@@ -1686,7 +1721,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_LEFT_THUMB_BTN;
+							eventData.inputCode = G_LEFT_THUMB_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_THUMB_BTN];
 							controllersMutex.unlock();
 
@@ -1700,7 +1735,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_RIGHT_THUMB_BTN;
+							eventData.inputCode = G_RIGHT_THUMB_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_THUMB_BTN];
 							controllersMutex.unlock();
 
@@ -1714,7 +1749,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_START_BTN;
+							eventData.inputCode = G_START_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_START_BTN];
 							controllersMutex.unlock();
 
@@ -1728,7 +1763,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0 ? 1.0f : 0.0f;
-							eventData.inputCode = G_XBOX_BACK_BTN;
+							eventData.inputCode = G_SELECT_BTN;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_SELECT_BTN];
 							controllersMutex.unlock();
 
@@ -1742,7 +1777,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bLeftTrigger, true);
-							eventData.inputCode = G_XBOX_LEFT_TRIGGER_AXIS;
+							eventData.inputCode = G_LEFT_TRIGGER_AXIS;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LEFT_TRIGGER_AXIS];
 							controllersMutex.unlock();
 
@@ -1755,7 +1790,7 @@ void XboxController::XinputLoop()
 						{
 							controllersMutex.lock();
 							controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS] = XboxDeadZoneCalc(controllerState.Gamepad.bRightTrigger, true);
-							eventData.inputCode = G_XBOX_RIGHT_TRIGGER_AXIS;
+							eventData.inputCode = G_RIGHT_TRIGGER_AXIS;
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RIGHT_TRIGGER_AXIS];
 							controllersMutex.unlock();
 
@@ -1792,7 +1827,7 @@ void XboxController::XinputLoop()
 
 						if (newLX != oldState.controllerInputs[G_LX_AXIS])
 						{
-							eventData.inputCode = G_XBOX_LX_AXIS;
+							eventData.inputCode = G_LX_AXIS;
 							controllersMutex.lock();
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LX_AXIS];
 							controllersMutex.unlock();
@@ -1804,7 +1839,7 @@ void XboxController::XinputLoop()
 						}
 						if (newLY != oldState.controllerInputs[G_LY_AXIS])
 						{
-							eventData.inputCode = G_XBOX_LY_AXIS;
+							eventData.inputCode = G_LY_AXIS;
 							controllersMutex.lock();
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_LY_AXIS];
 							controllersMutex.unlock();
@@ -1817,7 +1852,7 @@ void XboxController::XinputLoop()
 
 						if (newRX != oldState.controllerInputs[G_RX_AXIS])
 						{
-							eventData.inputCode = G_XBOX_RX_AXIS;
+							eventData.inputCode = G_RX_AXIS;
 							controllersMutex.lock();
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RX_AXIS];
 							controllersMutex.unlock();
@@ -1830,7 +1865,7 @@ void XboxController::XinputLoop()
 
 						if (newRY != oldState.controllerInputs[G_RY_AXIS])
 						{
-							eventData.inputCode = G_XBOX_RY_AXIS;
+							eventData.inputCode = G_RY_AXIS;
 							controllersMutex.lock();
 							eventData.inputValue = controllers[XControllerSlotIndices[i]].controllerInputs[G_RY_AXIS];
 							controllersMutex.unlock();

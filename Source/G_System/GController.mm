@@ -48,7 +48,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
            // swap 2 with controller id stored in controllers
            manager->controllersMutex->lock();
            manager->controllers[controllerIndex].controllerInputs[inputCode] = (__bridge float)scaledValue;
-           eventData.inputCode = (inputCode | 0xff00000);
+           eventData.inputCode = inputCode;
            eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[inputCode];
            eventData.isConnected = 1;
            eventData.controllerID = manager->controllers[controllerIndex].controllerID;
@@ -79,7 +79,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                             *(manager->deadzoneType),
                                             *(manager->deadzonePercentage));
                         
-                        eventData.inputCode = G_GENERAL_LX_AXIS;
+                        eventData.inputCode = G_LX_AXIS;
                         eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_LX_AXIS];
                         manager->controllersMutex->unlock();
                         
@@ -96,7 +96,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         if(oldY != eventData.inputValue)
                         {
                             // Send LY event
-                            eventData.inputCode = G_GENERAL_LY_AXIS;
+                            eventData.inputCode = G_LY_AXIS;
                             
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -124,7 +124,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         
                         // Send LY event
                         manager->controllers[controllerIndex].controllerInputs[G_LY_AXIS] *= -1.0f; // to fix flipped value
-                        eventData.inputCode = G_GENERAL_LY_AXIS;
+                        eventData.inputCode = G_LY_AXIS;
                         eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_LY_AXIS];
                         manager->controllersMutex->unlock();
                         
@@ -140,7 +140,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         if(oldX != eventData.inputValue)
                         {
                             // Send LX event
-                            eventData.inputCode = G_GENERAL_LX_AXIS;
+                            eventData.inputCode = G_LX_AXIS;
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
@@ -164,7 +164,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                             *(manager->deadzoneType),
                                             *(manager->deadzonePercentage));
                         
-                        eventData.inputCode = G_GENERAL_RX_AXIS;
+                        eventData.inputCode = G_RX_AXIS;
                         eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_RX_AXIS];
                         manager->controllersMutex->unlock();
                         
@@ -181,7 +181,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         if(oldY != eventData.inputValue)
                         {
                             // Send LY event
-                            eventData.inputCode = G_GENERAL_RY_AXIS;
+                            eventData.inputCode = G_RY_AXIS;
                             
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -208,7 +208,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         
                         // Send RY event
                         manager->controllers[controllerIndex].controllerInputs[G_RY_AXIS] *= -1.0f; // to fix flipped value
-                        eventData.inputCode = G_GENERAL_RY_AXIS;
+                        eventData.inputCode = G_RY_AXIS;
                         eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_RY_AXIS];
                         manager->controllersMutex->unlock();
                         
@@ -224,7 +224,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         if(oldX != eventData.inputValue)
                         {
                             // Send RX event
-                            eventData.inputCode = G_GENERAL_RX_AXIS;
+                            eventData.inputCode = G_RX_AXIS;
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GControllerUUIID, CONTROLLERAXISVALUECHANGED, &eventData, sizeof(GCONTROLLER_EVENT_DATA));
@@ -255,7 +255,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         manager->controllersMutex->unlock();
                         if(oldAxis != eventData.inputValue)
                         {
-                            eventData.inputCode = G_GENERAL_LEFT_TRIGGER_AXIS;
+                            eventData.inputCode = G_LEFT_TRIGGER_AXIS;
                             
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -287,7 +287,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                         manager->controllersMutex->unlock();
                         if(oldAxis != eventData.inputValue)
                         {
-                            eventData.inputCode = G_GENERAL_RIGHT_TRIGGER_AXIS;
+                            eventData.inputCode = G_RIGHT_TRIGGER_AXIS;
                             
                             manager->listenerMutex->lock();
                             for (iter = listeners.begin(); iter != listeners.end(); ++iter)
@@ -313,7 +313,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -328,7 +328,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -342,7 +342,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -356,7 +356,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -379,7 +379,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -394,7 +394,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -408,7 +408,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -422,7 +422,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -447,7 +447,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -461,7 +461,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -475,7 +475,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -490,7 +490,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -513,7 +513,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -527,7 +527,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -541,7 +541,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -556,7 +556,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -579,7 +579,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -593,7 +593,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -607,7 +607,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -622,7 +622,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -646,7 +646,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -660,7 +660,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -674,7 +674,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -688,7 +688,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -714,7 +714,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
-                                eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                eventData.inputCode = G_DPAD_LEFT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -728,7 +728,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                eventData.inputCode = G_DPAD_UP_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -742,7 +742,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                eventData.inputCode = G_DPAD_RIGHT_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -756,7 +756,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                             {
                                 manager->controllersMutex->lock();
                                 manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                eventData.inputCode = G_DPAD_DOWN_BTN;
                                 eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                 manager->controllersMutex->unlock();
                                 
@@ -781,7 +781,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 1;
-                                    eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                    eventData.inputCode = G_DPAD_LEFT_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -795,7 +795,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 1;
-                                    eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                    eventData.inputCode = G_DPAD_UP_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -810,7 +810,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                    eventData.inputCode = G_DPAD_RIGHT_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -824,7 +824,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                    eventData.inputCode = G_DPAD_DOWN_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -850,7 +850,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_UP_BTN;
+                                    eventData.inputCode = G_DPAD_UP_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_UP_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -864,7 +864,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_RIGHT_BTN;
+                                    eventData.inputCode = G_DPAD_RIGHT_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_RIGHT_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -878,7 +878,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_DOWN_BTN;
+                                    eventData.inputCode = G_DPAD_DOWN_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_DOWN_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -893,7 +893,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
                                 {
                                     manager->controllersMutex->lock();
                                     manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN] = 0;
-                                    eventData.inputCode = G_GENERAL_DPAD_LEFT_BTN;
+                                    eventData.inputCode = G_DPAD_LEFT_BTN;
                                     eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[G_DPAD_LEFT_BTN];
                                     manager->controllersMutex->unlock();
                                     
@@ -931,24 +931,33 @@ static void gamepadWasAdded(void* inContext, IOReturn inResult, void* inSender, 
             IOReturn res = IOHIDDeviceOpen(device,kIOHIDOptionsTypeNone);
             if(kIOReturnSuccess == res)
             {
-                 manager->controllers[controllerIndex].isConnected = 1;
-                 manager->controllers[controllerIndex].device = device;
+                
                 uint32_t vendorID;
+                int controllerID;
                 // IOHIDeviceGetProperty Returns a CFTyperef based on the CString passed in. CFNumberGetValue is used to retrieve the value
                 CFNumberGetValue((CFNumberRef)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey)), kCFNumberSInt32Type, &vendorID);
                 
                 switch (vendorID) {
                     case SONY_VENDOR_ID:
-                        manager->controllers[controllerIndex].controllerID = G_PS4_CONTROLLER;
+                        controllerID = G_PS4_CONTROLLER;
                         break;
                         
                     case MICROSOFT_VENDOR_ID:
-                         manager->controllers[controllerIndex].controllerID = G_XBOX_CONTROLLER;
+                        controllerID = G_XBOX_CONTROLLER;
                     default:
-                        manager->controllers[controllerIndex].controllerID = G_GENERAL_CONTROLLER;
+                       controllerID = G_GENERAL_CONTROLLER;
                         break;
                 }
                 
+                if(manager->supportedControllerID != G_GENERAL_CONTROLLER && controllerID != manager->supportedControllerID)
+                {
+                    manager->controllersMutex->unlock();
+                    return;
+                }
+                 manager->controllers[controllerIndex].controllerID = controllerID;
+                 manager->controllers[controllerIndex].isConnected = 1;
+                 manager->controllers[controllerIndex].device = device;
+  
                  // send controller connected event
                 
                  GCONTROLLER_EVENT_DATA eventData;

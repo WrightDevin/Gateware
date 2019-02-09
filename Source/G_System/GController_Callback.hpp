@@ -227,7 +227,7 @@ namespace
     CONTROLLER_STATE* controllers;
     GControllerDeadzoneTypes* deadzoneType;
     float* deadzonePercentage;
-
+    int supportedControllerID;
     CFRunLoopRef managerRunLoop;
 
     int LX, LY, LZ, RX, RY, RZ;
