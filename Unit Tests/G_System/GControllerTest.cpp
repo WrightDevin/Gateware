@@ -121,6 +121,7 @@ TEST_CASE("CreateGController Tests", "[CreateGController]")
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_XBOX_CONTROLLER, &controller)));
 #else
 	REQUIRE(G_SUCCESS(GW::SYSTEM::CreateGController(G_GENERAL_CONTROLLER, &controller)));
+	//REQUIRE(GW::SYSTEM::CreateGController(G_XBOX_CONTROLLER, &controller) == GW::SUCCESS);
 #endif // _WIN32
 
 
@@ -258,7 +259,7 @@ TEST_CASE("GController Manual input test")
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-     //while(!isConnected)
+     while(!isConnected)
     controller->IsConnected(0, isConnected);
 
 
