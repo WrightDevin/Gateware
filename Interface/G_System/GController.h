@@ -40,7 +40,7 @@ namespace GW
 			int controllerID;	 /*!<  The Controller ID of the controller that sent the event*/
 			int inputCode;		 /*!< The Code repsenting the Detected input */
 			float inputValue;	 /*!< The value of the detected input */
-			int isConnected;		 /*!< Value indicating whether the controller is connected */
+			int isConnected;	 /*!< Value indicating whether the controller is connected */
 		};
 #pragma pack(pop)
 

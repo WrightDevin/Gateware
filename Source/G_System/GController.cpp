@@ -621,12 +621,12 @@ void GeneralController::Linux_InotifyLoop()
     //auto lastCheck = std::chrono::high_resolution_clock::now();
 
     fd = inotify_init1(IN_NONBLOCK);
-    if(fd < 0)
-        printf("ERROR");
+   // if(fd < 0)
+   //     printf("ERROR");
 
     wd = inotify_add_watch(fd,"/dev/input", IN_CREATE | IN_DELETE);
-    if(wd < 0)
-        printf("ERROR");
+  //  if(wd < 0)
+  //      printf("ERROR");
 
     char filepath[] = "/dev/input";
 

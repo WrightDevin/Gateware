@@ -201,7 +201,7 @@ namespace
     static void* RunLoopThreadEntry(void* manager_ptr)
     {
         HIDMANAGER* manager = static_cast<HIDMANAGER*>(manager_ptr);
-        [manager InitManagerAndRunLoop];
+        [manager InitManagerAndRunLoop]; // warning due to forward declartion
 
         return NULL;
     }
