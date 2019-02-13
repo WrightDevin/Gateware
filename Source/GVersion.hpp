@@ -35,14 +35,14 @@ SOFTWARE.
 // The Minor version is increased whenever an interface is altered.(patch is reset)
 #define GATEWARE_MINOR 1
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH 'c'
+#define GATEWARE_PATCH ''
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "DevinWright_GController"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x259cbad
+#define GATEWARE_COMMIT_HASH 0x81bb700
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v6.1c"
+#define GATEWARE_VERSION_STRING "Gateware v6.1"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.1c (DevinWright_GController) [259cbad]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.1 (DevinWright_GController) [81bb700]"
 
 #endif

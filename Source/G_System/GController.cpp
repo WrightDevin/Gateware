@@ -181,18 +181,18 @@ GReturn GW::SYSTEM::CreateGController(int _controllerType, GController** _outCon
 #endif // !_WIN32
 		break;
 	}
-    
+
     case G_PS4_CONTROLLER:
     {
 #ifdef _WIN32
-       
+
         _outController = nullptr;
         return FEATURE_UNSUPPORTED;
 #else
         GeneralController* genController = new GeneralController;
-        if (genController == nullptr)
-            return FAILURE;
-        
+		if (genController == nullptr)
+			return FAILURE;
+
         genController->SetSupportedControllerID(G_PS4_CONTROLLER);
         genController->Init();
         (*_outController) = genController;
@@ -226,7 +226,7 @@ void GeneralController::Init()
 	controllers = new CONTROLLER_STATE[MAX_CONTROLLER_INDEX];
 	deadzoneType = DEADZONESQUARE;
 	deadzonePercentage = .2f;
-    
+
 	for (unsigned int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
 	{
 	controllers[i].isConnected = 0;
@@ -515,7 +515,7 @@ if ((dir = opendir("/dev/input")) != NULL) {
   /* print all the files and directories within directory */
   while ((fileData = readdir(dir)) != NULL)
   {
-    printf ("%s\n", fileData->d_name);
+  //  printf ("%s\n", fileData->d_name);
 
     char newFile[30];
     strcpy(newFile, "/dev/input/");
@@ -538,37 +538,29 @@ if ((dir = opendir("/dev/input")) != NULL) {
                 if(controllerIndex != -1)
                 {
                     //printf("Opening file %s\n", fileData->d_name);
-                   
-                    
+
+
+
                     input_id ID;
-                    ioctl(event_fd, EVIOCGID, ID);
-                   
-                   
+                    char name[20];
+                    //ioctl(event_fd, EVIOCGID, ID);
+                    ioctl(event_fd, EVIOCGNAME(20), name);
+
                     int controllerID;
-                     switch(ID.vendor)
-                        {
-                            case SONY_VENDOR_ID:
-                            {
-                                controllerID = G_PS4_CONTROLLER;
-                                break;
-                            }
-                            case MICROSOFT_VENDOR_ID:
-                            {
-                                controllerID = G_XBOX_CONTROLLER;
-                                break;
-                            }
-                            default:
-                            {
-                                controllerID = G_GENERAL_CONTROLLER;
-                                break;
-                            }
-                        }
-                    
+
+
+                    if(strstr(name,"Sony") != nullptr)
+                        controllerID = G_PS4_CONTROLLER;
+                    else if (strstr(name, "Microsoft") != nullptr)
+                        controllerID = G_XBOX_CONTROLLER;
+                    else
+                        controllerID = G_GENERAL_CONTROLLER;
+
                     if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
                     {
                         continue;
                     }
-                    
+
                     controllersMutex.lock();
                     iscontrollerLoopRunning[controllerIndex] = true;
                     controllerFilePaths[controllerIndex] = fileData->d_name;
@@ -639,7 +631,7 @@ void GeneralController::Linux_InotifyLoop()
 
         if(iev.len)
         {
-            printf("new file %s\n", iev.name);
+            //printf("new file %s\n", iev.name);
             if(iev.mask & IN_CREATE)
             {
                 if(!(iev.mask & IN_ISDIR))
@@ -664,36 +656,27 @@ void GeneralController::Linux_InotifyLoop()
                                 if(controllerIndex != -1)
                                 {
                                     //printf("Opening File %s", iev.name);
-                                   
+
                                     input_id ID;
-                                    ioctl(event_fd, EVIOCGID, ID);
-                                    
+                                    char name[20];
+                                    //ioctl(event_fd, EVIOCGID, ID);
+                                    ioctl(event_fd, EVIOCGNAME(20), name);
 
                                     int controllerID;
-                                    switch(ID.vendor)
-                                    {
-                                        case SONY_VENDOR_ID:
-                                        {
-                                            controllerID = G_PS4_CONTROLLER;
-                                            break;
-                                        }
-                                        case MICROSOFT_VENDOR_ID:
-                                        {
-                                            controllerID = G_XBOX_CONTROLLER;
-                                            break;
-                                        }
-                                        default:
-                                        {
-                                            controllerID = G_GENERAL_CONTROLLER;
-                                            break;
-                                        }
-                                    }
-                                    
+
+
+                                    if(strstr(name,"Sony") != nullptr)
+                                        controllerID = G_PS4_CONTROLLER;
+                                    else if (strstr(name, "Microsoft") != nullptr)
+                                        controllerID = G_XBOX_CONTROLLER;
+                                    else
+                                        controllerID = G_GENERAL_CONTROLLER;
+
                                     if(supportedControllerID != G_GENERAL_CONTROLLER && controllerID != supportedControllerID)
                                     {
                                         continue;
                                     }
-                                    
+
                                     controllersMutex.lock();
                                     controllers[controllerIndex].controllerID = controllerID;
                                     iscontrollerLoopRunning[controllerIndex] = true;
@@ -842,7 +825,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                                             deadzoneType,
                                             deadzonePercentage);
 
-                            eventData.inputCode = G_GENERAL_LX_AXIS;
+                            eventData.inputCode = G_LX_AXIS;
 							eventData.inputValue = controllers[_controllerIndex].controllerInputs[G_LX_AXIS];
 							eventData.controllerIndex = _controllerIndex;
 							eventData.controllerID = controllers[_controllerIndex].controllerID;
