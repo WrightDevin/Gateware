@@ -16,7 +16,7 @@ GW::GReturn GControllerTestListener::OnEvent(const GW::GUUIID &_senderInterface,
 		{
 		case GW::SYSTEM::CONTROLLERBUTTONVALUECHANGED:
 		{
-			switch (data.inputCode & 0xFF)
+			switch (data.inputCode)
 			{
 			case G_SOUTH_BTN:
 			{
@@ -47,7 +47,7 @@ GW::GReturn GControllerTestListener::OnEvent(const GW::GUUIID &_senderInterface,
 		}
 		case GW::SYSTEM::CONTROLLERAXISVALUECHANGED:
 		{
-			switch (data.inputCode & 0xFF)
+			switch (data.inputCode)
 			{
 			case G_LX_AXIS:
 			{
