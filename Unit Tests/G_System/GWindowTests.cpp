@@ -6,6 +6,8 @@
 #ifdef __linux__
 #include <unistd.h> //Allows for linux side "sleep()" calls
 #endif
+
+
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -336,7 +338,7 @@ TEST_CASE("Sending events to listeners.", "")
 		Sleep(.001);
 	#endif // !_WIN32
 
-        
+
 	}  // while tell all test are completed
 	windowListener->GetWindowTestValue(windowTestValue);
 	REQUIRE(windowTestValue == 1);

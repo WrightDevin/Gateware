@@ -3,10 +3,12 @@
 
 #include <thread>
 
-#define MANUAl_INPUT
+//#define MANUAl_INPUT
 //#define MANUAL_CONNECTION_EVENTS
 //#define MANUAL_VIBRATION_TEST
 //#define SIMULATED_INPUT
+
+
 
 ///=============================================================================
 //==============================TEST CASES======================================
@@ -391,3 +393,5 @@ TEST_CASE("GController Unregistering listener", "[DeregisterListener]")
 	controller->DecrementCount();
 
 }
+
+
