@@ -298,12 +298,23 @@ someWaveFile = fopen(path, "r");
                 }
                 default:
                 {
-                 dwRead = fread(&throwAwayValue,1,dwChunkDataSize,someWaveFile);
-                  if(dwRead!= dwChunkDataSize)
+                int sizeToRead = sizeof(throwAwayValue);
+                int totalChunkData = dwChunkDataSize;
+
+                while(totalChunkData > 0)
+                {
+                    if(sizeToRead > totalChunkData)
+                        sizeToRead = totalChunkData;
+
+                 dwRead = fread(&throwAwayValue,1,sizeToRead,someWaveFile);
+                  if(dwRead!= sizeToRead)
                     {
                     result = -1;
+                    totalChunkData = 0;
                     }
                     bytesRead += dwRead;
+                    totalChunkData -= dwRead;
+                }
                 break;
                 }
 
