@@ -27,7 +27,8 @@ GReturn checkReturned = FAILURE;
 #ifdef _WIN32
 
 const char * testpath =  u8"../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
-const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
+//const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
+const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
 const char * testpath3 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
 #elif __APPLE__
 const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";

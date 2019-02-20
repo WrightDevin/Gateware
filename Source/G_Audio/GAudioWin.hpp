@@ -140,12 +140,26 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 		}
 		default:
 		{
-			ReadFile(theFile, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
-			if (dwRead != dwChunkDataSize)
+			int sizeToRead = sizeof(throwAwayValue);
+			int totalChunkData = dwChunkDataSize;
+			while (totalChunkData > 0)
 			{
-				result = -7;
+				if(sizeToRead > totalChunkData)
+					sizeToRead = totalChunkData;
+
+				
+				ReadFile(theFile, &throwAwayValue, sizeToRead, &dwRead, NULL);
+				if (dwRead != sizeToRead)
+				{
+					result = -7;
+					totalChunkData = 0;
+				}
+
+				bytesRead += dwRead;
+				totalChunkData -= dwRead;
 			}
-			bytesRead += dwRead;
+			
+			
 			break;
 		}
 
@@ -266,12 +280,24 @@ HRESULT FindStreamData(HANDLE _file, unsigned long & _outDataChunk, OVERLAPPED &
 			}
 			default:
 			{
-				ReadFile(_file, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
-				if (dwRead != dwChunkDataSize)
+				int sizeToRead = sizeof(throwAwayValue);
+				int totalChunkData = dwChunkDataSize;
+				while (totalChunkData > 0)
 				{
-					result = -7;
+					if (sizeToRead > totalChunkData)
+						sizeToRead = totalChunkData;
+
+
+					ReadFile(_file, &throwAwayValue, sizeToRead, &dwRead, NULL);
+					if (dwRead != sizeToRead)
+					{
+						result = -7;
+						totalChunkData = 0;
+					}
+
+					bytesRead += dwRead;
+					totalChunkData -= dwRead;
 				}
-				bytesRead += dwRead;
 				break;
 			}
 

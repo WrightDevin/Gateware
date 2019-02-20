@@ -259,7 +259,7 @@ TEST_CASE("GController Manual input test")
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-     while(!isConnected)
+   //while(!isConnected)
     controller->IsConnected(0, isConnected);
 
 
