@@ -128,6 +128,11 @@ namespace
             mag = (mag - _deadzonePercentage) / liveRange;
             _outX *= mag;
             _outY *= mag;
+            
+            if(std::abs(_outX) <= _deadzonePercentage)
+                _outX = 0.0f;
+            if(std::abs(_outY) <= _deadzonePercentage)
+                _outY = 0.0f;
         }
 
     }

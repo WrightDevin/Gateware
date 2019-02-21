@@ -47,7 +47,7 @@ static void Handle_IOHIDDeviceInputValueCallback(
         {
            // swap 2 with controller id stored in controllers
            manager->controllersMutex->lock();
-           manager->controllers[controllerIndex].controllerInputs[inputCode] = (__bridge float)scaledValue;
+           manager->controllers[controllerIndex].controllerInputs[inputCode] = (float)scaledValue;
            eventData.inputCode = inputCode;
            eventData.inputValue = manager->controllers[controllerIndex].controllerInputs[inputCode];
            eventData.isConnected = 1;

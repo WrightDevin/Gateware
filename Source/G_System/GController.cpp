@@ -333,10 +333,10 @@ GReturn GeneralController::SetDeadZone(GControllerDeadzoneTypes _type, float _de
 {
 	if (_deadzonePercentage > 1.0f || _deadzonePercentage < 0.0f)
 		return INVALID_ARGUMENT;
-
+    controllersMutex.lock();
 	deadzoneType = _type;
 	deadzonePercentage = _deadzonePercentage;
-
+    controllersMutex.unlock();
 	return SUCCESS;
 }
 
