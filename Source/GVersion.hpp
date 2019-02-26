@@ -35,14 +35,14 @@ SOFTWARE.
 // The Minor version is increased whenever an interface is altered.(patch is reset)
 #define GATEWARE_MINOR 3
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH 'A'
+#define GATEWARE_PATCH ''
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "Alpha"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0xdb292a9
+#define GATEWARE_COMMIT_HASH 0xe678940
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v6.3A"
+#define GATEWARE_VERSION_STRING "Gateware v6.3"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3A (Alpha) [db292a9]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (Alpha) [e678940]"
 
 #endif

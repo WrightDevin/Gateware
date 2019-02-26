@@ -907,6 +907,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         break;
                     }
                     case ABS_Z:
+                    case ABS_BRAKE: // xboxdrv send abs_brake events rather than abs_z's
                     {
                         // left trigger
                         if(ev.value != lastLT)
@@ -1042,6 +1043,7 @@ void GeneralController::Linux_ControllerInputLoop(char* _filePath, unsigned int 
                         break;
                     }
                     case ABS_RZ:
+                    case ABS_GAS: // xboxdrv send abs_gas events rather than abs_rz's
                     {
                         // left trigger
                         if(ev.value != lastRT)
