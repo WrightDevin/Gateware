@@ -43,7 +43,7 @@ private:
         std::thread* linuxControllerThreads[MAX_CONTROLLER_INDEX];
         std::thread* linuxInotifyThread;
         std::atomic<bool> iscontrollerLoopRunning[MAX_CONTROLLER_INDEX];
-        char* controllerFilePaths[MAX_CONTROLLER_INDEX];
+        //char** controllerFilePaths[MAX_CONTROLLER_INDEX];
 #endif
 
 #ifdef __APPLE__
@@ -244,7 +244,10 @@ void GeneralController::Init()
 
 #ifdef __linux__
         for(int i = 0; i < MAX_CONTROLLER_INDEX; ++i)
+        {
             iscontrollerLoopRunning[i] = false;
+            //controllerFilePaths[i] = char[8];
+        }
         Linux_InitControllers();
         linuxInotifyThread = new std::thread(&GeneralController::Linux_InotifyLoop, this);
 
@@ -563,7 +566,9 @@ if ((dir = opendir("/dev/input")) != NULL) {
 
                     controllersMutex.lock();
                     iscontrollerLoopRunning[controllerIndex] = true;
-                    controllerFilePaths[controllerIndex] = fileData->d_name;
+                   // controllerFilePaths[controllerIndex] = char[8];
+                    for(int i = 0; i < 8; ++i)
+                    	controllers[controllerIndex].controllerFilePath[i] = fileData->d_name[i];
                     controllers[controllerIndex].controllerID = controllerID;
                     controllers[controllerIndex].isConnected = 1;
                     eventData.controllerID = controllers[controllerIndex].controllerID;
@@ -680,7 +685,10 @@ void GeneralController::Linux_InotifyLoop()
                                     controllersMutex.lock();
                                     controllers[controllerIndex].controllerID = controllerID;
                                     iscontrollerLoopRunning[controllerIndex] = true;
-                                    controllerFilePaths[controllerIndex] = iev.name;
+
+                                    for(int i = 0; i < 8; ++i)
+                                        controllers[controllerIndex].controllerFilePath[i] = iev.name[i];
+
                                     controllers[controllerIndex].isConnected = 1;
                                     eventData.controllerID = controllers[controllerIndex].controllerID;
                                     controllersMutex.unlock();
@@ -718,9 +726,10 @@ void GeneralController::Linux_InotifyLoop()
             {
                 if(!(iev.mask & IN_ISDIR))
                     {
+                		//sleep(1);
                         for(int controllerIndex = 0; controllerIndex < MAX_CONTROLLER_INDEX; ++controllerIndex)
                         {
-                            int result = strncmp(controllerFilePaths[controllerIndex], iev.name, 8);
+                            int result = strncmp(controllers[controllerIndex].controllerFilePath, iev.name, 8);
                             if(result == 0)
                             {
                                 iscontrollerLoopRunning[controllerIndex] = false;

@@ -60,6 +60,10 @@ namespace
             #ifdef __APPLE__
             IOHIDDeviceRef device;
             #endif
+
+            #ifdef __linux__
+            char controllerFilePath[8];
+            #endif
         };
 
 
