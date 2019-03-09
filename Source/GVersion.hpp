@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "Alpha"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x22ace11
+#define GATEWARE_COMMIT_HASH 0x1f100e5
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3B"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3B (Alpha) [22ace11]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3B (Alpha) [1f100e5]"
 
 #endif
