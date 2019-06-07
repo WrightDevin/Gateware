@@ -9,7 +9,7 @@ string(REGEX MATCH [0-9]+ VERSION_MAJOR ${GATEWARE_MAJOR})
 file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_MINOR OFFSET 30)
 string(REGEX MATCH [0-9]+ VERSION_MINOR ${GATEWARE_MINOR})
 
-file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_PATCH OFFSET 50)
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/gateware.ver" GATEWARE_PATCH OFFSET 49)
 string(REGEX MATCH "[A-z]+" VERSION_PATCH ${GATEWARE_PATCH})
 
 ###################################################################################################################################Create Version.h
