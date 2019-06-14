@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "CMakeFixes"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x081c68cf
+#define GATEWARE_COMMIT_HASH 0x0d3ce60b
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3c"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3c (CMakeFixes) [081c68cf]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3c (CMakeFixes) [0d3ce60b]"
 
 #endif
