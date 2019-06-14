@@ -21,9 +21,15 @@ G_System/GLogTest.cpp
 
 G_System/GWindowTests.cpp
 
+G_System/GControllerTest.cpp
+
 G_System/GBufferedInputTestListener.cpp
 
 G_System/GBufferedInputTestListener.h
+
+G_System/GControllerTestListener.cpp
+
+G_System/GControllerTestListener.h
 
 G_System/GWindowTestListener.cpp
 
@@ -47,7 +53,7 @@ G_Audio/GAudioTests.cpp
 
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GDirectX11Surface GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GController GDirectX11Surface GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif(WIN32)
 
@@ -112,6 +118,8 @@ G_System/GLogTest.cpp
 
 G_System/GWindowTests.cpp
 
+G_System/GControllerTest.cpp
+
 G_System/GBufferedInputTestListener.cpp
 
 G_System/GBufferedInputTestListener.h
@@ -119,6 +127,10 @@ G_System/GBufferedInputTestListener.h
 G_System/GWindowTestListener.cpp
 
 G_System/GWindowTestListener.h
+
+G_System/GControllerTestListener.cpp
+
+G_System/GControllerTestListener.h
 
 G_Graphics/GOpenGLSurfaceTest.cpp
 
@@ -134,7 +146,7 @@ G_Audio/GAudioTests.cpp
 
 add_executable(UnitTests UnitTestMain.cpp CATCH.hpp ${UnitTestDependecies})
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GController GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif(UNIX AND NOT APPLE)
 
@@ -168,7 +180,7 @@ add_executable(UnitTests G_System/GTests.mm CATCH.hpp)
 
 target_sources(UnitTests INTERFACE UnitTests.cpp)
 
-target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(UnitTests GBufferedInput GFile GInput GLog GWindow GController GOpenGLSurface GAudio GMatrix GVector GQuaternion ${CMAKE_THREAD_LIBS_INIT})
 
 endif(APPLE)
 

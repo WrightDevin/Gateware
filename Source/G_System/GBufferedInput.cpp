@@ -3,6 +3,16 @@
 
 #ifndef __APPLE__
 #include "../../Source/G_System/GBI_Callback.cpp"
+#else
+// Thanks to Chris for this little snippet and reminding everyone the proper way to interact with the apple UI layer
+// https://chritto.wordpress.com/2012/12/20/updating-the-ui-from-another-thread/
+static void RUN_ON_UI_THREAD(dispatch_block_t block)
+{
+    if ([NSThread isMainThread])
+        block();
+    else
+        dispatch_sync(dispatch_get_main_queue(), block);
+}
 #endif
 
 #include <mutex>
@@ -91,7 +101,7 @@ GReturn BufferedInput::DecrementCount() {
 
 		//Release handles to any listeners that remain (releases handles)
 		mutex.lock();
-		std::map<GListener*, unsigned long long>::iterator iter = _listeners.begin();
+		std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
 		for (; iter != _listeners.end(); ++iter)
 			iter->first->DecrementCount(); // free handle
 		_listeners.clear(); // dump all invalid pointers
@@ -110,7 +120,7 @@ GReturn BufferedInput::DecrementCount() {
         //[currentResponder setNextResponder:responder];
         [currentResponder setNextResponder:nil];
 #endif
-        
+
 		delete this;
 
 	}
@@ -160,12 +170,14 @@ GReturn BufferedInput::RegisterListener(GListener* _addListener, unsigned long l
 
 	mutex.lock();
 
-	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_addListener);
+	std::pair<GListener*, unsigned long long> search(_addListener, _eventMask);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find(_listeners.begin(), _listeners.end(), search);
 	if (iter != _listeners.end()) {
+		mutex.unlock();
 		return REDUNDANT_OPERATION;
 	}
-
-	_listeners[_addListener] = _eventMask;
+	_listeners.push_back(search);
 	_addListener->IncrementCount();
 
 	mutex.unlock();
@@ -180,7 +192,12 @@ GReturn BufferedInput::DeregisterListener(GListener* _removeListener) {
 		return INVALID_ARGUMENT;
 	}
 	mutex.lock();
-	std::map<GListener* , unsigned long long>::const_iterator iter = _listeners.find(_removeListener);
+	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
+	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
+		find_if(_listeners.begin(), _listeners.end(),
+			[&search](std::pair<GListener*, unsigned long long> const& elem) {
+		return elem.first == search.first;
+	});
 	if (iter != _listeners.end()) {
 		iter->first->DecrementCount();
 		_listeners.erase(iter);
@@ -377,8 +394,8 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //Need to convert _data back into an NSWindow*.
     //NSWindow* currentResponder = ((__bridge NSWindow*)_data);
     currentResponder = ((__bridge NSWindow*)_data);
-    
-    
+
+
 	//We only want to process the message and pass it on. So if there is already
 	//a responder we set our responders next responder to be the current next responder.
     [responder setNextResponder:currentResponder.nextResponder];
@@ -389,11 +406,11 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //We also need to make our responder the first responder of the window.
     [currentResponder makeFirstResponder:responder];
 
-    //In order to get mouse button presses we need to set our responder to be
-    //The next responder in the contentView as well.
-    [currentResponder.contentView setNextResponder:responder];
-   
-
+    RUN_ON_UI_THREAD( ^{
+        //In order to get mouse button presses we need to set our responder to be
+        //The next responder in the contentView as well.
+        [currentResponder.contentView setNextResponder:responder];
+    });
 
 #endif
 
@@ -410,7 +427,7 @@ void BufferedInput::InputThread()
 	while (threadOpen)
 	{
 
-        std::map<GListener* , unsigned long long>::iterator iter = _listeners.begin();
+        std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
 
         Display* _display = (Display*)_linuxWindow.display;
 

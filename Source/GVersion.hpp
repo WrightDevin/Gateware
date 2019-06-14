@@ -31,18 +31,18 @@ SOFTWARE.
 #define GVERSION_HPP
 
 // The Major version is increased when a new library is added.(minor & patch are reset)
-#define GATEWARE_MAJOR 5
+#define GATEWARE_MAJOR 6
 // The Minor version is increased whenever an interface is altered.(patch is reset)
-#define GATEWARE_MINOR 0
+#define GATEWARE_MINOR 3
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH ''
+#define GATEWARE_PATCH 'c'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH ""
+#define GATEWARE_BRANCH "CMakeFixes"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x
+#define GATEWARE_COMMIT_HASH 0x0d3ce60b
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v5.0"
+#define GATEWARE_VERSION_STRING "Gateware v6.3c"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0 () []"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3c (CMakeFixes) [0d3ce60b]"
 
 #endif

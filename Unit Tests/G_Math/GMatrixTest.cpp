@@ -885,19 +885,19 @@ TEST_CASE("Translate a specified matrix by the vector.", "[TranslatelocalF], [Tr
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[0], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[1], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[2], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], -0.6f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[3], 2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[4], -2.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[5], 1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[6], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[7], 0.4f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[7], -1.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[8], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[9], 0.0f));
 		CHECK(G_COMPARISON_STANDARD_F(resultF.data[10], 1.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[11], -6.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[12], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[13], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[14], 0.0f));
-		CHECK(G_COMPARISON_STANDARD_F(resultF.data[15], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[11], 1.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[12], -4.6f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[13], 1.7f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[14], -7.0f));
+		CHECK(G_COMPARISON_STANDARD_F(resultF.data[15], -7.4f));
 	}
 	SECTION("Double matrix trasnlation.", "[TranslatelocalD]")
 	{
@@ -905,19 +905,19 @@ TEST_CASE("Translate a specified matrix by the vector.", "[TranslatelocalF], [Tr
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[0], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[1], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[2], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], -0.6));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[3], 2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[4], -2.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[5], 1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[6], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[7], 0.4));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[7], -1.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[8], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[9], 0.0));
 		CHECK(G_COMPARISON_STANDARD_D(resultD.data[10], 1.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[11], -6.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[12], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[13], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[14], 0.0));
-		CHECK(G_COMPARISON_STANDARD_D(resultD.data[15], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[11], 1.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[12], -4.6));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[13], 1.7));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[14], -7.0));
+		CHECK(G_COMPARISON_STANDARD_D(resultD.data[15], -7.4));
 
 	}
 

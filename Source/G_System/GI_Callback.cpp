@@ -140,9 +140,16 @@ unsigned int mouseWriteCount = 0;
 				}
 
 				//update delta mouse position
-				
-				_mouseDeltaX = raw->data.mouse.lLastX;
-				_mouseDeltaY = raw->data.mouse.lLastY;
+				if ((mouseWriteCount - mouseReadCount) <= 1)
+				{
+					_mouseDeltaX = raw->data.mouse.lLastX;
+					_mouseDeltaY = raw->data.mouse.lLastY;
+				}
+				else
+				{
+					_mouseDeltaX += raw->data.mouse.lLastX;
+					_mouseDeltaY += raw->data.mouse.lLastY;
+				}
 
 			}
 

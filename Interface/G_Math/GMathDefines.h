@@ -15,7 +15,7 @@ License: MIT
 #define G_PI						3.14159265358979323846
 #define G_PI_R						0.318309886183790671538
 
-#define G_EPSILON_F					1.192092896e-07F 
+#define G_EPSILON_F					1.192092896e-07F
 #define G_EPSILON_D					2.2204460492503131e-016
 
 #define G_ABS(num)					( ( (num) > 0 ) ?  (num) : (-(num)) )		//RETURN THE ABSOLUTE VALUE OF THE INPUT NUMBER
@@ -32,15 +32,15 @@ License: MIT
 #define G_DEVIATION_STANDARD_D G_EPSILON_D * 10
 #define G_DEVIATION_LOOSE_D G_EPSILON_D * 100
 
-#define G_FIRST_COMPARISON_F(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_EPSILON_F ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON 
+#define G_FIRST_COMPARISON_F(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_EPSILON_F ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON
 #define G_SECOND_COMPARISON_F(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_DEVIATION_STANDARD_F * G_ABS_LARGER(num1, num2)) ) 	//SECOND CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON MULTIPLY THE LARGER INPUT FLOAT
 #define G_COMPARISON_STANDARD_F(num1 , num2)   ( G_FIRST_COMPARISON_F( (num1), (num2) ) ? true : G_SECOND_COMPARISON_F( (num1) , (num2) ) )
-#define G_COMPARISON_F(num1, num2, deviation) ( G_FIRST_COMPARISON_F( (num1), (num2) )	? true :  ( G_ABS( (num1) - (num2) ) <=  ( deviation * G_ABS_LARGER(num1, num2)) )  ) 
+#define G_COMPARISON_F(num1, num2, deviation) ( G_FIRST_COMPARISON_F( (num1), (num2) )	? true :  ( G_ABS( (num1) - (num2) ) <=  ( deviation * G_ABS_LARGER(num1, num2)) )  )
 
-#define G_FIRST_COMPARISON_D(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_EPSILON_D ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON 
+#define G_FIRST_COMPARISON_D(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_EPSILON_D ) )	//FIRST CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON
 #define G_SECOND_COMPARISON_D(num1 , num2)   ( G_ABS( (num1) - (num2) ) <= ( G_DEVIATION_STANDARD_D * G_ABS_LARGER(num1, num2)) ) //SECOND CHECK IF TWO INPUT FLOATS' DIFF ARE LESS THAN EPSILON MULTIPLY THE LARGER INPUT FLOAT
-#define G_COMPARISON_STANDARD_D(num1 , num2)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true : G_SECOND_COMPARISON_D( (num1) , (num2) ) )	
-#define G_COMPARISON_D(num1 , num2, deviation)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true :( G_ABS( (num1) - (num2) ) <= ( deviation * (G_ABS_LARGER(num1, num2))) )  )	
+#define G_COMPARISON_STANDARD_D(num1 , num2)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true : G_SECOND_COMPARISON_D( (num1) , (num2) ) )
+#define G_COMPARISON_D(num1 , num2, deviation)   ( G_FIRST_COMPARISON_D( (num1), (num2) ) ? true :( G_ABS( (num1) - (num2) ) <= ( deviation * (G_ABS_LARGER(num1, num2))) )  )
 
 #define G_LERP(start , end, ratio)  ( start + ratio * (end - start) )		//LINEAR INTERPOLATE TWO POINT WITH THE RATIO
 #define G_CLAMP(num , top, bottom)  ((((num) > (top)) ? (top) : (num)) < (bottom)) ? (bottom) : (num)		//CLAMP THE NUMBER BETWEEN THE TOP NUMBER AND THE BOTTOM NUMBER
@@ -162,8 +162,10 @@ namespace GW
 
 #pragma pack(pop)
 
-		static const GVECTORF GZeroVectorF = { 0,0,0,0 };
-		static const GVECTORD GZeroVectorD = { 0,0,0,0 };
+		static const GVECTORF GIdentityVectorF{ 0,0,0,1 };
+		static const GVECTORD GIdentityVectorD{ 0,0,0,1 };
+		static const GVECTORF GZeroVectorF{ 0,0,0,0 };
+		static const GVECTORD GZeroVectorD{ 0,0,0,0 };
 
 		static const GMATRIXF GIdentityMatrixF{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 		static const GMATRIXD GIdentityMatrixD{ 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };

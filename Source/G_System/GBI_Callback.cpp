@@ -3,7 +3,8 @@
 #include "../../Source/G_System/GI_Static.cpp"
 #include "../../Interface/G_System/GBufferedInput.h"
 
-#include <list>
+#include <algorithm>
+#include <vector>
 
 using namespace GW;
 using namespace CORE;
@@ -11,8 +12,9 @@ using namespace SYSTEM;
 
 namespace {
 
-	//! Map of Listeners to send event information to.
-	std::map<GListener *, unsigned long long> _listeners;
+	// vector of Listeners to send event information to.
+	// ordering is important for event listeners so we need to switch containers
+	std::vector<std::pair<GListener *, unsigned long long>> _listeners;
     unsigned int keyMask;
 
 
@@ -158,7 +160,7 @@ namespace {
 			_dataStruct.keyMask = keyMask;
 
 			if (_dataStruct.data != -1 && _event != -1) {
-				std::map<GListener *, unsigned long long>::iterator iter = _listeners.begin();
+				std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = _listeners.begin();
 				for (; iter != _listeners.end(); ++iter) {
 					iter->first->OnEvent(GBufferedInputUUIID, _event, (void*)&_dataStruct, sizeof(GBUFFEREDINPUT_EVENT_DATA));
 				}

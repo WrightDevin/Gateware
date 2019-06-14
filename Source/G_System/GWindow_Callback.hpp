@@ -1,7 +1,8 @@
 #pragma once
 #include "../../Interface/G_System/GWindow.h"
 #include "GUtility.h"
-#include <mutex>
+#include <algorithm>
+#include <vector>
 
 #ifdef __linux
 #include <X11/Xlib.h>
@@ -24,8 +25,10 @@ namespace
     std::mutex mutex;
 
     //! Map of Listeners to send event information to.
-    std::map<GListener *, unsigned long long> listeners;
-    std::atomic_char16_t flag(0);
+
+
+    std::vector<std::pair<GListener *, unsigned long long>> listeners;
+
 #ifdef __APPLE__
     std::map<NSWindow *, GW::SYSTEM::GWindowInputEvents> eventCatchers;
 #endif
@@ -35,7 +38,11 @@ namespace
 	//Methods
 	LRESULT CALLBACK GWindowProc(HWND window, unsigned int msg, WPARAM wp, LPARAM lp)
 	{
-		GW::SYSTEM::GWindowInputEvents* GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
+		GW::SYSTEM::GWindowInputEvents* GEvents = nullptr;
+		GEvents = (GW::SYSTEM::GWindowInputEvents*)GetWindowLongPtr(window, GWLP_USERDATA);
+		if (GEvents == nullptr) // *BUG FIX* This will happen once if you launch a window fullscreen
+			return DefWindowProcW(window, msg, wp, lp);
+		// If we have a valid event handler we can process
 		switch (msg)
 		{
 		case WM_SIZE:
@@ -73,7 +80,7 @@ namespace
 			if (eventStruct.eventFlags != -1)
 			{
 
-				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+				std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 			}
@@ -99,7 +106,7 @@ namespace
 
 			if (eventStruct.eventFlags != -1)
 			{
-				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+				std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 			}
@@ -125,7 +132,7 @@ namespace
 			if (eventStruct.eventFlags != -1)
 			{
 
-				std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+				std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
 				for (; iter != listeners.end(); ++iter)
 					iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 			}
@@ -249,8 +256,7 @@ namespace
 
                             if (eventStruct.eventFlags != -1 && listeners.size() > 0)
                             {
-                            mutex.lock();
-                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                           std::vector<std::pair<GListener *, unsigned long long>>::iterator iter = listeners.begin();
                             for (; iter != listeners.end(); ++iter)
                                 iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
@@ -291,8 +297,7 @@ namespace
 
                             if (eventStruct.eventFlags != -1 && listeners.size() > 0)
                                 {
-                                    mutex.lock();
-                                    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                                    std::vector<std::pair<GListener *, unsigned long long>>::iterator iter = listeners.begin();
                                     for (; iter != listeners.end(); ++iter)
                                         iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
@@ -319,8 +324,7 @@ namespace
 
                             if (eventStruct.eventFlags != -1 && listeners.size() > 0)
                                 {
-                                    mutex.lock();
-                                    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                                    std::vector<std::pair<GListener *, unsigned long long>>::iterator iter = listeners.begin();
                                     for (; iter != listeners.end(); ++iter)
                                         iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
@@ -377,13 +381,14 @@ namespace
 
                         prevX = x; prevY = y; prevHeight = height; prevWidth = width;
 
-                        if (eventStruct.eventFlags != -1 && listeners.size() > 0)
-                        {
-                            mutex.lock();
-                            std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
-                            for (; iter != listeners.end(); ++iter)
-                                iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
-                            mutex.unlock();
+                            prevX = x; prevY = y; prevHeight = height; prevWidth = width;
+
+                            if (eventStruct.eventFlags != -1 && listeners.size() > 0)
+                                {
+                                    std::vector<std::pair<GListener *, unsigned long long>>::iterator iter = listeners.begin();
+                                    for (; iter != listeners.end(); ++iter)
+                                        iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
+                                }
                         }
 
                         break;
@@ -428,8 +433,7 @@ namespace
 
                         if (eventStruct.eventFlags != -1 && listeners.size() > 0)
                             {
-                                mutex.lock();
-                                std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+                                std::vector<std::pair<GListener *, unsigned long long>>::iterator iter = listeners.begin();
                                 for (; iter != listeners.end(); ++iter)
                                     iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
 
