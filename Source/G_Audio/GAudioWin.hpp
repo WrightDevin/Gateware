@@ -670,7 +670,8 @@ public:
 	GReturn IncrementCount();
 	GReturn DecrementCount();
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
-	GReturn CleanUp();
+	GReturn CleanUpSound();
+	GReturn CleanUpMusic();
 	 ~WindowAppAudio();
 };
 
@@ -694,6 +695,10 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 		if (mscUser != nullptr && mscUser->isPlaying == false && mscUser->mySourceVoice != nullptr)
 		{
 			mscUser->mySourceVoice->FlushSourceBuffers();
+			if (mscUser->audio) // this is where the reference count decrements to zero after the user has released but the audio system has not
+			{
+				mscUser->audio->CleanUpMusic();
+			}
 		}
 		SetEvent(hBufferEndEvent);
 	}
@@ -709,6 +714,10 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 			sndUser->isPaused = true;
 			// Bug fix, reload the audio buffer so the sound can play again (can't beleive I had to fix this!)
 			sndUser->isComplete = true; // this shifts the fix onto the main audio thread which resolves the popping issue
+			if (sndUser->audio) // this is where the reference count decrements to zero after the user has released but the audio system has not
+			{
+				sndUser->audio->CleanUpSound();
+			}
 		}
 
 	}
@@ -1064,9 +1073,9 @@ GReturn WindowAppSound::StopSound()
 	 //Here do not need to call "delete this" when the SoundCounter is 0
 	 //because in GAudio destructor will do that.
 
-	 if (SoundCounter == 1) //the user is removing this object
+	 if (SoundCounter == 0)
 	 {
-		 audio->CleanUp();
+		 delete this;
 	 }
 
 	 result = SUCCESS;
@@ -1129,6 +1138,7 @@ WindowAppSound::~WindowAppSound()
 	{
 		StopSound();
 	}
+	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
@@ -1591,9 +1601,9 @@ GReturn WindowAppMusic::StopStream()
 	 //Here do not need to call "delete this" when the MusicCounter is 0
 	 //because in GAudio destructor will do that.
 
-	 if (MusicCounter == 1) //the user is removing this object
+	 if (MusicCounter == 0) //the user is removing this object
 	 {
-		 audio->CleanUp();
+		 delete this;
 	 }
 
 	 result = SUCCESS;
@@ -1656,6 +1666,7 @@ WindowAppMusic::~WindowAppMusic()
 	{
 		StopStream();
 	}
+	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
@@ -2022,17 +2033,13 @@ GReturn WindowAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _o
 }
 WindowAppAudio::~WindowAppAudio()
 {
-	while( activeSounds.size()>0)
+	for (auto s : activeSounds)
 	{
-		delete activeSounds[0];
-		activeSounds[0] = nullptr;
-		activeSounds.erase(activeSounds.begin());
+		s->DecrementCount();
 	}
-	while (activeMusic.size()>0)
+	for (auto m : activeMusic)
 	{
-		delete activeMusic[0];
-		activeMusic[0] = nullptr;
-		activeMusic.erase(activeMusic.begin());
+		m->DecrementCount();
 	}
 
 	theMasterVoice->DestroyVoice();
@@ -2041,7 +2048,7 @@ WindowAppAudio::~WindowAppAudio()
 
 }
 
-GReturn WindowAppAudio::CleanUp()
+GReturn WindowAppAudio::CleanUpSound()
 {
 	GReturn result = FAILURE;
 	for (int i = 0; i < activeSounds.size(); i++)
@@ -2061,6 +2068,13 @@ GReturn WindowAppAudio::CleanUp()
 			DecrementCount();
 		}
 	}
+	result = SUCCESS;
+	return result;
+}
+
+GReturn WindowAppAudio::CleanUpMusic()
+{
+	GReturn result = FAILURE;
 	for (int i = 0; i < activeMusic.size(); i++)
 	{
 		unsigned int musicCount = 0;
