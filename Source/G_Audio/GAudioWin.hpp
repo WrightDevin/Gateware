@@ -646,6 +646,9 @@ public:
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
 	 ~WindowAppAudio();
 
+private:
+
+	GReturn CleanUp();
 };
 
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
@@ -1040,6 +1043,12 @@ GReturn WindowAppSound::StopSound()
 	 SoundCounter--;
 	 //Here do not need to call "delete this" when the SoundCounter is 0
 	 //because in GAudio destructor will do that.
+
+	 if (SoundCounter == 1) //the user is removing this object
+	 {
+		 audio->CleanUp();
+	 }
+
 	 result = SUCCESS;
 	 return result;
 }
@@ -1561,6 +1570,12 @@ GReturn WindowAppMusic::StopStream()
 	 MusicCounter--;
 	 //Here do not need to call "delete this" when the MusicCounter is 0
 	 //because in GAudio destructor will do that.
+
+	 if (MusicCounter == 1) //the user is removing this object
+	 {
+		 audio->CleanUp();
+	 }
+
 	 result = SUCCESS;
 	 return result;
 }
@@ -1708,7 +1723,9 @@ GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 	}
 	snd->myContext->sndUser = snd;
 	result = snd->Init();
+	snd->IncrementCount();
 	activeSounds.push_back(snd);
+	IncrementCount();
 	snd->audio = this;
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
@@ -1772,9 +1789,10 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	{
 		return result;
 	}
-	msc->audio = this;
-
+	msc->IncrementCount();
 	activeMusic.push_back(msc);
+	IncrementCount();
+	msc->audio = this;
 	*_outMusic = msc;
 	if (result == INVALID_ARGUMENT)
 		return result;
@@ -2001,6 +2019,32 @@ WindowAppAudio::~WindowAppAudio()
 	myAudio->StopEngine();
 	myAudio->Release();
 
+}
+
+WindowAppAudio::CleanUp()
+{
+	for (int i = 0; i < activeSounds.size(); i++)
+	{
+		if (activeSounds[i]->GetCount() == 1)
+		{
+			snd = activeSounds[i];
+			activeSounds.erase(activeSounds.begin() + i);
+			i--;
+			snd.DecrementCount();
+			DecrementCount();
+		}
+	}
+	for (int i = 0; i < activeMusic.size(); i++)
+	{
+		if (activeMusic[i]->GetCount() == 1)
+		{
+			msc = activeMusic[i];
+			activeMusic.erase(activeMusic.begin() + i);
+			i--;
+			msc.DecrementCount();
+			DecrementCount();
+		}
+	}
 }
 
 GReturn PlatformGetAudio(GAudio ** _outAudio)

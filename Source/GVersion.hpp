@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "master"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x9c1db96
+#define GATEWARE_COMMIT_HASH 0x3c40486
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v5.0f"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0f (master) [9c1db96]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v5.0f (master) [3c40486]"
 
 #endif
