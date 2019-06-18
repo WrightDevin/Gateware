@@ -140,12 +140,26 @@ HRESULT LoadWaveData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, XAUDIO2_BU
 		}
 		default:
 		{
-			ReadFile(theFile, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
-			if (dwRead != dwChunkDataSize)
+			int sizeToRead = sizeof(throwAwayValue);
+			int totalChunkData = dwChunkDataSize;
+			while (totalChunkData > 0)
 			{
-				result = -7;
+				if(sizeToRead > totalChunkData)
+					sizeToRead = totalChunkData;
+
+				
+				ReadFile(theFile, &throwAwayValue, sizeToRead, &dwRead, NULL);
+				if (dwRead != sizeToRead)
+				{
+					result = -7;
+					totalChunkData = 0;
+				}
+
+				bytesRead += dwRead;
+				totalChunkData -= dwRead;
 			}
-			bytesRead += dwRead;
+			
+			
 			break;
 		}
 
@@ -266,12 +280,24 @@ HRESULT FindStreamData(HANDLE _file, unsigned long & _outDataChunk, OVERLAPPED &
 			}
 			default:
 			{
-				ReadFile(_file, &throwAwayValue, dwChunkDataSize, &dwRead, NULL);
-				if (dwRead != dwChunkDataSize)
+				int sizeToRead = sizeof(throwAwayValue);
+				int totalChunkData = dwChunkDataSize;
+				while (totalChunkData > 0)
 				{
-					result = -7;
+					if (sizeToRead > totalChunkData)
+						sizeToRead = totalChunkData;
+
+
+					ReadFile(_file, &throwAwayValue, sizeToRead, &dwRead, NULL);
+					if (dwRead != sizeToRead)
+					{
+						result = -7;
+						totalChunkData = 0;
+					}
+
+					bytesRead += dwRead;
+					totalChunkData -= dwRead;
 				}
-				bytesRead += dwRead;
 				break;
 			}
 
@@ -659,7 +685,8 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 	HANDLE hstreamEndEvent;
 	StreamingVoiceContext() :
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-		hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)), hstreamEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE))
+		hBufferEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE)), 
+		hstreamEndEvent(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE))
 #else
 		hBufferEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)), hstreamEndEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr))
 #endif
@@ -672,8 +699,6 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 			mscUser->mySourceVoice->FlushSourceBuffers();
 		}
 		SetEvent(hBufferEndEvent);
-		
-	
 	}
 	void STDMETHODCALLTYPE OnVoiceProcessingPassStart(UINT32) {  }
 	void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() {  }
@@ -690,11 +715,9 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 		}
 
 	}
-	void STDMETHODCALLTYPE OnBufferStart(void*) {  }
+	void STDMETHODCALLTYPE OnBufferStart(void*) { ResetEvent(hBufferEndEvent); } // YAY this fixes the CPU crunching!
 	void STDMETHODCALLTYPE OnLoopEnd(void*) {  }
 	void STDMETHODCALLTYPE OnLoopEnd(void*, HRESULT) {  }
-
-
 };
 GReturn CreateVoiceContext(StreamingVoiceContext ** outcontext)
 {

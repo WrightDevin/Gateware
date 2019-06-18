@@ -94,7 +94,7 @@
     eventData.windowY = sender.frame.origin.y;
     eventData.windowHandle = (__bridge void*)sender;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
     
@@ -118,7 +118,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
 }
@@ -139,7 +139,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
 }
@@ -160,7 +160,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
 }
@@ -181,7 +181,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));}
 
@@ -201,7 +201,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
 }
@@ -222,7 +222,7 @@
     eventData.windowY = window.frame.origin.y;
     eventData.windowHandle = (__bridge void*)window;
     
-    std::map<GListener *, unsigned long long>::iterator iter = listeners.begin();
+    std::vector<std::pair<GListener*, unsigned long long>>::iterator iter = listeners.begin();
     for (; iter != listeners.end(); ++iter)
         iter->first->OnEvent(GWindowUUIID, eventData.eventFlags, (void*)&eventData, sizeof(GWINDOW_EVENT_DATA));
     

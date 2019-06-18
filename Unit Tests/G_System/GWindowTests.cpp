@@ -6,6 +6,8 @@
 #ifdef __linux__
 #include <unistd.h> //Allows for linux side "sleep()" calls
 #endif
+
+
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -291,7 +293,9 @@ TEST_CASE("Querying Client Information.", "[GetClientWidth], [GetClientHeight], 
 	REQUIRE(G_SUCCESS(appWindow->GetClientTopLeft(appWindowClientPosX, appWindowClientPosY)));
 }
 
-
+ // Section needs to be reworked using only the GWindow interface functions.
+ // Event testing needs to sync with windowListener. Example on line 330
+ // This is required to advoid race condtion issuses on the Linux platform.
 TEST_CASE("Sending events to listeners.", "")
 {
 	int windowTestValue = 0;
@@ -308,8 +312,8 @@ TEST_CASE("Sending events to listeners.", "")
 #endif
 
 	// Fail case
-	windowListener->GetWindowTestValue(windowTestValue);
-	CHECK(windowTestValue == 1);
+	//windowListener->GetWindowTestValue(windowTestValue);
+	//CHECK(windowTestValue == 1);
 
 #ifdef _WIN32
 	// Tell window to maximize
@@ -319,17 +323,29 @@ TEST_CASE("Sending events to listeners.", "")
 	//appWindow->GetWindowHandle(l_windowSize, (void**)&l_appWindow);
 	//ShowWindowAsync(l_appWindow, SW_SHOWMAXIMIZED);
 	appWindow->Maximize();
-	sleep(0.001);
+	windowListener->m_testsPending++;
 #elif __APPLE__
 	//appWindow->GetWindowHandle(m_windowSize, (void**)&m_appWindow);
 	//ShowWindowAsync(m_appWindow, SW_SHOWMAXIMIZED);
 #endif
 
 	// Pass case
+	while(windowListener->m_testsPending)
+	{
+	#ifndef _WIN32
+		sleep(.001);
+	#else
+		Sleep(.001);
+	#endif // !_WIN32
+
+
+	}  // while tell all test are completed
 	windowListener->GetWindowTestValue(windowTestValue);
 	REQUIRE(windowTestValue == 1);
 }
 
+// The function GetLastEvent will be removed and replaced with IsOpen() in GWindow
+#if 0
 TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 {
 	/*
@@ -463,7 +479,9 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 	REQUIRE(G_SUCCESS(tstWindow->GetLastEvent(curEvent)));
 	REQUIRE(curEvent == GWindowInputEvents::DESTROY); //Linux side this is a false positive
 
+	tstWindow->DecrementCount();
 }
+#endif
 
 
 TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
@@ -482,7 +500,6 @@ TEST_CASE("GWindow Unregistering listener", "[DeregisterListener]")
 	windowListener->DecrementCount();
 	appWindow->DecrementCount();
 	unopenedWindow->DecrementCount();
-	tstWindow->DecrementCount();
 }
 
 

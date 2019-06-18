@@ -22,6 +22,8 @@ GW::GReturn GWindowTestListener::OnEvent(const GW::GUUIID &_senderInterface, uns
 
 		case GW::SYSTEM::MAXIMIZE:
 			windowTestValue = 1;
+			if(m_testsPending > 0)
+                --m_testsPending;
 			break;
 
 		case GW::SYSTEM::RESIZE:

@@ -300,15 +300,15 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 	{
 		//Pass cases
 #ifdef _WIN32
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../gateware.git.0/Unit Tests/GFile_TestFolder")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //10 is the number of files that should be in the directory after all other testing
 #elif __APPLE__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0/Unit Tests/GFile_TestFolder")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
 #elif __linux__
-		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0")));
+		REQUIRE(G_SUCCESS(file->SetCurrentWorkingDirectory(u8"../../../../../gateware.git.0/Unit Tests/GFile_TestFolder")));
 		REQUIRE(G_SUCCESS(file->GetDirectorySize(dirSize)));
 		REQUIRE(dirSize == DIR_SIZE); //9 is the number of files that should be in the directory after all other testing
 #endif
@@ -330,16 +330,16 @@ TEST_CASE("Directory Handling continued.", "[GetDirectorySize], [GetFileSize], [
 			//Pass cases
 			REQUIRE(G_SUCCESS(file->GetFilesFromDirectory(files, dirSize, FILE_NAME_SIZE)));
 
-			Checklist[0] = ".DS_Store";
-			Checklist[1] = ".gitignore";
-			Checklist[2] = "CMakeLists.txt";
-			Checklist[3] = "Doxyfile";
-			Checklist[4] = "gateware.ver";
-			Checklist[5] = "LICENSE.md";
-			Checklist[6] = "LinuxSetup";
-			Checklist[7] = "MacSetup.command";
-			Checklist[8] = "README.md";
-			Checklist[9] = "WinSetup.bat";
+			Checklist[0] = "testFile1.txt";
+			Checklist[1] = "testFile2.txt";
+			Checklist[2] = "testFile3.txt";
+			Checklist[3] = "testFile4.txt";
+			Checklist[4] = "testFile5.txt";
+			Checklist[5] = "testFile6.txt";
+			Checklist[6] = "testFile7.txt";
+			Checklist[7] = "testFile8.txt";
+			Checklist[8] = "testFile9.txt";
+			Checklist[9] = "testFile10.txt";
 
 			for (int i = 0; i < DIR_SIZE; i++)
 			{

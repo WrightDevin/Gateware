@@ -11,8 +11,12 @@ class GWindowTestListener : public GW::CORE::GListener
 	//Needed for reference counting. ALL GATEWARE LIBRARY OBJECTS ARE REF COUNTED.
 	std::atomic<unsigned int> m_refCount;
 
+
 public:
-	GWindowTestListener() :m_refCount(1) {};
+
+    std::atomic<unsigned int> m_testsPending;
+
+	GWindowTestListener() :m_refCount(1), m_testsPending(0) {};
 	virtual ~GWindowTestListener() {};
 
 	//GListener overrides
@@ -26,6 +30,7 @@ public:
 
 	//Helper function for testing
 	GW::GReturn GetWindowTestValue(int& _outWindowTestValue);
+
 };
 
 #endif // TESTLISTENER_H

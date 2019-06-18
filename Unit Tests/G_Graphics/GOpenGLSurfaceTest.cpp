@@ -24,6 +24,7 @@
 
 #include <iostream>
 
+
 ///=============================================================================
 //==============================TEST CASES======================================
 ///=============================================================================
@@ -189,6 +190,13 @@ TEST_CASE("Testing OGLSurface Events")
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	oglSurface->UniversalSwapBuffers();
 
+
+        //Release memory
+	gWnd_OGL->DecrementCount();
+	oglSurface->DecrementCount();
+	oglSurface->DecrementCount();
+
+
 #elif __APPLE__
 
     glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
@@ -197,7 +205,8 @@ TEST_CASE("Testing OGLSurface Events")
 
 #endif
 
-}
+int d = 0;
 
+}
 
 
