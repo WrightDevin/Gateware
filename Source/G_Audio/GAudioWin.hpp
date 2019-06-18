@@ -670,11 +670,8 @@ public:
 	GReturn IncrementCount();
 	GReturn DecrementCount();
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
-	 ~WindowAppAudio();
-
-private:
-
 	GReturn CleanUp();
+	 ~WindowAppAudio();
 };
 
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
@@ -2044,30 +2041,45 @@ WindowAppAudio::~WindowAppAudio()
 
 }
 
-WindowAppAudio::CleanUp()
+GReturn WindowAppAudio::CleanUp()
 {
+	GReturn result = FAILURE;
 	for (int i = 0; i < activeSounds.size(); i++)
 	{
-		if (activeSounds[i]->GetCount() == 1)
+		unsigned int soundCount = 0;
+		result = activeSounds[i]->GetCount(soundCount);
+		if (result != SUCCESS)
 		{
-			snd = activeSounds[i];
+			return result;
+		}
+		if (soundCount == 1)
+		{
+			WindowAppSound * snd = activeSounds[i];
 			activeSounds.erase(activeSounds.begin() + i);
 			i--;
-			snd.DecrementCount();
+			snd->DecrementCount();
 			DecrementCount();
 		}
 	}
 	for (int i = 0; i < activeMusic.size(); i++)
 	{
-		if (activeMusic[i]->GetCount() == 1)
+		unsigned int musicCount = 0;
+		result = activeMusic[i]->GetCount(musicCount);
+		if (result != SUCCESS)
 		{
-			msc = activeMusic[i];
+			return result;
+		}
+		if (musicCount == 1)
+		{
+			WindowAppMusic * msc = activeMusic[i];
 			activeMusic.erase(activeMusic.begin() + i);
 			i--;
-			msc.DecrementCount();
+			msc->DecrementCount();
 			DecrementCount();
 		}
 	}
+	result = SUCCESS;
+	return result;
 }
 
 GReturn PlatformGetAudio(GAudio ** _outAudio)
