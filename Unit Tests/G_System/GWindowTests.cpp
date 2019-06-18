@@ -129,6 +129,16 @@ TEST_CASE("Open a Window.", "[OpenWindow]")
 	REQUIRE(appWindow->OpenWindow() == REDUNDANT_OPERATION);
 }
 
+TEST_CASE("Change Window Name.", "[SetWindowName]")
+{
+	//Pass Case; Make sure the name was changed.
+	char newName[128] = "New Window Name";
+	REQUIRE(G_SUCCESS(appWindow->SetWindowName("New Window Name")));
+
+	//Fail Case; name cannot be null
+	REQUIRE(G_FAIL(appWindow->SetWindowName(nullptr)));
+}
+
 TEST_CASE("GWindow Register Listeners.", "[RegisterListener]")
 {
 	// Create our new test listener

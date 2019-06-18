@@ -105,6 +105,8 @@ public:
 
 	GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
+	GReturn SetWindowName(char* newName);
+
 	GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
 	GReturn MoveWindow(int _x, int _y);
@@ -1007,6 +1009,10 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	return SUCCESS;
 }
 
+GReturn AppWindow::SetWindowName(char* newName)
+{
+	return FAILURE;
+}
 GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
 	if (_style < 0 || _style > 4)
