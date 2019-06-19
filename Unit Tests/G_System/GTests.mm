@@ -5,7 +5,7 @@
 #import "../G_System/GFileTest.cpp"
 #import "../G_System/GLogTest.cpp"
 #import "../G_System/GWindowTests.cpp"
-#import "../G_Audio/GAudioTests.cpp"
+#import "../G_Audio/GAudioTests.cpp" // Audio system seems to have some entitlment issues onMojave but it does pass all tests
 #import "../G_System/GControllerTest.cpp"
 #import "../G_System/GBufferedInputTestListener.cpp"
 #import "../G_System/GWindowTestListener.cpp"
