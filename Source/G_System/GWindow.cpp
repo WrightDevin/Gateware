@@ -12,6 +12,16 @@
 #include "unistd.h"
 #elif __APPLE__
 
+// Thanks to Chris for this little snippet and reminding everyone the proper way to interact with the apple UI layer
+// https://chritto.wordpress.com/2012/12/20/updating-the-ui-from-another-thread/
+void RUN_ON_UI_THREAD(dispatch_block_t block)
+{
+    if ([NSThread isMainThread])
+        block();
+    else
+        dispatch_sync(dispatch_get_main_queue(), block);
+}
+
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -464,13 +474,16 @@ GReturn AppWindow::ProcessWindowEvents()
     //sleep(1);
 	//XFlush(display);
 	//XSync(display, 0);
+    return SUCCESS;
 
 #elif __APPLE__
 	dispatch_sync(dispatch_get_main_queue(), ^{
 
 		FlushMacEventLoop();
 	});
+    return SUCCESS;
 #endif
+    return FAILURE;
 }
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
@@ -577,23 +590,28 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		XUnlockDisplay(display);
 		return SUCCESS;
 #elif __APPLE__
+        
+        RUN_ON_UI_THREAD( ^{
+            
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
 		NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
 		NSRect rect = NSMakeRect(xPos, yPos, width, height);
-
+        
 		[window setStyleMask : styleMask];
 		[window setFrame : rect display : YES];
-
+       
         bool fullscreen = false;
         if (fullscreen == true)
             [window toggleFullScreen : nil];
 
-		dispatch_sync(dispatch_get_main_queue(), ^{
+            FlushMacEventLoop();
+        });
+		/*dispatch_sync(dispatch_get_main_queue(), ^{
 
 			FlushMacEventLoop();
-		});
+		});*/
 
 		if (window)
 		{
@@ -690,6 +708,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
+        
+        RUN_ON_UI_THREAD( ^{
+            
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -705,9 +726,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         if (fullscreen == true)
             [window toggleFullScreen : nil];
 
-		dispatch_sync(dispatch_get_main_queue(), ^{
+            FlushMacEventLoop();
+        });
+		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
-		});
+		});*/
 
 		if (window)
 		{
@@ -797,6 +820,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
+        
+        RUN_ON_UI_THREAD( ^{
+            
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -814,10 +840,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
         //[window setCollectionBehavior:(NSWindowCollectionBehaviorFullScreenPrimary)];
         //[window toggleFullScreen:nil];
-
-		dispatch_sync(dispatch_get_main_queue(), ^{
+            FlushMacEventLoop();
+        });
+		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
-		});
+		});*/
 
 		if (window)
 		{
@@ -904,6 +931,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
+        
+        RUN_ON_UI_THREAD( ^{
+            
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -920,9 +950,11 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		if (fullscreen == false)
 			[window toggleFullScreen : nil];
 
-		dispatch_sync(dispatch_get_main_queue(), ^{
+            FlushMacEventLoop();
+        });
+		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
-		});
+		});*/
 
 		if (window)
 		{
@@ -973,13 +1005,21 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		}
 
 #elif __APPLE__
+        
+        RUN_ON_UI_THREAD( ^{
+            
 		bool fullscreen;
 		IsFullscreen(fullscreen);
 		if (fullscreen == true)
 		{
 			ReconfigureWindow(_x, _y, _width, _height, WINDOWEDBORDERED);
 		}
-		dispatch_sync(dispatch_get_main_queue(), ^{
+            FlushMacEventLoop();
+            [window miniaturize:nil];
+            
+        });
+            
+		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
 
@@ -989,7 +1029,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         //This set-up allows the window to minimize and let our event system know.
         dispatch_sync(dispatch_get_main_queue(), ^{
             [window miniaturize:nil];
-        });
+        });*/
 
 		//dispatch_sync(dispatch_get_main_queue(), ^{
 		//	FlushMacEventLoop();
@@ -1092,6 +1132,9 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     }
 
 #elif __APPLE__
+    
+    RUN_ON_UI_THREAD( ^{
+        
 	NSRect rect = window.frame;
 	CGPoint newPos;
 	newPos.y = yPos - height;
@@ -1106,9 +1149,11 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     pointPos.y = newPos.y;
     pointPos.x = newPos.x;
 
-    dispatch_sync(dispatch_get_main_queue(), ^{
         [window setFrameTopLeftPoint: pointPos];
     });
+    /*dispatch_sync(dispatch_get_main_queue(), ^{
+        [window setFrameTopLeftPoint: pointPos];
+    });*/
 
 	return SUCCESS;
 #endif
@@ -1182,15 +1227,19 @@ XLockDisplay(display);
 
 
 #elif __APPLE__
-	//NSRect rect = window.frame;
+	
+    RUN_ON_UI_THREAD( ^{
+    //NSRect rect = window.frame;
     NSRect rect = NSMakeRect(xPos, yPos, _width, _height);
 	CGSize newSize;
 	newSize.height = height;
 	newSize.width = width;
 
-	dispatch_sync(dispatch_get_main_queue(), ^{
+        [window setFrame : rect display : YES animate : YES];
+    });
+	/*dispatch_sync(dispatch_get_main_queue(), ^{
 		[window setFrame : rect display : YES animate : YES];
-	});
+	});*/
 	return SUCCESS;
 #endif
 	return FAILURE;
@@ -1785,7 +1834,9 @@ GReturn AppWindow::IsFullscreen(bool& _outIsFullscreen)
 	return SUCCESS;
 
 #elif __APPLE__
-	if (([window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen)
+    __block NSWindowStyleMask winStyle;
+    RUN_ON_UI_THREAD( ^{ winStyle = [window styleMask]; });
+	if ((winStyle & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen)
 		_outIsFullscreen = TRUE;
 	else
 		_outIsFullscreen = FALSE;

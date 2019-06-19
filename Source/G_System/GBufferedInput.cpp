@@ -3,6 +3,16 @@
 
 #ifndef __APPLE__
 #include "../../Source/G_System/GBI_Callback.cpp"
+#else
+// Thanks to Chris for this little snippet and reminding everyone the proper way to interact with the apple UI layer
+// https://chritto.wordpress.com/2012/12/20/updating-the-ui-from-another-thread/
+static void RUN_ON_UI_THREAD(dispatch_block_t block)
+{
+    if ([NSThread isMainThread])
+        block();
+    else
+        dispatch_sync(dispatch_get_main_queue(), block);
+}
 #endif
 
 #include <mutex>
@@ -396,11 +406,11 @@ GReturn BufferedInput::InitializeMac(void* _data) {
     //We also need to make our responder the first responder of the window.
     [currentResponder makeFirstResponder:responder];
 
-    //In order to get mouse button presses we need to set our responder to be
-    //The next responder in the contentView as well.
-    [currentResponder.contentView setNextResponder:responder];
-
-
+    RUN_ON_UI_THREAD( ^{
+        //In order to get mouse button presses we need to set our responder to be
+        //The next responder in the contentView as well.
+        [currentResponder.contentView setNextResponder:responder];
+    });
 
 #endif
 
