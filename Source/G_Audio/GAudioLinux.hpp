@@ -1110,9 +1110,10 @@ GReturn LinuxAppSound::StreamSound()
             std::this_thread::yield();
             if(theCallback.didFinish == 1)
             {
-            isPlaying = false;
-            isPaused = true;
-            break;
+                audio->CleanUpSound();
+                isPlaying = false;
+                isPaused = true;
+                break;
             }
         }
     }
@@ -1256,6 +1257,12 @@ GReturn LinuxAppSound::DecrementCount()
 	if (SoundCounter == 0)
 		return result;
 	SoundCounter--;
+
+    if (SoundCounter == 0)
+    {
+        delete this;
+    }
+
 	result = SUCCESS;
 	return result;
 }
@@ -1903,6 +1910,7 @@ GReturn LinuxAppMusic::StreamMusic()
         {
             if(theCallback.didFinish == 1)
             {
+                audio->CleanUpMusic();
                 isPlaying = false;
                 isPaused = true;
                 break;
@@ -2022,6 +2030,12 @@ GReturn LinuxAppMusic::DecrementCount()
 	if (MusicCounter == 0)
 		return result;
 	MusicCounter--;
+
+    if (MusicCounter == 0) //the user is removing this object
+    {
+        delete this;
+    }
+
 	result = SUCCESS;
 	return result;
 }
@@ -2132,6 +2146,7 @@ GReturn LinuxAppAudio::CreateSound(const char* _path, GSound** _outSound)
        // std::cout << "\n\n" << " snd->Init() failed" << "\n";
         return result;
     }
+    snd->IncrementCount();
     activeSounds.push_back(snd);
     *_outSound = snd;
 
@@ -2181,6 +2196,7 @@ GReturn LinuxAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
         return result;
     }
     result = SUCCESS;
+    msc->IncrementCount();
     activeMusic.push_back(msc);
     *_outMusic = msc;
 
