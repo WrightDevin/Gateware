@@ -590,18 +590,18 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		XUnlockDisplay(display);
 		return SUCCESS;
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
 		NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
 		NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
 		[window setStyleMask : styleMask];
 		[window setFrame : rect display : YES];
-       
+
         bool fullscreen = false;
         if (fullscreen == true)
             [window toggleFullScreen : nil];
@@ -740,9 +740,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -861,7 +861,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xclient.data.l[1] = prop_hMax;
         eventStruct.xclient.data.l[2] = prop_vMax;
         */
-        flag = 1;
+        //flag = 1;
         //Send event to server and wait a bit so it can receive it.
 		XSendEvent(display, window, false, eventMask, &eventStruct);
         XSync(display,False);
@@ -911,9 +911,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -1028,7 +1028,7 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
         eventStruct.xclient.data.l[2] = 0;
 
         //Send event to server and wait a bit so it can receive it.
-        flag = 1;
+        //flag = 1;
         //int nu1 = XPending(display);
 		XSendEvent(display, window, false, eventMask, &eventStruct);
        // nu1 = XPending(display);
@@ -1080,9 +1080,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -1156,9 +1156,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		}
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		bool fullscreen;
 		IsFullscreen(fullscreen);
 		if (fullscreen == true)
@@ -1167,9 +1167,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		}
             FlushMacEventLoop();
             [window miniaturize:nil];
-            
+
         });
-            
+
 		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
@@ -1281,9 +1281,9 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     }
 
 #elif __APPLE__
-    
+
     RUN_ON_UI_THREAD( ^{
-        
+
 	NSRect rect = window.frame;
 	CGPoint newPos;
 	newPos.y = yPos - height;
@@ -1376,7 +1376,7 @@ XLockDisplay(display);
 
 
 #elif __APPLE__
-	
+
     RUN_ON_UI_THREAD( ^{
     //NSRect rect = window.frame;
     NSRect rect = NSMakeRect(xPos, yPos, _width, _height);
@@ -1560,9 +1560,9 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
 	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
-		find_if(listeners.begin(), listeners.end(), 
-			[&search](std::pair<GListener*, unsigned long long> const& elem) { 
-				return elem.first == search.first; 
+		find_if(listeners.begin(), listeners.end(),
+			[&search](std::pair<GListener*, unsigned long long> const& elem) {
+				return elem.first == search.first;
 	});
 	if (iter != listeners.end()) {
 		iter->first->DecrementCount();

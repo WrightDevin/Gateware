@@ -489,6 +489,7 @@ TEST_CASE("GetLastEvent tests.", "[GetLastEvent]")
 }
 #endif
 
+
 TEST_CASE("Close Window", "[Close Window]")
 {
 	// Pass cases

@@ -356,7 +356,7 @@ namespace
                         {
                             eventFlag = MAXIMIZE;
                             Gwnd = GWindowInputEvents::MAXIMIZE;
-                            flag = 0;
+                            //flag = 0;
                         }
                         if(event.xclient.message_type == propType)
                         {
@@ -389,7 +389,6 @@ namespace
                                     for (; iter != listeners.end(); ++iter)
                                         iter->first->OnEvent(GWindowUUIID, eventStruct.eventFlags, &eventStruct, sizeof(GWINDOW_EVENT_DATA));
                                 }
-                        }
 
                         break;
                     }
