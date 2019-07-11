@@ -108,6 +108,8 @@ public:
 	GReturn IncrementCount();
 	GReturn DecrementCount();
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+    GReturn CleanUpSound();
+    GReturn CleanUpMusic();
 	~MacAppAudio();
 
 #if __APPLE__
@@ -126,6 +128,7 @@ GReturn MacAppSound::Init(const char * _path)
     
     NSString * nsPath = [[[NSString alloc] initWithUTF8String:_path] autorelease];
     mac_snd = [[GMacSound alloc]initWithPath:nsPath];
+    mac_snd->iSound = this;
     
     if (mac_snd != nullptr)
     {
@@ -312,6 +315,10 @@ GReturn MacAppSound::DecrementCount()
 	if (SoundCounter == 0)
 		return result;
 	SoundCounter--;
+    if (SoundCounter == 0)
+    {
+        delete this;
+    }
 	result = SUCCESS;
 	return result;
 }
@@ -384,6 +391,7 @@ GReturn MacAppMusic::Init(const char * _path)
 
 	NSString * nsPath = [[[NSString alloc] initWithUTF8String:_path] autorelease];
 	mac_msc = [[GMacMusic alloc]initWithPath:nsPath];
+    mac_msc->iMusic = this;
 	
 	if (mac_msc != nullptr)
 	{
@@ -590,6 +598,10 @@ GReturn MacAppMusic::DecrementCount()
 	if (MusicCounter == 0)
 		return result;
 	MusicCounter--;
+    if (MusicCounter == 0)
+    {
+        delete this;
+    }
 	result = SUCCESS;
 	return result;
 }
@@ -646,7 +658,7 @@ GReturn MacAppMusic::RequestInterface(const GUUIID & _interfaceID, void ** _outp
 }
 MacAppMusic::~MacAppMusic()
 {
-    DecrementCount();
+    
 }
 //End of GMusic implementation
 MacAppAudio::MacAppAudio(): AudioCounter(1)
@@ -662,6 +674,7 @@ GReturn MacAppAudio::Init(int _numOfOutputs)
     mac_audio = [GMacAudio alloc];
     [mac_audio Init];
     [mac_audio autorelease];
+    mac_audio->iAudio = this;
 #endif
 	return result;
 }
@@ -683,14 +696,17 @@ GReturn MacAppAudio::CreateSound(const char* _path, GSound** _outSound)
 	}
 	
 	result = snd->Init(_path);
+    snd->IncrementCount();
 #if __APPLE__
     snd->mac_snd->myAudio = mac_audio->myAudio;
+    snd->mac_snd->macAudio = mac_audio;
     [mac_audio->myAudio attachNode:snd->mac_snd->mySound];
     [mac_audio->myAudio connect:snd->mac_snd->mySound to:mac_audio->myAudio.mainMixerNode format:snd->mac_snd->myBuffer.format];
     [mac_audio->ActiveSounds addObject:snd->mac_snd];
     
 #endif
     //	activeSounds.push_back(snd);
+    IncrementCount();
 	snd->audio = this;
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
@@ -724,12 +740,15 @@ GReturn MacAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	{
 		return result;
 	}
+    msc->IncrementCount();
 #if __APPLE__
     msc->mac_msc->myAudio = mac_audio->myAudio;
+    msc->mac_msc->macAudio = mac_audio;
     [mac_audio->myAudio attachNode:msc->mac_msc->mySound];
     [mac_audio->myAudio connect:msc->mac_msc->mySound to:mac_audio->myAudio.mainMixerNode format:msc->mac_msc->myBuffers[0].format];
     [mac_audio->ActiveMusic addObject:msc->mac_msc];
 #endif
+    IncrementCount();
 	msc->audio = this;
 
 	
@@ -849,6 +868,10 @@ GReturn MacAppAudio::DecrementCount()
 	if (AudioCounter == 0)
 		return result;
 	AudioCounter--;
+    if (AudioCounter == 0)
+    {
+        delete this;
+    }
 	result = SUCCESS;
 	return result;
 }
@@ -903,6 +926,7 @@ GReturn MacAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _outp
 
 	return result;
 }
+
 MacAppAudio::~MacAppAudio()
 {
 
