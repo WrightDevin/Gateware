@@ -60,10 +60,10 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identifier for this interface. {E4F0D5F4-E4DA-4127-A9DA-0414272033EF}
+		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
 		static const GUUIID GWindowUUIID =
 		{
-			0xe4f0d5f4, 0xe4da, 0x4127, { 0xa9, 0xda, 0x4, 0x14, 0x27, 0x20, 0x33, 0xef } 
+			0xe53c2594, 0xe47c, 0x49a5,{ 0xbd, 0x1b, 0x53, 0x41, 0xf2, 0x60, 0x3f, 0x95 }
 		};
 
 		//! A thread-safe window creation and management library.
