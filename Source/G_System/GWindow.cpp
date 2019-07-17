@@ -40,6 +40,7 @@ void RUN_ON_UI_THREAD(dispatch_block_t block)
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
+using namespace INTERNAL;
 
 //namespace
 //{
@@ -485,6 +486,7 @@ GReturn AppWindow::ProcessWindowEvents()
 #endif
     return FAILURE;
 }
+
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
 #ifdef _WIN32
@@ -1051,8 +1053,29 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 
 GReturn AppWindow::SetWindowName(char* newName)
 {
+
+	if(newName == nullptr)
+		return INVALID_ARGUMENT;
+
+	if (wndHandle == nullptr)
+		return REDUNDANT_OPERATION;
+
+#ifdef _WIN32
+
+	bool result = SetWindowTextW(wndHandle, G_TO_UTF16(newName).c_str());
+
+#elif __linux__
+	//Linux implementation
+#elif __APPLE__
+	//MacOS implementetion
+#endif
+
+	if (result)
+		return SUCCESS;
+
 	return FAILURE;
 }
+
 GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
 	if (_style < 0 || _style > 4)

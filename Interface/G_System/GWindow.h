@@ -122,6 +122,14 @@ namespace GW
 			*/
 			virtual GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
 
+			//! Changes de text displayed at the top bar of the window.
+			/*!
+			*	\param [in] _style The style to give to the window. (see GWindowStyle for style options)
+			*
+			*	\retval SUCCESS The window successfully had its text changed.
+			*	\retval INVALID_ARGUMENT The string passed in contains invalid characters or is null.
+			*	\retval REDUNDANT_OPERATION No window exists to edit. 
+			*/
 			virtual GReturn SetWindowName(char* newName) = 0;
 
 			//! Repositions the currently opened window to the specified x and y pixels on screen.
