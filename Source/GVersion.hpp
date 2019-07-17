@@ -39,18 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH ""
 // Pulled directly from GIT
-<<<<<<< HEAD
 #define GATEWARE_COMMIT_HASH 0x20b7de61
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3"
 // Window Title Bar displayed in DEBUG builds
 #define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (JP_Branch-Audio) [20b7de61]"
-=======
-#define GATEWARE_COMMIT_HASH 0x
-// Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v6.3"
-// Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 () []"
->>>>>>> JP_Branch-Audio
 
 #endif
