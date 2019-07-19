@@ -24,6 +24,7 @@ const unsigned long fourRIFFcc = 'FFIR';
 const unsigned long fourDATAcc = 'atad';
 const unsigned long fourFMTcc = ' tmf';
 const unsigned long fourWAVEcc = 'EVAW';
+const unsigned long fourJUNKcc = 'KNUJ';
 const unsigned long fourXWMAcc = 'AMWX';
 const unsigned long fourDPDScc = 'sdpd';
 
@@ -367,7 +368,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 		{
 		case fourRIFFcc:
 		{
-			 dwRiffDataSize = dwChunkDataSize;
+			dwRiffDataSize = dwChunkDataSize;
 			dwChunkDataSize = 4;
 			ReadFile(returnedHandle, &dwFileType, 4, &dwRead, NULL);
 			if (dwRead != 4)
@@ -384,6 +385,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 			break;
 		}
 		case fourWAVEcc:
+		case fourJUNKcc: //FIX: added to support wav files exported from various applications
 		{
 			ReadFile(returnedHandle, &dwIsWave, 4, &dwRead, NULL);
 			if (dwRead != 4)
@@ -392,7 +394,6 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 				break;
 			}
 			bytesRead += dwRead;
-
 			break;
 		}
 		case fourFMTcc:
