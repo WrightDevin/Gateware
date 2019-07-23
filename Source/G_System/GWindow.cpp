@@ -1054,23 +1054,43 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 GReturn AppWindow::SetWindowName(char* newName)
 {
 
-	if(newName == nullptr)
-		return INVALID_ARGUMENT;
 
-	if (wndHandle == nullptr)
-		return REDUNDANT_OPERATION;
+
+    bool operationResult = false;
+
 
 #ifdef _WIN32
 
-	bool result = SetWindowTextW(wndHandle, G_TO_UTF16(newName).c_str());
+    if(newName == nullptr)
+        return INVALID_ARGUMENT;
+    
+    if (wndHandle == nullptr)
+        return REDUNDANT_OPERATION;
+
+	operationResult = SetWindowTextW(wndHandle, G_TO_UTF16(newName).c_str());
 
 #elif __linux__
 	//Linux implementation
 #elif __APPLE__
 	//MacOS implementetion
+    
+    
+    if(newName == nil)
+        return INVALID_ARGUMENT;
+    //window = nullptr;
+    NSString* macName = [NSString stringWithCString: newName encoding: NSUTF8StringEncoding];
+
+    if(!window)
+        return REDUNDANT_OPERATION;
+    dispatch_sync(dispatch_get_main_queue(), ^{window.title = macName; } );
+    
+    if(window.title == macName)
+        operationResult = true;
+    
+
 #endif
 
-	if (result)
+	if (operationResult)
 		return SUCCESS;
 
 	return FAILURE;
