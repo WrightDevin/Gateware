@@ -652,6 +652,103 @@ TEST_CASE("Stop test sound", "[StopSound]")
 
 TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
+    float * testvolumes = nullptr;
+    
+    atestVolume[0] = 1.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 1.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 1.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 1.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 1.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicBass)));
+    REQUIRE(G_SUCCESS(checkReturned = musicBass->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicBass->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 1.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->StreamStart()));
 
     REQUIRE(testMusic != nullptr);
      REQUIRE(testMusic2 != nullptr);
@@ -660,7 +757,7 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 		 atestVolume[i] = 0.0f;
 	 }
 	 atestVolume[0] = { 1.0f };
-	float * testvolumes = atestVolume;
+	testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
 
