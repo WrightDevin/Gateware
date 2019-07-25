@@ -1071,6 +1071,18 @@ GReturn AppWindow::SetWindowName(char* newName)
 
 #elif __linux__
 	//Linux implementation
+
+  if(newName == nullptr)
+      return INVALID_ARGUMENT;
+
+  if (window == 0)
+      return REDUNDANT_OPERATION;
+
+int nameChangeResult = XStoreName(display, window, newName);
+
+if(nameChangeResult != 0)
+    operationResult = true;
+
 #elif __APPLE__
 	//MacOS implementetion
     

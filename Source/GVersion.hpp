@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "EEusebio_GWindowUpdate"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x12eced5c
+#define GATEWARE_COMMIT_HASH 0x7f1e1ef2
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (EEusebio_GWindowUpdate) [12eced5c]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (EEusebio_GWindowUpdate) [7f1e1ef2]"
 
 #endif
