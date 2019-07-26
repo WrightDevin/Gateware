@@ -6,9 +6,41 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #include <atomic>
+
+class MacAppAudio;
+class MacAppMusic;
+class MacAppSound;
+
+@interface GMacAudio : NSObject
+{
+@public
+    MacAppAudio * iAudio;
+    AVAudioPlayerNode * inputNode;
+    AVAudioEngine * myAudio;
+    AVAudioOutputNode * leftSpeaker;
+    AVAudioOutputNode * rightSpeaker;
+    NSMutableArray *ActiveSounds;
+    NSMutableArray *ActiveMusic;
+    
+    float MasterVolume;
+}
+
+-(bool) Init;
+-(bool) SetMasterVolume:(float) _newVolume;
+-(bool) SetMasterVolumeChannels:(const float *) _values theNumberOfChannels:(int)_numChannels;
+-(bool) PauseAll;
+-(bool) ResumeAll;
+-(bool) StopAll;
+-(bool) CleanUpSound;
+-(bool) CleanUpMusic;
+
+@end
+
 @interface GMacSound : NSObject
 {
     @public
+    MacAppSound * iSound;
+    GMacAudio * macAudio;
     AVAudioEngine * myAudio;
     AVAudioPlayerNode * mySound;
     AVAudioMixerNode * myMixer;
@@ -29,8 +61,47 @@
 -(bool) ResumeSound;
 -(bool) StopSound;
 
-
 @end
+
+#define  MAX_BUFFER_COUNT = 3;
+#define  STREAMING_BUFFER_SIZE = 65536;
+@interface GMacMusic : NSObject
+{
+@public
+    
+    MacAppMusic * iMusic;
+    GMacAudio * macAudio;
+    AVAudioEngine * myAudio;
+    AVAudioPlayerNode * mySound;
+    AVAudioMixerNode * myMixer;
+    AVAudioFile * myFile;
+    AVAudioPCMBuffer * myBuffers[3];
+    NSThread * myScheduler;
+    int currentBufferIndex;
+    int index;
+    std::atomic<int> buffersQueued;
+    std::atomic<bool> stopFlag;
+    bool loops ;
+    bool isPlaying;
+    bool isPaused;
+    float volume ;
+    AVAudioFrameCount MaxPosition;
+    AVAudioFrameCount CurrentPosition;
+}
+
+-(id) initWithPath:(NSString*) _path;
+-(bool) SetPCMShader:(const char *) _data;
+-(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
+-(bool) SetVolume:(float) _newVolume;
+-(unsigned int) GetChannels;
+-(bool) StreamStart:(bool) _loops;
+-(bool) PauseStream;
+-(bool) ResumeStream;
+-(bool) StopStream;
+-(void) StreamMusic;
+-(void) setBuffersQueued:(int) _value;
+@end
+
 @implementation GMacSound
 -(id)initWithPath:(NSString*) _path
 {
@@ -38,10 +109,9 @@
     self = [super init];
     if(self)
     {
-        
         self->mySound = [[AVAudioPlayerNode alloc] init];
         
-         self->myMixer = [[AVAudioMixerNode alloc] init];
+        self->myMixer = [[AVAudioMixerNode alloc] init];
      
         NSURL * filePath =[[NSURL alloc] initFileURLWithPath:_path];
         self->myFile = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
@@ -57,13 +127,15 @@
 }
 -(bool) SetPCMShader:(const char *) _data
 {
-       NSLog(@"bettter not see this");
+    NSLog(@"bettter not see this");
     return false;
 }
 -(unsigned int) GetChannels
 {
     if(!myAudio)
+    {
         return 0;
+    }
     return [myFile processingFormat].channelCount;
 }
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels
@@ -94,14 +166,13 @@
 }
 -(bool) SetVolume:(float) _newVolume
 {
-    
     if(_newVolume <= 0)
+    {
         return false;
-   
- 
-     [mySound setVolume:(_newVolume)];
-     float check = [mySound volume];
-         if(check == _newVolume)
+    }
+    [mySound setVolume:(_newVolume)];
+    float check = [mySound volume];
+    if(check == _newVolume)
     {
         return true;
     }
@@ -109,16 +180,17 @@
     {
         return false;
     }
-    
-    
 }
 -(bool) PlaySound
 {
-
-
-     [mySound play];
-    [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:nil];
-
+    [mySound play];
+    [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:
+    ^{
+        if (![macAudio CleanUpSound])
+        {
+            NSLog(@"sound cleanup failed");
+        }
+    }];
     bool returnValue = [mySound isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
@@ -127,9 +199,7 @@
 }
 -(bool) PauseSound
 {
-    
-     [mySound pause];
-    
+    [mySound pause];
     bool returnValue = [mySound isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
@@ -137,8 +207,7 @@
 }
 -(bool) ResumeSound
 {
-    
-     [mySound playAtTime:nil];
+    [mySound playAtTime:nil];
     bool returnValue = [mySound isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
@@ -146,8 +215,7 @@
 }
 -(bool) StopSound
 {
-   
-     [mySound stop];
+    [mySound stop];
     bool returnValue = [mySound isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
@@ -155,8 +223,6 @@
 }
 -(bool) Unload
 {
-
-   
     bool macresult = false;
     if(mySound != nil)
     {
@@ -170,42 +236,6 @@
     return macresult;
 }
 
-@end
-#define  MAX_BUFFER_COUNT = 3;
-#define  STREAMING_BUFFER_SIZE = 65536;
-@interface GMacMusic : NSObject
-{
-@public
-
-    AVAudioEngine * myAudio;
-    AVAudioPlayerNode * mySound;
-    AVAudioMixerNode * myMixer;
-    AVAudioFile * myFile;
-    AVAudioPCMBuffer * myBuffers[3];
-    NSThread * myScheduler;
-    int currentBufferIndex;
-    int index;
-    std::atomic<int> buffersQueued;
-    std::atomic<bool> stopFlag;
-    bool loops ;
-    bool isPlaying;
-    bool isPaused;
-    float volume ;
-    AVAudioFrameCount MaxPosition;
-    AVAudioFrameCount CurrentPosition;
-}
-
--(id) initWithPath:(NSString*) _path;
--(bool) SetPCMShader:(const char *) _data;
--(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
--(bool) SetVolume:(float) _newVolume;
--(unsigned int) GetChannels;
--(bool) StreamStart:(bool) _loops;
--(bool) PauseStream;
--(bool) ResumeStream;
--(bool) StopStream;
--(void) StreamMusic;
--(void) setBuffersQueued:(int) _value;
 @end
 
 @implementation GMacMusic
@@ -261,14 +291,12 @@
     }
     else if(theValues.count > 1)
     {
-         float first = _volumes[0];
-         float second = _volumes[1];
-        float newVal = second -first;
-        if(newVal > 1.0f)
-            newVal = 1.0f;
-        if(newVal < -1.0f)
-            newVal = -1.0f;
-         mySound.pan = newVal;
+        float first = _volumes[0];
+        float second = _volumes[1];
+        float newVal = second - first;
+        if(newVal > 1.0f) newVal = 1.0f;
+        if(newVal < -1.0f) newVal = -1.0f;
+        mySound.pan = newVal;
     }
     else
     {
@@ -280,7 +308,6 @@
 {
     if(_newVolume <= 0)
         return false;
-    
     
     [mySound setVolume:(_newVolume)];
     float check = [mySound volume];
@@ -305,7 +332,7 @@
     AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition:CurrentPosition );
     CurrentPosition += valid;
  
-        AVAudioPCMBuffer * currentBuffer = myBuffers[currentBufferIndex];
+    AVAudioPCMBuffer * currentBuffer = myBuffers[currentBufferIndex];
     [myFile readIntoBuffer:currentBuffer frameCount:valid error:&testError];
 
     while(buffersQueued >= 2)
@@ -315,12 +342,15 @@
     [self setBuffersQueued:(buffersQueued + 1)];
     
     [mySound scheduleBuffer:currentBuffer completionHandler:^{
-       [self setBuffersQueued:(buffersQueued - 1)];
+        if (![macAudio CleanUpMusic])
+        {
+            NSLog(@"music cleanup failed");
+        }
+        [self setBuffersQueued:(buffersQueued - 1)];
     }];
     
     currentBufferIndex++;
-    if(currentBufferIndex >2)
-        currentBufferIndex = 0;
+    if(currentBufferIndex > 2) currentBufferIndex = 0;
     
     //This following code is simillar to needed code down below in an attempt to stop
     //breaks in music when starting playback from begining
@@ -366,9 +396,6 @@
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
-    
-    
-
 }
 
 -(bool) PauseStream
@@ -406,29 +433,6 @@
 
 @end
 
-
-@interface GMacAudio : NSObject
-{
-    @public
-    AVAudioPlayerNode * inputNode;
-    AVAudioEngine * myAudio;
-    AVAudioOutputNode * leftSpeaker;
-    AVAudioOutputNode * rightSpeaker;
-    NSMutableArray *ActiveSounds;
-    NSMutableArray *ActiveMusic;
-
-    float MasterVolume ;
-}
-
--(bool) Init;
--(bool) SetMasterVolume:(float) _newVolume;
--(bool) SetMasterVolumeChannels:(const float *) _values theNumberOfChannels:(int)_numChannels;
--(bool) PauseAll;
--(bool) ResumeAll;
--(bool) StopAll;
-
-@end
-
 @implementation GMacAudio
 
 -(bool) Init
@@ -440,22 +444,17 @@
     ActiveMusic = [[[NSMutableArray alloc] init]  autorelease];
     ActiveSounds = [[[NSMutableArray alloc] init] autorelease];
     [myAudio attachNode:inputNode];
-       [myAudio connect:inputNode to:myAudio.mainMixerNode format:[inputNode outputFormatForBus:0]];
-
-      [myAudio connect:myAudio.mainMixerNode to:myAudio.outputNode format:[inputNode outputFormatForBus:0]];
-    
+    [myAudio connect:inputNode to:myAudio.mainMixerNode format:[inputNode outputFormatForBus:0]];
+    [myAudio connect:myAudio.mainMixerNode to:myAudio.outputNode format:[inputNode outputFormatForBus:0]];
     [myAudio stop];
- 
     result = [myAudio startAndReturnError:&err];
     
     if(myAudio.isRunning)
     {
-        
         return true;
     }
     else
     {
-        
         return false;
     }
 }
@@ -463,11 +462,11 @@
 -(bool) SetMasterVolume:(float) _newVolume
 {
     if(_newVolume <= 0)
+    {
         return false;
-    
-    
+    }
     [myAudio mainMixerNode].outputVolume =_newVolume;
-    float check =   [myAudio mainMixerNode].outputVolume;
+    float check = [myAudio mainMixerNode].outputVolume;
     if(check == _newVolume)
     {
         return true;
@@ -491,12 +490,10 @@
     }
     else if(theValues.count > 1)
     {
-        float newVal = _values[1] -  _values[0];
-        if(newVal > 1.0f)
-            newVal = 1.0f;
-        if(newVal < -1.0f)
-            newVal = -1.0f;
-         myAudio.mainMixerNode.pan = newVal;
+        float newVal = _values[1] - _values[0];
+        if(newVal > 1.0f) newVal = 1.0f;
+        if(newVal < -1.0f) newVal = -1.0f;
+        myAudio.mainMixerNode.pan = newVal;
     }
     else
     {
@@ -540,6 +537,46 @@
     for (int i = 0; i < ActiveMusic.count; i++)
     {
         returnedResult = [ActiveMusic[i] StopStream];
+    }
+    return returnedResult;
+}
+-(bool) CleanUpSound
+{
+    bool returnedResult = true;
+    for (int i = 0; i < ActiveSounds.count; i++)
+    {
+        GMacSound * gMacSound = ActiveSounds[i];
+        unsigned int soundCount = 0;
+        bool safetyCheck = gMacSound->iSound->GetCount(soundCount);
+        if (safetyCheck == false) returnedResult = false;
+        if (soundCount == 1)
+        {
+            MacAppSound * macAppSound = gMacSound->iSound;
+            [ActiveSounds removeObjectAtIndex:i];
+            i--;
+            macAppSound->DecrementCount();
+            iAudio->DecrementCount();
+        }
+    }
+    return returnedResult;
+}
+-(bool) CleanUpMusic
+{
+    bool returnedResult = true;
+    for (int i = 0; i < ActiveMusic.count; i++)
+    {
+        GMacMusic * gMacMusic = ActiveMusic[i];
+        unsigned int musicCount = 0;
+        bool safetyCheck = gMacMusic->iMusic->GetCount(musicCount);
+        if (safetyCheck == false) returnedResult = false;
+        if (musicCount == 1)
+        {
+            MacAppMusic * macAppMusic = gMacMusic->iMusic;
+            [ActiveMusic removeObjectAtIndex:i];
+            i--;
+            macAppMusic->DecrementCount();
+            iAudio->DecrementCount();
+        }
     }
     return returnedResult;
 }

@@ -22,6 +22,23 @@ GSound * testSound = nullptr;
 GSound * testSound2 = nullptr;
 GMusic * testMusic = nullptr;
 GMusic * testMusic2 = nullptr;
+
+GSound * soundBeep = nullptr;
+GSound * soundFrontRight = nullptr;
+GSound * soundFrontCenter = nullptr;
+GSound * soundFrontLeft = nullptr;
+GSound * soundSurroundRight = nullptr;
+GSound * soundBass = nullptr;
+GSound * soundSurroundLeft = nullptr;
+
+GMusic * musicBeep = nullptr;
+GMusic * musicFrontRight = nullptr;
+GMusic * musicFrontCenter = nullptr;
+GMusic * musicFrontLeft = nullptr;
+GMusic * musicSurroundRight = nullptr;
+GMusic * musicBass = nullptr;
+GMusic * musicSurroundLeft = nullptr;
+
 GReturn checkReturned = FAILURE;
 #ifdef _WIN32
 
@@ -29,16 +46,40 @@ const char * testpath =  u8"../../../../gateware.git.0/Unit Tests/Resources/Test
 //const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
 const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
 const char * testpath3 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+
+const char * monoBeep =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
+const char * monoFrontRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
+const char * monoFrontCenter =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
+const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
+const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
+const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
+const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
 #elif __APPLE__
 const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
 //const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
 const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
 const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+
+const char * monoBeep =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
+const char * monoFrontRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
+const char * monoFrontCenter =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
+const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
+const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
+const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
+const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
 #elif __linux__
 const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
 //const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
 const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
 const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
+
+const char * monoBeep =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
+const char * monoFrontRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
+const char * monoFrontCenter =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
+const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
+const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
+const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
+const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
 #endif
 
 
@@ -173,20 +214,20 @@ TEST_CASE("GMusic core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		REQUIRE(G_SUCCESS(GMusic_specific->GetCount(countS)));
 		REQUIRE(G_SUCCESS(GMusic_generic->GetCount(countG)));
 		CHECK(countS == countG);
-		CHECK(countS == 2); // should be exactly 2 references at this point
-		REQUIRE(G_SUCCESS(GMusic_specific->IncrementCount())); // 3
-		REQUIRE(G_SUCCESS(GMusic_generic->IncrementCount())); // 4
+		CHECK(countS == 3); // should be exactly 3 references at this point, as GAudio also has a handle to this object
+		REQUIRE(G_SUCCESS(GMusic_specific->IncrementCount())); // 4
+		REQUIRE(G_SUCCESS(GMusic_generic->IncrementCount())); // 5
 		GMusic_specific->GetCount(countS);
 		GMusic_generic->GetCount(countG);
 		CHECK(countS == countG);
-		CHECK(countS == 4); // should be exactly 4 references at this point
-		REQUIRE(G_SUCCESS(GMusic_specific->DecrementCount())); // 3
-		REQUIRE(G_SUCCESS(GMusic_generic->DecrementCount())); // 2
+		CHECK(countS == 5); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GMusic_specific->DecrementCount())); // 4
+		REQUIRE(G_SUCCESS(GMusic_generic->DecrementCount())); // 3
 		// Free GMusic_specific pointer (user simulation of interface deletion)
-		CHECK(G_SUCCESS(GMusic_specific->DecrementCount())); // 1
+		CHECK(G_SUCCESS(GMusic_specific->DecrementCount())); // 2
 		GMusic_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
 		GMusic_generic->GetCount(countG);
-		REQUIRE(countG == 1); // should be last remaining handle
+		REQUIRE(countG == 2); // should be last remaining user handle
 	}
 	// Finally test interface Forward Compatibilty
 	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
@@ -195,30 +236,30 @@ TEST_CASE("GMusic core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		CHECK(GMusic_generic->RequestInterface(notAnValidInterface, (void**)&GMusic_specific) == GW::INTERFACE_UNSUPPORTED);
 		CHECK(GMusic_specific == nullptr); // should not have changed yet
 		// TODO: Check that GMusic_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
-		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::AUDIO::GMusicUUIID, (void**)&GMusic_specific))); // 2
+		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::AUDIO::GMusicUUIID, (void**)&GMusic_specific))); // 3
 		CHECK(GMusic_specific != nullptr); // GMusic_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GMusic_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GMusic is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
+		REQUIRE(G_SUCCESS(GMusic_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 4
 		CHECK(multiSupport != nullptr); // GMusic IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
-		CHECK(countS == 3); // three valid handles should exist now
+		CHECK(countS == 4); // four valid handles should exist now
 		// Free all handles except GAudio_specific, all should succeed
-		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 2
-		REQUIRE(G_SUCCESS(GMusic_specific->DecrementCount())); // 1
+		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GMusic_specific->DecrementCount())); // 2
 		GMusic_generic->GetCount(countG);
-		REQUIRE(countG == 1); // should be last remaining handle (again)
-		REQUIRE(G_SUCCESS(GMusic_generic->DecrementCount())); // 0
+		REQUIRE(countG == 2); // should be last remaining user handle (again)
+		REQUIRE(G_SUCCESS(GMusic_generic->DecrementCount())); // 1
 
 		//Free GAudio_specific
-		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 0
+		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 1
 		//delete GAudio_specific;
 		GAudio_specific = nullptr;
 	}
-	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+	// done with standard tests, the memory for the object should be released at a safe point by GAudio and all pointers should be invalid
 }
 
 //GSound Test
@@ -261,20 +302,20 @@ TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		REQUIRE(G_SUCCESS(GSound_specific->GetCount(countS)));
 		REQUIRE(G_SUCCESS(GSound_generic->GetCount(countG)));
 		CHECK(countS == countG);
-		CHECK(countS == 2); // should be exactly 2 references at this point
-		REQUIRE(G_SUCCESS(GSound_specific->IncrementCount())); // 3
-		REQUIRE(G_SUCCESS(GSound_generic->IncrementCount())); // 4
+		CHECK(countS == 3); // should be exactly 3 references at this point, as GAudio also has a handle to this object
+		REQUIRE(G_SUCCESS(GSound_specific->IncrementCount())); // 4
+		REQUIRE(G_SUCCESS(GSound_generic->IncrementCount())); // 5
 		GSound_specific->GetCount(countS);
 		GSound_generic->GetCount(countG);
 		CHECK(countS == countG);
-		CHECK(countS == 4); // should be exactly 4 references at this point
-		REQUIRE(G_SUCCESS(GSound_specific->DecrementCount())); // 3
-		REQUIRE(G_SUCCESS(GSound_generic->DecrementCount())); // 2
+		CHECK(countS == 5); // should be exactly 4 references at this point
+		REQUIRE(G_SUCCESS(GSound_specific->DecrementCount())); // 4
+		REQUIRE(G_SUCCESS(GSound_generic->DecrementCount())); // 3
 		// Free GSound_specific pointer (user simulation of interface deletion)
-		CHECK(G_SUCCESS(GSound_specific->DecrementCount())); // 1
+		CHECK(G_SUCCESS(GSound_specific->DecrementCount())); // 2
 		GSound_specific = nullptr; // this pointer should not longer be valid from users standpoint (though it is)
 		GSound_generic->GetCount(countG);
-		REQUIRE(countG == 1); // should be last remaining handle
+		REQUIRE(countG == 2); // should be last remaining user handle
 	}
 	// Finally test interface Forward Compatibilty
 	SECTION("Forward Compatibility Tests", "[RequestInterface], [GetCount], [DecrementCount]")
@@ -283,30 +324,30 @@ TEST_CASE("GSound core test battery", "[CreateGAudio], [CreateMusicStream], [Req
 		CHECK(GSound_generic->RequestInterface(notAnValidInterface, (void**)&GSound_specific) == GW::INTERFACE_UNSUPPORTED);
 		CHECK(GSound_specific == nullptr); // should not have changed yet
 		// TODO: Check that GSound_generic interface supports upgrading to ALL relevant interfaces in the class heirarchy chain
-		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::AUDIO::GSoundUUIID, (void**)&GSound_specific))); // 2
+		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::AUDIO::GSoundUUIID, (void**)&GSound_specific))); // 3
 		CHECK(GSound_specific != nullptr); // GSound_specific pointer is valid again
 		GW::CORE::GSingleThreaded *singleSupport = nullptr;
 		GW::CORE::GMultiThreaded *multiSupport = nullptr;
 		REQUIRE(G_FAIL(GSound_generic->RequestInterface(GW::CORE::GSingleThreadedUUIID, (void**)&singleSupport)));
 		CHECK(singleSupport == nullptr); // GSound is NOT singlethreaded
-		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 3
+		REQUIRE(G_SUCCESS(GSound_generic->RequestInterface(GW::CORE::GMultiThreadedUUIID, (void**)&multiSupport))); // 4
 		CHECK(multiSupport != nullptr); // GSound IS multithreaded
 		// Check final count VS expectations
 		REQUIRE(G_SUCCESS(multiSupport->GetCount(countS)));
-		CHECK(countS == 3); // three valid handles should exist now
+		CHECK(countS == 4); // four valid handles should exist now
 		// Free all handles except GAudio_specific, all should succeed
-		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 2
-		REQUIRE(G_SUCCESS(GSound_specific->DecrementCount())); // 1
+		REQUIRE(G_SUCCESS(multiSupport->DecrementCount())); // 3
+		REQUIRE(G_SUCCESS(GSound_specific->DecrementCount())); // 2
 		GSound_generic->GetCount(countG);
-		REQUIRE(countG == 1); // should be last remaining handle (again)
-		REQUIRE(G_SUCCESS(GSound_generic->DecrementCount())); // 0
+		REQUIRE(countG == 2); // should be last remaining user handle (again)
+		REQUIRE(G_SUCCESS(GSound_generic->DecrementCount())); // 1
 
 		//Free GAudio_specific
-		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 0
+		REQUIRE(G_SUCCESS(GAudio_specific->DecrementCount())); // 1
 		//delete GAudio_specific;
 		GAudio_specific = nullptr;
 	}
-	// done with standard tests, the memory for the object should be released at this point and all pointers should be invalid
+	// done with standard tests, the memory for the object should be released at a safe point by GAudio and all pointers should be invalid
 }
 
 
@@ -428,21 +469,109 @@ Sleep(1);
 
 TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 {
-	atestVolume[0] = 1.0f;
-	atestVolume[3] = 1.0f;
-	atestVolume[5] = 1.0f;
+    float * testvolumes = nullptr;
 
-
-	float * testvolumes = atestVolume;
-
-	REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 6)));
-	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
-
-	#ifdef WIN32
-  	Sleep(1);
-    #else
+    atestVolume[0] = 1.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->Play()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
     sleep(1);
-    #endif
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 1.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->Play()));
+
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 1.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->Play()));
+
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 1.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->Play()));
+
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 1.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundBass)));
+    REQUIRE(G_SUCCESS(checkReturned = soundBass->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundBass->Play()));
+
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 1.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->Play()));
+
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
 
 	atestVolume[0] = 0.5f;
 	// Fail cases
@@ -523,6 +652,103 @@ TEST_CASE("Stop test sound", "[StopSound]")
 
 TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
+    float * testvolumes = nullptr;
+    
+    atestVolume[0] = 1.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 1.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 1.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 1.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 1.0f;
+    atestVolume[5] = 0.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicBass)));
+    REQUIRE(G_SUCCESS(checkReturned = musicBass->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicBass->StreamStart()));
+    
+#ifdef WIN32
+    Sleep(1);
+#else
+    sleep(1);
+#endif
+    
+    atestVolume[0] = 0.0f;
+    atestVolume[1] = 0.0f;
+    atestVolume[2] = 0.0f;
+    atestVolume[3] = 0.0f;
+    atestVolume[4] = 0.0f;
+    atestVolume[5] = 1.0f;
+    testvolumes = atestVolume;
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->SetChannelVolumes(testvolumes, 6)));
+    REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->StreamStart()));
 
     REQUIRE(testMusic != nullptr);
      REQUIRE(testMusic2 != nullptr);
@@ -531,7 +757,7 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 		 atestVolume[i] = 0.0f;
 	 }
 	 atestVolume[0] = { 1.0f };
-	float * testvolumes = atestVolume;
+	testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
 

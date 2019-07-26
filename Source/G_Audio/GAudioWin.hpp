@@ -24,6 +24,7 @@ const unsigned long fourRIFFcc = 'FFIR';
 const unsigned long fourDATAcc = 'atad';
 const unsigned long fourFMTcc = ' tmf';
 const unsigned long fourWAVEcc = 'EVAW';
+const unsigned long fourJUNKcc = 'KNUJ';
 const unsigned long fourXWMAcc = 'AMWX';
 const unsigned long fourDPDScc = 'sdpd';
 
@@ -367,7 +368,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 		{
 		case fourRIFFcc:
 		{
-			 dwRiffDataSize = dwChunkDataSize;
+			dwRiffDataSize = dwChunkDataSize;
 			dwChunkDataSize = 4;
 			ReadFile(returnedHandle, &dwFileType, 4, &dwRead, NULL);
 			if (dwRead != 4)
@@ -384,6 +385,7 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 			break;
 		}
 		case fourWAVEcc:
+		case fourJUNKcc: //FIX: added to support wav files exported from various applications
 		{
 			ReadFile(returnedHandle, &dwIsWave, 4, &dwRead, NULL);
 			if (dwRead != 4)
@@ -392,7 +394,6 @@ HRESULT LoadOnlyWaveHeaderData(const char * path, WAVEFORMATEXTENSIBLE & myWFX, 
 				break;
 			}
 			bytesRead += dwRead;
-
 			break;
 		}
 		case fourFMTcc:
@@ -670,8 +671,9 @@ public:
 	GReturn IncrementCount();
 	GReturn DecrementCount();
 	GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface);
+	GReturn CleanUpSound();
+	GReturn CleanUpMusic();
 	 ~WindowAppAudio();
-
 };
 
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
@@ -694,6 +696,10 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 		if (mscUser != nullptr && mscUser->isPlaying == false && mscUser->mySourceVoice != nullptr)
 		{
 			mscUser->mySourceVoice->FlushSourceBuffers();
+			if (mscUser->audio) // this is where the reference count decrements to zero after the user has released but the audio system has not
+			{
+				mscUser->audio->CleanUpMusic();
+			}
 		}
 		SetEvent(hBufferEndEvent);
 	}
@@ -709,6 +715,10 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 			sndUser->isPaused = true;
 			// Bug fix, reload the audio buffer so the sound can play again (can't beleive I had to fix this!)
 			sndUser->isComplete = true; // this shifts the fix onto the main audio thread which resolves the popping issue
+			if (sndUser->audio) // this is where the reference count decrements to zero after the user has released but the audio system has not
+			{
+				sndUser->audio->CleanUpSound();
+			}
 		}
 
 	}
@@ -1063,6 +1073,12 @@ GReturn WindowAppSound::StopSound()
 	 SoundCounter--;
 	 //Here do not need to call "delete this" when the SoundCounter is 0
 	 //because in GAudio destructor will do that.
+
+	 if (SoundCounter == 0)
+	 {
+		 delete this;
+	 }
+
 	 result = SUCCESS;
 	 return result;
 }
@@ -1123,6 +1139,7 @@ WindowAppSound::~WindowAppSound()
 	{
 		StopSound();
 	}
+	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
@@ -1366,7 +1383,6 @@ GReturn WindowAppMusic::Stream()
 		{
 			DWORD dwRead;
 			DWORD cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
-
 			if (0 == ReadFile(theFile, buffers[CurrentDiskReadBuffer], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
 				theResult = HRESULT_FROM_WIN32(GetLastError());
 			overlap.Offset += cbValid;
@@ -1401,27 +1417,29 @@ GReturn WindowAppMusic::Stream()
 				buf.AudioBytes = cbValid;
 				buf.pAudioData = buffers[CurrentDiskReadBuffer];
 
-			if (CurrentPosition >= cbWaveSize && !loops)
+			if (CurrentPosition >= cbWaveSize)
 			{
-				buf.Flags = XAUDIO2_END_OF_STREAM;
+				if (loops)
+				{
+					mySourceVoice->SubmitSourceBuffer(&buf);
+					CurrentDiskReadBuffer++;
+					CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
+					if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+						theResult = HRESULT_FROM_WIN32(GetLastError());
+					CurrentPosition = 0;
+					//sets the offset to skip right to the streaming data. Used to be overlap.offset = 0; and that caused a pop.
+					FindStreamData(theFile, cbWaveSize, overlap);
+					continue;
+				}
+				else
+				{
+					buf.Flags = XAUDIO2_END_OF_STREAM;
+				}
+			}
 			
-			}
-			else if (CurrentPosition >= cbWaveSize && loops)
-			{
-				mySourceVoice->SubmitSourceBuffer(&buf);
-				CurrentDiskReadBuffer++;
-				CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
-				if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-					theResult = HRESULT_FROM_WIN32(GetLastError());
-				CurrentPosition = 0;
-				overlap.Offset = 0;
-				continue;
-			}
-		
 			mySourceVoice->SubmitSourceBuffer(&buf);
 			CurrentDiskReadBuffer++;
 			CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
-
 		}
 	}
 	XAUDIO2_VOICE_STATE state;
@@ -1584,6 +1602,12 @@ GReturn WindowAppMusic::StopStream()
 	 MusicCounter--;
 	 //Here do not need to call "delete this" when the MusicCounter is 0
 	 //because in GAudio destructor will do that.
+
+	 if (MusicCounter == 0) //the user is removing this object
+	 {
+		 delete this;
+	 }
+
 	 result = SUCCESS;
 	 return result;
 }
@@ -1644,6 +1668,7 @@ WindowAppMusic::~WindowAppMusic()
 	{
 		StopStream();
 	}
+	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
@@ -1731,7 +1756,9 @@ GReturn WindowAppAudio::CreateSound(const char* _path, GSound** _outSound)
 	}
 	snd->myContext->sndUser = snd;
 	result = snd->Init();
+	snd->IncrementCount();
 	activeSounds.push_back(snd);
+	IncrementCount();
 	snd->audio = this;
 	*_outSound = snd;
 	if (result == INVALID_ARGUMENT)
@@ -1795,9 +1822,10 @@ GReturn WindowAppAudio::CreateMusicStream(const char* _path, GMusic** _outMusic)
 	{
 		return result;
 	}
-	msc->audio = this;
-
+	msc->IncrementCount();
 	activeMusic.push_back(msc);
+	IncrementCount();
+	msc->audio = this;
 	*_outMusic = msc;
 	if (result == INVALID_ARGUMENT)
 		return result;
@@ -2007,23 +2035,67 @@ GReturn WindowAppAudio::RequestInterface(const GUUIID & _interfaceID, void ** _o
 }
 WindowAppAudio::~WindowAppAudio()
 {
-	while( activeSounds.size()>0)
+	for (auto s : activeSounds)
 	{
-		delete activeSounds[0];
-		activeSounds[0] = nullptr;
-		activeSounds.erase(activeSounds.begin());
+		s->DecrementCount();
 	}
-	while (activeMusic.size()>0)
+	for (auto m : activeMusic)
 	{
-		delete activeMusic[0];
-		activeMusic[0] = nullptr;
-		activeMusic.erase(activeMusic.begin());
+		m->DecrementCount();
 	}
 
 	theMasterVoice->DestroyVoice();
 	myAudio->StopEngine();
 	myAudio->Release();
 
+}
+
+GReturn WindowAppAudio::CleanUpSound()
+{
+	GReturn result = FAILURE;
+	for (int i = 0; i < activeSounds.size(); i++)
+	{
+		unsigned int soundCount = 0;
+		result = activeSounds[i]->GetCount(soundCount);
+		if (result != SUCCESS)
+		{
+			return result;
+		}
+		if (soundCount == 1)
+		{
+			WindowAppSound * snd = activeSounds[i];
+			activeSounds.erase(activeSounds.begin() + i);
+			i--;
+			snd->DecrementCount();
+			DecrementCount();
+		}
+	}
+	result = SUCCESS;
+	return result;
+}
+
+GReturn WindowAppAudio::CleanUpMusic()
+{
+	GReturn result = FAILURE;
+	for (int i = 0; i < activeMusic.size(); i++)
+	{
+		unsigned int musicCount = 0;
+		result = activeMusic[i]->GetCount(musicCount);
+		if (result != SUCCESS)
+		{
+			return result;
+		}
+		if (musicCount == 1)
+		{
+			WindowAppMusic * msc = activeMusic[i];
+			activeMusic.erase(activeMusic.begin() + i);
+			i--;
+			msc->DecrementCount();
+			DecrementCount();
+		}
+	}
+	result = SUCCESS;
+	return result;
 }
 
 GReturn PlatformGetAudio(GAudio ** _outAudio)
