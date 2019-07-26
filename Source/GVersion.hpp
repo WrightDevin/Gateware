@@ -33,16 +33,16 @@ SOFTWARE.
 // The Major version is increased when a new library is added.(minor & patch are reset)
 #define GATEWARE_MAJOR 6
 // The Minor version is increased whenever an interface is altered.(patch is reset)
-#define GATEWARE_MINOR 3
+#define GATEWARE_MINOR 4
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH ''
+#define GATEWARE_PATCH 'a'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH "EEusebio_GWindowUpdate"
+#define GATEWARE_BRANCH ""
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x7f1e1ef2
+#define GATEWARE_COMMIT_HASH 0x
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v6.3"
+#define GATEWARE_VERSION_STRING "Gateware v6.4a"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (EEusebio_GWindowUpdate) [7f1e1ef2]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.4a () []"
 
 #endif
