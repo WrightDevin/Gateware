@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH 'a'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH ""
+#define GATEWARE_BRANCH "BetaDeployment"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x
+#define GATEWARE_COMMIT_HASH 0x95e0ae93
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.4a"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.4a () []"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.4a (BetaDeployment) [95e0ae93]"
 
 #endif
