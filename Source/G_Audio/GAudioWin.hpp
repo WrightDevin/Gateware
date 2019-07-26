@@ -1383,7 +1383,6 @@ GReturn WindowAppMusic::Stream()
 		{
 			DWORD dwRead;
 			DWORD cbValid = min(STREAMING_BUFFER_SIZE, cbWaveSize - CurrentPosition);
-
 			if (0 == ReadFile(theFile, buffers[CurrentDiskReadBuffer], STREAMING_BUFFER_SIZE, &dwRead, &overlap))
 				theResult = HRESULT_FROM_WIN32(GetLastError());
 			overlap.Offset += cbValid;
@@ -1418,27 +1417,29 @@ GReturn WindowAppMusic::Stream()
 				buf.AudioBytes = cbValid;
 				buf.pAudioData = buffers[CurrentDiskReadBuffer];
 
-			if (CurrentPosition >= cbWaveSize && !loops)
+			if (CurrentPosition >= cbWaveSize)
 			{
-				buf.Flags = XAUDIO2_END_OF_STREAM;
+				if (loops)
+				{
+					mySourceVoice->SubmitSourceBuffer(&buf);
+					CurrentDiskReadBuffer++;
+					CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
+					if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
+						theResult = HRESULT_FROM_WIN32(GetLastError());
+					CurrentPosition = 0;
+					//sets the offset to skip right to the streaming data. Used to be overlap.offset = 0; and that caused a pop.
+					FindStreamData(theFile, cbWaveSize, overlap);
+					continue;
+				}
+				else
+				{
+					buf.Flags = XAUDIO2_END_OF_STREAM;
+				}
+			}
 			
-			}
-			else if (CurrentPosition >= cbWaveSize && loops)
-			{
-				mySourceVoice->SubmitSourceBuffer(&buf);
-				CurrentDiskReadBuffer++;
-				CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
-				if (INVALID_SET_FILE_POINTER == SetFilePointer(theFile, 0, NULL, FILE_BEGIN))
-					theResult = HRESULT_FROM_WIN32(GetLastError());
-				CurrentPosition = 0;
-				overlap.Offset = 0;
-				continue;
-			}
-		
 			mySourceVoice->SubmitSourceBuffer(&buf);
 			CurrentDiskReadBuffer++;
 			CurrentDiskReadBuffer %= MAX_BUFFER_COUNT;
-
 		}
 	}
 	XAUDIO2_VOICE_STATE state;
