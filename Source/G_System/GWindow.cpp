@@ -300,7 +300,7 @@ GReturn AppWindow::OpenWindow()
 	wid = width;
 	heig = height;
 
-	window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
+    window = XCreateWindow(display, XRootWindow(display, screen), x, y, wid, heig, 5,
 		depth, InputOutput, CopyFromParent, valueMask, &attributes);
 
 	if (!window)
@@ -590,18 +590,18 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		XUnlockDisplay(display);
 		return SUCCESS;
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
 		NSUInteger styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
 		NSRect rect = NSMakeRect(xPos, yPos, width, height);
-        
+
 		[window setStyleMask : styleMask];
 		[window setFrame : rect display : YES];
-       
+
         bool fullscreen = false;
         if (fullscreen == true)
             [window toggleFullScreen : nil];
@@ -708,9 +708,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -820,9 +820,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -931,9 +931,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		return SUCCESS;
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		if ([window isMiniaturized])
 			[window deminiaturize : nil];
 
@@ -1005,9 +1005,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		}
 
 #elif __APPLE__
-        
+
         RUN_ON_UI_THREAD( ^{
-            
+
 		bool fullscreen;
 		IsFullscreen(fullscreen);
 		if (fullscreen == true)
@@ -1016,9 +1016,9 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 		}
             FlushMacEventLoop();
             [window miniaturize:nil];
-            
+
         });
-            
+
 		/*dispatch_sync(dispatch_get_main_queue(), ^{
 			FlushMacEventLoop();
 		});
@@ -1128,9 +1128,9 @@ GReturn AppWindow::MoveWindow(int _x, int _y)
     }
 
 #elif __APPLE__
-    
+
     RUN_ON_UI_THREAD( ^{
-        
+
 	NSRect rect = window.frame;
 	CGPoint newPos;
 	newPos.y = yPos - height;
@@ -1223,7 +1223,7 @@ XLockDisplay(display);
 
 
 #elif __APPLE__
-	
+
     RUN_ON_UI_THREAD( ^{
     //NSRect rect = window.frame;
     NSRect rect = NSMakeRect(xPos, yPos, _width, _height);
@@ -1407,9 +1407,9 @@ GReturn AppWindow::DeregisterListener(GListener* _removeListener)
 
 	std::pair<GListener*, unsigned long long> search(_removeListener, 0);
 	std::vector<std::pair<GListener*, unsigned long long>>::const_iterator iter =
-		find_if(listeners.begin(), listeners.end(), 
-			[&search](std::pair<GListener*, unsigned long long> const& elem) { 
-				return elem.first == search.first; 
+		find_if(listeners.begin(), listeners.end(),
+			[&search](std::pair<GListener*, unsigned long long> const& elem) {
+				return elem.first == search.first;
 	});
 	if (iter != listeners.end()) {
 		iter->first->DecrementCount();
@@ -1888,6 +1888,23 @@ GReturn AppWindow::CloseWindow()
         return FAILURE;
     }
     //XFlush(display);
+    //LastEvent = GWindowInputEvents::DESTROY;
+    //unsigned int eventMask = SubstructureNotifyMask | PropertyChangeMask | ExposureMask | SubstructureRedirectMask;
+
+    //Fill the correct Event structure for the action you performed on the window to update the server side.
+    //XEvent eventStruct;
+    //memset(&eventStruct, 0, sizeof eventStruct);
+    //eventStruct.type = SelectionNotify;
+    //eventStruct.xselection.display = display;
+    //eventStruct.xdestroywindow.window = window;
+    //eventStruct.xselection.send_event = true;
+    //eventStruct.xclient.
+    //Send event to server and wait a bit so it can receive it.
+    //XSendEvent(display, window, false, eventMask, &eventStruct);
+    //sleep(1);
+    //XFlush(display);
+
+    //XUnlockDisplay(display);
     XUnmapWindow(display, window);
     if(XDestroyWindow(display,window)==BadWindow)
     {
@@ -1898,6 +1915,7 @@ GReturn AppWindow::CloseWindow()
     else
     {
         XUnlockDisplay(display);
+        //XCloseDisplay(display);
         return SUCCESS;
     }
 	return FEATURE_UNSUPPORTED;

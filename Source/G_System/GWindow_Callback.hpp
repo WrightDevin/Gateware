@@ -333,6 +333,7 @@ namespace
 
                                     mutex.unlock();
                                 }
+                        break;
                     }
                 case ButtonPress:
                     {
