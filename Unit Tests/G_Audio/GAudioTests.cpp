@@ -478,6 +478,7 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
 
+#ifdef WIN32
 	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
     atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
@@ -549,6 +550,8 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
     REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoSurroundRight, &soundSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->Play()));
+    
+#endif
 
 #ifdef WIN32
     Sleep(1);
@@ -556,7 +559,9 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
     sleep(1);
 #endif
 
+    for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
 	atestVolume[0] = 0.5f;
+    testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testSound->SetChannelVolumes(nullptr, 0) == INVALID_ARGUMENT);
 
@@ -637,6 +642,7 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
     
+#ifdef WIN32
 	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
 	atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
@@ -708,7 +714,8 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
     REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoSurroundRight, &musicSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->StreamStart()));
-
+#endif
+    
     REQUIRE(testMusic != nullptr);
      REQUIRE(testMusic2 != nullptr);
 	 for (int i = 0; i < 6; i++)
