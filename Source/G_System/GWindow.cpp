@@ -40,6 +40,7 @@ void RUN_ON_UI_THREAD(dispatch_block_t block)
 using namespace GW;
 using namespace CORE;
 using namespace SYSTEM;
+using namespace INTERNAL;
 
 //namespace
 //{
@@ -114,6 +115,8 @@ public:
 	GReturn ProcessWindowEvents();
 
 	GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
+
+	GReturn SetWindowName(char* newName);
 
 	GReturn InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style);
 
@@ -483,6 +486,7 @@ GReturn AppWindow::ProcessWindowEvents()
 #endif
     return FAILURE;
 }
+
 GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)
 {
 #ifdef _WIN32
@@ -1045,6 +1049,63 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 	break;
 	}
 	return SUCCESS;
+}
+
+GReturn AppWindow::SetWindowName(char* newName)
+{
+
+
+
+    bool operationResult = false;
+
+
+#ifdef _WIN32
+
+    if(newName == nullptr)
+        return INVALID_ARGUMENT;
+    
+    if (wndHandle == nullptr)
+        return REDUNDANT_OPERATION;
+
+	operationResult = SetWindowTextW(wndHandle, G_TO_UTF16(newName).c_str());
+
+#elif __linux__
+	//Linux implementation
+
+  if(newName == nullptr)
+      return INVALID_ARGUMENT;
+
+  if (window == 0)
+      return REDUNDANT_OPERATION;
+
+int nameChangeResult = XStoreName(display, window, newName);
+
+if(nameChangeResult != 0)
+    operationResult = true;
+
+#elif __APPLE__
+	//MacOS implementetion
+    
+    
+    if(newName == nil)
+        return INVALID_ARGUMENT;
+    //window = nullptr;
+    NSString* macName = [NSString stringWithCString: newName encoding: NSUTF8StringEncoding];
+
+    if(!window)
+        return REDUNDANT_OPERATION;
+    dispatch_sync(dispatch_get_main_queue(), ^{window.title = macName; } );
+    
+    if(window.title == macName)
+        operationResult = true;
+    
+
+#endif
+
+	if (operationResult)
+		return SUCCESS;
+
+	return FAILURE;
 }
 
 GReturn AppWindow::InitWindow(int _x, int _y, int _width, int _height, GWindowStyle _style)

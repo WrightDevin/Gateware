@@ -61,9 +61,10 @@ namespace GW
 		};
 
 		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
+
 		static const GUUIID GWindowUUIID =
 		{
-			0xe53c2594, 0xe47c, 0x49a5,{ 0xbd, 0x1b, 0x53, 0x41, 0xf2, 0x60, 0x3f, 0x95 }
+			0x8a3d75b1, 0x4169, 0x4c1f,{ 0xa7, 0x2, 0xb8, 0x9d, 0x2a, 0x36, 0x7e, 0xe }
 		};
 
 		//! A thread-safe window creation and management library.
@@ -120,6 +121,16 @@ namespace GW
 			*	\retval REDUNDANT_OPERATION No window exists to edit. 
 			*/
 			virtual GReturn ReconfigureWindow(int _x, int _y, int _width, int _height, GWindowStyle _style) = 0;
+
+			//! Changes de text displayed at the top bar of the window.
+			/*!
+			*	\param [in] _style The style to give to the window. (see GWindowStyle for style options)
+			*
+			*	\retval SUCCESS The window successfully had its text changed.
+			*	\retval INVALID_ARGUMENT The string passed in contains invalid characters or is null.
+			*	\retval REDUNDANT_OPERATION No window exists to edit. 
+			*/
+			virtual GReturn SetWindowName(char* newName) = 0;
 
 			//! Repositions the currently opened window to the specified x and y pixels on screen.
 			/*!
