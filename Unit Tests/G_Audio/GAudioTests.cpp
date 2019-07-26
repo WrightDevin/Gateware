@@ -467,103 +467,86 @@ Sleep(1);
 #endif
 }
 
+#define FRONT_LEFT 0
+#define FRONT_RIGHT 1
+#define FRONT_CENTER 2
+#define SURROUND_CENTER 3
+#define SURROUND_LEFT 4
+#define SURROUND_RIGHT 5
+
 TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
 
-    atestVolume[0] = 1.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+    atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontLeft, &soundFrontLeft)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->Play()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 1.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontCenter, &soundFrontCenter)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->Play()));
 
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 1.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontRight, &soundFrontRight)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->Play()));
 
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 1.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoSurroundLeft, &soundSurroundLeft)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->Play()));
 
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 1.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundBass)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoBass, &soundBass)));
     REQUIRE(G_SUCCESS(checkReturned = soundBass->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundBass->Play()));
 
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 1.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoSurroundRight, &soundSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->Play()));
 
@@ -654,99 +637,75 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
     
-    atestVolume[0] = 1.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontLeft, &musicFrontLeft)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->StreamStart()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 1.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontCenter, &musicFrontCenter)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->StreamStart()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 1.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontRight, &musicFrontRight)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->StreamStart()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 1.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoSurroundLeft, &musicSurroundLeft)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->StreamStart()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 1.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicBass)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoBass, &musicBass)));
     REQUIRE(G_SUCCESS(checkReturned = musicBass->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicBass->StreamStart()));
     
 #ifdef WIN32
-    Sleep(1);
+    Sleep(1000);
 #else
-    sleep(1);
+    sleep(1000);
 #endif
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 1.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoSurroundRight, &musicSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->StreamStart()));
 
