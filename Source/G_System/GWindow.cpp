@@ -1054,17 +1054,14 @@ GReturn AppWindow::ReconfigureWindow(int _x, int _y, int _width, int _height, GW
 GReturn AppWindow::SetWindowName(char* newName)
 {
 
-
-
     bool operationResult = false;
-
 
 #ifdef _WIN32
 
     if(newName == nullptr)
         return INVALID_ARGUMENT;
     
-    if (wndHandle == nullptr)
+    if(wndHandle == nullptr)
         return REDUNDANT_OPERATION;
 
 	operationResult = SetWindowTextW(wndHandle, G_TO_UTF16(newName).c_str());
@@ -1072,28 +1069,28 @@ GReturn AppWindow::SetWindowName(char* newName)
 #elif __linux__
 	//Linux implementation
 
-  if(newName == nullptr)
-      return INVALID_ARGUMENT;
+	if(newName == nullptr)
+		return INVALID_ARGUMENT;
 
-  if (window == 0)
-      return REDUNDANT_OPERATION;
+	if(window == 0)
+		return REDUNDANT_OPERATION;
 
-int nameChangeResult = XStoreName(display, window, newName);
+	int nameChangeResult = XStoreName(display, window, newName);
 
-if(nameChangeResult != 0)
-    operationResult = true;
+	if(nameChangeResult != 0)
+		operationResult = true;
 
 #elif __APPLE__
 	//MacOS implementetion
     
-    
-    if(newName == nil)
+	if(newName == nil)
         return INVALID_ARGUMENT;
-    //window = nullptr;
+	
+	if(!window)
+        return REDUNDANT_OPERATION;
+
     NSString* macName = [NSString stringWithCString: newName encoding: NSUTF8StringEncoding];
 
-    if(!window)
-        return REDUNDANT_OPERATION;
     dispatch_sync(dispatch_get_main_queue(), ^{window.title = macName; } );
     
     if(window.title == macName)

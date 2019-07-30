@@ -131,11 +131,12 @@ TEST_CASE("Open a Window.", "[OpenWindow]")
 
 TEST_CASE("Change Window Name.", "[SetWindowName]")
 {
-	//Pass Case; Make sure the name was changed.
+	//Pass Case
 	REQUIRE(G_SUCCESS(appWindow->SetWindowName((char*)"New Window Name")));
 
-	//Fail Case; name cannot be null
+	//Fail Case
 	REQUIRE(G_FAIL(appWindow->SetWindowName(nullptr)));
+
     
 }
 
