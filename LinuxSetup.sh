@@ -1,3 +1,12 @@
+#In order to run this shell script you must first set appropriate permissions (only once)
+#sudo chmod 774 LinuxSetup.sh
+
+#Also remember to install the necessary development libraries
+#sudo apt-get install libx11-dev
+#sudo apt-get install mesa-utils
+
+#!/bin/bash
+
 sudo apt install cmake
 cd ../
 
