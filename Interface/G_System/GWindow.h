@@ -60,11 +60,11 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
+		//! Unique Identifier for this interface. {769BC008-3860-4E00-A55C-5D6316DCB9F3}
 
 		static const GUUIID GWindowUUIID =
 		{
-			0x8a3d75b1, 0x4169, 0x4c1f,{ 0xa7, 0x2, 0xb8, 0x9d, 0x2a, 0x36, 0x7e, 0xe }
+			0x769bc008, 0x3860, 0x4e00, { 0xa5, 0x5c, 0x5d, 0x63, 0x16, 0xdc, 0xb9, 0xf3 }
 		};
 
 		//! A thread-safe window creation and management library.
@@ -130,7 +130,7 @@ namespace GW
 			*	\retval INVALID_ARGUMENT The string passed in contains invalid characters or is null.
 			*	\retval REDUNDANT_OPERATION No window exists to edit. 
 			*/
-			virtual GReturn SetWindowName(char* newName) = 0;
+			virtual GReturn SetWindowName(const char* _newName) = 0;
 
 			//! Repositions the currently opened window to the specified x and y pixels on screen.
 			/*!
