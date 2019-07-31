@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH ''
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH ""
+#define GATEWARE_BRANCH "JP_Branch-Audio"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x20b7de61
+#define GATEWARE_COMMIT_HASH 0xbdc8e62a
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (JP_Branch-Audio) [20b7de61]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (JP_Branch-Audio) [bdc8e62a]"
 
 #endif
