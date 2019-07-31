@@ -12,36 +12,43 @@
 
 //THESE TEST CASES ARE SET UP IN A SPECIFIC ORDER. REORDERING TEST CASES COULD CAUSE
 //CRASHES, FALSE FAILURES, or FALSE PASSES.
+
 using namespace GW;
 using namespace AUDIO;
 
 // Global variables needed for all Test Cases.
 
 GAudio * testAudio = nullptr;
+
 GSound * testSound = nullptr;
 GSound * testSound2 = nullptr;
+
 GMusic * testMusic = nullptr;
 GMusic * testMusic2 = nullptr;
 
 GSound * soundBeep = nullptr;
+
 GSound * soundFrontRight = nullptr;
 GSound * soundFrontCenter = nullptr;
 GSound * soundFrontLeft = nullptr;
+
 GSound * soundSurroundRight = nullptr;
 GSound * soundBass = nullptr;
 GSound * soundSurroundLeft = nullptr;
 
 GMusic * musicBeep = nullptr;
+
 GMusic * musicFrontRight = nullptr;
 GMusic * musicFrontCenter = nullptr;
 GMusic * musicFrontLeft = nullptr;
+
 GMusic * musicSurroundRight = nullptr;
 GMusic * musicBass = nullptr;
 GMusic * musicSurroundLeft = nullptr;
 
 GReturn checkReturned = FAILURE;
-#ifdef _WIN32
 
+#ifdef _WIN32 // pathing needs one less indirection on windows
 const char * testpath =  u8"../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
 //const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
 const char * testpath2 = u8"../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
@@ -54,36 +61,31 @@ const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources
 const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
 const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
 const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
-#elif __APPLE__
+#else
 const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
 //const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
 const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
 const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
 
-const char * monoBeep =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
-const char * monoFrontRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
-const char * monoFrontCenter =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
-const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
-const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
-const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
-const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
-#elif __linux__
-const char * testpath =  u8"../../../../../gateware.git.0/Unit Tests/Resources/TestBeep.wav";
-//const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic.wav";
-const char * testpath2 = u8"../../../../../gateware.git.0/Unit Tests/Resources/Doom.wav";
-const char * testpath3 = u8"../../../../../gateware.git.0/Unit Tests/Resources/TestMusic2.wav";
-
-const char * monoBeep =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
-const char * monoFrontRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
-const char * monoFrontCenter =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
-const char * monoFrontLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
-const char * monoSurroundRight =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
-const char * monoBass =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
-const char * monoSurroundLeft =  u8"../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
+const char * monoBeep =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoBeep.wav";
+const char * monoFrontRight =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoFrontRight.wav";
+const char * monoFrontCenter =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoFrontCenter.wav";
+const char * monoFrontLeft =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoFrontLeft.wav";
+const char * monoSurroundRight =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundRight.wav";
+const char * monoBass =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoBass.wav";
+const char * monoSurroundLeft =  u8"../../../../../gateware.git.0/Unit Tests/Resources/MonoSurroundLeft.wav";
 #endif
 
+void SLEEP(int d)
+{
+#ifdef WIN32
+    Sleep(d);
+#else
+    usleep(d*1000);
+#endif
+}
 
-//const char * testpath4 = "TestSound2.wav";
+
 int numOfOutputs;
 float atestVolume[6] = { 1.0f, 0.0f, 0.0f ,0.0f, 0.0f, 0.0f};
 
@@ -368,9 +370,9 @@ TEST_CASE("Initialize Audio", "[Init]")
 {
 
 #ifdef WIN32
- numOfOutputs = 6;
+    numOfOutputs = 6;
 #else
- numOfOutputs = 2;
+    numOfOutputs = 2;
 #endif
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->Init(numOfOutputs)));
@@ -384,7 +386,6 @@ TEST_CASE("Creating Sound.", "[CreateSound]")
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &testSound)));
-
     REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath3, &testSound2)));
 
 	checkReturned = FAILURE;
@@ -416,21 +417,9 @@ TEST_CASE("Setting master volume", "[SetMasterVolume]")
 //Starting Sound Tests
 TEST_CASE("Playing test sound", "[PlaySound]")
 {
-	// Fail cases
-	// CHECK(testSound->PlaySound() == INVALID_ARGUMENT);
-	// Pass cases
-
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
-    //REQUIRE(G_SUCCESS(checkReturned = testSound->Pause())); //TESTING
-#ifdef WIN32
-  	Sleep(1);
-#else
- //sleep(1); //the sleep is a higher duration than the sound itself. Uncomment if you want to hear the sound
-#endif
-
+    SLEEP(1); //comment me out
     REQUIRE(G_SUCCESS(checkReturned = testSound2->Play()));
-
-
     checkReturned = FAILURE;
 }
 
@@ -438,153 +427,100 @@ TEST_CASE("Pausing test sound", "[Pause]")
 {
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
-#ifdef WIN32
-Sleep(1);
-#else
- sleep(1); //TestSound 2 should be the only sound playing
-#endif
+    SLEEP(1);
 	REQUIRE(G_SUCCESS(checkReturned = testSound2->Pause()));
 	checkReturned = FAILURE;
-#ifdef WIN32
-Sleep(1);
-#else
- sleep(1); //Should be no audio playing for 1 second.
-#endif
+    SLEEP(1);
 }
 
 TEST_CASE("Resuming test sound", "[Resume]")
 {
 	// Fail cases
-	//CHECK(testSound->Resume() == INVALID_ARGUMENT);
+
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Resume()));
 	REQUIRE(G_SUCCESS(checkReturned = testSound2->Resume()));
 	checkReturned = FAILURE;
-#ifdef WIN32
-Sleep(1);
-#else
- sleep(1); //Should hear audio playing
-#endif
+    SLEEP(1);
 }
+
+#define FRONT_LEFT 0
+#define FRONT_RIGHT 1
+#define FRONT_CENTER 2
+#define SURROUND_CENTER 3
+#define SURROUND_LEFT 4
+#define SURROUND_RIGHT 5
 
 TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
 
-    atestVolume[0] = 1.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+    atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontLeft, &soundFrontLeft)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontLeft->Play()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 1.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontCenter, &soundFrontCenter)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontCenter->Play()));
 
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 1.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoFrontRight, &soundFrontRight)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundFrontRight->Play()));
 
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 1.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoSurroundLeft, &soundSurroundLeft)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundLeft->Play()));
 
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 1.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundBass)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoBass, &soundBass)));
     REQUIRE(G_SUCCESS(checkReturned = soundBass->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundBass->Play()));
 
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
 
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 1.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(testpath, &soundSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateSound(monoSurroundRight, &soundSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = soundSurroundRight->Play()));
 
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
 
+    for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
 	atestVolume[0] = 0.5f;
+    testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testSound->SetChannelVolumes(nullptr, 0) == INVALID_ARGUMENT);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testSound2->SetChannelVolumes(testvolumes, 6)));
 
-#ifdef WIN32
-
 	for (int k = 1; k < numOfOutputs; k++)
 	{
-		Sleep(1);
+		SLEEP(1);
 		for (int i = 0; i < 6; i++)
 		{
 			atestVolume[i] = 0.0f;
@@ -593,8 +529,8 @@ TEST_CASE("Setting sound channel volumes", "[SetChannelVolumes]")
 		REQUIRE(G_SUCCESS(checkReturned = testSound->SetChannelVolumes(testvolumes, 6)));
 		REQUIRE(G_SUCCESS(checkReturned = testSound->Play()));
 	}
-	Sleep(1);
-#endif
+	SLEEP(1);
+    
 	checkReturned = FAILURE;
 }
 
@@ -611,18 +547,10 @@ TEST_CASE("Pausing & Stopping test sound", "[Pause], [StopSound]")
 {
 	REQUIRE(G_SUCCESS(checkReturned = testSound->Pause()));
 	checkReturned = FAILURE;
-	#ifdef WIN32
-  	Sleep(1);
-    #else
-    sleep(1);
-    #endif
+    SLEEP(1);
 	REQUIRE(G_SUCCESS(checkReturned = testSound->StopSound()));
 	checkReturned = FAILURE;
-	#ifdef WIN32
-  	Sleep(1);
-    #else
-    sleep(1);
-    #endif
+    SLEEP(1);
 
 }
 
@@ -654,110 +582,67 @@ TEST_CASE("Setting music channel volumes", "[SetChannelVolumes]")
 {
     float * testvolumes = nullptr;
     
-    atestVolume[0] = 1.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontLeft, &musicFrontLeft)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontLeft->StreamStart()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 1.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontCenter)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontCenter, &musicFrontCenter)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontCenter->StreamStart()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 1.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[FRONT_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicFrontRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoFrontRight, &musicFrontRight)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicFrontRight->StreamStart()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 1.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_LEFT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundLeft)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoSurroundLeft, &musicSurroundLeft)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundLeft->StreamStart()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 1.0f;
-    atestVolume[5] = 0.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_CENTER] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicBass)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoBass, &musicBass)));
     REQUIRE(G_SUCCESS(checkReturned = musicBass->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicBass->StreamStart()));
     
-#ifdef WIN32
-    Sleep(1);
-#else
-    sleep(1);
-#endif
+    SLEEP(1000);
     
-    atestVolume[0] = 0.0f;
-    atestVolume[1] = 0.0f;
-    atestVolume[2] = 0.0f;
-    atestVolume[3] = 0.0f;
-    atestVolume[4] = 0.0f;
-    atestVolume[5] = 1.0f;
+	for (size_t i = 0; i < 6; i++) atestVolume[i] = 0.0f;
+	atestVolume[SURROUND_RIGHT] = 1.0f;
     testvolumes = atestVolume;
-    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(testpath, &musicSurroundRight)));
+    REQUIRE(G_SUCCESS(checkReturned = testAudio->CreateMusicStream(monoSurroundRight, &musicSurroundRight)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->SetChannelVolumes(testvolumes, 6)));
     REQUIRE(G_SUCCESS(checkReturned = musicSurroundRight->StreamStart()));
-
+    
     REQUIRE(testMusic != nullptr);
-     REQUIRE(testMusic2 != nullptr);
-	 for (int i = 0; i < 6; i++)
-	 {
+    REQUIRE(testMusic2 != nullptr);
+	for (int i = 0; i < 6; i++)
+	{
 		 atestVolume[i] = 0.0f;
-	 }
-	 atestVolume[0] = { 1.0f };
+	}
+	atestVolume[0] = { 1.0f };
 	testvolumes = atestVolume;
+    
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
 
@@ -781,53 +666,49 @@ TEST_CASE("Playing test music", "[Playmusic]")
 	// Pass cases
   	REQUIRE(G_SUCCESS(checkReturned = testMusic->StreamStart()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StreamStart()));
-#ifdef WIN32
+
 	float * testvolumes = atestVolume;
 
-		Sleep(1);
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
-		for (int i = 0; i < 6; i++)
-		{
-			atestVolume[i] = 0.0f;
-		}
-		atestVolume[3] = 1.0f;
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 6)));
-		atestVolume[3] = 0.0f;
-		atestVolume[2] = 1.0f;
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
+	SLEEP(1);
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
+	for (int i = 0; i < 6; i++)
+	{
+		atestVolume[i] = 0.0f;
+	}
+	atestVolume[3] = 1.0f;
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 6)));
+	atestVolume[3] = 0.0f;
+	atestVolume[2] = 1.0f;
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
 
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
 
-		Sleep(1);
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
-		for (int i = 0; i < 6; i++)
-		{
-			atestVolume[i] = 0.0f;
-		}
-		atestVolume[4] = 1.0f;
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 6)));
-		atestVolume[4] = 0.0f;
-		atestVolume[1] = 1.0f;
+	SLEEP(1);
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
+	for (int i = 0; i < 6; i++)
+	{
+		atestVolume[i] = 0.0f;
+	}
+	atestVolume[4] = 1.0f;
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->SetChannelVolumes(testvolumes, 6)));
+	atestVolume[4] = 0.0f;
+	atestVolume[1] = 1.0f;
 
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
-		REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
-		REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
-		Sleep(1);
-
-#else
- sleep(1);
-#endif
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
+	REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
+	SLEEP(1);
 
 	checkReturned = FAILURE;
 
 }
 
 TEST_CASE("Setting test music volume", "[SetVolume]")
-{   REQUIRE(testMusic != nullptr);
-  // REQUIRE(testMusic2 != nullptr);
+{
+    REQUIRE(testMusic != nullptr);
     // Fail cases
     CHECK(testMusic->SetVolume(-1) == INVALID_ARGUMENT);
     // Pass cases
@@ -840,7 +721,6 @@ TEST_CASE("Pausing test music", "[Pause]")
     REQUIRE(testMusic != nullptr);
     REQUIRE(testMusic2 != nullptr);
 	// Fail cases
-	//CHECK(testmusic->Pause() == INVALID_ARGUMENT);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
@@ -849,7 +729,7 @@ TEST_CASE("Pausing test music", "[Pause]")
 	{
 		atestVolume[i] = 0.0f;
 	}
-     atestVolume[3] = atestVolume[4] = atestVolume[5] = {0.3f};
+    atestVolume[3] = atestVolume[4] = atestVolume[5] = {0.3f};
 	float * testvolumes = atestVolume;
 	// Fail cases
 	CHECK(testMusic->SetChannelVolumes(nullptr, 1) == INVALID_ARGUMENT);
@@ -863,11 +743,7 @@ TEST_CASE("Pausing test music", "[Pause]")
 	atestVolume[0] = atestVolume[1] = atestVolume[2] = { 0.5f };
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetChannelVolumes(testvolumes, 6)));
 	checkReturned = FAILURE;
-#ifdef WIN32
-  	Sleep(1);
-#else
- sleep(1);
-#endif
+    SLEEP(1);
 
 }
 TEST_CASE("Resuming test music", "[Resume]")
@@ -877,16 +753,12 @@ TEST_CASE("Resuming test music", "[Resume]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetVolume(0.2)));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->SetVolume(1)));
 	// Fail cases
-	//CHECK(testmusic->Resume() == INVALID_ARGUMENT);
+
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
 	checkReturned = FAILURE;
-#ifdef WIN32
-  	Sleep(1);
-#else
- sleep(1);
-#endif
+    SLEEP(1);
 
 }
 
@@ -898,20 +770,18 @@ TEST_CASE("Stop test music", "[Stopmusic]")
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
     REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
 	checkReturned = FAILURE;
-#ifdef WIN32
-  	Sleep(1);
-#else
- sleep(1);
-#endif
+    SLEEP(1);
 
 }
 
-//TEST_CASE("Editing test music PCM", "[EditPCM]")
-//{
-//	const char* testdata = nullptr;
-//	// Pass cases
-//	REQUIRE(G_SUCCESS(testMusic->SetPCMShader(testdata)));
-//}
+/*
+*   TEST_CASE("Editing test music PCM", "[EditPCM]")
+*   {
+*      const char* testdata = nullptr;
+*      // Pass cases
+*      REQUIRE(G_SUCCESS(testMusic->SetPCMShader(testdata)));
+*   }
+*/
 
 //Last of Audio Tests
 TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
@@ -942,11 +812,7 @@ TEST_CASE("Pausing all sounds and music.", "[PauseAll]")
 	testMusic->StreamStart(true);
     testMusic2->StreamStart();
 	testSound->Play();
-#ifdef WIN32
-  	Sleep(1);
-#else
- sleep(1);
-#endif
+    SLEEP(1);
 
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->PauseAll()));
@@ -973,32 +839,18 @@ TEST_CASE("Pausing & Stopping test music", "[Pause], [Stopmusic]")
 {
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->ResumeStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->ResumeStream()));
-	#ifdef WIN32
-  	Sleep(1);
-    #else
-    sleep(1);
-    #endif
+    SLEEP(1);
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->PauseStream()));
-	#ifdef WIN32
-  	Sleep(1);
-    #else
-    sleep(1);
-    #endif
+	SLEEP(1);
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->StopStream()));
 	REQUIRE(G_SUCCESS(checkReturned = testMusic2->StopStream()));
-	#ifdef WIN32
-  	Sleep(1);
-    #else
-    sleep(1);
-    #endif
+	SLEEP(1);
 
 	//Start Stream again
-	#ifdef WIN32
     testMusic->StreamStart(true);
 	REQUIRE(G_SUCCESS(checkReturned = testMusic->PauseStream()));
-  	Sleep(2000);
-    #endif
+  	SLEEP(2000);
 }
 
 TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
@@ -1007,11 +859,7 @@ TEST_CASE("Resuming all sounds and music.", "[ResumeAll]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->ResumeAll()));
 	checkReturned = FAILURE;
-#ifdef WIN32
-  	Sleep(2000); //Should play some audio before it hits the StopAll().
-#else
- sleep(1);
-#endif
+    SLEEP(2000);
 
 }
 
@@ -1021,19 +869,34 @@ TEST_CASE("Stopping all sounds and music.", "[StopAll]")
 	// Pass cases
 	REQUIRE(G_SUCCESS(checkReturned = testAudio->StopAll()));
 	checkReturned = FAILURE;
-	testMusic->DecrementCount();
-	testMusic2->DecrementCount();
+    
 	testSound->DecrementCount();
 	testSound2->DecrementCount();
-	testAudio->DecrementCount();
+    
+    soundFrontLeft->DecrementCount();
+    soundFrontRight->DecrementCount();
+    soundFrontCenter->DecrementCount();
+    
+    soundSurroundLeft->DecrementCount();
+    soundSurroundRight->DecrementCount();
+    soundBass->DecrementCount();
+    
+    testMusic->DecrementCount();
+    testMusic2->DecrementCount();
+    
+    musicFrontLeft->DecrementCount();
+    musicFrontRight->DecrementCount();
+    musicFrontCenter->DecrementCount();
+    
+    musicSurroundLeft->DecrementCount();
+    musicSurroundRight->DecrementCount();
+    musicBass->DecrementCount();
+    
+    testAudio->DecrementCount();
 
 	testAudio = nullptr;
 	testMusic = nullptr;
 	testMusic2 = nullptr;
 	testSound = nullptr;
 	testSound2 = nullptr;
-
 }
-
-
-
