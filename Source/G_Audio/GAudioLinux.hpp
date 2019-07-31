@@ -47,6 +47,7 @@ const unsigned long fourRIFFcc = 'FFIR';
 const unsigned long fourDATAcc = 'atad';
 const unsigned long fourFMTcc = ' tmf';
 const unsigned long fourWAVEcc = 'EVAW';
+const unsigned long fourJUNKcc = 'KNUJ';
 const unsigned long fourXWMAcc = 'AMWX';
 const unsigned long fourDPDScc = 'sdpd';
 using std::atomic;
@@ -161,6 +162,7 @@ someWaveFile = fopen(path, "r");
                  break;
                 }
                 case fourWAVEcc:
+                case fourJUNKcc: //FIX: added to support wav files exported from various applications
                 {
 
                     dwRead = fread(&throwAway,1,4,someWaveFile);
