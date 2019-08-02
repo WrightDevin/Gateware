@@ -132,8 +132,8 @@ TEST_CASE("Testing logging functions", "[Log], [LogCategorized]")
 {
 	//Fail cases
 	REQUIRE(m_log->Log(nullptr) == GW::INVALID_ARGUMENT);
-	REQUIRE(m_log->LogCatergorized(nullptr, "Something") == GW::INVALID_ARGUMENT);
-	REQUIRE(m_log->LogCatergorized("Something", nullptr) == GW::INVALID_ARGUMENT);
+	REQUIRE(m_log->LogCategorized(nullptr, "Something") == GW::INVALID_ARGUMENT);
+	REQUIRE(m_log->LogCategorized("Something", nullptr) == GW::INVALID_ARGUMENT);
 
 	//Pass cases
 	REQUIRE(G_SUCCESS(m_log->Log("Something I wanna do.")));
@@ -141,10 +141,10 @@ TEST_CASE("Testing logging functions", "[Log], [LogCategorized]")
 	m_log->EnableVerboseLogging(false);
 	REQUIRE(G_SUCCESS(m_log->Log("Something else I wanna do.")));
 
-	REQUIRE(G_SUCCESS(m_log->LogCatergorized("MINE", "Something I wanna do more")));
+	REQUIRE(G_SUCCESS(m_log->LogCategorized("MINE", "Something I wanna do more")));
 	//Turn verbose logging on and try again
 	m_log->EnableVerboseLogging(true);
-	REQUIRE(G_SUCCESS(m_log->LogCatergorized("MINE", "Something I wanna do more")));
+	REQUIRE(G_SUCCESS(m_log->LogCategorized("MINE", "Something I wanna do more")));
 
 	//Test flush
 	REQUIRE(G_SUCCESS(m_log->Flush()));

@@ -39,10 +39,10 @@ SOFTWARE.
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "EEusebio_Typos"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x578a244e
+#define GATEWARE_COMMIT_HASH 0xc8c49395
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3e"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3e (EEusebio_Typos) [578a244e]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3e (EEusebio_Typos) [c8c49395]"
 
 #endif
