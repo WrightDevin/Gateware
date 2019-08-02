@@ -60,8 +60,7 @@ namespace GW
 			DESTROY,
 		};
 
-		//! Unique Identifier for this interface. {E53C2594-E47C-49A5-BD1B-5341F2603F95}
-
+		//! Unique Identifier for this interface. {8A3D75B1-4169-4C1F-A702-B89D2A367E0E}
 		static const GUUIID GWindowUUIID =
 		{
 			0x8a3d75b1, 0x4169, 0x4c1f,{ 0xa7, 0x2, 0xb8, 0x9d, 0x2a, 0x36, 0x7e, 0xe }

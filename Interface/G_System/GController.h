@@ -60,10 +60,10 @@ namespace GW
 			DEADZONECIRCLE	/*!< Calulates the deadzone of x and y as a single magnitude*/
 		};
 
-		//! Unique Identifier for this interface. {DFF7EEBF-C333-4606-9500-BDE01CE7C1CB}
+		//! Unique Identifier for this interface. {0ED9D226-CDE0-4070-AF50-DA797AD5770F}
 		static const GUUIID GControllerUUIID = 
 		{
-			0xdff7eebf, 0xc333, 0x4606,{ 0x95, 0x0, 0xbd, 0xe0, 0x1c, 0xe7, 0xc1, 0xcb }
+			0xed9d226, 0xcde0, 0x4070, { 0xaf, 0x50, 0xda, 0x79, 0x7a, 0xd5, 0x77, 0xf }
 		};
 
 
@@ -169,19 +169,19 @@ namespace GW
 			/*
 			*	\param [in] _controllerIndex The controller index to stop
 			*
-			*	\retval SUCCESS The virbration was stop
+			*	\retval SUCCESS The vibration was stop
 			*	\retval INVALID_ARGUMENT _controllerIndex was out of range.
 			*	\retval	REDUNDANT_OPERATION The controller was not vibrating. 
 			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
 			*/
-			virtual GReturn StopVirbration(unsigned int _controllerIndex) = 0;
+			virtual GReturn StopVibration(unsigned int _controllerIndex) = 0;
 
 			//! Stops all currently vibrating controllers
 			/*
 			*	\retval SUCCESS All vibrations were stopped
 			*	\retval FEATURE_UNSUPPORTED Vibration for the current controller type is not supported.
 			*/
-			virtual GReturn StopAllVirbrations() = 0;
+			virtual GReturn StopAllVibrations() = 0;
 		
 		}; //end GController class
 

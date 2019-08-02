@@ -83,8 +83,8 @@ public:
 	virtual GReturn SetDeadZone(GControllerDeadzoneTypes _type, float _deadzonePercentage);
 	virtual GReturn StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex);
 	virtual GReturn IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating);
-	virtual GReturn StopVirbration(unsigned int _controllerIndex);
-	virtual GReturn StopAllVirbrations();
+	virtual GReturn StopVibration(unsigned int _controllerIndex);
+	virtual GReturn StopAllVibrations();
 
 	// GBroadcasting
 	GReturn RegisterListener(GListener* _addListener, unsigned long long _eventMask);
@@ -126,8 +126,8 @@ public:
 	GReturn IsConnected(int _controllerIndex, bool& _outIsConnected);
 	GReturn StartVibration(float _pan, float _duration, float _strength, unsigned int _controllerIndex);
 	GReturn IsVibrating(unsigned int _controllerIndex, bool& _outIsVibrating);
-	GReturn StopVirbration(unsigned int _controllerIndex);
-	GReturn StopAllVirbrations();
+	GReturn StopVibration(unsigned int _controllerIndex);
+	GReturn StopAllVibrations();
 	// GInterface
 	GReturn DecrementCount();
 };
@@ -353,12 +353,12 @@ GReturn GeneralController::IsVibrating(unsigned int _controllerIndex, bool& _out
 	return FEATURE_UNSUPPORTED;
 }
 
-GReturn GeneralController::StopVirbration(unsigned int _controllerIndex)
+GReturn GeneralController::StopVibration(unsigned int _controllerIndex)
 {
 	return FEATURE_UNSUPPORTED;
 }
 
-GReturn GeneralController::StopAllVirbrations()
+GReturn GeneralController::StopAllVibrations()
 {
 	return FEATURE_UNSUPPORTED;
 }
@@ -1431,7 +1431,7 @@ GReturn XboxController::IsVibrating(unsigned int _controllerIndex, bool& _outIsV
 
 	return SUCCESS;
 }
-GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
+GReturn XboxController::StopVibration(unsigned int _controllerIndex)
 {
 	if ((_controllerIndex > MAX_XBOX_CONTROLLER_INDEX || _controllerIndex < 0))
 		return INVALID_ARGUMENT;
@@ -1462,7 +1462,7 @@ GReturn XboxController::StopVirbration(unsigned int _controllerIndex)
 	controllersMutex.unlock();
 	return SUCCESS;
 }
-GReturn XboxController::StopAllVirbrations()
+GReturn XboxController::StopAllVibrations()
 {
 #ifdef _WIN32
 	XINPUT_VIBRATION vibrationState;

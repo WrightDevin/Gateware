@@ -37,12 +37,12 @@ SOFTWARE.
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
 #define GATEWARE_PATCH 'e'
 // Pulled directly from GIT  
-#define GATEWARE_BRANCH "EEusebio_GWindowUpdate"
+#define GATEWARE_BRANCH "EEusebio_Typos"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0x76fa92fc
+#define GATEWARE_COMMIT_HASH 0x578a244e
 // Standard Window Title Bar
 #define GATEWARE_VERSION_STRING "Gateware v6.3e"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3e (EEusebio_GWindowUpdate) [76fa92fc]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3e (EEusebio_Typos) [578a244e]"
 
 #endif

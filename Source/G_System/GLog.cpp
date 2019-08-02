@@ -61,7 +61,7 @@ public:
 
 	GW::GReturn Log(const char* const _log) override;
 
-	GW::GReturn LogCatergorized(const char* const _category, const char* const _log) override;
+	GW::GReturn LogCategorized(const char* const _category, const char* const _log) override;
 
 	GW::GReturn EnableVerboseLogging(bool _value) override;
 
@@ -195,7 +195,7 @@ GW::GReturn LogFile::Log(const char* const _log)
 	return GW::SUCCESS;
 }
 
-GW::GReturn LogFile::LogCatergorized(const char* const _category, const char* const _log)
+GW::GReturn LogFile::LogCategorized(const char* const _category, const char* const _log)
 {
 	if (_category == nullptr || _log == nullptr)
 		return GW::INVALID_ARGUMENT;

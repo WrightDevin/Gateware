@@ -200,7 +200,7 @@ TEST_CASE("GController Manual controller vibration test")
 
 	// Checking invailds
 	CHECK(controller->IsVibrating(-1, isVibrating) == GW::INVALID_ARGUMENT);
-	CHECK(controller->StopVirbration(-1) == GW::INVALID_ARGUMENT);
+	CHECK(controller->StopVibration(-1) == GW::INVALID_ARGUMENT);
 	CHECK(controller->StartVibration(-1.0f, -1.0f, -2.0f, -1) == GW::INVALID_ARGUMENT);
 
 	printf("Vibration both sides duration .5 seconds\n");
@@ -227,20 +227,20 @@ TEST_CASE("GController Manual controller vibration test")
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
-	CHECK(G_SUCCESS(controller->StopVirbration(0)));
+	CHECK(G_SUCCESS(controller->StopVibration(0)));
 	controller->IsVibrating(0, isVibrating);
 	CHECK(isVibrating == false);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
-	CHECK(G_SUCCESS(controller->StopAllVirbrations()));
+	CHECK(G_SUCCESS(controller->StopAllVibrations()));
 	controller->IsVibrating(0, isVibrating);
 	CHECK(isVibrating == false);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	CHECK(G_SUCCESS(controller->StartVibration(0, 1, .5f, 0)));
 	CHECK(controller->StartVibration(0, 1, .5f, 0) == GW::FAILURE);
-	CHECK(G_SUCCESS(controller->StopVirbration(0)));
+	CHECK(G_SUCCESS(controller->StopVibration(0)));
 
 
 }

@@ -21,10 +21,10 @@ namespace GW
 	//! The namespace to which all Gateware library interfaces must belong.
 	namespace SYSTEM
 	{
-		//! Unique Identifier for this interface. {305FDF22-A4AD-40B9-92B0-E0F9DDC97D1E}
+		//! Unique Identifier for this interface. {EA0D6CA4-963E-45AF-83B2-203BEA09C7A8}
 		static const GUUIID GLogUUIID =
 		{
-			0x305fdf22, 0xa4ad, 0x40b9,{ 0x92, 0xb0, 0xe0, 0xf9, 0xdd, 0xc9, 0x7d, 0x1e }
+			0xea0d6ca4, 0x963e, 0x45af,{ 0x83, 0xb2, 0x20, 0x3b, 0xea, 0x9, 0xc7, 0xa8 }
 		};
 	
 		// Forward declaration so we can use GFile* in a function.
@@ -70,7 +70,7 @@ namespace GW
 			*	\retval FAILURE  The queue has reached maximum size (call flush).
 			*	\retval INVALID_ARGUMENT  Either _category or _log are nullptr.
 			*/
-			virtual GReturn LogCatergorized(const char* const _category, const char* const _log) = 0;
+			virtual GReturn LogCategorized(const char* const _category, const char* const _log) = 0;
 			
 			//! Turns verbose logging on or off.
 			/*!
