@@ -325,11 +325,10 @@ class MacAppSound;
 -(void) StreamMusic
 {
     if(stopFlag == true)
-    {
         return;
-    }
+    
     NSError *testError;
-    AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition:CurrentPosition );
+    AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition : CurrentPosition );
     CurrentPosition += valid;
  
     AVAudioPCMBuffer * currentBuffer = myBuffers[currentBufferIndex];
@@ -374,6 +373,10 @@ class MacAppSound;
         }
         else
         {
+            // this fixes bug where no files less than three seconds would play
+            if (MaxPosition < 3 * 63553)
+                sleep(3);
+            
             [self StopStream];
         }
     }
