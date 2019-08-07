@@ -15,36 +15,33 @@ License: MIT
 #include "GSound.h"
 #include "GMusic.h"
 
-
 //! The core namespace to which all Gateware interfaces/structures/defines must belong.
 namespace GW
 {
-	//! The namespace to which all Gateware library interfaces must belong.
-	namespace AUDIO
-	{
+//! The namespace to which all Gateware library interfaces must belong.
+namespace AUDIO
+{
 
-		//! Ensure identical binary padding for structures on all platforms.
+//! Ensure identical binary padding for structures on all platforms.
 #pragma pack(push, 1)
 
 #pragma pack(pop)
 
+//! Unique Identifier for this interface. {82DE61C1-C47A-41E5-90BE-C31604DF1140}.
+static const GUUIID GAudioUUIID =
+	{
 
+		{{0x82de61c1, 0xc47a, 0x41e5, {0x90, 0xbe, 0xc3, 0x16, 0x4, 0xdf, 0x11, 0x40}}}
 
-		//! Unique Identifier for this interface. {82DE61C1-C47A-41E5-90BE-C31604DF1140}.
-		static const GUUIID GAudioUUIID =
-		{
+};
 
-            {{0x82de61c1, 0xc47a, 0x41e5,{ 0x90, 0xbe, 0xc3, 0x16, 0x4, 0xdf, 0x11, 0x40 }}}
-
-		};
-
-		class GAudio : public GW::CORE::GMultiThreaded
-		{
-		private:
-		//	virtual GReturn Destroy() = 0;
-		public:
-			//! Initializes all neccassary data for GAudio based on platform.
-			/*!
+class GAudio : public GW::CORE::GMultiThreaded
+{
+private:
+	//	virtual GReturn Destroy() = 0;
+public:
+	//! Initializes all neccassary data for GAudio based on platform.
+	/*!
 			*	On Windows, initilaizes XAudio2 pointers IXAudio2 and IXAudio2MasteringVoice.
 			*	On Mac, initilaizes AVAudioEngine and starts the engine.
 			*
@@ -60,10 +57,10 @@ namespace GW
 			*	\retval SUCCESS on Linux Always.
 			*   \retval REDUNDANT_OPERATION tbd
 			*/
-			virtual GReturn Init(int _numOfOutputs = 2) = 0;
+	virtual GReturn Init(int _numOfOutputs = 2) = 0;
 
-			//! Fills out a GSound with data from provided .wav file.
-			/*!
+	//! Fills out a GSound with data from provided .wav file.
+	/*!
 			*	Creates a GSound to return, attempts to initallize internal variables, and loads audio fully into memeory.
 			*
 			*
@@ -76,10 +73,10 @@ namespace GW
 			*	AvAudioPlayerNode could not be created or could not read in file.
 			*	\retval SUCCESS None of the above errors occured.
 			*/
-			virtual GReturn CreateSound(const char* _path, GSound** _outSound) = 0;
+	virtual GReturn CreateSound(const char *_path, GSound **_outSound) = 0;
 
-			//! Fills out a GMusic with data from provided .wav file.
-			/*!
+	//! Fills out a GMusic with data from provided .wav file.
+	/*!
 			*	Creates a GMusic to return, attempts to initallize internal variables, and loads header information from .wav file for setup.
 			*
 			*
@@ -92,20 +89,20 @@ namespace GW
 			*	AvAudioPlayerNode could not be created or AvAudioPCMBuffers could not be initialized
 			*	\retval SUCCESS None of the above errors occured.
 			*/
-			virtual GReturn CreateMusicStream(const char* _path, GMusic** _outMusic) = 0;
+	virtual GReturn CreateMusicStream(const char *_path, GMusic **_outMusic) = 0;
 
-			//! Sets Master Volume for all sounds and music.
-			/*!
+	//! Sets Master Volume for all sounds and music.
+	/*!
 			* After setting this, created sounds and music will check if their current volume are higher than passed in value and will set them to the new master volume if they are above.
 			*	\param [in] _value The output master volume to be set.
 			*
 			*	\retval FAILURE _newVolume is less than Zero.
 			*	\retval SUCCESS Successfully ran without running into any of the above issues.
 			*/
-			virtual GReturn SetMasterVolume(float _value) = 0;
+	virtual GReturn SetMasterVolume(float _value) = 0;
 
-			//! Sets Master Volume for all sounds and music for specifc speakers.
-			/*!
+	//! Sets Master Volume for all sounds and music for specifc speakers.
+	/*!
 			* The amount of values in _values that will be used is based on _numChannels.
 			* After setting this, created sounds and music will check if their current volumes are higher than passed in values and will set them to the new master volumes if they are above.
 			* If you attempt to set the volume of an output your hardware does not support, it will be ignored.
@@ -125,62 +122,61 @@ namespace GW
 			*	\retval FAILURE _values is NULL		
 			*	\retval SUCCESS Successfully ran without running into any of the above issues.
 			*/
-			virtual GReturn SetMasterChannelVolumes(const float * _values, int _numChannels) = 0;
+	virtual GReturn SetMasterChannelVolumes(const float *_values, int _numChannels) = 0;
 
-			//! Sets Pauses all sounds and music.
-			/*!
+	//! Sets Pauses all sounds and music.
+	/*!
 			*	Calls each created sound's and music pause function.
 			*	\retval FAILURE A sound or Music returned FAILURE	
 			*	\retval SUCCESS Successfully ran without running into any of the above issues.
 			*/
-			virtual GReturn PauseAll() = 0;
+	virtual GReturn PauseAll() = 0;
 
-			//!  Resumes all paused/stoped sounds and music.
-			/*!
+	//!  Resumes all paused/stoped sounds and music.
+	/*!
 			*	Calls each created sound's and music resume function.
 			*	\retval FAILURE A sound or Music returned FAILURE
 			*	\retval SUCCESS Successfully ran without running into any of the above issues.
 			*/
-			virtual GReturn ResumeAll() = 0;
+	virtual GReturn ResumeAll() = 0;
 
-			//! Stops all paused/playing sounds and music.
-			/*!
+	//! Stops all paused/playing sounds and music.
+	/*!
 			*	Calls each created sound's and music stop function.
 			*	\retval FAILURE A sound or Music returned FAILURE
 			*	\retval SUCCESS Successfully ran without running into any of the above issues.
 			*/
-			virtual GReturn StopAll() = 0;
+	virtual GReturn StopAll() = 0;
 
-
-			//! Return the total number of active references to this object.
-			/*!
+	//! Return the total number of active references to this object.
+	/*!
 			*	\param [out] _outCount The total number of active references of this object.
 			*
 			*	\retval SUCCESS Successfully ran.
 			*	\retval FAILURE Either class does not exist or the internal reference count is corrupt.
 			*/
-			virtual GReturn GetCount(unsigned int& _outCount) = 0;
+	virtual GReturn GetCount(unsigned int &_outCount) = 0;
 
-			//! Increase the total number of active references to this object.
-			/*!
+	//! Increase the total number of active references to this object.
+	/*!
 			*	End users should only call this operation if they are familiar with reference counting behavior.
 			*
 			*	\retval SUCCESS Successfully incremented the internal reference count.
 			*	\retval FAILURE Incrementation of internal reference count would overflow the value.
 			*/
-			virtual GReturn IncrementCount() = 0;
+	virtual GReturn IncrementCount() = 0;
 
-			//! Decrease the total number of active references to this object.
-			/*!
+	//! Decrease the total number of active references to this object.
+	/*!
 			*	Once the internal count reaches zero this object will be deallocated and your pointer will become invalid.
 			*
 			*	\retval SUCCESS Successfully decremented the internal reference count.
 			*	\retval FAILURE Decrementing of internal reference count would underflow the value.
 			*/
-			virtual GReturn DecrementCount() = 0;
+	virtual GReturn DecrementCount() = 0;
 
-			//! Requests an interface that may or may not be supported by this object.
-			/*!
+	//! Requests an interface that may or may not be supported by this object.
+	/*!
 			*	 Can be used by the end-user to query for a new interface using the
 			*	 unique ID of the interface they want and implement an interface update.
 			*
@@ -190,15 +186,13 @@ namespace GW
 			*	\retval SUCCESS The interface is supported and function succeded.
 			*	\retval INTERFACE_UNSUPPORTED The requested interface is not supported.
 			*/
-			virtual GReturn RequestInterface(const GUUIID& _interfaceID, void** _outputInterface) = 0;
-			
-			virtual ~GAudio() = 0;
+	virtual GReturn RequestInterface(const GUUIID &_interfaceID, void **_outputInterface) = 0;
 
-		}; // end GAudio class
-		GATEWARE_EXPORT_IMPLICIT GReturn CreateGAudio(GAudio** _outAudio);
+	virtual ~GAudio() = 0;
 
-	
+}; // end GAudio class
+GATEWARE_EXPORT_IMPLICIT GReturn CreateGAudio(GAudio **_outAudio);
 
-	} // end SYSTEM namespace
-} // end GW namespace
+} // namespace AUDIO
+} // namespace GW
 #endif
