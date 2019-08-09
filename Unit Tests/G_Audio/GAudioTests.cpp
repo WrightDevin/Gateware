@@ -456,7 +456,6 @@ TEST_CASE("Playing sound", "[Play]")
     testAudio->DecrementCount();
 }
 
-// Starting Sound Tests
 TEST_CASE("Deleting sound", "[DecrementCount]")
 {
     GAudio *testAudio = nullptr;
@@ -470,6 +469,8 @@ TEST_CASE("Deleting sound", "[DecrementCount]")
     // [Pass case] Should throw an access violation when uncommented
     // There is no good way in c++ to check if something has been deleted.
     // testSound->DecrementCount();
+
+	testAudio->DecrementCount();
 }
 
 TEST_CASE("Pausing sound", "[Pause]")

@@ -35,14 +35,14 @@ SOFTWARE.
 // The Minor version is increased whenever an interface is altered.(patch is reset)
 #define GATEWARE_MINOR 3
 // The Patch version is increased whenever a bug or leak is fixed.(nothing is reset)
-#define GATEWARE_PATCH ''
+#define GATEWARE_PATCH 'f'
 // Pulled directly from GIT  
 #define GATEWARE_BRANCH "JP_Branch-Audio"
 // Pulled directly from GIT
-#define GATEWARE_COMMIT_HASH 0xbdc8e62a
+#define GATEWARE_COMMIT_HASH 0x6b2e74c8
 // Standard Window Title Bar
-#define GATEWARE_VERSION_STRING "Gateware v6.3"
+#define GATEWARE_VERSION_STRING "Gateware v6.3f"
 // Window Title Bar displayed in DEBUG builds
-#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3 (JP_Branch-Audio) [bdc8e62a]"
+#define GATEWARE_VERSION_STRING_LONG "Gateware v6.3f (JP_Branch-Audio) [6b2e74c8]"
 
 #endif

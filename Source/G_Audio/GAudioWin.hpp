@@ -1110,14 +1110,15 @@ WindowAppSound::~WindowAppSound()
 	{
 		StopSound();
 	}
-	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
 	mySourceVoice->DestroyVoice();
 	delete myAudioBuffer.pAudioData;
 	myAudioBuffer.pAudioData = nullptr;
-	delete myContext;
+	Sleep(2000);		// this gives time to XAudio to stop using myContext.
+						// This may cause a crash on slower hardware, and we are not sure how to check if XAudio2 is done in the correct way.
+	delete myContext;	// < this line is causing the crash
 	myContext = nullptr;
 	audio = nullptr;
 }
@@ -1627,7 +1628,6 @@ WindowAppMusic::~WindowAppMusic()
 	{
 		StopStream();
 	}
-	audio->DecrementCount();
 	HRESULT theResult;
 	theResult = mySourceVoice->FlushSourceBuffers();
 	mySubmixVoice->DestroyVoice();
@@ -1992,15 +1992,10 @@ GReturn WindowAppAudio::RequestInterface(const GUUIID &_interfaceID, void **_out
 }
 WindowAppAudio::~WindowAppAudio()
 {
-	for (auto s : activeSounds)
-	{
-		s->DecrementCount();
-	}
-	for (auto m : activeMusic)
-	{
-		m->DecrementCount();
-	}
-
+	for (auto snd : activeSounds)
+		snd->DecrementCount();
+	for (auto msc : activeMusic)
+		msc->DecrementCount();
 	theMasterVoice->DestroyVoice();
 	myAudio->StopEngine();
 	myAudio->Release();
