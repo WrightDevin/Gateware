@@ -443,6 +443,19 @@ TEST_CASE("Creating music.", "[CreateMusicStream]")
 }
 
 //Starting Sound Tests
+TEST_CASE("Playing multi-channel encoded sound", "[Play]")
+{
+    GAudio *testAudio = nullptr;
+    CreateGAudio(&testAudio);
+    GSound *testSound = nullptr;
+    testAudio->CreateSound(stereo5_1Test, &testSound);
+    
+    REQUIRE(G_SUCCESS(testSound->Play()));
+    sleep_ms(10000);
+    
+    testAudio->DecrementCount();
+}
+
 TEST_CASE("Playing sound", "[Play]")
 {
     GAudio *testAudio = nullptr;

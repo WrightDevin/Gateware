@@ -14,17 +14,16 @@ class MacAppSound;
 @interface GMacAudio : NSObject
 {
 @public
-    MacAppAudio * iAudio;
-    AVAudioPlayerNode * inputNode;
-    AVAudioEngine * myAudio;
-    AVAudioOutputNode * leftSpeaker;
-    AVAudioOutputNode * rightSpeaker;
+    MacAppAudio * gAudio;
+    AVAudioEngine * engine;
+    AVAudioPlayerNode * output;
+    AVAudioPlayerNode * surroundOutput;
+    AVAudioPlayerNode * centerBassOutput;
     NSMutableArray *ActiveSounds;
     NSMutableArray *ActiveMusic;
-    
     float MasterVolume;
 }
-
+@property (readonly) int maxChannels;
 -(bool) Init;
 -(bool) SetMasterVolume:(float) _newVolume;
 -(bool) SetMasterVolumeChannels:(const float *) _values theNumberOfChannels:(int)_numChannels;
@@ -33,23 +32,20 @@ class MacAppSound;
 -(bool) StopAll;
 -(bool) CleanUpSound;
 -(bool) CleanUpMusic;
-
 @end
 
 @interface GMacSound : NSObject
 {
-    @public
-    MacAppSound * iSound;
-    GMacAudio * macAudio;
-    AVAudioEngine * myAudio;
-    AVAudioPlayerNode * mySound;
-    AVAudioMixerNode * myMixer;
-    AVAudioFile * myFile;
-    AVAudioPCMBuffer * myBuffer;
-    bool loops ;
+@public
+    MacAppSound * gSound;
+    GMacAudio * audio;
+    AVAudioPlayerNode * player;
+    AVAudioFile * file;
+    AVAudioPCMBuffer * buffer;
+    bool loops;
     bool isPlaying;
     bool isPaused;
-    float volume ;
+    float volume;
 }
 -(id) initWithPath:(NSString*) _path;
 -(bool) SetPCMShader:(const char *) _data;
@@ -60,35 +56,28 @@ class MacAppSound;
 -(bool) PauseSound;
 -(bool) ResumeSound;
 -(bool) StopSound;
-
 @end
 
-#define  MAX_BUFFER_COUNT = 3;
-#define  STREAMING_BUFFER_SIZE = 65536;
 @interface GMacMusic : NSObject
 {
 @public
-    
-    MacAppMusic * iMusic;
-    GMacAudio * macAudio;
-    AVAudioEngine * myAudio;
-    AVAudioPlayerNode * mySound;
-    AVAudioMixerNode * myMixer;
-    AVAudioFile * myFile;
-    AVAudioPCMBuffer * myBuffers[3];
-    NSThread * myScheduler;
-    int currentBufferIndex;
-    int index;
+    MacAppMusic * gMusic;
+    GMacAudio * audio;
+    AVAudioPlayerNode * player;
+    AVAudioFile * file;
+    AVAudioPCMBuffer * buffers[3];
+    AVAudioFrameCount CurrentPosition;
+    AVAudioFrameCount MaxPosition;
     std::atomic<int> buffersQueued;
     std::atomic<bool> stopFlag;
-    bool loops ;
+    NSThread * scheduler;
+    int currentBufferIndex;
+    int index;
+    bool loops;
     bool isPlaying;
     bool isPaused;
-    float volume ;
-    AVAudioFrameCount MaxPosition;
-    AVAudioFrameCount CurrentPosition;
+    float volume;
 }
-
 -(id) initWithPath:(NSString*) _path;
 -(bool) SetPCMShader:(const char *) _data;
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels;
@@ -109,36 +98,40 @@ class MacAppSound;
     self = [super init];
     if(self)
     {
-        self->mySound = [[AVAudioPlayerNode alloc] init];
+        // setting up player
+        self->player = [[AVAudioPlayerNode alloc] init];
+        [audio->engine attachNode:player];
         
-        self->myMixer = [[AVAudioMixerNode alloc] init];
-     
-        NSURL * filePath =[[NSURL alloc] initFileURLWithPath:_path];
-        self->myFile = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
-        self->myBuffer =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:[self->myFile length]];
-      
-        bool success = [self->myFile readIntoBuffer:self->myBuffer error:&testError];
+        // setting up buffer
+        NSURL * filePath = [[NSURL alloc] initFileURLWithPath:_path];
+        self->file = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
+        self->buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->file processingFormat] frameCapacity:[self->file length]];
+        bool success = [self->file readIntoBuffer:self->buffer error:&testError];
         if(!success)
-        {
             NSAssert(success, @"could nor read file into buffer", [testError localizedDescription]);
-        }
+        
+        // setting up mixer
+        [audio->engine connect:player to:audio->engine.mainMixerNode format:buffer.format];
+        
+        [audio->ActiveSounds addObject:self];
     }
     return self;
 }
+
 -(bool) SetPCMShader:(const char *) _data
 {
     NSLog(@"bettter not see this");
     return false;
 }
+
 -(unsigned int) GetChannels
 {
-    if(!myAudio)
-    {
+    if(!audio->engine)
         return 0;
-    }
-    return [myFile processingFormat].channelCount;
+    return [file processingFormat].channelCount;
 }
--(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels
+
+-(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int)_numChannels
 {
     NSMutableArray * theValues = [[[NSMutableArray alloc] init] autorelease];
     for (int i = 0; i < _numChannels; i++)
@@ -147,16 +140,16 @@ class MacAppSound;
     }
     if(theValues.count == 1)
     {
-        mySound.pan = -1 * _volumes[0];
+        player.pan = -1 * _volumes[0];
     }
     else if(theValues.count > 1)
     {
-        float newVal = _volumes[1] -  _volumes[0];
+        float newVal = _volumes[1] - _volumes[0];
         if(newVal > 1.0f)
             newVal = 1.0f;
         if(newVal < -1.0f)
             newVal = -1.0f;
-        mySound.pan = newVal;
+        player.pan = newVal;
     }
     else
     {
@@ -164,14 +157,15 @@ class MacAppSound;
     }
     return true;
 }
+
 -(bool) SetVolume:(float) _newVolume
 {
     if(_newVolume <= 0)
     {
         return false;
     }
-    [mySound setVolume:(_newVolume)];
-    float check = [mySound volume];
+    [player setVolume:(_newVolume)];
+    float check = [player volume];
     if(check == _newVolume)
     {
         return true;
@@ -181,103 +175,109 @@ class MacAppSound;
         return false;
     }
 }
+
 -(bool) PlaySound
 {
-    [mySound play];
-    [mySound scheduleBuffer:myBuffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:
-    ^{
-        if (![macAudio CleanUpSound])
-        {
-            NSLog(@"sound cleanup failed");
-        }
-    }];
-    bool returnValue = [mySound isPlaying];
+    [player play];
+    [player scheduleBuffer:buffer atTime:nil options:AVAudioPlayerNodeBufferInterrupts completionHandler:
+     ^{
+         if ([audio CleanUpSound] == false)
+             NSLog(@"sound cleanup failed");
+     }];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
-
 }
+
 -(bool) PauseSound
 {
-    [mySound pause];
-    bool returnValue = [mySound isPlaying];
+    [player pause];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return isPaused;
 }
+
 -(bool) ResumeSound
 {
-    [mySound playAtTime:nil];
-    bool returnValue = [mySound isPlaying];
+    [player playAtTime:nil];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
 }
+
 -(bool) StopSound
 {
-    [mySound stop];
-    bool returnValue = [mySound isPlaying];
+    [player stop];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return isPaused;
 }
+
 -(bool) Unload
 {
     bool macresult = false;
-    if(mySound != nil)
+    if(player != nil)
     {
-        if([mySound isPlaying] == true)
+        if([player isPlaying] == true)
         {
-            [mySound stop];
+            [player stop];
         }
-        [mySound release];
+        [player release];
         macresult = true;
     }
     return macresult;
 }
-
 @end
 
 @implementation GMacMusic
 -(id)initWithPath:(NSString*) _path
 {
-
-    NSError *testError;
     self = [super init];
+    
     if(self)
     {
         AVAudioFrameCount bufferLength = 63553;
-        self->mySound = [[AVAudioPlayerNode alloc] init];
+        self->player = [[AVAudioPlayerNode alloc] init];
+        [audio->engine attachNode:player];
         
-        self->myMixer = [[AVAudioMixerNode alloc] init];
-        
+        NSError * error;
         NSURL * filePath =[[NSURL alloc] initFileURLWithPath:_path];
-        self->myFile = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&testError];
-        self->myBuffers[0] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
-        self->myBuffers[1] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength ];
-        self->myBuffers[2] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->myFile processingFormat] frameCapacity:bufferLength];
+        self->file = [[AVAudioFile alloc] initForReading:filePath commonFormat:AVAudioPCMFormatFloat32 interleaved:false error:&error];
+        self->buffers[0] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->file processingFormat] frameCapacity:bufferLength];
+        self->buffers[1] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->file processingFormat] frameCapacity:bufferLength ];
+        self->buffers[2] =[[AVAudioPCMBuffer alloc] initWithPCMFormat:[self->file processingFormat] frameCapacity:bufferLength];
         
+        [audio->engine connect:player to:audio->engine.mainMixerNode format:file.processingFormat];
         
         currentBufferIndex = 0;
         buffersQueued = 0;
         stopFlag = false;
-        MaxPosition = myFile.length;
+        MaxPosition = file.length;
         volume = 1;
-      
+        
+        [audio->ActiveMusic addObject:self];
     }
+    
     return self;
 }
+
 -(bool) SetPCMShader:(const char *) _data
 {
    
     return false;
 }
+
 -(unsigned int) GetChannels
 {
-    if(!myAudio)
+    if(!audio->engine)
         return 0;
-    return [myFile processingFormat].channelCount;
+    return [file processingFormat].channelCount;
 }
+
 -(bool) SetChannelVolumes:(float *) _volumes theNumberOfChannels:(int )_numChannels
 {
     NSMutableArray * theValues = [[[NSMutableArray alloc] init] autorelease];
@@ -287,7 +287,7 @@ class MacAppSound;
     }
     if(theValues.count == 1)
     {
-        mySound.pan = -1 * _volumes[0];
+        player.pan = -1 * _volumes[0];
     }
     else if(theValues.count > 1)
     {
@@ -296,21 +296,23 @@ class MacAppSound;
         float newVal = second - first;
         if(newVal > 1.0f) newVal = 1.0f;
         if(newVal < -1.0f) newVal = -1.0f;
-        mySound.pan = newVal;
+        player.pan = newVal;
     }
     else
     {
         return false;
     }
+    
     return true;
 }
+
 -(bool) SetVolume:(float) _newVolume
 {
     if(_newVolume <= 0)
         return false;
     
-    [mySound setVolume:(_newVolume)];
-    float check = [mySound volume];
+    [player setVolume:(_newVolume)];
+    float check = [player volume];
     volume = check;
     if(check == _newVolume)
     {
@@ -322,6 +324,7 @@ class MacAppSound;
     }
     return false;
 }
+
 -(void) StreamMusic
 {
     if(stopFlag == true)
@@ -331,8 +334,8 @@ class MacAppSound;
     AVAudioFrameCount valid = MIN(63553, MaxPosition - CurrentPosition > 0 ? MaxPosition - CurrentPosition : CurrentPosition );
     CurrentPosition += valid;
  
-    AVAudioPCMBuffer * currentBuffer = myBuffers[currentBufferIndex];
-    [myFile readIntoBuffer:currentBuffer frameCount:valid error:&testError];
+    AVAudioPCMBuffer * currentBuffer = buffers[currentBufferIndex];
+    [file readIntoBuffer:currentBuffer frameCount:valid error:&testError];
 
     while(buffersQueued >= 2)
     {
@@ -340,8 +343,8 @@ class MacAppSound;
     }
     [self setBuffersQueued:(buffersQueued + 1)];
     
-    [mySound scheduleBuffer:currentBuffer completionHandler:^{
-        if (![macAudio CleanUpMusic])
+    [player scheduleBuffer:currentBuffer completionHandler:^{
+        if ([audio CleanUpMusic] == false)
         {
             NSLog(@"music cleanup failed");
         }
@@ -358,7 +361,7 @@ class MacAppSound;
         if(loops)
         {
             CurrentPosition = 0;
-            myFile.framePosition = 0;
+            file.framePosition = 0;
         }
     }
     
@@ -369,7 +372,7 @@ class MacAppSound;
         if(loops)
         {
             CurrentPosition = 0;
-            myFile.framePosition = 0;
+            file.framePosition = 0;
         }
         else
         {
@@ -388,14 +391,14 @@ class MacAppSound;
 -(bool) StreamStart:(bool) _loops
 {
     loops = _loops;
-    if(![mySound isPlaying])
+    if(![player isPlaying])
     {
-    [mySound playAtTime:0];
+    [player playAtTime:0];
         CurrentPosition = 0;
-        myFile.framePosition = 0;
+        file.framePosition = 0;
     }
     stopFlag = false;
-    bool returnValue = [mySound isPlaying];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
@@ -403,63 +406,65 @@ class MacAppSound;
 
 -(bool) PauseStream
 {
-    [mySound pause];
-    bool returnValue = ![mySound isPlaying];
+    [player pause];
+    bool returnValue = ![player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
 }
+
 -(bool) ResumeStream
 {
-    [mySound play];
-    bool returnValue = [mySound isPlaying];
+    [player play];
+    bool returnValue = [player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
 }
+
 -(bool) StopStream
 {
-    [mySound stop];
-    [mySound prepareWithFrameCount:63553];
+    [player stop];
+    [player prepareWithFrameCount:63553];
     stopFlag = true;
     CurrentPosition = 0;
     buffersQueued = 0;
-    bool returnValue = ![mySound isPlaying];
+    bool returnValue = ![player isPlaying];
     isPlaying = returnValue;
     isPaused = !returnValue;
     return returnValue;
 }
+
 -(void) setBuffersQueued:(int) _value
 {
     buffersQueued = _value;
 }
-
 @end
 
 @implementation GMacAudio
+-(int)maxChannels
+{
+    return gAudio->maxChannels;
+}
 
 -(bool) Init
 {
     bool result = false;
-    NSError *err;
-    myAudio = [[AVAudioEngine alloc]init];
-    inputNode = [[AVAudioPlayerNode alloc] init];
+    
+    engine = [[AVAudioEngine alloc] init];
+    
+    output = [[AVAudioPlayerNode alloc] init];
+    [engine attachNode:output];
+    [engine connect:output to:engine.mainMixerNode format:[output outputFormatForBus:0]];
+    [engine connect:engine.mainMixerNode to:engine.outputNode format:[output outputFormatForBus:0]];
+    
     ActiveMusic = [[[NSMutableArray alloc] init]  autorelease];
     ActiveSounds = [[[NSMutableArray alloc] init] autorelease];
-    [myAudio attachNode:inputNode];
-    [myAudio connect:inputNode to:myAudio.mainMixerNode format:[inputNode outputFormatForBus:0]];
-    [myAudio connect:myAudio.mainMixerNode to:myAudio.outputNode format:[inputNode outputFormatForBus:0]];
-    [myAudio stop];
-    result = [myAudio startAndReturnError:&err];
     
-    if(myAudio.isRunning)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    NSError *err;
+    [engine startAndReturnError:&err];
+    
+    return result = (engine.isRunning ? true : false);
 }
 
 -(bool) SetMasterVolume:(float) _newVolume
@@ -468,8 +473,8 @@ class MacAppSound;
     {
         return false;
     }
-    [myAudio mainMixerNode].outputVolume =_newVolume;
-    float check = [myAudio mainMixerNode].outputVolume;
+    [engine mainMixerNode].outputVolume =_newVolume;
+    float check = [engine mainMixerNode].outputVolume;
     if(check == _newVolume)
     {
         return true;
@@ -480,6 +485,7 @@ class MacAppSound;
     }
     return false;
 }
+
 -(bool) SetMasterVolumeChannels:(const float *) _values theNumberOfChannels:(int)_numChannels
 {
     NSMutableArray * theValues = [[[NSMutableArray alloc] init] autorelease];
@@ -489,14 +495,14 @@ class MacAppSound;
     }
     if(theValues.count == 1)
     {
-        myAudio.mainMixerNode.pan = -1 * _values[0];
+        engine.mainMixerNode.pan = -1 * _values[0];
     }
     else if(theValues.count > 1)
     {
         float newVal = _values[1] - _values[0];
         if(newVal > 1.0f) newVal = 1.0f;
         if(newVal < -1.0f) newVal = -1.0f;
-        myAudio.mainMixerNode.pan = newVal;
+        engine.mainMixerNode.pan = newVal;
     }
     else
     {
@@ -504,6 +510,7 @@ class MacAppSound;
     }
     return true;
 }
+
 -(bool) PauseAll
 {
     bool returnedResult = true;
@@ -517,6 +524,7 @@ class MacAppSound;
     }
     return returnedResult;
 }
+
 -(bool) ResumeAll
 {
     bool returnedResult = true;
@@ -530,6 +538,7 @@ class MacAppSound;
     }
     return returnedResult;
 }
+
 -(bool) StopAll
 {
     bool returnedResult = true;
@@ -543,6 +552,7 @@ class MacAppSound;
     }
     return returnedResult;
 }
+
 -(bool) CleanUpSound
 {
     bool returnedResult = true;
@@ -550,19 +560,20 @@ class MacAppSound;
     {
         GMacSound * gMacSound = ActiveSounds[i];
         unsigned int soundCount = 0;
-        bool safetyCheck = gMacSound->iSound->GetCount(soundCount);
+        bool safetyCheck = gMacSound->gSound->GetCount(soundCount);
         if (safetyCheck == false) returnedResult = false;
         if (soundCount == 1)
         {
-            MacAppSound * macAppSound = gMacSound->iSound;
+            MacAppSound * macAppSound = gMacSound->gSound;
             [ActiveSounds removeObjectAtIndex:i];
             i--;
             macAppSound->DecrementCount();
-            iAudio->DecrementCount();
+            gAudio->DecrementCount();
         }
     }
     return returnedResult;
 }
+
 -(bool) CleanUpMusic
 {
     bool returnedResult = true;
@@ -570,15 +581,15 @@ class MacAppSound;
     {
         GMacMusic * gMacMusic = ActiveMusic[i];
         unsigned int musicCount = 0;
-        bool safetyCheck = gMacMusic->iMusic->GetCount(musicCount);
+        bool safetyCheck = gMacMusic->gMusic->GetCount(musicCount);
         if (safetyCheck == false) returnedResult = false;
         if (musicCount == 1)
         {
-            MacAppMusic * macAppMusic = gMacMusic->iMusic;
+            MacAppMusic * macAppMusic = gMacMusic->gMusic;
             [ActiveMusic removeObjectAtIndex:i];
             i--;
             macAppMusic->DecrementCount();
-            iAudio->DecrementCount();
+            gAudio->DecrementCount();
         }
     }
     return returnedResult;
