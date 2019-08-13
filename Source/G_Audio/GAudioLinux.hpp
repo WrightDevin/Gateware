@@ -2,37 +2,46 @@
 #include "../DLL_Export_Symbols.h"
 
 #include "../../Interface/G_Audio/GAudio.h"
+
 /*
+
 PA_CHANNEL_POSITION_MONO
+
 PA_CHANNEL_POSITION_FRONT_LEFT
-
 Apple, Dolby call this 'Left'.
+
 PA_CHANNEL_POSITION_FRONT_RIGHT
-
 Apple, Dolby call this 'Right'.
+
 PA_CHANNEL_POSITION_FRONT_CENTER
-
 Apple, Dolby call this 'Center'.
+
 PA_CHANNEL_POSITION_REAR_CENTER
-
 Microsoft calls this 'Back Center', Apple calls this 'Center Surround', Dolby calls this 'Surround Rear Center'.
-PA_CHANNEL_POSITION_REAR_LEFT
 
+PA_CHANNEL_POSITION_REAR_LEFT
 Microsoft calls this 'Back Left', Apple calls this 'Left Surround' (!), Dolby calls this 'Surround Rear Left'.
+
 PA_CHANNEL_POSITION_REAR_RIGHT
+Microsoft calls this 'Back Right', Apple calls this 'Right Surround' (!), Dolby calls this 'Surround Rear Right'.
+
 */
+
 using namespace GW;
 using namespace AUDIO;
+
 #include <iostream>
 #include <time.h>
 #include <vector>
 #include <thread>
 #include <mutex>
+
 #include <atomic>
 #include <unistd.h>
 #include <stdio.h>
 #include <functional>
 #include <string.h>
+
 #include <pulse/mainloop.h>
 #include <pulse/mainloop-api.h>
 #include <pulse/channelmap.h>
@@ -50,9 +59,12 @@ const unsigned long fourWAVEcc = 'EVAW';
 const unsigned long fourJUNKcc = 'KNUJ';
 const unsigned long fourXWMAcc = 'AMWX';
 const unsigned long fourDPDScc = 'sdpd';
+
 using std::atomic;
+
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
+
 
 struct PCM_FORMAT_INFO
 {
@@ -64,17 +76,20 @@ struct PCM_FORMAT_INFO
     unsigned short mBitsPerSample = 0;
     unsigned short mCbSize = 0;
 };
+
 struct PCM_BUFFER
 {
     uint32_t byteSize = 0;
     uint8_t *bytes = nullptr;
 };
+
 struct WAVE_FILE
 {
     PCM_FORMAT_INFO myFormat;
     PCM_BUFFER myBuffer;
     bool isSigned = false;
 };
+
 enum TJState
 {
     Wait = 0,
@@ -82,6 +97,7 @@ enum TJState
     Poll,
     Dispatch
 };
+
 struct TJCALLBACK
 {
     int didFinish = -1;
@@ -91,16 +107,19 @@ struct TJCALLBACK
     pa_context_success_cb_t cbContextSucceed;
     pa_operation *myOperation = nullptr;
 };
+
 void FinishedContextGeneral(pa_context *c, int success, void *userdata)
 {
     TJCALLBACK *theCallback = reinterpret_cast<TJCALLBACK *>(userdata);
     theCallback->didFinish = 1;
 }
+
 void FinishedDrain(pa_stream *s, int success, void *userdata)
 {
     TJCALLBACK *theCallback = reinterpret_cast<TJCALLBACK *>(userdata);
     theCallback->didFinish = 1;
 }
+
 int LoadWavFormatOnly(const char *path, PCM_FORMAT_INFO &returnedInfo, long &_fileSize)
 {
     int result = 0; //zero is good
@@ -160,7 +179,7 @@ int LoadWavFormatOnly(const char *path, PCM_FORMAT_INFO &returnedInfo, long &_fi
                 break;
             }
             case fourWAVEcc:
-            case fourJUNKcc: //FIX: added to support wav files exported from various applications
+            //case fourJUNKcc: //FIX: added to support wav files exported from various applications
             {
 
                 dwRead = fread(&throwAway, 1, 4, someWaveFile);
@@ -195,9 +214,9 @@ int LoadWavFormatOnly(const char *path, PCM_FORMAT_INFO &returnedInfo, long &_fi
         return result;
     }
 }
+
 int LoadWav(const char *path, WAVE_FILE &returnedWave)
 {
-
     int result = 0; //zero is good
     unsigned long dwChunktype = 0;
     unsigned long dwChunkDataSize = 0;
@@ -336,6 +355,7 @@ int LoadWav(const char *path, WAVE_FILE &returnedWave)
     }
     return result;
 }
+
 int GetCharSize(const char *theConstChar)
 {
     int returnValue = 0;
@@ -349,6 +369,7 @@ int GetCharSize(const char *theConstChar)
     }
     return returnValue;
 }
+
 void CreateCharFromConstChar(char **myChar, const char *theConstChar, int size)
 {
     char *testChar = new char[size + 1];
@@ -410,6 +431,7 @@ void OnStateChange(pa_context *_c, void *_data)
     }
     }
 }
+
 
 class LinuxAppAudio;
 class LinuxAppSound : public GSound
@@ -550,6 +572,7 @@ public:
     ~LinuxAppAudio();
 };
 
+
 void RunMainLoop(pa_mainloop *myMainLoop)
 {
     if (myMainLoop == nullptr)
@@ -609,6 +632,7 @@ void RunMainLoop(pa_mainloop *myMainLoop)
         }
     }
 }
+
 static bool WaitForConnectionEstablished(pa_mainloop *mainLoop, pa_context *aContext, time_t timeOut)
 {
 
@@ -632,6 +656,7 @@ static bool WaitForConnectionEstablished(pa_mainloop *mainLoop, pa_context *aCon
     // std::cout << "\n\n DONE WAITING \n\n";
     return false;
 }
+
 GReturn createMainLoopAndContext(pa_mainloop **myMainLoop, pa_context **myContext)
 {
     GReturn result = FAILURE;
@@ -657,8 +682,10 @@ GReturn createMainLoopAndContext(pa_mainloop **myMainLoop, pa_context **myContex
     return result;
 }
 
+
 //Start of GSound implementation
 LinuxAppSound::LinuxAppSound() : SoundCounter(1) {}
+
 GReturn LinuxAppSound::Init()
 {
     GReturn result = GReturn::FAILURE;
@@ -776,6 +803,7 @@ GReturn LinuxAppSound::Init()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::SetPCMShader(const char *_data)
 {
     GReturn result = GReturn::FAILURE;
@@ -784,6 +812,7 @@ GReturn LinuxAppSound::SetPCMShader(const char *_data)
 
     return result;
 }
+
 GReturn LinuxAppSound::SetChannelVolumes(float *_values, int _numChannels)
 {
     //Sets the current volume channels to the values passed in.
@@ -865,6 +894,7 @@ GReturn LinuxAppSound::SetChannelVolumes(float *_values, int _numChannels)
     return result;
   */
 }
+
 GReturn LinuxAppSound::CheckChannelVolumes(const float *_values, int _numChannels)
 {
     //Checks the current volumns are higher than the passed in values and will set them
@@ -940,6 +970,7 @@ GReturn LinuxAppSound::CheckChannelVolumes(const float *_values, int _numChannel
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::GetSoundSourceChannels(unsigned int &returnedChannelNum)
 {
     GReturn result = FAILURE;
@@ -951,6 +982,7 @@ GReturn LinuxAppSound::GetSoundSourceChannels(unsigned int &returnedChannelNum)
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::GetSoundOutputChannels(unsigned int &returnedChannelNum)
 {
     GReturn result = FAILURE;
@@ -962,6 +994,7 @@ GReturn LinuxAppSound::GetSoundOutputChannels(unsigned int &returnedChannelNum)
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::SetVolume(float _newVolume)
 {
     //Sets all channels volume to the passed in value.
@@ -1040,6 +1073,7 @@ GReturn LinuxAppSound::SetVolume(float _newVolume)
     return result;
     */
 }
+
 GReturn LinuxAppSound::StreamSound()
 {
     GReturn theResult = SUCCESS;
@@ -1111,6 +1145,7 @@ GReturn LinuxAppSound::StreamSound()
     }
     return theResult;
 }
+
 GReturn LinuxAppSound::Play()
 {
     GReturn result = GReturn::FAILURE;
@@ -1134,6 +1169,7 @@ GReturn LinuxAppSound::Play()
 
     return result;
 }
+
 GReturn LinuxAppSound::Pause()
 {
     GReturn result = GReturn::FAILURE;
@@ -1160,6 +1196,7 @@ GReturn LinuxAppSound::Pause()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::Resume()
 {
 
@@ -1187,6 +1224,7 @@ GReturn LinuxAppSound::Resume()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::StopSound()
 {
     GReturn result = GReturn::FAILURE;
@@ -1209,6 +1247,7 @@ GReturn LinuxAppSound::StopSound()
     result = SUCCESS;
     return result;
 }
+
 LinuxAppSound::~LinuxAppSound()
 {
     pa_stream_disconnect(myStream);
@@ -1218,11 +1257,13 @@ LinuxAppSound::~LinuxAppSound()
     pa_mainloop_free(myMainLoop);
     //pa_operation_unref(theCallback.myOperation);
 }
+
 GReturn LinuxAppSound::isSoundPlaying(bool &_returnedBool)
 {
     _returnedBool = isPlaying;
     return SUCCESS;
 }
+
 GReturn LinuxAppSound::GetCount(unsigned int &_outCount)
 {
     GReturn result = FAILURE;
@@ -1231,6 +1272,7 @@ GReturn LinuxAppSound::GetCount(unsigned int &_outCount)
 
     return result;
 }
+
 GReturn LinuxAppSound::IncrementCount()
 {
     GReturn result = FAILURE;
@@ -1241,6 +1283,7 @@ GReturn LinuxAppSound::IncrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::DecrementCount()
 {
     GReturn result = FAILURE;
@@ -1257,6 +1300,7 @@ GReturn LinuxAppSound::DecrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppSound::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
     GReturn result = FAILURE;
@@ -1308,10 +1352,11 @@ GReturn LinuxAppSound::RequestInterface(const GUUIID &_interfaceID, void **_outp
 
     return result;
 }
-//End of GSound implementation
+//End of GSound implementation for Linux
 
-//Start of GMusic implementation
+//Start of GMusic implementation for Linux
 LinuxAppMusic::LinuxAppMusic() : MusicCounter(1) {}
+
 GReturn LinuxAppMusic::Init()
 {
     GReturn result = GReturn::INVALID_ARGUMENT;
@@ -1441,11 +1486,13 @@ GReturn LinuxAppMusic::Init()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::SetPCMShader(const char *_data)
 {
     GReturn result = FAILURE;
     return result;
 }
+
 GReturn LinuxAppMusic::SetChannelVolumes(float *_values, int _numChannels)
 {
     // Sets the current volume channels to the values passed in.
@@ -1534,6 +1581,7 @@ GReturn LinuxAppMusic::SetChannelVolumes(float *_values, int _numChannels)
     //   result = SUCCESS;
     //   return result;
 }
+
 GReturn LinuxAppMusic::CheckChannelVolumes(const float *_values, int _numChannels)
 {
     //Checks the current volumns are higher than the passed in values and will set them
@@ -1610,6 +1658,7 @@ GReturn LinuxAppMusic::CheckChannelVolumes(const float *_values, int _numChannel
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::GetStreamSourceChannels(unsigned int &returnedChannelNum)
 {
     GReturn result = FAILURE;
@@ -1626,6 +1675,7 @@ GReturn LinuxAppMusic::GetStreamSourceChannels(unsigned int &returnedChannelNum)
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::GetStreamOutputChannels(unsigned int &returnedChannelNum)
 {
     GReturn result = FAILURE;
@@ -1642,6 +1692,7 @@ GReturn LinuxAppMusic::GetStreamOutputChannels(unsigned int &returnedChannelNum)
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::SetVolume(float _newVolume)
 {
     //Sets all channels volume to the passed in value.
@@ -1721,6 +1772,7 @@ GReturn LinuxAppMusic::SetVolume(float _newVolume)
     return result;
     */
 }
+
 GReturn LinuxAppMusic::StreamMusic()
 {
     GReturn theResult = SUCCESS;
@@ -1909,6 +1961,7 @@ GReturn LinuxAppMusic::StreamMusic()
     fclose(someWaveFile);
     return theResult;
 }
+
 GReturn LinuxAppMusic::StreamStart(bool _loop)
 {
     GReturn result = GReturn::FAILURE;
@@ -1929,6 +1982,7 @@ GReturn LinuxAppMusic::StreamStart(bool _loop)
 
     return result;
 }
+
 GReturn LinuxAppMusic::PauseStream()
 {
     GReturn result = GReturn::FAILURE;
@@ -1948,6 +2002,7 @@ GReturn LinuxAppMusic::PauseStream()
 
     return result;
 }
+
 GReturn LinuxAppMusic::ResumeStream()
 {
     GReturn result = GReturn::FAILURE;
@@ -1967,6 +2022,7 @@ GReturn LinuxAppMusic::ResumeStream()
     }
     return result;
 }
+
 GReturn LinuxAppMusic::StopStream()
 {
     GReturn result = GReturn::FAILURE;
@@ -1989,11 +2045,13 @@ GReturn LinuxAppMusic::StopStream()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::isStreamPlaying(bool &_returnedBool)
 {
     _returnedBool = isPlaying;
     return SUCCESS;
 }
+
 GReturn LinuxAppMusic::GetCount(unsigned int &_outCount)
 {
     GReturn result = FAILURE;
@@ -2002,6 +2060,7 @@ GReturn LinuxAppMusic::GetCount(unsigned int &_outCount)
 
     return result;
 }
+
 GReturn LinuxAppMusic::IncrementCount()
 {
     GReturn result = FAILURE;
@@ -2012,6 +2071,7 @@ GReturn LinuxAppMusic::IncrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::DecrementCount()
 {
     GReturn result = FAILURE;
@@ -2028,6 +2088,7 @@ GReturn LinuxAppMusic::DecrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppMusic::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
     GReturn result = FAILURE;
@@ -2079,6 +2140,7 @@ GReturn LinuxAppMusic::RequestInterface(const GUUIID &_interfaceID, void **_outp
 
     return result;
 }
+
 LinuxAppMusic::~LinuxAppMusic()
 {
     pa_stream_disconnect(myStream);
@@ -2087,7 +2149,9 @@ LinuxAppMusic::~LinuxAppMusic()
     pa_context_unref(myContext);
     pa_mainloop_free(myMainLoop);
 }
-//End of GMusic implementation
+//End of GMusic implementation for Linux
+
+//Begining of GAudio implementation for Linux
 LinuxAppAudio::LinuxAppAudio() : AudioCounter(1) {}
 
 GReturn LinuxAppAudio::Init(int _numOfOutputs)
@@ -2097,6 +2161,7 @@ GReturn LinuxAppAudio::Init(int _numOfOutputs)
 
     return result;
 }
+
 GReturn LinuxAppAudio::CreateSound(const char *_path, GSound **_outSound)
 {
     GReturn result = FAILURE;
@@ -2142,6 +2207,7 @@ GReturn LinuxAppAudio::CreateSound(const char *_path, GSound **_outSound)
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppAudio::CreateMusicStream(const char *_path, GMusic **_outMusic)
 {
     GReturn result = FAILURE;
@@ -2191,6 +2257,7 @@ GReturn LinuxAppAudio::CreateMusicStream(const char *_path, GMusic **_outMusic)
 
     return result;
 }
+
 GReturn LinuxAppAudio::SetMasterVolume(float _value)
 {
     GReturn result = INVALID_ARGUMENT;
@@ -2209,6 +2276,7 @@ GReturn LinuxAppAudio::SetMasterVolume(float _value)
     }
     return result;
 }
+
 GReturn LinuxAppAudio::SetMasterChannelVolumes(const float *_values, int _numChannels)
 {
     GReturn result = INVALID_ARGUMENT;
@@ -2276,6 +2344,7 @@ GReturn LinuxAppAudio::SetMasterChannelVolumes(const float *_values, int _numCha
     return result;
     */
 }
+
 GReturn LinuxAppAudio::PauseAll()
 {
     GReturn result = FAILURE;
@@ -2298,6 +2367,7 @@ GReturn LinuxAppAudio::PauseAll()
 
     return result;
 }
+
 GReturn LinuxAppAudio::StopAll()
 {
     GReturn result = FAILURE;
@@ -2320,6 +2390,7 @@ GReturn LinuxAppAudio::StopAll()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppAudio::ResumeAll()
 {
     GReturn result = FAILURE;
@@ -2342,6 +2413,7 @@ GReturn LinuxAppAudio::ResumeAll()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppAudio::GetCount(unsigned int &_outCount)
 {
     GReturn result = FAILURE;
@@ -2350,6 +2422,7 @@ GReturn LinuxAppAudio::GetCount(unsigned int &_outCount)
 
     return result;
 }
+
 GReturn LinuxAppAudio::IncrementCount()
 {
     GReturn result = FAILURE;
@@ -2360,6 +2433,7 @@ GReturn LinuxAppAudio::IncrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppAudio::DecrementCount()
 {
     GReturn result = FAILURE;
@@ -2370,6 +2444,7 @@ GReturn LinuxAppAudio::DecrementCount()
     result = SUCCESS;
     return result;
 }
+
 GReturn LinuxAppAudio::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
     GReturn result = FAILURE;
@@ -2421,6 +2496,7 @@ GReturn LinuxAppAudio::RequestInterface(const GUUIID &_interfaceID, void **_outp
 
     return result;
 }
+
 LinuxAppAudio::~LinuxAppAudio()
 {
     while (activeSounds.size() > 0)
@@ -2432,6 +2508,7 @@ LinuxAppAudio::~LinuxAppAudio()
         activeMusic.erase(activeMusic.begin());
     }
 }
+
 GReturn LinuxAppAudio::CleanUpSound()
 {
     GReturn result = FAILURE;
@@ -2480,7 +2557,6 @@ GReturn LinuxAppAudio::CleanUpMusic()
     return result;
 }
 
-//Start of GAudio implementation for Windows
 GReturn PlatformGetAudio(GAudio **_outAudio)
 {
     GReturn result = FAILURE;
@@ -2508,4 +2584,4 @@ GReturn PlatformGetAudio(GAudio **_outAudio)
     result = SUCCESS;
     return result;
 }
-//End of GMusic implementation for Windows
+//End of GAudio implementation for Linux

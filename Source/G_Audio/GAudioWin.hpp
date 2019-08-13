@@ -30,6 +30,7 @@ const unsigned long fourDPDScc = 'sdpd';
 
 #define STREAMING_BUFFER_SIZE 65536
 #define MAX_BUFFER_COUNT 3
+
 using std::atomic;
 
 HRESULT LoadWaveData(const char *path, WAVEFORMATEXTENSIBLE &myWFX, XAUDIO2_BUFFER &myAudioBuffer)
@@ -176,6 +177,7 @@ HRESULT LoadWaveData(const char *path, WAVEFORMATEXTENSIBLE &myWFX, XAUDIO2_BUFF
 
 	return theResult;
 }
+
 HRESULT FindStreamData(HANDLE _file, unsigned long &_outDataChunk, OVERLAPPED &_overLab)
 {
 	//Assumes that the file is opened.
@@ -308,6 +310,7 @@ HRESULT FindStreamData(HANDLE _file, unsigned long &_outDataChunk, OVERLAPPED &_
 	}
 	return theResult;
 }
+
 HRESULT LoadOnlyWaveHeaderData(const char *path, WAVEFORMATEXTENSIBLE &myWFX, XAUDIO2_BUFFER &myAudioBuffer)
 {
 
@@ -408,6 +411,7 @@ HRESULT LoadOnlyWaveHeaderData(const char *path, WAVEFORMATEXTENSIBLE &myWFX, XA
 	CloseHandle(returnedHandle);
 	return theResult;
 }
+
 HRESULT FindChunk(HANDLE &theFile, DWORD fourcc, DWORD &dwChunkSize, DWORD &dwChunkDataPosition, DWORD &dwRiffSize)
 {
 	//by default code assumes its reading PCM file with 'RIFF', 'fmt ', and 'data' chunks
@@ -484,6 +488,7 @@ HRESULT FindChunk(HANDLE &theFile, DWORD fourcc, DWORD &dwChunkSize, DWORD &dwCh
 	}
 	return theResult;
 }
+
 HRESULT ReadChunkData(HANDLE &theFile, void *someBuffer, DWORD buffersize, DWORD bufferOffset)
 {
 	HRESULT theResult = S_OK;
@@ -505,6 +510,7 @@ HRESULT ReadChunkData(HANDLE &theFile, void *someBuffer, DWORD buffersize, DWORD
 
 	return theResult;
 }
+
 int GetCharSize(const char *theConstChar)
 {
 	int returnValue = 0;
@@ -518,6 +524,7 @@ int GetCharSize(const char *theConstChar)
 	}
 	return returnValue;
 }
+
 void CreateCharFromConstChar(char **myChar, const char *theConstChar, int size)
 {
 	char *testChar = new char[size + 1];
@@ -528,6 +535,7 @@ void CreateCharFromConstChar(char **myChar, const char *theConstChar, int size)
 	testChar[size] = '\0';
 	*myChar = testChar;
 }
+
 
 //Forward Declarations so classes can have certain members
 class WindowAppAudio;
@@ -649,6 +657,7 @@ public:
 	~WindowAppAudio();
 };
 
+
 struct StreamingVoiceContext : public IXAudio2VoiceCallback
 {
 	WindowAppSound *sndUser = nullptr;
@@ -703,6 +712,7 @@ struct StreamingVoiceContext : public IXAudio2VoiceCallback
 	void STDMETHODCALLTYPE OnLoopEnd(void *) {}
 	void STDMETHODCALLTYPE OnLoopEnd(void *, HRESULT) {}
 };
+
 GReturn CreateVoiceContext(StreamingVoiceContext **outcontext)
 {
 	GReturn result = FAILURE;
@@ -728,11 +738,10 @@ GReturn CreateVoiceContext(StreamingVoiceContext **outcontext)
 	return result;
 }
 
-WindowAppSound::WindowAppSound() : SoundCounter(1)
-{
-}
 
-//Start of GSound implementation
+//Start of GSound implementation for Windows
+WindowAppSound::WindowAppSound() : SoundCounter(1) { }
+
 GReturn WindowAppSound::Init()
 {
 	GReturn result = GReturn::FAILURE;
@@ -745,6 +754,7 @@ GReturn WindowAppSound::Init()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::SetPCMShader(const char *_data)
 {
 	GReturn result = GReturn::FAILURE;
@@ -754,6 +764,7 @@ GReturn WindowAppSound::SetPCMShader(const char *_data)
 		return result;
 	return result;
 }
+
 GReturn WindowAppSound::SetChannelVolumes(float *_values, int _numChannels)
 {
 	GReturn result = INVALID_ARGUMENT;
@@ -813,6 +824,7 @@ GReturn WindowAppSound::SetChannelVolumes(float *_values, int _numChannels)
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::CheckChannelVolumes(const float *_values, int _numChannels)
 {
 	GReturn result = GReturn::FAILURE;
@@ -866,6 +878,7 @@ GReturn WindowAppSound::CheckChannelVolumes(const float *_values, int _numChanne
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::GetSoundSourceChannels(unsigned int &returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -877,6 +890,7 @@ GReturn WindowAppSound::GetSoundSourceChannels(unsigned int &returnedChannelNum)
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::GetSoundOutputChannels(unsigned int &returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -888,6 +902,7 @@ GReturn WindowAppSound::GetSoundOutputChannels(unsigned int &returnedChannelNum)
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::SetVolume(float _newVolume)
 {
 	GReturn result = INVALID_ARGUMENT;
@@ -913,6 +928,7 @@ GReturn WindowAppSound::SetVolume(float _newVolume)
 
 	return result;
 }
+
 GReturn WindowAppSound::Play()
 {
 	GReturn result = GReturn::FAILURE;
@@ -941,6 +957,7 @@ GReturn WindowAppSound::Play()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::Pause()
 {
 	GReturn result = GReturn::FAILURE;
@@ -962,6 +979,7 @@ GReturn WindowAppSound::Pause()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::Resume()
 {
 	GReturn result = GReturn::FAILURE;
@@ -983,6 +1001,7 @@ GReturn WindowAppSound::Resume()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::StopSound()
 {
 	GReturn result = GReturn::FAILURE;
@@ -1012,11 +1031,13 @@ GReturn WindowAppSound::StopSound()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::isSoundPlaying(bool &_returnedBool)
 {
 	_returnedBool = isPlaying;
 	return SUCCESS;
 }
+
 GReturn WindowAppSound::GetCount(unsigned int &_outCount)
 {
 	GReturn result = FAILURE;
@@ -1025,6 +1046,7 @@ GReturn WindowAppSound::GetCount(unsigned int &_outCount)
 
 	return result;
 }
+
 GReturn WindowAppSound::IncrementCount()
 {
 	GReturn result = FAILURE;
@@ -1035,6 +1057,7 @@ GReturn WindowAppSound::IncrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::DecrementCount()
 {
 	GReturn result = FAILURE;
@@ -1053,6 +1076,7 @@ GReturn WindowAppSound::DecrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppSound::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
 	GReturn result = FAILURE;
@@ -1104,6 +1128,7 @@ GReturn WindowAppSound::RequestInterface(const GUUIID &_interfaceID, void **_out
 
 	return result;
 }
+
 WindowAppSound::~WindowAppSound()
 {
 	if (isPlaying)
@@ -1122,13 +1147,11 @@ WindowAppSound::~WindowAppSound()
 	myContext = nullptr;
 	audio = nullptr;
 }
-//End of GSound implementation
+//End of GSound implementation for Windows
 
-WindowAppMusic::WindowAppMusic() : MusicCounter(1)
-{
-}
+//Start of GMusic implementation for Windows
+WindowAppMusic::WindowAppMusic() : MusicCounter(1) { }
 
-//Start of GMusic implementation
 GReturn WindowAppMusic::Init()
 {
 	GReturn result = GReturn::FAILURE;
@@ -1137,12 +1160,14 @@ GReturn WindowAppMusic::Init()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::SetPCMShader(const char *_data)
 {
 	GReturn result = FAILURE;
 
 	return result;
 }
+
 GReturn WindowAppMusic::SetChannelVolumes(float *_values, int _numChannels)
 {
 	GReturn result = INVALID_ARGUMENT;
@@ -1201,6 +1226,7 @@ GReturn WindowAppMusic::SetChannelVolumes(float *_values, int _numChannels)
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::CheckChannelVolumes(const float *_values, int _numChannels)
 {
 	GReturn result = GReturn::INVALID_ARGUMENT;
@@ -1254,6 +1280,7 @@ GReturn WindowAppMusic::CheckChannelVolumes(const float *_values, int _numChanne
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::GetStreamSourceChannels(unsigned int &returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -1267,6 +1294,7 @@ GReturn WindowAppMusic::GetStreamSourceChannels(unsigned int &returnedChannelNum
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::GetStreamOutputChannels(unsigned int &returnedChannelNum)
 {
 	GReturn result = FAILURE;
@@ -1278,6 +1306,7 @@ GReturn WindowAppMusic::GetStreamOutputChannels(unsigned int &returnedChannelNum
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::SetVolume(float _newVolume)
 {
 	GReturn result = FAILURE;
@@ -1304,6 +1333,7 @@ GReturn WindowAppMusic::SetVolume(float _newVolume)
 
 	return result;
 }
+
 GReturn WindowAppMusic::Stream()
 {
 	HRESULT theResult = S_OK;
@@ -1431,6 +1461,7 @@ GReturn WindowAppMusic::Stream()
 	isPlaying = false;
 	isPaused = true;
 }
+
 GReturn WindowAppMusic::StreamStart(bool _loop)
 {
 	GReturn result = GReturn::FAILURE;
@@ -1457,6 +1488,7 @@ GReturn WindowAppMusic::StreamStart(bool _loop)
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::PauseStream()
 {
 	GReturn result = GReturn::FAILURE;
@@ -1478,6 +1510,7 @@ GReturn WindowAppMusic::PauseStream()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::ResumeStream()
 {
 	GReturn result = GReturn::FAILURE;
@@ -1500,6 +1533,7 @@ GReturn WindowAppMusic::ResumeStream()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::StopStream()
 {
 	GReturn result = GReturn::FAILURE;
@@ -1530,11 +1564,13 @@ GReturn WindowAppMusic::StopStream()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::isStreamPlaying(bool &_returnedBool)
 {
 	_returnedBool = isPlaying;
 	return SUCCESS;
 }
+
 GReturn WindowAppMusic::GetCount(unsigned int &_outCount)
 {
 	GReturn result = FAILURE;
@@ -1543,6 +1579,7 @@ GReturn WindowAppMusic::GetCount(unsigned int &_outCount)
 
 	return result;
 }
+
 GReturn WindowAppMusic::IncrementCount()
 {
 	GReturn result = FAILURE;
@@ -1553,6 +1590,7 @@ GReturn WindowAppMusic::IncrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::DecrementCount()
 {
 	GReturn result = FAILURE;
@@ -1571,6 +1609,7 @@ GReturn WindowAppMusic::DecrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppMusic::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
 	GReturn result = FAILURE;
@@ -1622,6 +1661,7 @@ GReturn WindowAppMusic::RequestInterface(const GUUIID &_interfaceID, void **_out
 
 	return result;
 }
+
 WindowAppMusic::~WindowAppMusic()
 {
 	if (isPlaying)
@@ -1640,11 +1680,11 @@ WindowAppMusic::~WindowAppMusic()
 	myContext = nullptr;
 	audio = nullptr;
 }
-WindowAppAudio::WindowAppAudio() : AudioCounter(1)
-{
-}
-//End of GMusic implementation
+//End of GMusic implementation for Windows
+
 //Start of GAudio implementation for Windows
+WindowAppAudio::WindowAppAudio() : AudioCounter(1) { }
+
 GReturn WindowAppAudio::Init(int _numOfOutputs)
 {
 	GReturn result = FAILURE;
@@ -1665,6 +1705,7 @@ GReturn WindowAppAudio::Init(int _numOfOutputs)
 
 	return result;
 }
+
 GReturn WindowAppAudio::CreateSound(const char *_path, GSound **_outSound)
 {
 
@@ -1726,6 +1767,7 @@ GReturn WindowAppAudio::CreateSound(const char *_path, GSound **_outSound)
 
 	return result;
 }
+
 GReturn WindowAppAudio::CreateMusicStream(const char *_path, GMusic **_outMusic)
 {
 	GReturn result = FAILURE;
@@ -1790,6 +1832,7 @@ GReturn WindowAppAudio::CreateMusicStream(const char *_path, GMusic **_outMusic)
 
 	return result;
 }
+
 GReturn WindowAppAudio::SetMasterVolume(float _value)
 {
 	GReturn result = INVALID_ARGUMENT;
@@ -1808,6 +1851,7 @@ GReturn WindowAppAudio::SetMasterVolume(float _value)
 	}
 	return result;
 }
+
 GReturn WindowAppAudio::SetMasterChannelVolumes(const float *_values, int _numChannels)
 {
 
@@ -1846,6 +1890,7 @@ GReturn WindowAppAudio::SetMasterChannelVolumes(const float *_values, int _numCh
 	}
 	return result;
 }
+
 GReturn WindowAppAudio::PauseAll()
 {
 	GReturn result = FAILURE;
@@ -1867,6 +1912,7 @@ GReturn WindowAppAudio::PauseAll()
 	}
 	return result;
 }
+
 GReturn WindowAppAudio::StopAll()
 {
 	GReturn result = FAILURE;
@@ -1888,6 +1934,7 @@ GReturn WindowAppAudio::StopAll()
 	}
 	return result;
 }
+
 GReturn WindowAppAudio::ResumeAll()
 {
 	GReturn result = FAILURE;
@@ -1909,6 +1956,7 @@ GReturn WindowAppAudio::ResumeAll()
 	}
 	return result;
 }
+
 GReturn WindowAppAudio::GetCount(unsigned int &_outCount)
 {
 	GReturn result = FAILURE;
@@ -1917,6 +1965,7 @@ GReturn WindowAppAudio::GetCount(unsigned int &_outCount)
 
 	return result;
 }
+
 GReturn WindowAppAudio::IncrementCount()
 {
 	GReturn result = FAILURE;
@@ -1927,6 +1976,7 @@ GReturn WindowAppAudio::IncrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppAudio::DecrementCount()
 {
 	GReturn result = FAILURE;
@@ -1939,6 +1989,7 @@ GReturn WindowAppAudio::DecrementCount()
 	result = SUCCESS;
 	return result;
 }
+
 GReturn WindowAppAudio::RequestInterface(const GUUIID &_interfaceID, void **_outputInterface)
 {
 	GReturn result = FAILURE;
@@ -1990,6 +2041,7 @@ GReturn WindowAppAudio::RequestInterface(const GUUIID &_interfaceID, void **_out
 
 	return result;
 }
+
 WindowAppAudio::~WindowAppAudio()
 {
 	for (auto snd : activeSounds)
@@ -2077,4 +2129,4 @@ GReturn PlatformGetAudio(GAudio **_outAudio)
 	result = SUCCESS;
 	return result;
 }
-//End of GMusic implementation for Windows
+//End of GAudio implementation for Windows

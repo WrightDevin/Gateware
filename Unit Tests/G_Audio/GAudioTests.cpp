@@ -449,10 +449,10 @@ TEST_CASE("Playing multi-channel encoded sound", "[Play]")
     CreateGAudio(&testAudio);
     GSound *testSound = nullptr;
     testAudio->CreateSound(stereo5_1Test, &testSound);
-    
+
     REQUIRE(G_SUCCESS(testSound->Play()));
     sleep_ms(10000);
-    
+
     testAudio->DecrementCount();
 }
 
@@ -483,6 +483,7 @@ TEST_CASE("Deleting sound", "[DecrementCount]")
     // There is no good way in c++ to check if something has been deleted.
     // testSound->DecrementCount();
 
+    // test sound count is 0? this currently returns failure
 	testAudio->DecrementCount();
 }
 
